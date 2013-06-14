@@ -15,9 +15,11 @@
 //  *                                                           *
 //  *************************************************************
 
+#include <map>
 #include "scanner.h"
+#include "misc.h"
 
-TCharCode charCodeMap[128]; // maps a character to its code
+char_code_map charCodeMap; // maps a character to its code
 
 //--------------------------------------------------------------
 //  Constructor     Construct a scanner by constructing the
@@ -29,10 +31,10 @@ TCharCode charCodeMap[128]; // maps a character to its code
 
 TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
 : pTextInBuffer(pBuffer) {
-    int i;
+    char i;
 
     //--Initialize the character code map.
-    for (i = 0; i < 128; ++i) charCodeMap[i] = ccError;
+    //for (i = 0; i < 128; ++i) charCodeMap[i] = ccError;
     for (i = 'a'; i <= 'z'; ++i) charCodeMap[i] = ccLetter;
     for (i = 'A'; i <= 'Z'; ++i) charCodeMap[i] = ccLetter;
     for (i = '0'; i <= '9'; ++i) charCodeMap[i] = ccDigit;
@@ -57,10 +59,14 @@ TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
     charCodeMap[' ' ] = charCodeMap['\t'] = ccWhiteSpace;
     charCodeMap['\n'] = charCodeMap['\0'] = ccWhiteSpace;
     charCodeMap['\r'] = charCodeMap['\f'] = ccWhiteSpace;
+    charCodeMap['\\'] = ccWhiteSpace;
+
     charCodeMap['\''] = ccQuote;
     charCodeMap['\"'] = ccQuoteQuote;
 
     charCodeMap[eofChar] = ccEndOfFile;
+
+    charCodeMap['`'] = charCodeMap['@'] = ccError;
 }
 
 //fig 3-16
@@ -74,12 +80,10 @@ TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
 void TTextScanner::SkipWhiteSpace(void) {
     char ch = pTextInBuffer->Char();
 
-
     do {
         if (charCodeMap[ch] == ccWhiteSpace) {
             ch = pTextInBuffer->GetChar();
         }
-        //if (ch == eofChar)Error(errUnexpectedEndOfFile);
     } while ((charCodeMap[ch] == ccWhiteSpace));
 }
 //endfig

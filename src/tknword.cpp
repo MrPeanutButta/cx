@@ -16,8 +16,10 @@
 //  *                                                           *
 //  *************************************************************
 
-#include <string.h>
-#include <stdio.h>
+#include <utility>
+#include <cstring>
+#include <cstdio>
+#include "misc.h"
 #include "token.h"
 
 //              *************************
@@ -26,64 +28,77 @@
 //              *                       *
 //              *************************
 
-const int minResWordLen = 2;    // min and max reserved
-const int maxResWordLen = 9;    //   word lengths
+const int minResWordLen = 2; // min and max reserved
+const int maxResWordLen = 12; //   word lengths
 
 //--------------------------------------------------------------
 //  Reserved word lists (according to word length)
 //--------------------------------------------------------------
-
-struct TResWord {
-    const char *pString; // ptr to word string
-    TTokenCode  code;     // word code
+std::pair<const char *, TTokenCode> map_data[] = {
+    std::make_pair("if", tcIf),
+    std::make_pair("return", tcReturn),
+    std::make_pair("continue", tcContinue),
+    std::make_pair("friend", tcFriend),
+    std::make_pair("true", tcTrue),
+    std::make_pair("goto", tcGoto),
+    std::make_pair("try", tcTry),
+    std::make_pair("delete", tcDelete),
+    std::make_pair("short", tcShort),
+    std::make_pair("typeid", tcTypeId),
+    std::make_pair("bool", tcBool),
+    std::make_pair("do", tcDo),
+    std::make_pair("int", tcInt),
+    std::make_pair("signed", tcSigned),
+    std::make_pair("typename", tcTypeName),
+    std::make_pair("break", tcBreak),
+    std::make_pair("double", tcDouble),
+    std::make_pair("long", tcLong),
+    std::make_pair("sizeof", tcSizeOf),
+    std::make_pair("union", tcUnion),
+    std::make_pair("case", tcCase),
+    std::make_pair("static", tcStatic),
+    std::make_pair("unsigned", tcUnsigned),
+    std::make_pair("catch", tcCatch),
+    std::make_pair("else", tcElse),
+    std::make_pair("namespace", tcNameSpace),
+    std::make_pair("using", tcUsing),
+    std::make_pair("char", tcChar),
+    std::make_pair("enum", tcEnum),
+    std::make_pair("new", tcNew),
+    std::make_pair("virtual", tcVirtual),
+    std::make_pair("char16_t", tcChar16_t),
+    std::make_pair("explicit", tcExplicit),
+    std::make_pair("noexcept", tcNoExcept),
+    std::make_pair("char32_t", tcChar32_t),
+    std::make_pair("export", tcExport),
+    std::make_pair("nullptr", tcNullptr),
+    std::make_pair("switch", tcSwitch),
+    std::make_pair("struct", tcStruct),
+    std::make_pair("void", tcVoid),
+    std::make_pair("class", tcClass),
+    std::make_pair("extern", tcExtern),
+    std::make_pair("operator", tcOperator),
+    std::make_pair("template", tcTemplate),
+    std::make_pair("const", tcConst),
+    std::make_pair("false", tcFalse),
+    std::make_pair("private", tcPrivate),
+    std::make_pair("this", tcThis),
+    std::make_pair("while", tcWhile),
+    std::make_pair("float", tcFloat),
+    std::make_pair("protected", tcProtected),
+    std::make_pair("thread_local", tcThreadLocal),
+    std::make_pair("for", tcFor),
+    std::make_pair("public", tcPublic),
+    std::make_pair("throw", tcThrow),
+    std::make_pair("default", tcDefault),
+    std::make_pair("typedef", tcTypeDef),
+    std::make_pair("mutable", tcMutable),
+    std::make_pair("include", tcInclude),
 };
 
-static TResWord rw2[] = {
-    {"do", tcDO}, {"if", tcIF}, {"in", tcIN}, {"of", tcOF},
-    {"or", tcOR}, {"to", tcTO}, {NULL},
-};
 
-static TResWord rw3[] = {
-    {"for", tcFOR},
-    {"int", tcVAR}, {NULL},
-};
-
-static TResWord rw4[] = {
-    {"case", tcCASE}, {"else", tcELSE}, {"file", tcFILE},
-    {"goto", tcGOTO}, {"type", tcTYPE},
-    {"null", tcNIL}, {NULL},
-};
-
-static TResWord rw5[] = {
-{"const", tcCONST},
-    {"label", tcLABEL}, {"while", tcWHILE},
-    {NULL},
-};
-
-static TResWord rw6[] = {
-    {"downto", tcDOWNTO}, {"packed", tcPACKED}, {"record", tcRECORD},
-    {"repeat", tcREPEAT}, {NULL},
-};
-
-static TResWord rw7[] = {
-    {"program", tcPROGRAM}, {NULL},
-};
-
-static TResWord rw8[] = {
-    {"function", tcFUNCTION}, {NULL},
-};
-
-static TResWord rw9[] = {
-    {"procedure", tcPROCEDURE}, {NULL},
-};
-
-//--------------------------------------------------------------
-//  The reserved word table
-//--------------------------------------------------------------
-
-static TResWord *rwTable[] = {
-    NULL, NULL, rw2, rw3, rw4, rw5, rw6, rw7, rw8, rw9,
-};
+token_map TResWord(map_data,
+        map_data + sizeof map_data / sizeof map_data[0]);
 
 //              *****************
 //              *               *
@@ -98,17 +113,16 @@ static TResWord *rwTable[] = {
 //      pBuffer : ptr to text input buffer
 //--------------------------------------------------------------
 
-void TWordToken::Get(TTextInBuffer &buffer)
-{
-    extern TCharCode charCodeMap[];
+void TWordToken::Get(TTextInBuffer &buffer) {
+    extern char_code_map charCodeMap;
 
-    char  ch = buffer.Char();  // char fetched from input
+    char ch = buffer.Char(); // char fetched from input
     char *ps = string;
 
     //--Get the word.
     do {
-	*ps++ = ch;
-	ch = buffer.GetChar();
+        *ps++ = ch;
+        ch = buffer.GetChar();
     } while ((charCodeMap[ch] == ccLetter)
             || (charCodeMap[ch] == ccDigit));
 
@@ -124,25 +138,24 @@ void TWordToken::Get(TTextInBuffer &buffer)
 //                          the token code to tcIdentifier.
 //--------------------------------------------------------------
 
-void TWordToken::CheckForReservedWord(void)
-{
-    int       len = strlen(string);
-    TResWord *prw;        // ptr to elmt of reserved word table
+void TWordToken::CheckForReservedWord(void) {
+    int len = strlen(string);
 
-    code = tcIdentifier;  // first assume it's an identifier
+    code = tcIdentifier; // first assume it's an identifier
 
     //--Is it the right length?
     if ((len >= minResWordLen) && (len <= maxResWordLen)) {
+        token_map::iterator __it;
 
-	//--Yes.  Use the word length to pick the appropriate list
-	//--from the reserved word table and check to see if the word
-	//--is in there.
-	for (prw = rwTable[len]; prw->pString; ++prw) {
-	    if (strcmp(string, prw->pString) == 0) {
-		code = prw->code;  // yes: set reserved word token code
-		break;
-	    }
-	}
+        //--Yes.  Use the word length to pick the appropriate list
+        //--from the reserved word table and check to see if the word
+        //--is in there.
+        __it = TResWord.find(string);
+
+        if (__it != TResWord.end()) {
+            code = TResWord[string];
+        }
+
     }
 }
 
@@ -150,13 +163,11 @@ void TWordToken::CheckForReservedWord(void)
 //  Print       Print the token to the list file.
 //--------------------------------------------------------------
 
-void TWordToken::Print(void) const
-{
+void TWordToken::Print(void) const {
     if (code == tcIdentifier) {
-	sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
-    }
-    else {
-	sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
+        sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
+    } else {
+        sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
     }
 
     list.PutLine();

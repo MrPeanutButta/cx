@@ -18,8 +18,9 @@ private:
     char *pText;
 
 public:
+
     TCompactListBuffer() :
-    textLength(0){
+    textLength(0) {
         pText = text;
         *pText = '\0';
     }

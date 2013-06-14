@@ -26,19 +26,20 @@
 //--------------------------------------------------------------
 
 class TScanner {
-
 protected:
 
     //--Tokens extracted and returned by the scanner.
-    TWordToken    wordToken;
-    TNumberToken  numberToken;
-    TStringToken  stringToken;
+    TWordToken wordToken;
+    TNumberToken numberToken;
+    TStringToken stringToken;
     TSpecialToken specialToken;
-    TEOFToken     eofToken;
-    TErrorToken   errorToken;
+    TEOFToken eofToken;
+    TErrorToken errorToken;
 
 public:
-    virtual ~TScanner(void) {}
+
+    virtual ~TScanner(void) {
+    }
 
     virtual TToken *Get(void) = 0;
 };
@@ -48,14 +49,17 @@ public:
 //--------------------------------------------------------------
 
 class TTextScanner : public TScanner {
-    TTextInBuffer *const pTextInBuffer;  // ptr to input text buffer
-					 //   to scan
+    TTextInBuffer * const pTextInBuffer; // ptr to input text buffer
+    //   to scan
 
     void SkipWhiteSpace(void);
 
 public:
     TTextScanner(TTextInBuffer *pBuffer);
-    virtual ~TTextScanner(void) { delete pTextInBuffer; }
+
+    virtual ~TTextScanner(void) {
+        delete pTextInBuffer;
+    }
 
     virtual TToken *Get(void);
 };

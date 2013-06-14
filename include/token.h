@@ -23,37 +23,48 @@
 #include "error.h"
 #include "buffer.h"
 
-extern TCharCode charCodeMap[];
+
+extern char_code_map charCodeMap;
 
 //--------------------------------------------------------------
 //  TToken              Abstract token class.
 //--------------------------------------------------------------
 
 class TToken {
-
 protected:
     TTokenCode code;
-    TDataType  type;
+    TDataType type;
     TDataValue value;
-    char       string[maxInputBufferSize];
+    char string[maxInputBufferSize];
 
 public:
-    TToken(void)
-    {
-	code = tcDummy;
-	type = tyDummy;
-	value.integer = 0;
-	string[0]     = '\0';
+
+    TToken(void) {
+        code = tcDummy;
+        type = tyDummy;
+        value.integer = 0;
+        string[0] = '\0';
     }
 
-    TTokenCode  Code()   const { return code;   }
-    TDataType   Type()   const { return type;   }
-    TDataValue  Value()  const { return value;  }
-    char       *String()       { return string; }
+    TTokenCode Code() const {
+        return code;
+    }
+
+    TDataType Type() const {
+        return type;
+    }
+
+    TDataValue Value() const {
+        return value;
+    }
+
+    char *String() {
+        return string;
+    }
 
     virtual void Get(TTextInBuffer &buffer) = 0;
-    virtual int  IsDelimiter(void) const = 0;
-    virtual void Print      (void) const = 0;
+    virtual int IsDelimiter(void) const = 0;
+    virtual void Print(void) const = 0;
 };
 
 //--------------------------------------------------------------
@@ -65,8 +76,11 @@ class TWordToken : public TToken {
 
 public:
     virtual void Get(TTextInBuffer &buffer);
-    virtual int  IsDelimiter(void) const { return false; }
-    virtual void Print      (void) const;
+
+    virtual int IsDelimiter(void) const {
+        return false;
+    }
+    virtual void Print(void) const;
 };
 
 //--------------------------------------------------------------
@@ -74,20 +88,26 @@ public:
 //--------------------------------------------------------------
 
 class TNumberToken : public TToken {
-    char  ch;              // char fetched from input buffer
-    char *ps;              // ptr into token string
-    int   digitCount;      // total no. of digits in number
-    int   countErrorFlag;  // true if too many digits, else false
+    char ch; // char fetched from input buffer
+    char *ps; // ptr into token string
+    int digitCount; // total no. of digits in number
+    int countErrorFlag; // true if too many digits, else false
 
     int AccumulateValue(TTextInBuffer &buffer,
-			float &value, TErrorCode ec);
+            float &value, TErrorCode ec);
 
 public:
-    TNumberToken() { code = tcNumber; }
+
+    TNumberToken() {
+        code = tcNumber;
+    }
 
     virtual void Get(TTextInBuffer &buffer);
-    virtual int  IsDelimiter(void) const { return false; }
-    virtual void Print      (void) const;
+
+    virtual int IsDelimiter(void) const {
+        return false;
+    }
+    virtual void Print(void) const;
 };
 
 //--------------------------------------------------------------
@@ -95,13 +115,18 @@ public:
 //--------------------------------------------------------------
 
 class TStringToken : public TToken {
-
 public:
-    TStringToken() { code = tcString; }
+
+    TStringToken() {
+        code = tcString;
+    }
 
     virtual void Get(TTextInBuffer &buffer);
-    virtual int  IsDelimiter(void) const { return true; }
-    virtual void Print      (void) const;
+
+    virtual int IsDelimiter(void) const {
+        return true;
+    }
+    virtual void Print(void) const;
 };
 
 //--------------------------------------------------------------
@@ -109,11 +134,13 @@ public:
 //--------------------------------------------------------------
 
 class TSpecialToken : public TToken {
-
 public:
     virtual void Get(TTextInBuffer &buffer);
-    virtual int  IsDelimiter(void) const { return true; }
-    virtual void Print      (void) const;
+
+    virtual int IsDelimiter(void) const {
+        return true;
+    }
+    virtual void Print(void) const;
 };
 
 //--------------------------------------------------------------
@@ -121,13 +148,21 @@ public:
 //--------------------------------------------------------------
 
 class TEOFToken : public TToken {
-
 public:
-    TEOFToken() { code = tcEndOfFile; }
 
-    virtual void Get(TTextInBuffer &buffer) {}
-    virtual int  IsDelimiter(void) const { return false; }
-    virtual void Print      (void) const {}
+    TEOFToken() {
+        code = tcEndOfFile;
+    }
+
+    virtual void Get(TTextInBuffer &buffer) {
+    }
+
+    virtual int IsDelimiter(void) const {
+        return false;
+    }
+
+    virtual void Print(void) const {
+    }
 };
 
 //--------------------------------------------------------------
@@ -135,13 +170,20 @@ public:
 //--------------------------------------------------------------
 
 class TErrorToken : public TToken {
-
 public:
-    TErrorToken() { code = tcError; }
+
+    TErrorToken() {
+        code = tcError;
+    }
 
     virtual void Get(TTextInBuffer &buffer);
-    virtual int  IsDelimiter(void) const { return false; }
-    virtual void Print      (void) const {}
+
+    virtual int IsDelimiter(void) const {
+        return false;
+    }
+
+    virtual void Print(void) const {
+    }
 };
 
 #endif

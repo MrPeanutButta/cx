@@ -18,7 +18,7 @@
 //  *                                                           *
 //  *************************************************************
 
-#include <stdio.h>
+#include <cstdio>
 #include "common.h"
 #include "buffer.h"
 #include "error.h"
@@ -31,38 +31,37 @@
 //              source line, extract and list its tokens.
 //--------------------------------------------------------------
 
-void TParser::Parse(void)
-{
-    
+void TParser::Parse(void) {
+
     bool currIsDelimiter(false); // true if current token is delimeter
     bool prevIsDelimiter(true); // likewise for previous token
-    
-    
-    
+
+
+
     //--Loop to extract and print tokens
     //--until the end of the source file.
     do {
-	GetToken();
-        
-        if(token != tcError){
+        GetToken();
+
+        if (token != tcError) {
             currIsDelimiter = pToken->IsDelimiter();
-            
-            if(!prevIsDelimiter && !currIsDelimiter){
+
+            if (!prevIsDelimiter && !currIsDelimiter) {
                 pCompact->Put(pToken->String());
-                
+
                 prevIsDelimiter = currIsDelimiter;
             }
         }
-        
-	if (token != tcError) pToken->Print();
-        
+
+        if (token != tcError) pToken->Print();
+
     } while (token != tcEndOfFile);
-    
+
     pCompact->PutLine();
 
     //--Print the parser's summary.
     list.PutLine();
-    sprintf(list.text, "%20d source lines.",  currentLineNumber);
+    sprintf(list.text, "%20d source lines.", currentLineNumber);
     list.PutLine();
     sprintf(list.text, "%20d syntax errors.", errorCount);
     list.PutLine();

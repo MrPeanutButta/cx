@@ -27,15 +27,14 @@
 //  main
 //--------------------------------------------------------------
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     //--Check the command line arguments.
     if (argc != 2) {
-	cerr << "Usage: token <source file>" << endl;
-	AbortTranslation(abortInvalidCommandLineArgs);
+        cerr << "Usage: token <source file>" << endl;
+        AbortTranslation(abortInvalidCommandLineArgs);
     }
-    
-    listFlag = false;
+
+    listFlag = true;
     errorArrowFlag = false;
 
     //--Create the parser for the source file,

@@ -21,10 +21,10 @@
 #include "buffer.h"
 #include "error.h"
 
-int errorCount       = 0;     // count of syntax errors
-int errorArrowFlag   = true;  // true if print arrows under syntax
-			      //   errors, false if not
-int errorArrowOffset = 8;     // offset for printing the error arrow
+int errorCount = 0; // count of syntax errors
+int errorArrowFlag = true; // true if print arrows under syntax
+//   errors, false if not
+int errorArrowOffset = 8; // offset for printing the error arrow
 
 //--------------------------------------------------------------
 //  Abort messages      Keyed to enumeration type TAbortCode.
@@ -52,8 +52,7 @@ const char *abortMsg[] = {
 //      ac : abort code
 //--------------------------------------------------------------
 
-void AbortTranslation(TAbortCode ac)
-{
+void AbortTranslation(TAbortCode ac) {
     cerr << "*** Fatal translator error: " << abortMsg[-ac] << endl;
     exit(ac);
 }
@@ -132,16 +131,15 @@ const char *errorMessages[] = {
 //      ec : error code
 //--------------------------------------------------------------
 
-void Error(TErrorCode ec)
-{
+void Error(TErrorCode ec) {
     const int maxSyntaxErrors = 25;
 
     int errorPosition = errorArrowOffset + inputPosition - 1;
 
     //--Print the arrow pointing to the token just scanned.
     if (errorArrowFlag) {
-	sprintf(list.text, "%*s^", errorPosition, " ");
-	list.PutLine();
+        sprintf(list.text, "%*s^", errorPosition, " ");
+        list.PutLine();
     }
 
     //--Print the error message.
@@ -149,8 +147,8 @@ void Error(TErrorCode ec)
     list.PutLine();
 
     if (++errorCount > maxSyntaxErrors) {
-	list.PutLine("Too many syntax errors.  Translation aborted.");
-	AbortTranslation(abortTooManySyntaxErrors);
+        list.PutLine("Too many syntax errors.  Translation aborted.");
+        AbortTranslation(abortTooManySyntaxErrors);
     }
 }
 //endfig

@@ -17,7 +17,7 @@
 //  *                                                           *
 //  *************************************************************
 
-#include <stdio.h>
+#include <cstdio>
 #include "token.h"
 
 //              *******************
@@ -134,10 +134,6 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 *ps++ = '=';
                 code = tcStarEqual;
                 buffer.GetChar();
-            } else if (ch == '/') {
-                *ps++ = '/';
-                code = tcBlockCommentEnd;
-                buffer.GetChar();
             } else code = tcStar;
             break;
         case '(': code = tcLParen;
@@ -221,8 +217,12 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 buffer.GetChar();
             } else if (ch == '<') {
                 *ps++ = '<';
-                code = tcBitLeftShift;
-                buffer.GetChar();
+                ch = buffer.GetChar();
+                if (ch == '=') {
+                    *ps++ = '=';
+                    code = tcBitLeftShiftEqual;
+                    buffer.GetChar();
+                } else code = tcBitLeftShift;
             } else code = tcLt;
             break;
         case '>': ch = buffer.GetChar(); // > or >=
@@ -232,8 +232,12 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 buffer.GetChar();
             } else if (ch == '>') {
                 *ps++ = '>';
-                code = tcBitRightShift;
-                buffer.GetChar();
+                ch = buffer.GetChar();
+                if (ch == '=') {
+                    *ps++ = '=';
+                    code = tcBitRightShiftEqual;
+                    buffer.GetChar();
+                } else code = tcBitRightShift;
             } else code = tcGt;
             break;
         case '!': ch = buffer.GetChar(); // ! or !=
@@ -263,7 +267,7 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
 
             break;
         case '\"': code = tcQuoteQuote;
-        buffer.GetChar();
+            buffer.GetChar();
         default: code = tcError; // error
             buffer.GetChar();
             Error(errUnrecognizable);

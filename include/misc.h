@@ -14,6 +14,9 @@
 #ifndef misc_h
 #define misc_h
 
+
+#include <map>
+
 //--------------------------------------------------------------
 //  TCharCode           Character codes.
 //--------------------------------------------------------------
@@ -34,11 +37,6 @@ enum TTokenCode {
 
     //operators and punctuation
     //bitwise
-    tcBlockCommentStart, // /*
-    tcBlockCommentEnd, // */
-    tcLineCommentStart, // //
-    tcNewLine, // \n
-    tcReturnLine, // \r
     tcBitXORorPow, // ^
     tcBitANDorAddrOf, // &
     tcBitOR, // |
@@ -48,7 +46,9 @@ enum TTokenCode {
     tcBitANDEqual, // &=
     tcBitOREqual, // |=
     tcBitLeftShift, // <<
+    tcBitLeftShiftEqual, // <<=
     tcBitRightShift, // >>
+    tcBitRightShiftEqual, // >>=
 
     tcMinus, // -
     tcMinusEqual, // -=
@@ -97,14 +97,18 @@ enum TTokenCode {
     tcLogicOr, // ||
     tcLogicAnd, // &&
     tcLogicNOT, // !
-    tcQuote,
-    tcQuoteQuote,
+    tcQuote, // '
+    tcQuoteQuote, // "
 
-    tcAND, tcARRAY, tcBEGIN, tcCASE, tcCONST, tcDIV,
-    tcDO, tcDOWNTO, tcELSE, tcEND, tcFILE, tcFOR, tcFUNCTION,
-    tcGOTO, tcIF, tcIN, tcLABEL, tcMOD, tcNIL, tcNOT, tcOF, tcOR,
-    tcPACKED, tcPROCEDURE, tcPROGRAM, tcRECORD, tcREPEAT, tcSET,
-    tcTHEN, tcTO, tcTYPE, tcUNTIL, tcVAR, tcWHILE, tcWITH,
+    tcIf, tcReturn, tcContinue, tcFriend, tcTrue, tcGoto, tcTry, tcDelete,
+    tcShort, tcTypeId, tcBool, tcDo, tcInt, tcSigned, tcTypeName,
+    tcBreak, tcDouble, tcLong, tcSizeOf, tcUnion, tcCase, tcStatic,
+    tcUnsigned, tcCatch, tcElse, tcNameSpace, tcUsing, tcChar,
+    tcEnum, tcNew, tcVirtual, tcChar16_t, tcExplicit, tcNoExcept,
+    tcChar32_t, tcExport, tcNullptr, tcSwitch, tcStruct, tcVoid,
+    tcClass, tcExtern, tcOperator, tcTemplate, tcConst, tcFalse,
+    tcPrivate, tcThis, tcWhile, tcFloat, tcProtected, tcThreadLocal,
+    tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude
 };
 //endfig
 
@@ -126,6 +130,9 @@ union TDataValue {
     char character;
     char *pString;
 };
+
+typedef std::map<char, TCharCode> char_code_map;
+typedef std::map<const char *, TTokenCode> token_map;
 
 #endif
 

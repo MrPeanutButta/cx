@@ -129,6 +129,17 @@ TSourceBuffer::TSourceBuffer(const char *pSourceFileName)
 //          end-of-file character if at the end of the file
 //--------------------------------------------------------------
 
+void snip_line_comment(char *text) {
+    // clear comments
+    for (uint8_t i(0); i < strlen(text); ++i) {
+        if (text[i + 1] == eofChar)return;
+        if (text[i] == '/' && text[i + 1] == '/') {
+            text[i] = '\0';
+            return;
+        }
+    }
+}
+
 char TSourceBuffer::GetLine(void) {
     extern int lineNumber, currentNestingLevel;
 
@@ -137,21 +148,21 @@ char TSourceBuffer::GetLine(void) {
 
         //--Else read the next source line and print it to the list file.
     else {
-            file.getline(text, maxInputBufferSize);
-            pChar = text; // point to first source line char
+        memset(text, '\0', sizeof (text));
+        file.getline(text, maxInputBufferSize);
+        pChar = text; // point to first source line char
 
-            if (listFlag) list.PutLine(text, ++currentLineNumber,
-                currentNestingLevel);
-
-            // clear comments
-        for (uint8_t i(0); i < strlen(text); ++i) {
-                if(text[i+1] == eofChar)break;
-                if(text[i] == '/' && text[i+1]=='/'){
-                    text[i] = '\0';
-                    break;
-                }
-            }
+        if (listFlag) {
+            list.PutLine(
+                    text,
+                    ++currentLineNumber,
+                    currentNestingLevel
+                    );
         }
+
+        snip_line_comment(text);
+
+    }
 
     inputPosition = 0;
     return *pChar;
@@ -192,7 +203,7 @@ void TListBuffer::PrintPageHeader(void) {
 //--------------------------------------------------------------
 
 void TListBuffer::Initialize(const char *pFileName) {
-    text[0] = '\0';
+    memset(text, '\0', sizeof (text));
     pageNumber = 0;
 
     //--Copy the input file name.
@@ -221,7 +232,7 @@ void TListBuffer::PutLine(void) {
 
     //--Print the text line, and then blank out the text.
     cout << text << endl;
-    text[0] = '\0';
+    memset(text, '\0', sizeof (text));
 
     ++lineCount;
 }
