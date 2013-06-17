@@ -37,7 +37,6 @@ void TParser::Parse(void) {
     bool prevIsDelimiter(true); // likewise for previous token
 
 
-
     //--Loop to extract and print tokens
     //--until the end of the source file.
     do {
@@ -53,7 +52,21 @@ void TParser::Parse(void) {
             }
         }
 
-        if (token != tcError) pToken->Print();
+        if (token != tcError) {
+            pToken->Print();
+
+            switch (token) {
+                case tcEndOfFile: return;
+                case tcSemicolon: this->GetToken();
+                    break; // ignore top-level semicolons.
+                case tcFloat: HandleDefinition();
+                    break;
+                case tcExtern: HandleExtern();
+                    break;
+                default: HandleTopLevelExpression();
+                    break;
+            }
+        }
 
     } while (token != tcEndOfFile);
 

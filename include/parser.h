@@ -17,11 +17,15 @@
 #ifndef parser_h
 #define parser_h
 
+#include <map>
 #include "misc.h"
 #include "buffer.h"
 #include "token.h"
 #include "scanner.h"
 #include "complist.h"
+#include "ast.h"
+
+using namespace std;
 
 //--------------------------------------------------------------
 //  TParser     Parser class.
@@ -39,11 +43,37 @@ class TParser {
         token = pToken->Code();
     }
 
+    //
+    int GetTokPrecedence(void);
+    ExprAST *ParseExpression(void);
+    ExprAST *ParseIdentifierExpr(void);
+    ExprAST *ParseNumberExpr(void);
+    ExprAST *ParseParenExpr(void);
+    ExprAST *ParsePrimary(void);
+    ExprAST *ParseBinOpRHS(int ExprPrec, ExprAST *LHS);
+    PrototypeAST *ParsePrototype(void);
+    FunctionAST *ParseDefinition(void);
+    FunctionAST *ParseTopLevelExpr(void);
+    PrototypeAST *ParseExtern(void);
+    void HandleDefinition(void);
+    void HandleExtern(void);
+    void HandleTopLevelExpression(void);
+
+    /// BinopPrecedence - This holds the precedence for each binary operator that is
+    /// defined.
+    map<char, int> BinopPrecedence;
+
 public:
 
     TParser(TTextInBuffer *pBuffer)
     : pScanner(new TTextScanner(pBuffer)),
     pCompact(new TCompactListBuffer) {
+
+        BinopPrecedence['<'] = 10;
+        BinopPrecedence['+'] = 20;
+        BinopPrecedence['-'] = 20;
+        BinopPrecedence['*'] = 40; // highest.
+
     }
 
     ~TParser(void) {

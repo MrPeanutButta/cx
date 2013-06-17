@@ -15,15 +15,15 @@ NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
 CC=gcc
-CCC=clang++
-CXX=clang++
+CCC=clang
+CXX=clang
 FC=gfortran
 AS=as
 
 # Macros
 CND_PLATFORM=GNU-MacOSX
 CND_DLIB_EXT=dylib
-CND_CONF=Debug
+CND_CONF=Mac_-_debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -52,8 +52,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m32
-CXXFLAGS=-m32
+CCFLAGS=
+CXXFLAGS=
 
 # Fortran Compiler Flags
 FFLAGS=

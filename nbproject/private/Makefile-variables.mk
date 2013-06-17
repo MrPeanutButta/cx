@@ -5,3 +5,4 @@
 #
 # Debug configuration
 # Release configuration
+# Mac_-_debug configuration

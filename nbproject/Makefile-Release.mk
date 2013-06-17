@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=None-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/ast.o \
 	${OBJECTDIR}/src/buffer.o \
 	${OBJECTDIR}/src/common.o \
 	${OBJECTDIR}/src/complist.o \
@@ -70,6 +71,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/ast.o: ast.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ast.o ast.cpp
 
 ${OBJECTDIR}/src/buffer.o: src/buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

@@ -6,8 +6,8 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=None-Linux-x86
-CND_CONF=Release
+CND_PLATFORM=GNU-MacOSX
+CND_CONF=Mac_-_debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
