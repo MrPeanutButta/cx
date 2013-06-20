@@ -28,8 +28,9 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" test/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" tests/specials.in</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" tests/specials.in spc.icode</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" tests/specials.in</runcommand>
+        <runcommand>"${OUTPUT_PATH}" tests/specials.in spc.icode</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

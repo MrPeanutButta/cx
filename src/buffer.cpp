@@ -149,7 +149,13 @@ char TSourceBuffer::GetLine(void) {
         //--Else read the next source line and print it to the list file.
     else {
         memset(text, '\0', sizeof (text));
-        file.getline(text, maxInputBufferSize);
+
+
+        //if (vty)
+            //cin.getline(text, maxInputBufferSize);
+        //else
+            file.getline(text, maxInputBufferSize);
+
         pChar = text; // point to first source line char
 
         if (listFlag) {

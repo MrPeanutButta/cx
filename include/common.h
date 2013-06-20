@@ -16,10 +16,12 @@
 #define common_h
 
 #include "misc.h"
+#include "symtable.h"
 
 extern int currentLineNumber;
 extern int currentNestingLevel;
 
+extern TSymtab globalSymtab;
 #endif
 //endfig
 

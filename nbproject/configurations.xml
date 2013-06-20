@@ -4,14 +4,15 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>include/ast.h</itemPath>
       <itemPath>include/buffer.h</itemPath>
       <itemPath>include/common.h</itemPath>
       <itemPath>include/complist.h</itemPath>
       <itemPath>include/error.h</itemPath>
+      <itemPath>include/icode.h</itemPath>
       <itemPath>include/misc.h</itemPath>
       <itemPath>include/parser.h</itemPath>
       <itemPath>include/scanner.h</itemPath>
+      <itemPath>include/symtable.h</itemPath>
       <itemPath>include/token.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -21,14 +22,17 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>ast.cpp</itemPath>
       <itemPath>src/buffer.cpp</itemPath>
       <itemPath>src/common.cpp</itemPath>
       <itemPath>src/complist.cpp</itemPath>
       <itemPath>src/error.cpp</itemPath>
+      <itemPath>src/iform.cpp</itemPath>
       <itemPath>src/main.cpp</itemPath>
+      <itemPath>src/parse_expression.cpp</itemPath>
+      <itemPath>src/parse_statement.cpp</itemPath>
       <itemPath>src/parser.cpp</itemPath>
       <itemPath>src/scanner.cpp</itemPath>
+      <itemPath>include/symtable.cpp</itemPath>
       <itemPath>src/tknnum.cpp</itemPath>
       <itemPath>src/tknstrsp.cpp</itemPath>
       <itemPath>src/tknword.cpp</itemPath>
@@ -64,19 +68,15 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <architecture>1</architecture>
           <standard>8</standard>
           <commandlineTool>clang++</commandlineTool>
           <incDir>
             <pElem>include</pElem>
+            <pElem>/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include</pElem>
           </incDir>
           <warningLevel>2</warningLevel>
         </ccTool>
       </compileType>
-      <item path="ast.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="include/ast.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/common.h" ex="false" tool="3" flavor2="0">
@@ -85,11 +85,17 @@
       </item>
       <item path="include/error.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/icode.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/misc.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/parser.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/scanner.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/symtable.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/symtable.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/token.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -101,7 +107,13 @@
       </item>
       <item path="src/error.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/iform.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_expression.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_statement.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -147,10 +159,6 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="ast.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="include/ast.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/common.h" ex="false" tool="3" flavor2="0">
@@ -159,11 +167,17 @@
       </item>
       <item path="include/error.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/icode.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/misc.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/parser.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/scanner.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/symtable.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/symtable.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/token.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -175,7 +189,13 @@
       </item>
       <item path="src/error.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/iform.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_expression.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_statement.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -217,10 +237,6 @@
           <warningLevel>2</warningLevel>
         </ccTool>
       </compileType>
-      <item path="ast.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="include/ast.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/common.h" ex="false" tool="3" flavor2="0">
@@ -229,11 +245,17 @@
       </item>
       <item path="include/error.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/icode.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/misc.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/parser.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/scanner.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/symtable.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="include/symtable.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/token.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -245,7 +267,13 @@
       </item>
       <item path="src/error.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/iform.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_expression.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_statement.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>

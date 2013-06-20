@@ -30,8 +30,13 @@ extern char_code_map charCodeMap;
 //  TToken              Abstract token class.
 //--------------------------------------------------------------
 
+class TIcode;
+
 class TToken {
 protected:
+    
+    friend TIcode;
+    
     TTokenCode code;
     TDataType type;
     TDataValue value;

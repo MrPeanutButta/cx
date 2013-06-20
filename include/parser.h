@@ -23,9 +23,14 @@
 #include "token.h"
 #include "scanner.h"
 #include "complist.h"
-#include "ast.h"
+#include "icode.h"
+#include "exec.h"
+#include "symtable.h"
 
 using namespace std;
+
+extern TIcode *pIcode;
+extern TSymtab globalSymtab;
 
 //--------------------------------------------------------------
 //  TParser     Parser class.
@@ -35,44 +40,37 @@ class TParser {
     TTextScanner * const pScanner; // ptr to the scanner
     TToken *pToken; // ptr to the current token
     TTokenCode token; // code of current token
-
+    TRuntimeStack runStack;
     TCompactListBuffer * const pCompact; // compact list buffer
 
+    // statements
+    void ParseStatement(void);
+    void ParseAssignment(void);
+    
+    // expressions
+    void ParseExpression(void);
+    void ParseSimpleExpression(void);
+    void ParseTerm(void);
+    void ParseFactor (void);
+    
     void GetToken(void) {
         pToken = pScanner->Get();
         token = pToken->Code();
     }
-
-    //
-    int GetTokPrecedence(void);
-    ExprAST *ParseExpression(void);
-    ExprAST *ParseIdentifierExpr(void);
-    ExprAST *ParseNumberExpr(void);
-    ExprAST *ParseParenExpr(void);
-    ExprAST *ParsePrimary(void);
-    ExprAST *ParseBinOpRHS(int ExprPrec, ExprAST *LHS);
-    PrototypeAST *ParsePrototype(void);
-    FunctionAST *ParseDefinition(void);
-    FunctionAST *ParseTopLevelExpr(void);
-    PrototypeAST *ParseExtern(void);
-    void HandleDefinition(void);
-    void HandleExtern(void);
-    void HandleTopLevelExpression(void);
-
-    /// BinopPrecedence - This holds the precedence for each binary operator that is
-    /// defined.
-    map<char, int> BinopPrecedence;
+    
+    TSymtabNode *SearchAll(const char *pString) const {
+        return globalSymtab.Search(pString);
+    }
+    
+    TSymtabNode *EnterLocal(const char *pString) const {
+        return globalSymtab.Enter(pString);
+    }
 
 public:
 
     TParser(TTextInBuffer *pBuffer)
     : pScanner(new TTextScanner(pBuffer)),
     pCompact(new TCompactListBuffer) {
-
-        BinopPrecedence['<'] = 10;
-        BinopPrecedence['+'] = 20;
-        BinopPrecedence['-'] = 20;
-        BinopPrecedence['*'] = 40; // highest.
 
     }
 

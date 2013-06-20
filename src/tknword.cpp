@@ -34,7 +34,7 @@ const int maxResWordLen = 12; //   word lengths
 //--------------------------------------------------------------
 //  Reserved word lists (according to word length)
 //--------------------------------------------------------------
-std::pair<const char *, TTokenCode> map_data[] = {
+std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("if", tcIf),
     std::make_pair("return", tcReturn),
     std::make_pair("continue", tcContinue),
@@ -94,6 +94,8 @@ std::pair<const char *, TTokenCode> map_data[] = {
     std::make_pair("typedef", tcTypeDef),
     std::make_pair("mutable", tcMutable),
     std::make_pair("include", tcInclude),
+    std::make_pair("string", tcStringDef),
+
 };
 
 
@@ -139,24 +141,20 @@ void TWordToken::Get(TTextInBuffer &buffer) {
 //--------------------------------------------------------------
 
 void TWordToken::CheckForReservedWord(void) {
-    int len = strlen(string);
-
+    std::string __s(string);
     code = tcIdentifier; // first assume it's an identifier
 
     //--Is it the right length?
-    if ((len >= minResWordLen) && (len <= maxResWordLen)) {
-        token_map::iterator __it;
-
+    if ((__s.length() >= minResWordLen) && 
+            (__s.length() <= maxResWordLen)) {
         //--Yes.  Use the word length to pick the appropriate list
         //--from the reserved word table and check to see if the word
         //--is in there.
-        __it = TResWord.find(string);
-
-        if (__it != TResWord.end()) {
-            code = TResWord[string];
-        }
+        TTokenCode __c = TResWord[__s];
+        if (__c > 0) code = __c;
 
     }
+
 }
 
 //--------------------------------------------------------------

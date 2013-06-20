@@ -35,12 +35,15 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/ast.o \
+	${OBJECTDIR}/include/symtable.o \
 	${OBJECTDIR}/src/buffer.o \
 	${OBJECTDIR}/src/common.o \
 	${OBJECTDIR}/src/complist.o \
 	${OBJECTDIR}/src/error.o \
+	${OBJECTDIR}/src/iform.o \
 	${OBJECTDIR}/src/main.o \
+	${OBJECTDIR}/src/parse_expression.o \
+	${OBJECTDIR}/src/parse_statement.o \
 	${OBJECTDIR}/src/parser.o \
 	${OBJECTDIR}/src/scanner.o \
 	${OBJECTDIR}/src/tknnum.o \
@@ -72,10 +75,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/ast.o: ast.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/include/symtable.o: include/symtable.cpp 
+	${MKDIR} -p ${OBJECTDIR}/include
 	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ast.o ast.cpp
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/include/symtable.o include/symtable.cpp
 
 ${OBJECTDIR}/src/buffer.o: src/buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -97,10 +100,25 @@ ${OBJECTDIR}/src/error.o: src/error.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/error.o src/error.cpp
 
+${OBJECTDIR}/src/iform.o: src/iform.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/iform.o src/iform.cpp
+
 ${OBJECTDIR}/src/main.o: src/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
+
+${OBJECTDIR}/src/parse_expression.o: src/parse_expression.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_expression.o src/parse_expression.cpp
+
+${OBJECTDIR}/src/parse_statement.o: src/parse_statement.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_statement.o src/parse_statement.cpp
 
 ${OBJECTDIR}/src/parser.o: src/parser.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

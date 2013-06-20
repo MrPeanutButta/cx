@@ -32,7 +32,7 @@ enum TCharCode {
 //--------------------------------------------------------------
 
 enum TTokenCode {
-    tcDummy,
+    tcDummy = 0,
     tcIdentifier, tcNumber, tcString, tcEndOfFile, tcError,
 
     //operators and punctuation
@@ -108,7 +108,8 @@ enum TTokenCode {
     tcChar32_t, tcExport, tcNullptr, tcSwitch, tcStruct, tcVoid,
     tcClass, tcExtern, tcOperator, tcTemplate, tcConst, tcFalse,
     tcPrivate, tcThis, tcWhile, tcFloat, tcProtected, tcThreadLocal,
-    tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude
+    tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude,
+    tcStringDef
 };
 //endfig
 
@@ -132,7 +133,7 @@ union TDataValue {
 };
 
 typedef std::map<char, TCharCode> char_code_map;
-typedef std::map<const char *, TTokenCode> token_map;
+typedef std::map<std::string, TTokenCode> token_map;
 
 #endif
 

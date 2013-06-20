@@ -22,26 +22,45 @@
 #include "error.h"
 #include "buffer.h"
 #include "parser.h"
+#include "symtable.h"
+#include "common.h"
+#include "icode.h"
+
+TIcode *pIcode;
 
 //--------------------------------------------------------------
 //  main
 //--------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
+    
+    extern bool xrefFlag;
+    
     //--Check the command line arguments.
-    if (argc != 2) {
+   /* if (argc != 2) {
         cerr << "Usage: token <source file>" << endl;
         AbortTranslation(abortInvalidCommandLineArgs);
-    }
+    }*/
 
     listFlag = true;
     errorArrowFlag = false;
-
+    xrefFlag = true;
+    
+    pIcode = new TIcode(argv[2], TIcode::output);
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser parser(new TSourceBuffer(argv[1]));
     parser.Parse();
 
+    if(xrefFlag){
+        list.PutLine();
+        list.PutLine("--x ref---");
+        list.PutLine();
+        globalSymtab.Print();
+    }
+    
+    delete pIcode;
+    
     return 0;
 }
 //endfig

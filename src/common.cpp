@@ -20,3 +20,4 @@ int currentNestingLevel = 0;
 int currentLineNumber = 0;
 //endfig
 
+TSymtab globalSymtab;

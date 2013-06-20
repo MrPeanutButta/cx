@@ -33,43 +33,76 @@
 
 void TParser::Parse(void) {
 
-    bool currIsDelimiter(false); // true if current token is delimeter
-    bool prevIsDelimiter(true); // likewise for previous token
+    //bool currIsDelimiter(false); // true if current token is delimeter
+    //bool prevIsDelimiter(true); // likewise for previous token
 
+    //pIcode->Put(0);
+
+            GetToken();
 
     //--Loop to extract and print tokens
     //--until the end of the source file.
     do {
-        GetToken();
 
-        if (token != tcError) {
-            currIsDelimiter = pToken->IsDelimiter();
-
-            if (!prevIsDelimiter && !currIsDelimiter) {
-                pCompact->Put(pToken->String());
-
-                prevIsDelimiter = currIsDelimiter;
-            }
+        if(token == tcEndOfFile){
+            Error(errUnexpectedEndOfFile);
+            break;
         }
-
-        if (token != tcError) {
-            pToken->Print();
-
-            switch (token) {
-                case tcEndOfFile: return;
-                case tcSemicolon: this->GetToken();
-                    break; // ignore top-level semicolons.
-                case tcFloat: HandleDefinition();
-                    break;
-                case tcExtern: HandleExtern();
-                    break;
-                default: HandleTopLevelExpression();
-                    break;
-            }
+        
+        ParseStatement();
+        
+        if(token != tcSemicolon){
+           if(token == tcIdentifier) Error(errMissingSemicolon);
+           else{
+               Error(errUnexpectedToken);
+               
+               while((token != tcSemicolon) &&
+                       (token !=tcEndOfFile)){
+                   GetToken();
+               }
+           }
         }
+           
+           while(token ==tcSemicolon)GetToken();
+        
+//        if (token != tcError) {
+//            currIsDelimiter = pToken->IsDelimiter();
+//
+//            if (!prevIsDelimiter && !currIsDelimiter) {
+//                pCompact->Put(pToken->String());
+//
+//                prevIsDelimiter = currIsDelimiter;
+//            }
+//
+//            pToken->Print();
+//        }
+//
+//        switch (token) {
+//            case tcIdentifier:
+//            case tcNumber:
+//            case tcString:
+//            {
+//                TSymtabNode *pNode = globalSymtab.Search(pToken->String());
+//                if (pNode == nullptr) pNode = globalSymtab.Enter(pToken->String());
+//                break;
+//            }
+//            default:
+//            {
+//                pIcode->Put(token);
+//                break;
+//            }
+//        }
 
     } while (token != tcEndOfFile);
 
+    int programSize = pIcode->Size();
+    
+    pIcode->Put(globalSymtab.NodeCount());
+    pIcode->Put(globalSymtab.Root());
+    
+    pIcode->GoTo(0);
+    pIcode->Put(programSize);
+    
     pCompact->PutLine();
 
     //--Print the parser's summary.
