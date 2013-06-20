@@ -48,23 +48,23 @@ void TParser::Parse(void) {
             Error(errUnexpectedEndOfFile);
             break;
         }
-        
+
         ParseStatement();
-        
+
         if(token != tcSemicolon){
            if(token == tcIdentifier) Error(errMissingSemicolon);
            else{
                Error(errUnexpectedToken);
-               
+
                while((token != tcSemicolon) &&
                        (token !=tcEndOfFile)){
                    GetToken();
                }
            }
         }
-           
-           while(token ==tcSemicolon)GetToken();
-        
+
+        while (token == tcSemicolon)GetToken();
+
 //        if (token != tcError) {
 //            currIsDelimiter = pToken->IsDelimiter();
 //
@@ -95,14 +95,14 @@ void TParser::Parse(void) {
 
     } while (token != tcEndOfFile);
 
-    int programSize = pIcode->Size();
-    
-    pIcode->Put(globalSymtab.NodeCount());
-    pIcode->Put(globalSymtab.Root());
-    
-    pIcode->GoTo(0);
-    pIcode->Put(programSize);
-    
+    //int programSize = pIcode->Size();
+
+    //    pIcode->Put(globalSymtab.NodeCount());
+    //    pIcode->Put(globalSymtab.Root());
+    //
+    //    pIcode->GoTo(0);
+    //    pIcode->Put(programSize);
+
     pCompact->PutLine();
 
     //--Print the parser's summary.

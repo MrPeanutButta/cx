@@ -46,22 +46,24 @@ class TParser {
     // statements
     void ParseStatement(void);
     void ParseAssignment(void);
-    
+
     // expressions
     void ParseExpression(void);
+    void ParseSuffix(TSymtabNode *pNode);
+    void ParseSizeOf(void);
     void ParseSimpleExpression(void);
     void ParseTerm(void);
     void ParseFactor (void);
-    
+
     void GetToken(void) {
         pToken = pScanner->Get();
         token = pToken->Code();
     }
-    
+
     TSymtabNode *SearchAll(const char *pString) const {
         return globalSymtab.Search(pString);
     }
-    
+
     TSymtabNode *EnterLocal(const char *pString) const {
         return globalSymtab.Enter(pString);
     }

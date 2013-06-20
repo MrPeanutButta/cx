@@ -33,9 +33,9 @@ TIcode *pIcode;
 //--------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
-    
+
     extern bool xrefFlag;
-    
+
     //--Check the command line arguments.
    /* if (argc != 2) {
         cerr << "Usage: token <source file>" << endl;
@@ -45,8 +45,8 @@ int main(int argc, char *argv[]) {
     listFlag = true;
     errorArrowFlag = false;
     xrefFlag = true;
-    
-    pIcode = new TIcode(argv[2], TIcode::output);
+
+    //pIcode = new TIcode(argv[2], TIcode::output);
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser parser(new TSourceBuffer(argv[1]));
@@ -58,9 +58,9 @@ int main(int argc, char *argv[]) {
         list.PutLine();
         globalSymtab.Print();
     }
-    
-    delete pIcode;
-    
+
+    //delete pIcode;
+
     return 0;
 }
 //endfig

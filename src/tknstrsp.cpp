@@ -97,7 +97,7 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 *ps++ = '=';
                 code = tcBitXOREqual;
                 buffer.GetChar();
-            } else code = tcBitXORorPow;
+            } else code = tcBitXOR;
 
             break;
         case '&': ch = buffer.GetChar();

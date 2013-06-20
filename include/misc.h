@@ -16,6 +16,7 @@
 
 
 #include <map>
+#include <string>
 
 //--------------------------------------------------------------
 //  TCharCode           Character codes.
@@ -37,7 +38,7 @@ enum TTokenCode {
 
     //operators and punctuation
     //bitwise
-    tcBitXORorPow, // ^
+    tcBitXOR, // ^
     tcBitANDorAddrOf, // &
     tcBitOR, // |
     tcBitNOT, // ~
