@@ -1,0 +1,6 @@
+{
+    a = 0;
+    do{
+        output = a * a++;
+    }while(input != 1);
+}
