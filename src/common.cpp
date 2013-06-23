@@ -59,6 +59,7 @@ extern const TTokenCode tlExpressionStart[] = {
 extern const TTokenCode tlExpressionFollow[] = {
     tcComma, tcRParen, tcRightSubscript, tcPlusPlus,
     tcMinusMinus, tcColon, tcRBracket, tcDo, tcSemicolon,
+    tcEqualEqual, tcNe, tcLt, tcGt, tcLe, tcGe,
     tcDummy
 };
 
@@ -72,7 +73,7 @@ extern const TTokenCode tlUnaryOps[] = {
 
 extern const TTokenCode tlAddOps[] = {
     tcPlus, tcMinus, tcLogicOr, tcBitLeftShift, tcBitRightShift,
-    tcBitANDorAddrOf, tcBitXOR, tcBitOR, tcLogicOr, tcDummy
+    tcBitANDorAddrOf, tcBitXOR, tcBitOR, tcDummy
 };
 
 extern const TTokenCode tlMulOps[] = {

@@ -1,6 +1,22 @@
 {
-    a = 0;
+    // newton's square root algorithm
+    //-enter 0 to exit
+
     do{
-        output = a * a++;
-    }while(input != 1);
+        number = input;
+        root = number;
+
+        // single statement do-while does not require 
+        // '{' and '}' AKA code block, or more formerly 
+        // known as the compound statement operator.
+        do
+            root = (number/root + root)/2;
+        // exit if we found the square.
+        while((root * root) > number);
+        
+        // output sqr root
+        output = root;
+
+    }while(number != 1);
+
 }

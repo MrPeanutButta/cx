@@ -131,9 +131,13 @@ void TParser::ParseDO(void) {
     ParseStatementList(tcWhile);
 
     CondGetTokenAppend(tcWhile, errMissingWHILE);
-
+    CondGetTokenAppend(tcLParen, errMissingLeftParen);
+    
     InsertLineMarker();
     ParseExpression();
+    
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
+
 }
 
 void TParser::ParseWHILE(void) {
