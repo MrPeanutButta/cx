@@ -1,6 +1,6 @@
 {
     // newton's square root algorithm
-    //-enter 0 to exit
+    //-enter 1 to exit
 
     do{
         number = input;
