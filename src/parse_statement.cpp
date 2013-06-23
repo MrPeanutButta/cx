@@ -1,8 +1,49 @@
 #include <cstdio>
 #include "parser.h"
+#include "common.h"
 
 void TParser::ParseStatement(void) {
-    if (token == tcIdentifier) ParseAssignment();
+    InsertLineMarker();
+
+    switch (token) {
+        case tcIdentifier: ParseAssignment();
+            break;
+        case tcDo: ParseDO();
+            break;
+        case tcWhile: ParseWHILE();
+            break;
+        case tcIf: ParseIF();
+            break;
+        case tcFor: ParseFOR();
+            break;
+        case tcSwitch: ParseSWITCH();
+            break;
+        case tcCase:
+        case tcDefault:ParseCaseLabel();
+            break;
+        case tcBreak: GetTokenAppend();
+            break;
+        case tcLBracket: ParseCompound();
+            break;
+        case tcReturn: ParseRETURN();
+            break;
+    }
+
+    if (token != tcEndOfFile) {
+        Resync(tlStatementFollow, tlStatementStart);
+    }
+}
+
+void TParser::ParseStatementList(TTokenCode terminator) {
+
+    do {
+        ParseStatement();
+
+        //if (TokenIn(token, tlStatementStart)) {
+        //  Error(errMissingSemicolon);
+        //} else 
+        while (token == tcSemicolon)GetTokenAppend();
+    } while ((token != terminator) && (token != tcEndOfFile));
 }
 
 void TParser::ParseAssignment(void) {
@@ -10,111 +51,223 @@ void TParser::ParseAssignment(void) {
 
     if (!pTargetNode) pTargetNode = EnterLocal(pToken->String());
 
-    GetToken();
-
+    icode.Put(pTargetNode);
+    GetTokenAppend();
 
     switch (token) {
         case tcEqual:
-            GetToken();
+            //Resync(tcEqual, tlExpressionStart);
+            //CondGetTokenAppend(tcEqual, errMissingEqual);
+            GetTokenAppend();
             ParseExpression();
-            pTargetNode->value = runStack.Pop();
             break;
         case tcPlusPlus:
-            ++pTargetNode->value;
-            runStack.Push(pTargetNode->value);
-            GetToken();
+            //Resync(tcPlusPlus, tlExpressionFollow);
+            GetTokenAppend();
             break;
         case tcMinusMinus:
-            --pTargetNode->value;
-            runStack.Push(pTargetNode->value);
-            GetToken();
+            //Resync(tcMinusMinus, tlExpressionFollow);
+            GetTokenAppend();
             break;
         case tcPlusEqual:
-            GetToken();
+            //Resync(tcPlusEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            pTargetNode->value += runStack.Pop();
             break;
         case tcMinusEqual:
-            GetToken();
+            //Resync(tcMinusEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            pTargetNode->value -= runStack.Pop();
             break;
         case tcStarEqual:
-            GetToken();
+            //Resync(tcStarEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            pTargetNode->value *= runStack.Pop();
             break;
         case tcForwardSlashEqual:
-            GetToken();
+            //Resync(tcForwardSlashEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            pTargetNode->value /= runStack.Pop();
             break;
         case tcModEqual:
-        {
-            GetToken();
+            //Resync(tcModEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            int __1 = (int) pTargetNode->value;
-            int __2 = (int) runStack.Pop();
-
-            pTargetNode->value = (__1 %= __2);
-        }
             break;
         case tcBitLeftShiftEqual:
-        {
-            GetToken();
+            //Resync(tcBitLeftShiftEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            int __1 = (int) pTargetNode->value;
-            int __2 = (int) runStack.Pop();
-
-            pTargetNode->value = (__1 <<= __2);
-        }
             break;
         case tcBitRightShiftEqual:
-        {
-            GetToken();
+            //Resync(tcBitRightShiftEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            int __1 = (int) pTargetNode->value;
-            int __2 = (int) runStack.Pop();
-
-            pTargetNode->value = (__1 >>= __2);
-        }
             break;
         case tcBitANDEqual:
-        {
-            GetToken();
+            //Resync(tcBitANDEqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            int __1 = (int) pTargetNode->value;
-            int __2 = (int) runStack.Pop();
-
-            pTargetNode->value = (__1 &= __2);
-        }
             break;
         case tcBitXOREqual:
-        {
-            GetToken();
+            //Resync(tcBitXOREqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            int __1 = (int) pTargetNode->value;
-            int __2 = (int) runStack.Pop();
-
-            pTargetNode->value = (__1 ^= __2);
-        }
             break;
         case tcBitOREqual:
-        {
-            GetToken();
+            //Resync(tcBitOREqual, tlExpressionStart);
+            GetTokenAppend();
             ParseExpression();
-            int __1 = (int) pTargetNode->value;
-            int __2 = (int) runStack.Pop();
-
-            pTargetNode->value = (__1 |= __2);
-        }
             break;
         default:
             Error(errInvalidAssignment);
             break;
     }
+}
 
-    sprintf(::list.text, "\t> %s == %g", pTargetNode->String(), pTargetNode->value);
+void TParser::ParseDO(void) {
+    GetTokenAppend();
 
-    list.PutLine();
+    ParseStatementList(tcWhile);
+
+    CondGetTokenAppend(tcWhile, errMissingWHILE);
+
+    InsertLineMarker();
+    ParseExpression();
+}
+
+void TParser::ParseWHILE(void) {
+    GetTokenAppend();
+    ParseExpression();
+
+    CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
+
+    ParseStatement();
+}
+
+void TParser::ParseIF(void) {
+
+    GetTokenAppend();
+    CondGetTokenAppend(tcLParen, errMissingLeftParen);
+
+    ParseExpression();
+
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
+
+    ParseStatement();
+
+    if (token == tcSemicolon) GetTokenAppend();
+
+    if (token == tcElse) {
+        GetTokenAppend();
+        ParseStatement();
+    }
+}
+
+void TParser::ParseFOR(void) {
+
+    GetTokenAppend();
+    CondGetTokenAppend(tcLParen, errMissingLeftParen);
+
+    if ((token == tcIdentifier) && (!SearchAll(pToken->String()))) {
+        Error(errUndefinedIdentifier);
+    }
+
+    if (token != tcSemicolon) {
+
+        // declaration would go here //
+
+        CondGetTokenAppend(tcIdentifier, errMissingIdentifier);
+
+        //Resync(tcEqual, tlExpressionStart);
+        CondGetTokenAppend(tcEqual, errMissingEqual);
+        // expr 1
+        ParseExpression();
+
+        CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
+    } else GetTokenAppend();
+
+
+    if (token != tcSemicolon) {
+
+        // expr 2
+        ParseExpression();
+
+        CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
+    } else GetTokenAppend();
+
+    if (token != tcRParen) {
+        // expr 3
+        ParseExpression();
+
+    }
+
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
+
+    ParseStatement();
+}
+
+void TParser::ParseSWITCH(void) {
+
+    GetTokenAppend();
+    CondGetTokenAppend(tcLParen, errMissingLeftParen);
+
+    ParseExpression();
+
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
+
+    ParseStatement();
+
+}
+
+void TParser::ParseCaseBranch(void) {
+    // c switch easier to parse that Pascal???
+}
+
+void TParser::ParseCaseLabel(void) {
+    GetTokenAppend();
+    
+    bool signFlag(false);
+    
+    if(TokenIn(token, tlUnaryOps)){
+        signFlag = true;
+        GetTokenAppend();
+    }
+    
+    switch(token){
+        case tcIdentifier:
+            if(!SearchAll(pToken->String())){
+                Error(errUndefinedIdentifier);
+            }
+            
+            GetTokenAppend();
+            break;
+        case tcNumber:
+            if(pToken->Type() != tyInteger) Error(errInvalidConstant);
+            GetTokenAppend();
+            break;
+        case tcString:
+            if(signFlag || (strlen(pToken->String())!= 3)){
+                Error(errInvalidConstant);
+            }
+    }
+    
+    CondGetTokenAppend(tcColon, errMissingColon);
+
+    ParseStatementList(tcBreak);
+}
+
+void TParser::ParseCompound(void) {
+    GetTokenAppend();
+
+    ParseStatementList(tcRBracket);
+
+    CondGetTokenAppend(tcRBracket, errMissingRightBracket);
+
+}
+
+void TParser::ParseRETURN(void) {
+    GetTokenAppend();
+
+    ParseExpression();
 }

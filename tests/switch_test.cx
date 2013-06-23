@@ -1,0 +1,37 @@
+{
+    a = 23;
+    b = 0;
+
+    switch(a){
+        case 5:
+            b = 5;
+        break;
+        case 20:
+            b = 20;
+        break;
+        case 23:
+            b = 23;
+        break;
+        default:
+            b = a;
+        break;
+    }
+
+// nested switch branch
+    switch(b){
+        case 1:
+            switch(a){
+                case 1:
+                break;
+                default:
+                    output = b;
+                break;
+            }
+        break;
+        default:
+            output = a;
+        break;
+    }
+
+    return -b;
+}

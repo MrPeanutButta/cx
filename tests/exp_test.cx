@@ -1,0 +1,30 @@
+
+// expressions testing
+//
+// square roots by Newton's algorithm
+//
+//
+number = input;
+root = number;
+
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+root = (number/root + root)/2; output = root;
+
+condition = (root == 64); output = condition;
+condition = (root != 64); output = condition;
+condition = (root++ == 65); output = condition;
+condition = (root-- == 65); output = condition;
+
+__lshift = root << 1; output = __lshift;
+__rshift = root >> 1; output = __rshift;

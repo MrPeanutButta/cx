@@ -17,11 +17,46 @@
 
 #include "misc.h"
 #include "symtable.h"
+#include "icode.h"
 
 extern int currentLineNumber;
 extern int currentNestingLevel;
 
 extern TSymtab globalSymtab;
+
+// tokens that can start a statement
+extern const TTokenCode tlStatementStart[];
+
+// tokens that can follow a statement
+extern const TTokenCode tlStatementFollow[];
+
+extern const TTokenCode tlCaseLabelStart[];
+extern const TTokenCode tlExpressionStart[];
+
+extern const TTokenCode tlExpressionFollow[];
+
+extern const TTokenCode tlRelOps[];
+
+extern const TTokenCode tlUnaryOps[];
+
+extern const TTokenCode tlAddOps[];
+
+extern const TTokenCode tlMulOps[];
+
+extern const TTokenCode tlProgramEnd[];
+
+extern const TTokenCode tlEqualEqual[];
+extern const TTokenCode tlDo[];
+extern const TTokenCode tlLBracket [];
+extern const TTokenCode tlColonp[];
+extern const TTokenCode tlRBracket[];
+extern const TTokenCode tlSemicolon[];
+extern const TTokenCode tlRParen[];
+extern const TTokenCode tlLParen[];
+
+
+bool TokenIn(TTokenCode tc, const TTokenCode *pList);
+
 #endif
 //endfig
 

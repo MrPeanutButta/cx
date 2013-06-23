@@ -23,7 +23,7 @@
 #include "buffer.h"
 #include "error.h"
 #include "parser.h"
-#include "complist.h"
+//#include "complist.h"
 
 //fig 3-22
 //--------------------------------------------------------------
@@ -38,62 +38,66 @@ void TParser::Parse(void) {
 
     //pIcode->Put(0);
 
-            GetToken();
+    GetTokenAppend();
+    ParseStatement();
+
+    Resync(tlProgramEnd);
+    CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
 
     //--Loop to extract and print tokens
     //--until the end of the source file.
-    do {
-
-        if(token == tcEndOfFile){
-            Error(errUnexpectedEndOfFile);
-            break;
-        }
-
-        ParseStatement();
-
-        if(token != tcSemicolon){
-           if(token == tcIdentifier) Error(errMissingSemicolon);
-           else{
-               Error(errUnexpectedToken);
-
-               while((token != tcSemicolon) &&
-                       (token !=tcEndOfFile)){
-                   GetToken();
-               }
-           }
-        }
-
-        while (token == tcSemicolon)GetToken();
-
-//        if (token != tcError) {
-//            currIsDelimiter = pToken->IsDelimiter();
-//
-//            if (!prevIsDelimiter && !currIsDelimiter) {
-//                pCompact->Put(pToken->String());
-//
-//                prevIsDelimiter = currIsDelimiter;
-//            }
-//
-//            pToken->Print();
-//        }
-//
-//        switch (token) {
-//            case tcIdentifier:
-//            case tcNumber:
-//            case tcString:
-//            {
-//                TSymtabNode *pNode = globalSymtab.Search(pToken->String());
-//                if (pNode == nullptr) pNode = globalSymtab.Enter(pToken->String());
-//                break;
-//            }
-//            default:
-//            {
-//                pIcode->Put(token);
-//                break;
-//            }
-//        }
-
-    } while (token != tcEndOfFile);
+    //    do {
+    //
+    //        if (token == tcEndOfFile) {
+    //            Error(errUnexpectedEndOfFile);
+    //            break;
+    //        }
+    //
+    //        ParseStatement();
+    //
+    //        if (token != tcSemicolon) {
+    //            if (token == tcIdentifier) Error(errMissingSemicolon);
+    //            else {
+    //                Error(errUnexpectedToken);
+    //
+    //                while ((token != tcSemicolon) &&
+    //                        (token != tcEndOfFile)) {
+    //                    GetTokenAppend();
+    //                }
+    //            }
+    //        }
+    //
+    //        while (token == tcSemicolon)GetTokenAppend();
+    //
+    //        //        if (token != tcError) {
+    //        //            currIsDelimiter = pToken->IsDelimiter();
+    //        //
+    //        //            if (!prevIsDelimiter && !currIsDelimiter) {
+    //        //                pCompact->Put(pToken->String());
+    //        //
+    //        //                prevIsDelimiter = currIsDelimiter;
+    //        //            }
+    //        //
+    //        //            pToken->Print();
+    //        //        }
+    //        //
+    //        //        switch (token) {
+    //        //            case tcIdentifier:
+    //        //            case tcNumber:
+    //        //            case tcString:
+    //        //            {
+    //        //                TSymtabNode *pNode = globalSymtab.Search(pToken->String());
+    //        //                if (pNode == nullptr) pNode = globalSymtab.Enter(pToken->String());
+    //        //                break;
+    //        //            }
+    //        //            default:
+    //        //            {
+    //        //                pIcode->Put(token);
+    //        //                break;
+    //        //            }
+    //        //        }
+    //
+    //    } while (token != tcEndOfFile);
 
     //int programSize = pIcode->Size();
 
@@ -103,14 +107,45 @@ void TParser::Parse(void) {
     //    pIcode->GoTo(0);
     //    pIcode->Put(programSize);
 
-    pCompact->PutLine();
+    //    pCompact->PutLine();
 
     //--Print the parser's summary.
+
     list.PutLine();
     sprintf(list.text, "%20d source lines.", currentLineNumber);
     list.PutLine();
     sprintf(list.text, "%20d syntax errors.", errorCount);
     list.PutLine();
+
 }
 //endfig
 
+void TParser::Resync(const TTokenCode* pList1,
+        const TTokenCode* pList2,
+        const TTokenCode* pList3) {
+
+    bool errorFlag = (!TokenIn(token, pList1)) &&
+            (!TokenIn(token, pList2)) &&
+            (!TokenIn(token, pList3));
+
+    if (errorFlag) {
+        TErrorCode errorCode = token == tcEndOfFile
+                ? errUnexpectedEndOfFile
+                : errUnexpectedToken;
+
+        Error(errorCode);
+
+        while ((!TokenIn(token, pList1)) &&
+                (!TokenIn(token, pList2)) &&
+                (!TokenIn(token, pList3)) &&
+                (token != tcReturn) &&
+                (token != tcEndOfFile)) {
+            GetToken();
+        }
+
+        if ((token == tcEndOfFile) &&
+                (errorCode != errUnexpectedEndOfFile)) {
+            Error(errUnexpectedEndOfFile);
+        }
+    }
+}

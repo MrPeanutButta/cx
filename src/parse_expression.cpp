@@ -1,100 +1,47 @@
 #include <cstdio>
 #include "parser.h"
+#include "common.h"
 
 void TParser::ParseExpression(void) {
     ParseSimpleExpression();
+
+    if(TokenIn(token, tlRelOps)){
+       GetTokenAppend();
+       ParseSimpleExpression();
+    }
+    
+    Resync(tlExpressionFollow, tlStatementFollow, tlStatementStart);
 }
 
 void TParser::ParseSuffix(TSymtabNode *pNode) {
     if (token == tcPlusPlus) {
-        runStack.Push(runStack.Pop() + 1);
-        ++pNode->value;
-        GetToken();
+        GetTokenAppend();
     } else if (token == tcMinusMinus) {
-        runStack.Push(runStack.Pop() - 1);
-        --pNode->value;
-        GetToken();
+        GetTokenAppend();
     }
 }
 
 void TParser::ParseSimpleExpression(void) {
-    TTokenCode op; //binary operator
-    TTokenCode unaryOp = tcPlus; //unary operator
 
-    if ((token == tcMinus) || (token == tcPlus) ||
-            (token == tcBitNOT) || (token == tcLogicNOT)) {
-        unaryOp = token;
-        GetToken();
+    if(TokenIn(token, tlUnaryOps)){
+        GetTokenAppend();
     }
 
     ParseTerm();
-    if (unaryOp == tcMinus) runStack.Push(-runStack.Pop());
-    if (unaryOp == tcBitNOT) runStack.Push(~((int) runStack.Pop()));
-    if (unaryOp == tcLogicNOT) runStack.Push(!((int) runStack.Pop()));
 
-    while ((token == tcPlus) || (token == tcMinus) ||
-            (token == tcBitLeftShift) || (token == tcBitRightShift) ||
-            (token == tcBitANDorAddrOf) || (token == tcBitXOR) ||
-            (token == tcBitOR)) {
-
-        op = token;
-
-        GetToken();
+    while(TokenIn(token, tlAddOps)){
+        GetTokenAppend();
         ParseTerm();
-
-        float __2 = runStack.Pop();
-        float __1 = runStack.Pop();
-
-        switch (op) {
-            case tcPlus:
-                runStack.Push(__1 + __2);
-                break;
-            case tcMinus:
-                runStack.Push(__1 - __2);
-                break;
-            case tcBitLeftShift:
-                runStack.Push((int) __1 << (int) __2);
-                break;
-            case tcBitRightShift:
-                runStack.Push((int) __1 >> (int) __2);
-                break;
-            case tcBitANDorAddrOf:
-                runStack.Push((int) __1 & (int) __2);
-                break;
-            case tcBitXOR:
-                runStack.Push((int) __1 ^ (int) __2);
-                break;
-            case tcBitOR:
-                runStack.Push((int) __1 | (int) __2);
-                break;
-        }
     }
 }
 
 void TParser::ParseTerm(void) {
-    TTokenCode op; // binary operator
-
+ 
     ParseFactor();
 
-    while ((token == tcStar) || (token == tcForwardSlash) ||
-            (token == tcMod)) {
-
-        op = token;
-
-        GetToken();
+    while(TokenIn(token, tlMulOps)){
+        GetTokenAppend();
         ParseFactor();
-
-        float __2 = runStack.Pop();
-        float __1 = runStack.Pop();
-
-        if (op == tcStar)runStack.Push(__1 * __2);
-        else if (op == tcForwardSlash) {
-            if (__2 != 0.0) runStack.Push(__1 / __2);
-            else {
-                ::list.PutLine("runtime error: division by 0");
-                runStack.Push(0.0);
-            }
-        } else if (op == tcMod) runStack.Push((int) __1 % (int) __2);
     }
 }
 
@@ -104,39 +51,48 @@ void TParser::ParseFactor(void) {
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
             if (pNode) {
-                runStack.Push(pNode->value);
-                GetToken();
+                icode.Put(pNode);
+                GetTokenAppend();
 
                 ParseSuffix(pNode);
 
-                sprintf(::list.text, "\t>> %s == %g", pNode->String(), pNode->value);
-                ::list.PutLine();
             } else {
                 Error(errUndefinedIdentifier);
-                runStack.Push(0.0);
-                GetToken();
+                EnterLocal(pToken->String());
+                GetTokenAppend();
             }
-            break;
         }
+            break;
+
 
         case tcNumber:
-            runStack.Push(pToken->Type() == tyInteger ?
-                    (float) pToken->Value().integer : pToken->Value().real);
+        {
+            TSymtabNode *pNode = SearchAll(pToken->String());
+            if (!pNode) {
+                pNode = EnterLocal(pToken->String());
+                pNode->value = pToken->Type() == tyInteger ?
+                        (float) pToken->Value().integer : pToken->Value().real;
+            }
 
-            GetToken();
+            icode.Put(pNode);
+            GetTokenAppend();
+        }
+            break;
+
+        case tcString:
+            GetTokenAppend();
             break;
 
         case tcLParen:
-            GetToken();
+            GetTokenAppend();
             ParseExpression();
 
-            if (token == tcRParen) GetToken();
+            if (token == tcRParen) GetTokenAppend();
             else Error(errMissingRightParen);
-
             break;
-        case tcSizeOf:
-            GetToken();
-            ParseSizeOf();
+        case tcLogicNOT:
+            GetTokenAppend();
+            ParseFactor();
             break;
         case tcSemicolon:
             break;
@@ -152,9 +108,7 @@ void TParser::ParseSizeOf(void) {
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
             if (pNode) {
-                runStack.Push(sizeof (pNode->value));
-                GetToken();
-
+                GetTokenAppend();
 
                 sprintf(::list.text, "\t>> %s == %g", pNode->String(), pNode->value);
                 ::list.PutLine();
@@ -162,49 +116,39 @@ void TParser::ParseSizeOf(void) {
         }
             break;
         case tcInt:
-            runStack.Push(sizeof (int));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcShort:
-            runStack.Push(sizeof (short));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcBool:
-            runStack.Push(sizeof (bool));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcDouble:
-            runStack.Push(sizeof (double));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcLong:
-            runStack.Push(sizeof (long));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcChar:
-            runStack.Push(sizeof (char));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcChar16_t:
-            runStack.Push(sizeof (char16_t));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcChar32_t:
-            runStack.Push(sizeof (char32_t));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcFloat:
-            runStack.Push(sizeof (float));
-            GetToken();
+            GetTokenAppend();
             break;
         case tcLParen:
-            GetToken();
+            GetTokenAppend();
             ParseSizeOf();
 
-            if (token == tcRParen) GetToken();
+            if (token == tcRParen) GetTokenAppend();
             else Error(errMissingRightParen);
 
-            runStack.Push(sizeof (runStack.Pop()));
             break;
     }
 }

@@ -118,7 +118,7 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
         Error(errRealOutOfRange);
         return;
     }
-    if (exponent != 0) numValue *= float(pow((double)10, exponent));
+    if (exponent != 0) numValue *= float(pow((double) 10, exponent));
 
     //--Check and set the numeric value.
     if (type == tyInteger) {

@@ -34,7 +34,7 @@ TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
     char i;
 
     //--Initialize the character code map.
-     for (i = 'a'; i <= 'z'; ++i) charCodeMap[i] = ccLetter;
+    for (i = 'a'; i <= 'z'; ++i) charCodeMap[i] = ccLetter;
     for (i = 'A'; i <= 'Z'; ++i) charCodeMap[i] = ccLetter;
     for (i = '0'; i <= '9'; ++i) charCodeMap[i] = ccDigit;
 

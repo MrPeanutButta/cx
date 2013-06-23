@@ -52,22 +52,35 @@ public:
         return xNode;
     }
 
+    void Convert(TSymtabNode *vpNodes[]);
+
     void Print(void) const;
 };
 
 class TSymtab {
     TSymtabNode *root;
+    TSymtabNode **vpNodes;
     short cntNodes;
     short xSymtab;
+    TSymtab *next;
 
 public:
 
     TSymtab() : cntNodes(0), xSymtab(0) {
+        extern int cntSymtabs;
+        extern TSymtab *pSymtabList;
+
         root = nullptr;
+        vpNodes = nullptr;
+        xSymtab = cntSymtabs++;
+
+        next = pSymtabList;
+        pSymtabList = this;
     }
 
     ~TSymtab() {
         delete root;
+        delete [] vpNodes;
     }
 
     TSymtabNode *Search(const char *pString) const;
@@ -75,6 +88,18 @@ public:
 
     TSymtabNode *Root(void) const {
         return root;
+    }
+
+    TSymtabNode *Get(short xNode) const {
+        return vpNodes[xNode];
+    }
+
+    TSymtab *Next(void) const {
+        return next;
+    }
+
+    TSymtabNode **NodeVector(void) const {
+        return vpNodes;
     }
 
     int NodeCount(void)const {
@@ -85,29 +110,35 @@ public:
         root->Print();
     }
 
+    void Convert(TSymtab *vpSymtabs[]);
+
 };
 
-class TLineNumNode{
+class TLineNumNode {
     TLineNumNode *next;
     const int number;
-    
+
     friend class TLineNumList;
-    
+
 public:
+
     TLineNumNode() :
-    number(currentLineNumber) { next = nullptr; }
+    number(currentLineNumber) {
+        next = nullptr;
+    }
 };
 
-class TLineNumList{
+class TLineNumList {
     TLineNumNode *head, *tail;
-    
+
 public:
+
     TLineNumList() :
-    head(new TLineNumNode), tail(new TLineNumNode){
+    head(new TLineNumNode), tail(new TLineNumNode) {
     }
-    
+
     virtual ~TLineNumList();
-    
+
     void Update(void);
     void Print(int newLineFlag, int indent) const;
 };

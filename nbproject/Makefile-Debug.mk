@@ -15,14 +15,14 @@ NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
 CC=gcc
-CCC=g++
-CXX=g++
+CCC=clang++
+CXX=clang++
 FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=GNU-MacOSX
+CND_DLIB_EXT=dylib
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -35,17 +35,20 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/include/symtable.o \
 	${OBJECTDIR}/src/buffer.o \
 	${OBJECTDIR}/src/common.o \
 	${OBJECTDIR}/src/complist.o \
 	${OBJECTDIR}/src/error.o \
-	${OBJECTDIR}/src/iform.o \
+	${OBJECTDIR}/src/exec.o \
+	${OBJECTDIR}/src/exec_expression.o \
+	${OBJECTDIR}/src/exec_statment.o \
+	${OBJECTDIR}/src/icode.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/parse_expression.o \
 	${OBJECTDIR}/src/parse_statement.o \
 	${OBJECTDIR}/src/parser.o \
 	${OBJECTDIR}/src/scanner.o \
+	${OBJECTDIR}/src/symtable.o \
 	${OBJECTDIR}/src/tknnum.o \
 	${OBJECTDIR}/src/tknstrsp.o \
 	${OBJECTDIR}/src/tknword.o
@@ -75,11 +78,6 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/include/symtable.o: include/symtable.cpp 
-	${MKDIR} -p ${OBJECTDIR}/include
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/include/symtable.o include/symtable.cpp
-
 ${OBJECTDIR}/src/buffer.o: src/buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -100,10 +98,25 @@ ${OBJECTDIR}/src/error.o: src/error.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/error.o src/error.cpp
 
-${OBJECTDIR}/src/iform.o: src/iform.cpp 
+${OBJECTDIR}/src/exec.o: src/exec.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/iform.o src/iform.cpp
+	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec.o src/exec.cpp
+
+${OBJECTDIR}/src/exec_expression.o: src/exec_expression.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_expression.o src/exec_expression.cpp
+
+${OBJECTDIR}/src/exec_statment.o: src/exec_statment.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_statment.o src/exec_statment.cpp
+
+${OBJECTDIR}/src/icode.o: src/icode.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/icode.o src/icode.cpp
 
 ${OBJECTDIR}/src/main.o: src/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -129,6 +142,11 @@ ${OBJECTDIR}/src/scanner.o: src/scanner.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/scanner.o src/scanner.cpp
+
+${OBJECTDIR}/src/symtable.o: src/symtable.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -I/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/symtable.o src/symtable.cpp
 
 ${OBJECTDIR}/src/tknnum.o: src/tknnum.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

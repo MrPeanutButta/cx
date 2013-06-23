@@ -141,7 +141,7 @@ void snip_line_comment(char *text) {
 }
 
 char TSourceBuffer::GetLine(void) {
-    extern int lineNumber, currentNestingLevel;
+    extern int currentlineNumber, currentNestingLevel;
 
     //--If at the end of the source file, return the end-of-file char.
     if (file.eof()) pChar = (char *) &eofChar;
@@ -152,9 +152,9 @@ char TSourceBuffer::GetLine(void) {
 
 
         //if (vty)
-            //cin.getline(text, maxInputBufferSize);
+        //cin.getline(text, maxInputBufferSize);
         //else
-            file.getline(text, maxInputBufferSize);
+        file.getline(text, maxInputBufferSize);
 
         pChar = text; // point to first source line char
 

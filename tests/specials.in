@@ -1,7 +1,4 @@
 r = 9;
-r = sizeof(bool);
-f = sizeof(r);
-r = sizeof(char);
 f = 68;
 e = f-- % r++;
 cent = (f++ - (f-- /r++)) * r++;

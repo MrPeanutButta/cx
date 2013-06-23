@@ -1,0 +1,33 @@
+{
+    i = 0;
+
+    // empty for
+    for(;;);
+
+    for(;;){
+        output = i;
+    }
+
+    // regular for
+    for(i = 0; i < 10; i++){
+        output = i;
+    }
+
+    // no init for
+    for(; i< 10; i++){
+        output = i;
+    }
+
+    // error
+    for a = 2; a > 0; a--){
+        output = a;
+    }
+
+    for(f = 0;;f++)
+        output = f;
+
+    for(i = 0; i <= 10; i++)
+        output = i;
+
+    return 0;
+}

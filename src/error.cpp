@@ -53,7 +53,7 @@ const char *abortMsg[] = {
 //--------------------------------------------------------------
 
 void AbortTranslation(TAbortCode ac) {
-    cerr << "*** Fatal translator error: " << abortMsg[-ac] << endl;
+    cerr << "*** fatal translator error: " << abortMsg[-ac] << endl;
     exit(ac);
 }
 
@@ -77,7 +77,7 @@ const char *errorMessages[] = {
     "Invalid expression",
     "Invalid assignment statement",
     "Missing identifier",
-    "Missing :=",
+    "Missing =",
     "Undefined identifier",
     "Stack overflow",
     "Invalid statement",
@@ -85,7 +85,7 @@ const char *errorMessages[] = {
     "Missing ;",
     "Missing ,",
     "Missing DO",
-    "Missing UNTIL",
+    "Missing while",
     "Missing THEN",
     "Invalid FOR control variable",
     "Missing OF",
@@ -95,7 +95,7 @@ const char *errorMessages[] = {
     "Missing END",
     "Missing TO or DOWNTO",
     "Redefined identifier",
-    "Missing =",
+    "Missing ==",
     "Invalid type",
     "Not a type identifier",
     "Invalid subrange type",
@@ -106,11 +106,11 @@ const char *errorMessages[] = {
     "Invalid identifier usage",
     "Incompatible assignment",
     "Min limit greater than max limit",
-    "Missing [",
-    "Missing ]",
+    "Missing {",
+    "Missing }",
     "Invalid index type",
     "Missing BEGIN",
-    "Missing .",
+    "Missing return",
     "Too many subscripts",
     "Invalid field",
     "Nesting too deep",
@@ -122,6 +122,7 @@ const char *errorMessages[] = {
     "Missing variable",
     "Code segment overflow",
     "Unimplemented feature",
+    "Missing ("
 };
 
 //--------------------------------------------------------------
@@ -132,7 +133,7 @@ const char *errorMessages[] = {
 //--------------------------------------------------------------
 
 void Error(TErrorCode ec) {
-    const int maxSyntaxErrors = 25;
+    const int maxSyntaxErrors = 0;
 
     int errorPosition = errorArrowOffset + inputPosition - 1;
 
@@ -143,7 +144,7 @@ void Error(TErrorCode ec) {
     }
 
     //--Print the error message.
-    sprintf(list.text, "*** ERROR: %s", errorMessages[ec]);
+    sprintf(list.text, "*** error: %s", errorMessages[ec]);
     list.PutLine();
 
     if (++errorCount > maxSyntaxErrors) {
@@ -152,3 +153,23 @@ void Error(TErrorCode ec) {
     }
 }
 //endfig
+
+const char *runtimeErrorMessages[] = {
+    "No runtime error",
+    "Runtime stack overflow",
+    "Value out of range",
+    "Invalid CASE expression value",
+    "Division by zero",
+    "Invalid standard function argument",
+    "Invalid user input",
+    "Unimplemented runtime feature"
+};
+
+void RuntimeError(TRuntimeErrorCode ec){
+    extern int currentLineNumber;
+    
+    cout << "\nruntime error in line <" << currentLineNumber << ">: "
+            << runtimeErrorMessages[ec] << endl;
+    
+    exit(abortRuntimeError);
+}

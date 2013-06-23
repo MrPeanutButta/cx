@@ -145,7 +145,7 @@ void TWordToken::CheckForReservedWord(void) {
     code = tcIdentifier; // first assume it's an identifier
 
     //--Is it the right length?
-    if ((__s.length() >= minResWordLen) && 
+    if ((__s.length() >= minResWordLen) &&
             (__s.length() <= maxResWordLen)) {
         //--Yes.  Use the word length to pick the appropriate list
         //--from the reserved word table and check to see if the word

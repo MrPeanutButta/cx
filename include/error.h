@@ -57,7 +57,7 @@ enum TErrorCode {
     errInvalidExpression,
     errInvalidAssignment,
     errMissingIdentifier,
-    errMissingColonEqual,
+    errMissingEqual,
     errUndefinedIdentifier,
     errStackOverflow,
     errInvalidStatement,
@@ -65,7 +65,7 @@ enum TErrorCode {
     errMissingSemicolon,
     errMissingComma,
     errMissingDO,
-    errMissingUNTIL,
+    errMissingWHILE,
     errMissingTHEN,
     errInvalidFORControl,
     errMissingOF,
@@ -75,7 +75,7 @@ enum TErrorCode {
     errMissingEND,
     errMissingTOorDOWNTO,
     errRedefinedIdentifier,
-    errMissingEqual,
+    errMissingEqualEqual,
     errInvalidType,
     errNotATypeIdentifier,
     errInvalidSubrangeType,
@@ -90,7 +90,7 @@ enum TErrorCode {
     errMissingRightBracket,
     errInvalidIndexType,
     errMissingBEGIN,
-    errMissingPeriod,
+    errMissingReturn,
     errTooManySubscripts,
     errInvalidField,
     errNestingTooDeep,
@@ -102,9 +102,24 @@ enum TErrorCode {
     errMissingVariable,
     errCodeSegmentOverflow,
     errUnimplementedFeature,
+    errMissingLeftParen
 };
 
 void Error(TErrorCode ec);
+
+enum TRuntimeErrorCode{
+    rteNone, 
+    rteStackOverflow,
+    rteValueOutOfRange,
+    rteInvalidCaseValue,
+    rteDivisionByZero,
+    rteInvalidFunctionArgument,
+    rteInvalidUserInput,
+    rteUnimplementedRuntimeFeature
+};
+
+void RuntimeError(TRuntimeErrorCode ec);
+
 
 #endif
 //endfig

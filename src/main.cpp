@@ -26,7 +26,7 @@
 #include "common.h"
 #include "icode.h"
 
-TIcode *pIcode;
+//TIcode *pIcode;
 
 //--------------------------------------------------------------
 //  main
@@ -37,30 +37,40 @@ int main(int argc, char *argv[]) {
     extern bool xrefFlag;
 
     //--Check the command line arguments.
-   /* if (argc != 2) {
-        cerr << "Usage: token <source file>" << endl;
-        AbortTranslation(abortInvalidCommandLineArgs);
-    }*/
+     if (argc < 2) {
+         cerr << "Usage: Cx <source file>" << endl;
+         AbortTranslation(abortInvalidCommandLineArgs);
+     }
 
     listFlag = true;
-    errorArrowFlag = false;
-    xrefFlag = true;
+    errorArrowFlag = true;
+    xrefFlag = false;
 
-    //pIcode = new TIcode(argv[2], TIcode::output);
     //--Create the parser for the source file,
     //--and then parse the file.
-    TParser parser(new TSourceBuffer(argv[1]));
-    parser.Parse();
-
-    if(xrefFlag){
+    TParser *parser = new TParser(new TSourceBuffer(argv[1]));
+    parser->Parse();
+    delete parser;
+    
+    if (xrefFlag) {
         list.PutLine();
         list.PutLine("--x ref---");
         list.PutLine();
         globalSymtab.Print();
     }
 
-    //delete pIcode;
+    if(errorCount ==0){
+        vpSymtabs = new TSymtab *[cntSymtabs];
+        for(TSymtab *pSt = pSymtabList; pSt; pSt = pSt->Next()){
+            pSt->Convert(vpSymtabs);
+        }
+        
+        TBackend *pBackend = new TExecutor;
+        pBackend->Go();
+        
+        delete[] vpSymtabs;
+        delete pBackend;
+    }
 
     return 0;
 }
-//endfig
