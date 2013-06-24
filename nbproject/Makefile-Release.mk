@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=None-Linux-x86
+CND_PLATFORM=GNU-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -51,7 +51,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/symtable.o \
 	${OBJECTDIR}/src/tknnum.o \
 	${OBJECTDIR}/src/tknstrsp.o \
-	${OBJECTDIR}/src/tknword.o
+	${OBJECTDIR}/src/tknword.o \
+	${OBJECTDIR}/src/types.o
 
 
 # C Compiler Flags
@@ -162,6 +163,11 @@ ${OBJECTDIR}/src/tknword.o: src/tknword.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tknword.o src/tknword.cpp
+
+${OBJECTDIR}/src/types.o: src/types.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/types.o src/types.cpp
 
 # Subprojects
 .build-subprojects:

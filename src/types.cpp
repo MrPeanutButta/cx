@@ -4,7 +4,7 @@
 #include "error.h"
 #include "types.h"
 
-static char *forStrings[] = {
+const char *formStrings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "record"
 };
 
@@ -18,7 +18,7 @@ TType::TType(TFormCode fc, int s, TSymtabNode* pId)
 : form(fc), size(s), pTypeId(pId), refCount(0) {
 
     switch (fc) {
-        case fcSubRange:
+        case fcSubrange:
             subrange.pBaseType = nullptr;
             break;
         case fcArray:
@@ -170,20 +170,20 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
     SetType(pRealId->pType, pRealType);
-    SetType(pBolleanId->pType, pBooleanType);
+    SetType(pBooleanId->pType, pBooleanType);
     SetType(pCharId->pType, pCharType);
 
-    pBooleanType->enumeration->max = 1;
-    pBooleanType->enumeration->pConstIds = pFalseId;
+    pBooleanType->enumeration.max = 1;
+    pBooleanType->enumeration.pConstIds = pFalseId;
 
     pFalseId->defn.constant.value.integer = 0;
     pTrueId->defn.constant.value.integer = 1;
 
     SetType(pTrueId->pType, pBooleanType);
     SetType(pFalseId->pType, pBooleanType);
-    
+
     pFalseId->next = pTrueId;
-    
+
     SetType(pDummyType, new TType(fcNone, 1, nullptr));
 }
 
@@ -195,13 +195,15 @@ void RemovePredefinedTypes(void){
     RemoveType(pDummyType);
 }
 
-TType *SetType(TType *&pTargetType, TType *pSourceType){
-    if(!pTargetType) RemoveType(pTargerType);
-    
+void RemoveType(TType *&pType);
+
+TType *SetType(TType *&pTargetType, TType *pSourceType) {
+    if (!pTargetType) RemoveType(pTargetType);
+
     ++pSourceType->refCount;
-    
+
     pTargetType = pSourceType;
-    
+
     return pSourceType;
 }
 

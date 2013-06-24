@@ -41,7 +41,7 @@ void TParser::ParseStatementList(TTokenCode terminator) {
 
         //if (TokenIn(token, tlStatementStart)) {
         //  Error(errMissingSemicolon);
-        //} else 
+        //} else
         while (token == tcSemicolon)GetTokenAppend();
     } while ((token != terminator) && (token != tcEndOfFile));
 }
@@ -132,10 +132,10 @@ void TParser::ParseDO(void) {
 
     CondGetTokenAppend(tcWhile, errMissingWHILE);
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
-    
+
     InsertLineMarker();
     ParseExpression();
-    
+
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
 }
@@ -230,20 +230,20 @@ void TParser::ParseCaseBranch(void) {
 
 void TParser::ParseCaseLabel(void) {
     GetTokenAppend();
-    
+
     bool signFlag(false);
-    
+
     if(TokenIn(token, tlUnaryOps)){
         signFlag = true;
         GetTokenAppend();
     }
-    
+
     switch(token){
         case tcIdentifier:
             if(!SearchAll(pToken->String())){
                 Error(errUndefinedIdentifier);
             }
-            
+
             GetTokenAppend();
             break;
         case tcNumber:
@@ -255,7 +255,7 @@ void TParser::ParseCaseLabel(void) {
                 Error(errInvalidConstant);
             }
     }
-    
+
     CondGetTokenAppend(tcColon, errMissingColon);
 
     ParseStatementList(tcBreak);

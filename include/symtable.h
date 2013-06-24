@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   symtable.h
  * Author: aaro3965
  *
@@ -16,6 +16,7 @@ extern int currentLineNumber;
 extern int asmLabelIndex;
 
 class TSymtab;
+class TSymtabNode;
 class TLineNumList;
 class TIcode;
 class TType;
@@ -42,7 +43,7 @@ struct TLocalIds {
     TSymtabNode *pRoutineIds;
 };
 
-class Defn {
+class TDefn {
 public:
 
     TDefnCode how;
@@ -91,6 +92,9 @@ public:
     TDefn defn;
     int level;
     int labelIndex;
+
+    //legacy
+    float value;
 
     TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();
@@ -152,6 +156,7 @@ public:
 
     TSymtabNode *Search(const char *pString) const;
     TSymtabNode *Enter(const char *pString, TDefnCode dc = dcUndefined);
+    TSymtabNode *EnterNew(const char *pString, TDefnCode dc);
 
     TSymtabNode *Root(void) const {
         return root;

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   types.h
  * Author: aaro3965
  *
@@ -11,14 +11,14 @@
 #include "error.h"
 #include "symtable.h"
 
-extern TType *pIntergerType, *pRealType, *pBooleanType, *pCharType,
+extern TType *pIntegerType, *pRealType, *pBooleanType, *pCharType,
         *pDummyType;
 
 enum TFormCode{
     fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcRecord
 };
 
-extern char *formStrings[];
+extern const char *formStrings[];
 
 class TType {
     int refCount;
@@ -26,18 +26,18 @@ public:
     TFormCode form;
     int size;
     TSymtabNode *pTypeId;
-    
+
     union{
         struct{
             TSymtabNode *pConstIds;
             int max;
         } enumeration;
-        
+
         struct{
             TType *pBaseType;
             int min, max;
         } subrange;
-        
+
         struct{
             TType *pIndexType;
             TType *pElmtType;
@@ -48,30 +48,30 @@ public:
             TSymtab *pSymtab;
         } record;
     };
-            
+
     TType(TFormCode fc, int s, TSymtabNode *pId);
     TType(int length);
-    
+
     ~TType();
-    
+
     bool IsScalar(void) const { return (form != fcArray) &&
                                         (form != fcRecord); }
-    
+
     TType *Base(void) const{
         return form == fcSubrange ? subrange.pBaseType : (TType *) this;
     }
-    
+
     enum TVerbosityCode {vcVerbose, vcTerse};
-    
+
     void PrintTypeSpec(TVerbosityCode vc) const;
     void PrintEnumType(TVerbosityCode vc) const;
     void PrintSubrangeType(TVerbosityCode vc) const;
     void PrintArrayType(TVerbosityCode vc) const;
     void PrintRecordType(TVerbosityCode vc) const;
-    
+
     friend TType *SetType(TType *&pTargetType, TType *pSourceType);
     friend void RemoveType(TType *&pType);
-    
+
     friend void CheckRelOpOperands(const TType *pType1,
                                    const TType *pType2);
     friend void CheckInterOrReal(const TType *pType1,
@@ -84,11 +84,13 @@ public:
     friend int IntegerOperands(const TType *pType1,
                                const TType *pType2);
     friend int RealOperands(const TType *pType1,
-                            const TType *pType2);  
+                            const TType *pType2);
 };
 
 void InitializePredefinedTypes(TSymtab *pSymtab);
 void RemovePredefinedTypes(void);
+
+
 
 #endif	/* TYPES_H */
 

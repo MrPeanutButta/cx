@@ -85,7 +85,7 @@ void TSymtabNode::PrintIdentifier(void) const {
     switch (defn.how) {
         case dcConstant: PrintConstant();
             break;
-        case dcType: PrintType(void);
+        case dcType: PrintType();
             break;
         case dcVariable:
         case dcField: PrintVarOrField();
@@ -110,19 +110,19 @@ void TSymtabNode::PrintConstant(void) const {
     } else if (pType->form == fcArray) {
         sprintf(list.text, "value = '%s'", defn.constant.value.pString);
     }
-    
+
     list.PutLine();
-    
+
     if(pType) pType->PrintTypeSpec(TType::vcTerse);
     list.PutLine();
 }
 
 void TSymtabNode::PrintVarOrField(void) const {
     extern TListBuffer list;
-    
+
     list.PutLine();
     list.PutLine(defn.how == dcVariable ? "declared variable" : "declared record field");
-    
+
     if(pType)pType->PrintTypeSpec(TType::vcTerse);
     if((defn.how == dcVariable) || (this->next)) list.PutLine();
 }
@@ -130,7 +130,7 @@ void TSymtabNode::PrintVarOrField(void) const {
 void TSymtabNode::PrintType(void) const{
     list.PutLine();
     list.PutLine("defined type");
-    
+
     if(pType) pType->PrintTypeSpec(TType::vcVerbose);
     list.PutLine();
 }
@@ -170,12 +170,12 @@ TSymtabNode *TSymtab::Enter(const char* pString, TDefnCode dc) {
     return pNode;
 }
 
-TSymtabNode *TSymtab::EnterNew(const char pString, TDefnCode dc){
+TSymtabNode *TSymtab::EnterNew(const char *pString, TDefnCode dc) {
     TSymtabNode *pNode = Search(pString);
-    
+
     if(!pNode) pNode = Enter(pString, dc);
     else Error(errRedefinedIdentifier);
-    
+
     return pNode;
 }
 

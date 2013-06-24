@@ -15,14 +15,14 @@ NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
 CC=gcc
-CCC=clang++
-CXX=clang++
+CCC=clang
+CXX=clang
 FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
-CND_DLIB_EXT=dylib
+CND_PLATFORM=None-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Mac_-_debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -51,7 +51,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/symtable.o \
 	${OBJECTDIR}/src/tknnum.o \
 	${OBJECTDIR}/src/tknstrsp.o \
-	${OBJECTDIR}/src/tknword.o
+	${OBJECTDIR}/src/tknword.o \
+	${OBJECTDIR}/src/types.o
 
 
 # C Compiler Flags
@@ -72,9 +73,9 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
 
@@ -163,13 +164,18 @@ ${OBJECTDIR}/src/tknword.o: src/tknword.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tknword.o src/tknword.cpp
 
+${OBJECTDIR}/src/types.o: src/types.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/types.o src/types.cpp
+
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx.exe
 
 # Subprojects
 .clean-subprojects:

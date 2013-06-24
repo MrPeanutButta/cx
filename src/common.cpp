@@ -32,8 +32,8 @@ extern const TTokenCode tlStatementStart[] = {
    tcSwitch, tcFor, tcDo, tcWhile, tcIdentifier,
    tcColonColon, tcReturn, tcContinue, tcIf,
    tcFriend, tcGoto, tcTry, tcDelete, tcShort, tcBool, tcInt,
-   tcSigned, tcBreak, tcDouble, tcLong, tcUnion, tcStatic, 
-   tcUnsigned, tcCatch, tcNameSpace, tcUsing, tcChar, 
+   tcSigned, tcBreak, tcDouble, tcLong, tcUnion, tcStatic,
+   tcUnsigned, tcCatch, tcNameSpace, tcUsing, tcChar,
    tcEnum, tcVirtual, tcChar16_t, tcChar32_t, tcExport,
    tcStruct, tcVoid, tcClass, tcExtern, tcTemplate, tcConst,
    tcPrivate, tcThis, tcFloat, tcProtected, tcThreadLocal,
@@ -43,7 +43,8 @@ extern const TTokenCode tlStatementStart[] = {
 
 // tokens that can follow a statement
 extern const TTokenCode tlStatementFollow[] = {
-    tcSemicolon, tcLBracket , tcElse, tcWhile, tcDummy   
+    tcSemicolon, tcLBracket, tcElse, tcWhile,
+    tcDummy
 };
 
 extern const TTokenCode tlCaseLabelStart[] = {
@@ -95,12 +96,12 @@ extern const TTokenCode tlLParen[] = { tcLParen, tcDummy };
 
 bool TokenIn(TTokenCode tc, const TTokenCode *pList){
     const TTokenCode *pCode;
-    
+
     if(!pList) return false;
-    
+
     for(pCode = pList; *pCode; ++pCode){
         if(*pCode == tc) return true;
     }
-    
+
     return false;
 }
