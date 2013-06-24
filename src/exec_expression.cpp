@@ -38,9 +38,6 @@ void TExecutor::ExecuteExpression(void) {
             case tcGe:
                 runStack.Push(__1 >= __2 ? 1.0 : 0.0);
                 break;
-            case tcLogicOr:
-                runStack.Push((__1 != 0.0 || __2 != 0.0) ? 1.0 : 0.0);
-                break;
         }
     }
 }

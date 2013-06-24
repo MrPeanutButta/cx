@@ -1,9 +1,30 @@
 #include <cstdio>
 #include <iostream>
+#include "common.h"
+#include "error.h"
 #include "buffer.h"
 #include "symtable.h"
+#include "types.h"
+#include "icode.h"
 
+int asmLabelIndex(0);
 bool xrefFlag(false);
+
+TDefn::~TDefn() {
+    switch (how) {
+        case dcProgram:
+        case dcProcedure:
+        case dcFunction:
+
+            if (routine.which == rcDeclared) {
+                delete routine.pSymtab;
+                delete routine.pIcode;
+            }
+            break;
+
+        default: break;
+    }
+}
 
 void TSymtab::Convert(TSymtab* vpSymtabs[]) {
     vpSymtabs[xSymtab] = this;
@@ -20,9 +41,10 @@ void TSymtabNode::Convert(TSymtabNode* vpNodes[]) {
     if (right) right->Convert(vpNodes);
 }
 
-TSymtabNode::TSymtabNode(const char* pStr) :
-pString(new char[strlen(pStr) + 1]), xNode(0), value(0.0) {
-    left = right = nullptr;
+TSymtabNode::TSymtabNode(const char* pStr, TDefnCode dc) :
+pString(new char[strlen(pStr) + 1]), xNode(0), value(0.0),
+defn(dc), level(currentNestingLevel), labelIndex(++asmLabelIndex) {
+    left = right = next = nullptr;
     pLineNumList = nullptr;
 
     strcpy(pString, pStr);
@@ -31,10 +53,14 @@ pString(new char[strlen(pStr) + 1]), xNode(0), value(0.0) {
 }
 
 TSymtabNode::~TSymtabNode() {
+
+    void RemoveType(TType *&Type);
+
     delete left;
     delete right;
     delete [] pString;
     delete pLineNumList;
+    RemoveType(pType);
 }
 
 void TSymtabNode::Print(void) const {
@@ -49,8 +75,64 @@ void TSymtabNode::Print(void) const {
                 maxNamePrintWidth);
     } else list.PutLine();
 
+    PrintIdentifier();
+
     if (right != nullptr) right->Print();
 
+}
+
+void TSymtabNode::PrintIdentifier(void) const {
+    switch (defn.how) {
+        case dcConstant: PrintConstant();
+            break;
+        case dcType: PrintType(void);
+            break;
+        case dcVariable:
+        case dcField: PrintVarOrField();
+            break;
+    }
+}
+
+void TSymtabNode::PrintConstant(void) const {
+    extern TListBuffer list;
+
+    list.PutLine();
+    list.PutLine("defined constant");
+
+    if ((pType == pIntegerType) ||
+            (pType->form == fcEnum)) {
+
+        sprintf(list.text, "value = %d", defn.constant.value.integer);
+    } else if (pType == pRealType) {
+        sprintf(list.text, "value = %g", defn.constant.value.real);
+    } else if (pType == pCharType) {
+        sprintf(list.text, "value = '%c'", defn.constant.value.character);
+    } else if (pType->form == fcArray) {
+        sprintf(list.text, "value = '%s'", defn.constant.value.pString);
+    }
+    
+    list.PutLine();
+    
+    if(pType) pType->PrintTypeSpec(TType::vcTerse);
+    list.PutLine();
+}
+
+void TSymtabNode::PrintVarOrField(void) const {
+    extern TListBuffer list;
+    
+    list.PutLine();
+    list.PutLine(defn.how == dcVariable ? "declared variable" : "declared record field");
+    
+    if(pType)pType->PrintTypeSpec(TType::vcTerse);
+    if((defn.how == dcVariable) || (this->next)) list.PutLine();
+}
+
+void TSymtabNode::PrintType(void) const{
+    list.PutLine();
+    list.PutLine("defined type");
+    
+    if(pType) pType->PrintTypeSpec(TType::vcVerbose);
+    list.PutLine();
 }
 
 TSymtabNode *TSymtab::Search(const char* pString) const {
@@ -69,7 +151,7 @@ TSymtabNode *TSymtab::Search(const char* pString) const {
     return pNode;
 }
 
-TSymtabNode *TSymtab::Enter(const char* pString) {
+TSymtabNode *TSymtab::Enter(const char* pString, TDefnCode dc) {
     TSymtabNode *pNode;
     TSymtabNode **ppNode = &root;
 
@@ -80,13 +162,24 @@ TSymtabNode *TSymtab::Enter(const char* pString) {
         ppNode = comp < 0 ? &(pNode->left) : &(pNode->right);
     }
 
-    pNode = new TSymtabNode(pString);
+    pNode = new TSymtabNode(pString, dc);
     pNode->xSymtab = xSymtab;
     pNode->xNode = cntNodes++;
     *ppNode = pNode;
 
     return pNode;
 }
+
+TSymtabNode *TSymtab::EnterNew(const char pString, TDefnCode dc){
+    TSymtabNode *pNode = Search(pString);
+    
+    if(!pNode) pNode = Enter(pString, dc);
+    else Error(errRedefinedIdentifier);
+    
+    return pNode;
+}
+
+
 
 TLineNumList::~TLineNumList() {
     while (head != nullptr) {

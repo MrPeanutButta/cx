@@ -2,20 +2,24 @@
     // newton's square root algorithm
     //-enter 1 to exit
 
+
     do{
         number = input;
         root = number;
+
+        iterator = 0; 
 
         // single statement do-while does not require 
         // '{' and '}' AKA code block, or more formerly 
         // known as the compound statement operator.
         do
             root = (number/root + root)/2;
-        // exit if we found the square.
-        while((root * root) > number);
+        // exit if we found the square AND exit if at max iterations.
+        while(((root * root) > number) && (iterator++ < 20));
         
         // output sqr root
         output = root;
+        output = iterator;
 
     }while(number != 1);
 

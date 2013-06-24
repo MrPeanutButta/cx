@@ -13,8 +13,66 @@
 
 extern bool xrefFlag;
 extern int currentLineNumber;
+extern int asmLabelIndex;
 
+class TSymtab;
 class TLineNumList;
+class TIcode;
+class TType;
+
+enum TDefnCode {
+    dcUndefined, dcConstant, dcType, dcVariable, dcField,
+    dcValueParm, dcVarParm,
+    dcProgram, dcProcedure, dcFunction
+};
+
+enum TRoutineCode {
+    rcDeclared, rcForward,
+    rcRead, rcReadln, rcWrite, rcWriteln,
+    rcAbs, rcArctan, rcChr, rcCos, rcEof, rcEoln,
+    rcExp, rcLn, rcOdd, rcOrd, rcPred, rcRound,
+    rcSin, rcSqr, rcSqrt, rcSucc, rcTrunc
+};
+
+struct TLocalIds {
+    TSymtabNode *pParmsIds;
+    TSymtabNode *pConstantIds;
+    TSymtabNode *pTypeIds;
+    TSymtabNode *pVariableIds;
+    TSymtabNode *pRoutineIds;
+};
+
+class Defn {
+public:
+
+    TDefnCode how;
+
+    union {
+
+        struct {
+            TDataValue value;
+        } constant;
+
+        struct {
+            TRoutineCode which;
+            int parmCount;
+            int totalParmSize;
+            int totalLocalSize;
+            TLocalIds locals;
+            TSymtab *pSymtab;
+            TIcode *pIcode;
+        } routine;
+
+        struct {
+            int offset;
+        } data;
+    };
+
+    TDefn(TDefnCode dc) {
+        how = dc;
+    }
+    ~TDefn();
+};
 
 class TSymtabNode {
     TSymtabNode *left, *right;
@@ -27,9 +85,14 @@ class TSymtabNode {
 
 public:
 
-    float value;
+    TSymtabNode *next;
+    TType *pType;
 
-    TSymtabNode(const char *pStr);
+    TDefn defn;
+    int level;
+    int labelIndex;
+
+    TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();
 
     TSymtabNode *LeftSubtree(void) const {
@@ -55,6 +118,10 @@ public:
     void Convert(TSymtabNode *vpNodes[]);
 
     void Print(void) const;
+    void PrintIdentifier(void) const;
+    void PrintConstant(void) const;
+    void PrintVarOrField(void) const;
+    void PrintType(void) const;
 };
 
 class TSymtab {
@@ -84,7 +151,7 @@ public:
     }
 
     TSymtabNode *Search(const char *pString) const;
-    TSymtabNode *Enter(const char *pString);
+    TSymtabNode *Enter(const char *pString, TDefnCode dc = dcUndefined);
 
     TSymtabNode *Root(void) const {
         return root;
