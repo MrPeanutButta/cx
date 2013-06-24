@@ -187,7 +187,7 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     SetType(pDummyType, new TType(fcNone, 1, nullptr));
 }
 
-void RemovePredefinedTypes(void){
+void RemovePredefinedTypes(void) {
     RemoveType(pIntegerType);
     RemoveType(pRealType);
     RemoveType(pBooleanType);
@@ -207,9 +207,95 @@ TType *SetType(TType *&pTargetType, TType *pSourceType) {
     return pSourceType;
 }
 
-void RemoveType(TType *&pType){
-    if(pType && (--pType->refCount == 0)){
+void RemoveType(TType *&pType) {
+    if (pType && (--pType->refCount == 0)) {
         delete pType;
         pType = nullptr;
     }
+}
+
+void CheckRelOpOperamds(const TType *pType1, const TType *pType2) {
+    pType1 = pType1->Base();
+    pType2 = pType2->Base();
+
+    if ((pType1 == pType2) &&
+            ((pType1->form == fcScalar) || (pType1->form == fcEnum))) {
+        return;
+    }
+
+    if ((pType1 == pIntegerType) && (pType2 == pRealType)
+            || (pType2 == pIntegerType) && (pType2 == pRealType)) {
+        return;
+    }
+
+    if ((pType1->form == fcArray)
+            && (pType2->form == fcArray)
+            && (pType1->array.pElmtType == pCharType)
+            && (pType2->array.pElmtType == pCharType)
+            && (pType1->array.elmtCount == pType2->array.elmtCount)) {
+        return;
+    }
+
+    Error(errIncompatibleTypes);
+}
+
+void CheckIntegerOrReal(const TType *pType1, const TType *pType2) {
+    pType1 = pType1->Base();
+
+    if ((pType1 != pIntegerType) && (pType1 != pRealType)) {
+        Error(errIncompatibleTypes);
+    }
+
+    if (pType2) {
+        pType2 = pType2->Base();
+
+        if ((pType2 != pIntegerType) && (pType2 != pRealType)) {
+            Error(errIncompatibleTypes);
+        }
+    }
+}
+
+void CheckBoolean(const TType *pType1, const TType *pType2) {
+    if ((pType1->Base() != pBooleanType)
+            || (pType2 && (pType2->Base() != pBooleanType))) {
+        Error(errIncompatibleTypes);
+    }
+}
+
+void CheckAssigntmentTypeCompatible(const TType *pTargetType,
+        const TType *pValueType, TErrorCode ec) {
+
+    pTargetType = pTargetType->Base();
+    pValueType = pValueType->Base();
+
+    if (pTargetType == pValueType) return;
+
+    if ((pTargetType == pRealType)
+            && (pValueType == pIntegerType)) return;
+
+    if ((pTargetType->form == fcArray)
+            && (pValueType->form == fcArray)
+            && (pTargetType->array.pElmtType == pCharType)
+            && (pValueType->array.pElmtType == pCharType)
+            && (pTargetType->array.elmtCount == pValueType->array.elmtCount)) {
+        return;
+    }
+
+    Error(ec);
+}
+
+bool IntegerOperands(const TType *pType1, const TType *pType2) {
+    pType1 = pType1->Base();
+    pType2 = pType2->Base();
+
+    return (pType1 == pIntegerType) && (pType2 == pIntegerType);
+}
+
+bool RealOperands(const TType *pType1, const TType *pType2) {
+    pType1 = pType1->Base();
+    pType2 = pType2->Base();
+
+    return (pType1 == pRealType) && (pType2 == pRealType)
+            || (pType1 == pRealType) && (pType2 == pIntegerType)
+            || (pType2 == pRealType) && (pType1 == pIntegerType);
 }

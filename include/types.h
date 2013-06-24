@@ -81,9 +81,9 @@ public:
     friend void CheckAssignmentTypeCompatible(const TType *pTargetType,
                                               const TType *pValueType,
                                               TErrorCode ec);
-    friend int IntegerOperands(const TType *pType1,
+    friend bool IntegerOperands(const TType *pType1,
                                const TType *pType2);
-    friend int RealOperands(const TType *pType1,
+    friend bool RealOperands(const TType *pType1,
                             const TType *pType2);
 };
 
