@@ -82,8 +82,25 @@ void TTextScanner::SkipWhiteSpace(void) {
     do {
         if (charCodeMap[ch] == ccWhiteSpace) {
             ch = pTextInBuffer->GetChar();
+        } else if (ch == '/') {
+            ch = pTextInBuffer->GetChar();
+            if (ch == '/') {
+                while (ch != '\0') ch = pTextInBuffer->GetChar();
+            } else if (ch == '*') {
+                while (ch != eofChar) {
+                    ch = pTextInBuffer->GetChar();
+                    if (ch == '*') {
+                        ch = pTextInBuffer->GetChar();
+                        if (ch == '/') {
+                            ch = pTextInBuffer->GetChar();
+                            break;
+                        }
+                    }
+                }
+            } else pTextInBuffer->PutBackChar();
         }
-    } while (charCodeMap[ch] == ccWhiteSpace);
+    } while ((charCodeMap[ch] == ccWhiteSpace)
+            || (ch == '/'));
 }
 //endfig
 
@@ -94,7 +111,7 @@ void TTextScanner::SkipWhiteSpace(void) {
 //  Return: pointer to the extracted token
 //--------------------------------------------------------------
 
-TToken *TTextScanner::Get(void) {
+TToken * TTextScanner::Get(void) {
     TToken *pToken; // ptr to token to return
 
     SkipWhiteSpace();

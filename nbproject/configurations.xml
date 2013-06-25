@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="88">
+<configurationDescriptor version="89">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -34,8 +34,10 @@
       <itemPath>src/exec_statment.cpp</itemPath>
       <itemPath>src/icode.cpp</itemPath>
       <itemPath>src/main.cpp</itemPath>
+      <itemPath>src/parse_declarations.cpp</itemPath>
       <itemPath>src/parse_expression.cpp</itemPath>
       <itemPath>src/parse_statement.cpp</itemPath>
+      <itemPath>src/parse_type1.cpp</itemPath>
       <itemPath>src/parser.cpp</itemPath>
       <itemPath>src/scanner.cpp</itemPath>
       <itemPath>src/symtable.cpp</itemPath>
@@ -75,13 +77,13 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <developmentMode>2</developmentMode>
           <standard>8</standard>
-          <commandlineTool>clang++</commandlineTool>
+          <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>include</pElem>
-            <pElem>/Users/aaro3965/Downloads/clang+llvm-3.2-x86_64-apple-darwin11/include</pElem>
           </incDir>
-          <warningLevel>2</warningLevel>
+          <warningLevel>0</warningLevel>
         </ccTool>
       </compileType>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
@@ -128,9 +130,13 @@
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/parse_declarations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/parse_expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parse_statement.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_type1.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -224,9 +230,13 @@
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/parse_declarations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/parse_expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parse_statement.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_type1.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -316,9 +326,13 @@
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/parse_declarations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/parse_expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parse_statement.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/parse_type1.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -18,42 +18,12 @@
     } else if (a > 1){
         output = a;
     }
-    
+
     b = 32;
 
     if((b << a) == 64){
         output = b;
     }
-
-    i = 0;
-
-    // empty for
-    for(;;);
-
-    for(;;){
-        output = i;
-    }
-
-    // regular for
-    for(i = 0; i < 10; i++){
-        output = i;
-    }
-
-    // no init for
-    for(; i< 10; i++){
-        output = i;
-    }
-
-    for (a = 2; a > 0; a--){
-        output = a;
-    }
-
-    f = 0;
-    for(f = 0;;f++)
-        output = f;
-
-    for(i = 0; i <= 10; i++)
-        output = i;
 
     return a++;
 }

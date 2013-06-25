@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
-CND_DLIB_EXT=dylib
+CND_PLATFORM=None-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Mac_-_debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -44,8 +44,10 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/exec_statment.o \
 	${OBJECTDIR}/src/icode.o \
 	${OBJECTDIR}/src/main.o \
+	${OBJECTDIR}/src/parse_declarations.o \
 	${OBJECTDIR}/src/parse_expression.o \
 	${OBJECTDIR}/src/parse_statement.o \
+	${OBJECTDIR}/src/parse_type1.o \
 	${OBJECTDIR}/src/parser.o \
 	${OBJECTDIR}/src/scanner.o \
 	${OBJECTDIR}/src/symtable.o \
@@ -73,9 +75,9 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
 
@@ -124,6 +126,11 @@ ${OBJECTDIR}/src/main.o: src/main.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
 
+${OBJECTDIR}/src/parse_declarations.o: src/parse_declarations.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_declarations.o src/parse_declarations.cpp
+
 ${OBJECTDIR}/src/parse_expression.o: src/parse_expression.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -133,6 +140,11 @@ ${OBJECTDIR}/src/parse_statement.o: src/parse_statement.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_statement.o src/parse_statement.cpp
+
+${OBJECTDIR}/src/parse_type1.o: src/parse_type1.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_type1.o src/parse_type1.cpp
 
 ${OBJECTDIR}/src/parser.o: src/parser.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -175,7 +187,7 @@ ${OBJECTDIR}/src/types.o: src/types.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx.exe
 
 # Subprojects
 .clean-subprojects:

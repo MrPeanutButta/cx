@@ -1,9 +1,9 @@
 
-// expressions testing
-//
-// square roots by Newton's algorithm
-//
-//
+/* expressions testing
+ *
+ * square roots by Newton's algorithm
+ */
+
 number = input;
 root = number;
 

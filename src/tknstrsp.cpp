@@ -98,7 +98,6 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 code = tcBitXOREqual;
                 buffer.GetChar();
             } else code = tcBitXOR;
-
             break;
         case '&': ch = buffer.GetChar();
             if (ch == '=') {
@@ -168,7 +167,6 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 buffer.GetChar();
             } else code = tcPlus;
             break;
-
         case '=': ch = buffer.GetChar();
             if (ch == '=') {
                 *ps++ = '=';
@@ -176,7 +174,6 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 buffer.GetChar();
             } else code = tcEqual;
             break;
-
         case '[': code = tcLeftSubscript;
             buffer.GetChar();
             break;
@@ -209,7 +206,6 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 buffer.GetChar();
             } else code = tcColon;
             break;
-
         case '<': ch = buffer.GetChar(); // < or <=
             if (ch == '=') {
                 *ps++ = '=';
@@ -263,11 +259,9 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
             break;
         case '?': code = tcQuestionMark;
             buffer.GetChar();
-
             break;
         case '#': code = tcPound;
             buffer.GetChar();
-
             break;
         case '\"': code = tcQuoteQuote;
             buffer.GetChar();

@@ -6,13 +6,13 @@ using namespace std;
 void TExecutor::Go(void) {
     icode.Reset();
     GetToken();
-    
-    do{
+
+    do {
         ExecuteStatement();
-        
-        while(token == tcSemicolon)GetToken();
-        
-    }while(token != tcEndOfFile);
-        
+
+        while (token == tcSemicolon)GetToken();
+
+    } while (token != tcEndOfFile);
+
     cout << "\nsuccess: " << stmtCount << " statements executed.\n";
 }

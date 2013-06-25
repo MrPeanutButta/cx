@@ -3,9 +3,9 @@
 
 using namespace std;
 
-void TExecutor::ExecuteStatement(void){
-    if(token != tcLBracket) ++stmtCount;
-    
+void TExecutor::ExecuteStatement(void) {
+    if (token != tcLBracket) ++stmtCount;
+
     switch (token) {
         case tcIdentifier: ExecuteAssignment();
             break;
@@ -31,19 +31,19 @@ void TExecutor::ExecuteStatement(void){
     }
 }
 
-void TExecutor::ExecuteStatementList(TTokenCode terminator){
-    do{
+void TExecutor::ExecuteStatementList(TTokenCode terminator) {
+    do {
         ExecuteStatement();
-        while(token == tcSemicolon) GetToken();
-    }while(token != terminator);
+        while (token == tcSemicolon) GetToken();
+    } while (token != terminator);
 }
 
-void TExecutor::ExecuteAssignment(void){
+void TExecutor::ExecuteAssignment(void) {
     TSymtabNode *pTargetNode = pNode;
-    
+
     GetToken(); // assignment operator
     //GetToken(); // first token expression
-    
+
     switch (token) {
         case tcEqual:
             GetToken();
@@ -144,33 +144,33 @@ void TExecutor::ExecuteAssignment(void){
             Error(errInvalidAssignment);
             break;
     }
-    
-    if(pTargetNode == pOutputNode){
+
+    if (pTargetNode == pOutputNode) {
         cout << " output == " << pTargetNode->value << endl;
     }
-    
+
 }
 
-void TExecutor::ExecuteDO(void){
-    
+void TExecutor::ExecuteDO(void) {
+
     int atLoopStart = CurrentLocation(); // location of loop start in icode
-    
-    do{
-        GetToken();     // do
-        
+
+    do {
+        GetToken(); // do
+
         ExecuteStatementList(tcWhile);
-        
-        GetToken();     //while
-        ExecuteExpression();     // (condition)
-        
-        if(runStack.Pop() == 1.0)Goto(atLoopStart);
-    }while (CurrentLocation() == atLoopStart);
+
+        GetToken(); //while
+        ExecuteExpression(); // (condition)
+
+        if (runStack.Pop() == 1.0)Goto(atLoopStart);
+    } while (CurrentLocation() == atLoopStart);
 }
 
-void TExecutor::ExecuteCompound(void){
+void TExecutor::ExecuteCompound(void) {
     GetToken();
-    
+
     ExecuteStatementList(tcRBracket);
-    
+
     GetToken();
 }

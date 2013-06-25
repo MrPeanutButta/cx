@@ -165,11 +165,11 @@ const char *runtimeErrorMessages[] = {
     "Unimplemented runtime feature"
 };
 
-void RuntimeError(TRuntimeErrorCode ec){
+void RuntimeError(TRuntimeErrorCode ec) {
     extern int currentLineNumber;
-    
+
     cout << "\nruntime error in line <" << currentLineNumber << ">: "
             << runtimeErrorMessages[ec] << endl;
-    
+
     exit(abortRuntimeError);
 }
