@@ -233,25 +233,25 @@ void TParser::ParseCaseLabel(void) {
 
     bool signFlag(false);
 
-    if(TokenIn(token, tlUnaryOps)){
+    if (TokenIn(token, tlUnaryOps)) {
         signFlag = true;
         GetTokenAppend();
     }
 
-    switch(token){
+    switch (token) {
         case tcIdentifier:
-            if(!SearchAll(pToken->String())){
+            if (!SearchAll(pToken->String())) {
                 Error(errUndefinedIdentifier);
             }
 
             GetTokenAppend();
             break;
         case tcNumber:
-            if(pToken->Type() != tyInteger) Error(errInvalidConstant);
+            if (pToken->Type() != tyInteger) Error(errInvalidConstant);
             GetTokenAppend();
             break;
         case tcString:
-            if(signFlag || (strlen(pToken->String())!= 3)){
+            if (signFlag || (strlen(pToken->String()) != 3)) {
                 Error(errInvalidConstant);
             }
     }

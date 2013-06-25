@@ -60,8 +60,10 @@ public:
         file.close();
         delete pFileName;
     }
-    
-    const char *FileName(void){ return pFileName; }
+
+    const char *FileName(void) {
+        return pFileName;
+    }
 
     char Char(void) const {
         return *pChar;

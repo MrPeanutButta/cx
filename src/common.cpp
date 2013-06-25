@@ -50,7 +50,7 @@ extern const TTokenCode tlSublistFollow[] = {
 };
 
 extern const TTokenCode tlFieldDeclFollow[] = {
-    tcSemicolon, tcIdentifier, tlRBracket, tcDummy
+    tcSemicolon, tcIdentifier, tcRBracket, tcDummy
 };
 
 extern const TTokenCode tlEnumConstStart[] = {
@@ -75,7 +75,7 @@ extern const TTokenCode tlIndexFollow[] = {
 };
 
 extern const TTokenCode tlIndexListFollow[] = {
-    tcIdentifier, tcLParen, tcPlus, tcMinus, tcNumber, tcString, tcSemicolon
+    tcIdentifier, tcLParen, tcPlus, tcMinus, tcNumber, tcString, tcSemicolon,
     tcDummy
 };
 

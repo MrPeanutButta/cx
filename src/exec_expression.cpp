@@ -168,7 +168,8 @@ void TExecutor::ExecuteFactor(void) {
         {
 
             if (pNode == pInputNode) {
-                cout << "input = "; cin >> pNode->value;
+                cout << "input = ";
+                cin >> pNode->value;
                 if (!cin.good())RuntimeError(rteInvalidUserInput);
             }
 

@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=None-Linux-x86
+CND_PLATFORM=GNU-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -44,8 +44,10 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/exec_statment.o \
 	${OBJECTDIR}/src/icode.o \
 	${OBJECTDIR}/src/main.o \
+	${OBJECTDIR}/src/parse_declarations.o \
 	${OBJECTDIR}/src/parse_expression.o \
 	${OBJECTDIR}/src/parse_statement.o \
+	${OBJECTDIR}/src/parse_type1.o \
 	${OBJECTDIR}/src/parser.o \
 	${OBJECTDIR}/src/scanner.o \
 	${OBJECTDIR}/src/symtable.o \
@@ -124,6 +126,11 @@ ${OBJECTDIR}/src/main.o: src/main.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
 
+${OBJECTDIR}/src/parse_declarations.o: src/parse_declarations.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_declarations.o src/parse_declarations.cpp
+
 ${OBJECTDIR}/src/parse_expression.o: src/parse_expression.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -133,6 +140,11 @@ ${OBJECTDIR}/src/parse_statement.o: src/parse_statement.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_statement.o src/parse_statement.cpp
+
+${OBJECTDIR}/src/parse_type1.o: src/parse_type1.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_type1.o src/parse_type1.cpp
 
 ${OBJECTDIR}/src/parser.o: src/parser.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

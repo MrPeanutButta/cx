@@ -14,7 +14,7 @@
 extern TType *pIntegerType, *pRealType, *pBooleanType, *pCharType,
         *pDummyType;
 
-enum TFormCode{
+enum TFormCode {
     fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcRecord
 };
 
@@ -27,23 +27,25 @@ public:
     int size;
     TSymtabNode *pTypeId;
 
-    union{
-        struct{
+    union {
+
+        struct {
             TSymtabNode *pConstIds;
             int max;
         } enumeration;
 
-        struct{
+        struct {
             TType *pBaseType;
             int min, max;
         } subrange;
 
-        struct{
+        struct {
             TType *pIndexType;
             TType *pElmtType;
             int minIndex, maxIndex;
             int elmtCount;
         } array;
+
         struct {
             TSymtab *pSymtab;
         } record;
@@ -54,14 +56,18 @@ public:
 
     ~TType();
 
-    bool IsScalar(void) const { return (form != fcArray) &&
-                                        (form != fcRecord); }
+    bool IsScalar(void) const {
+        return (form != fcArray) &&
+                (form != fcRecord);
+    }
 
-    TType *Base(void) const{
+    TType *Base(void) const {
         return form == fcSubrange ? subrange.pBaseType : (TType *) this;
     }
 
-    enum TVerbosityCode {vcVerbose, vcTerse};
+    enum TVerbosityCode {
+        vcVerbose, vcTerse
+    };
 
     void PrintTypeSpec(TVerbosityCode vc) const;
     void PrintEnumType(TVerbosityCode vc) const;
@@ -73,18 +79,18 @@ public:
     friend void RemoveType(TType *&pType);
 
     friend void CheckRelOpOperands(const TType *pType1,
-                                   const TType *pType2);
+            const TType *pType2);
     friend void CheckInterOrReal(const TType *pType1,
-                                 const TType *Type2 = nullptr);
+            const TType *Type2 = nullptr);
     friend void CheckBoolean(const TType *pType1,
-                             const TType *pType2 = nullptr);
+            const TType *pType2 = nullptr);
     friend void CheckAssignmentTypeCompatible(const TType *pTargetType,
-                                              const TType *pValueType,
-                                              TErrorCode ec);
+            const TType *pValueType,
+            TErrorCode ec);
     friend bool IntegerOperands(const TType *pType1,
-                               const TType *pType2);
+            const TType *pType2);
     friend bool RealOperands(const TType *pType1,
-                            const TType *pType2);
+            const TType *pType2);
 };
 
 void InitializePredefinedTypes(TSymtab *pSymtab);
