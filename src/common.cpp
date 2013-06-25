@@ -27,18 +27,80 @@ TSymtab **vpSymtabs = nullptr;
 
 TIcode icode;
 
+extern const TTokenCode tlDeclarationStart[] = {
+    tcShort, tcBool, tcInt, tcSigned, tcDouble,
+    tcLong, tcUnion, tcStatic, tcUnsigned,
+    tcNameSpace, tcUsing, tcChar, tcEnum, tcVirtual,
+    tcChar16_t, tcChar32_t, tcExport, tcStruct, tcVoid,
+    tcClass, tcExtern, tcTemplate, tcConst, tcPrivate,
+    tcFloat, tcProtected, tcThreadLocal, tcPublic, tcTypeDef,
+    tcStringDef, tcPound, tcDummy
+};
+
+extern const TTokenCode tlDeclarationFollow[] = {
+    tcSemicolon, tcIdentifier, tcDummy
+};
+
+extern const TTokenCode tlIdentifierStart[] = {
+    tcIdentifier, tcDummy
+};
+
+extern const TTokenCode tlSublistFollow[] = {
+    tcColon, tcDummy
+};
+
+extern const TTokenCode tlFieldDeclFollow[] = {
+    tcSemicolon, tcIdentifier, tlRBracket, tcDummy
+};
+
+extern const TTokenCode tlEnumConstStart[] = {
+    tcEnum, tcDummy
+};
+
+extern const TTokenCode tlEnumConstFollow[] = {
+    tcRBracket, tcSemicolon, tcDummy
+};
+
+extern const TTokenCode tlSubrangeLimitFollow[] = {
+    tcDotDot, tcIdentifier, tcPlus, tcMinus, tcString,
+    tcRightSubscript, tcComma, tcSemicolon, tcDummy
+};
+
+extern const TTokenCode tlIndexStart[] = {
+    tcIdentifier, tcNumber, tcString, tcLParen, tcPlus, tcMinus, tcDummy
+};
+
+extern const TTokenCode tlIndexFollow[] = {
+    tcComma, tcLeftSubscript, tcSemicolon, tcDummy
+};
+
+extern const TTokenCode tlIndexListFollow[] = {
+    tcIdentifier, tcLParen, tcPlus, tcMinus, tcNumber, tcString, tcSemicolon
+    tcDummy
+};
+
+extern const TTokenCode tlSubscriptOrFieldStart[] = {
+    tcColonColon, tcSemicolon,
+    tcPointerMember, tcMemberPointer, tcDot, tcLeftSubscript, tcDummy
+};
+
+extern const TTokenCode tlIdentifierFollow[] = {
+    tcComma, tcIdentifier, tcColon, tcColonColon, tcSemicolon,
+    tcPointerMember, tcMemberPointer, tcDot, tcDummy
+};
+
 // tokens that can start a statement
 extern const TTokenCode tlStatementStart[] = {
-   tcSwitch, tcFor, tcDo, tcWhile, tcIdentifier,
-   tcColonColon, tcReturn, tcContinue, tcIf,
-   tcFriend, tcGoto, tcTry, tcDelete, tcShort, tcBool, tcInt,
-   tcSigned, tcBreak, tcDouble, tcLong, tcUnion, tcStatic,
-   tcUnsigned, tcCatch, tcNameSpace, tcUsing, tcChar,
-   tcEnum, tcVirtual, tcChar16_t, tcChar32_t, tcExport,
-   tcStruct, tcVoid, tcClass, tcExtern, tcTemplate, tcConst,
-   tcPrivate, tcThis, tcFloat, tcProtected, tcThreadLocal,
-   tcPublic, tcThrow, tcTypeDef, tcStringDef, tcPound,
-   tcDummy
+    tcSwitch, tcFor, tcDo, tcWhile, tcIdentifier,
+    tcColonColon, tcReturn, tcContinue, tcIf,
+    tcFriend, tcGoto, tcTry, tcDelete, tcShort, tcBool, tcInt,
+    tcSigned, tcBreak, tcDouble, tcLong, tcUnion, tcStatic,
+    tcUnsigned, tcCatch, tcNameSpace, tcUsing, tcChar,
+    tcEnum, tcVirtual, tcChar16_t, tcChar32_t, tcExport,
+    tcStruct, tcVoid, tcClass, tcExtern, tcTemplate, tcConst,
+    tcPrivate, tcThis, tcFloat, tcProtected, tcThreadLocal,
+    tcPublic, tcThrow, tcTypeDef, tcStringDef, tcPound,
+    tcDummy
 };
 
 // tokens that can follow a statement
@@ -85,22 +147,22 @@ extern const TTokenCode tlProgramEnd[] = {
     tcReturn, tcRBracket, tcEndOfFile, tcDummy
 };
 
-extern const TTokenCode tlEqualEqual[] = { tcEqualEqual, tcDummy };
-extern const TTokenCode tlDo[] = { tcDo, tcDummy };
-extern const TTokenCode tlLBracket [] = { tcLBracket, tcDummy };
-extern const TTokenCode tlColonp[] = { tcColon, tcDummy };
-extern const TTokenCode tlRBracket[] = { tcRBracket, tcDummy };
-extern const TTokenCode tlSemicolon[] = { tcSemicolon, tcDummy };
-extern const TTokenCode tlRParen[] = { tcRParen, tcDummy };
-extern const TTokenCode tlLParen[] = { tcLParen, tcDummy };
+extern const TTokenCode tlEqualEqual[] = {tcEqualEqual, tcDummy};
+extern const TTokenCode tlDo[] = {tcDo, tcDummy};
+extern const TTokenCode tlLBracket [] = {tcLBracket, tcDummy};
+extern const TTokenCode tlColonp[] = {tcColon, tcDummy};
+extern const TTokenCode tlRBracket[] = {tcRBracket, tcDummy};
+extern const TTokenCode tlSemicolon[] = {tcSemicolon, tcDummy};
+extern const TTokenCode tlRParen[] = {tcRParen, tcDummy};
+extern const TTokenCode tlLParen[] = {tcLParen, tcDummy};
 
-bool TokenIn(TTokenCode tc, const TTokenCode *pList){
+bool TokenIn(TTokenCode tc, const TTokenCode *pList) {
     const TTokenCode *pCode;
 
-    if(!pList) return false;
+    if (!pList) return false;
 
-    for(pCode = pList; *pCode; ++pCode){
-        if(*pCode == tc) return true;
+    for (pCode = pList; *pCode; ++pCode) {
+        if (*pCode == tc) return true;
     }
 
     return false;

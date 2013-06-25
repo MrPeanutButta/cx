@@ -17,7 +17,7 @@
 #ifndef parser_h
 #define parser_h
 
-#include <map>
+#include <string>
 #include "misc.h"
 #include "buffer.h"
 #include "error.h"
@@ -27,6 +27,7 @@
 #include "icode.h"
 #include "exec.h"
 #include "symtable.h"
+#include "types.h"
 
 using namespace std;
 
@@ -41,12 +42,36 @@ class TParser {
     TTextScanner * const pScanner; // ptr to the scanner
     TToken *pToken; // ptr to the current token
     TTokenCode token; // code of current token
+    
+    const string file_name;
     //TRuntimeStack runStack;
     //TCompactListBuffer * const pCompact; // compact list buffer
 
-    // statements
-    void ParseStatement(void);
-    void ParseAssignment(void);
+    // declarations
+    void ParseDeclarations(TSymtabNode *pRoutineId);
+    void ParseConstantDeclarations(TSymtabNode *pRoutineId);
+    void ParseConstant(TSymtabNode *pConstId);
+    void ParseIdentifierConstant(TSymtabNode *pId1, TTokenCode sign);
+
+    void ParseDefinitions(TSymtabNode *pRoutineId);
+    void ParseTypeDefinitions(TSymtabNode *pRoutineId);
+    TType *ParseTypeSpec(void);
+
+    TType *ParseIdentifierType(const TSymtabNode *pId2);
+    TType *ParseEnumerationType(void);
+    TType *ParseSubrangeType(TSymtabNode *pMinId);
+    TType *ParseSubrangeLimit(TSymtabNode *pLimitId, int &limit);
+
+    TType*ParseArrayType(void);
+    void ParseIndexType(TType *pArrayType);
+    int ArraySize(TType *pArrayType);
+    TType *ParseRecordType(void);
+
+    void ParseVariableDeclarations(TSymtabNode *pRoutineId);
+    void ParseFieldDeclarations(TType *pRecordType, int offset);
+    void ParseVarOrFieldDecls(TSymtabNode *pRoutineId, TType *pRecordType);
+    TSymtabNode *ParseIdSublist(const TSymtabNode *pRoutineId,
+            const TType *pRecordType, TSymtabNode *&pLastId);
 
     // expressions
     void ParseExpression(void);
@@ -56,6 +81,9 @@ class TParser {
     void ParseTerm(void);
     void ParseFactor(void);
 
+    // statements
+    void ParseStatement(void);
+    void ParseAssignment(void);
     void ParseStatementList(TTokenCode terminator);
     void ParseDO(void);
     void ParseWHILE(void);
@@ -84,9 +112,32 @@ class TParser {
     TSymtabNode *SearchAll(const char *pString) const {
         return globalSymtab.Search(pString);
     }
+    
+    TSymtabNode *Find(const char *pString) const {
+        TSymtabNode *pNode = SearchAll(pString);
+        
+        if(!pNode){
+            Error(errUndefinedIdentifier);
+            pNode = globalSymtab.Enter(pString);
+        }
+        
+        return pNode;
+    }
 
-    TSymtabNode *EnterLocal(const char *pString) const {
-        return globalSymtab.Enter(pString);
+    void CopyQuotedString(char *pString, const char *pQuotedString) const{
+        int length = strlen(pQuotedString) - 2;
+        strcpy(pString, &pQuotedString[1], length);
+        pString[length] = '\0';
+    }
+    
+    TSymtabNode *EnterLocal(const char *pString,
+            TDefnCode dc = dcUndefined) const {
+        return globalSymtab.Enter(pString, dc);
+    }
+
+    TSymtabNode *EnterNewLocal(const char *pString,
+            TDefnCode dc = dcUndefined) const {
+        return globalSymtab.EnterNew(pString, dc);
     }
 
     void CondGetToken(TTokenCode tc, TErrorCode ec) {
@@ -107,12 +158,19 @@ public:
 
     TParser(TTextInBuffer *pBuffer)
     : pScanner(new TTextScanner(pBuffer)) {
+        
+        file_name = pBuffer->FileName();
+        
         EnterLocal("input");
         EnterLocal("output");
+        
+        InitializePredefinedTypes(&globalSymtab);
+        
     }
 
     ~TParser(void) {
         delete pScanner;
+        RemovePredefinedTypes();
     }
 
     void Parse(void);

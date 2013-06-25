@@ -254,9 +254,12 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
                 buffer.GetChar();
             } else code = tcMod;
             break;
-        case '.': code = tcDot;
-            buffer.GetChar();
-
+        case '.': ch = buffer.GetChar();
+            if (ch == '.') {
+                *ps++ = '.';
+                code = tcDotDot;
+                buffer.GetChar();
+            } else code = tcDot;
             break;
         case '?': code = tcQuestionMark;
             buffer.GetChar();

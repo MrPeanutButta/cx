@@ -80,8 +80,8 @@ enum TTokenCode {
     tcLParen, // (
     tcRParen, // )
 
-    tcLBracket, // }
-    tcRBracket, // {
+    tcLBracket, // {
+    tcRBracket, // }
     tcColon, // :
     tcSemicolon, // ;
 
@@ -90,6 +90,7 @@ enum TTokenCode {
 
     // member access
     tcDot, // .
+    tcDotDot, // ..
     tcColonColon, // ::
     tcPointerMember, // ->
     tcMemberPointer, // ->*
