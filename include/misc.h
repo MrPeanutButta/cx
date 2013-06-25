@@ -129,6 +129,7 @@ enum TDataType {
 
 union TDataValue {
     int integer;
+    unsigned int u_integer;
     float real;
     char character;
     char *pString;

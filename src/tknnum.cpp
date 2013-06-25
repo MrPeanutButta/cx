@@ -19,6 +19,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cmath>
+#include <sstream>
 #include "token.h"
 
 //              *******************
@@ -54,6 +55,11 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
     countErrorFlag = false;
     code = tcError; // we don't know what it is yet, but
     type = tyInteger; //    assume it'll be an integer
+
+    // first check if hex
+    if (ch == 'x') {
+
+    }
 
     //--Get the whole part of the number by accumulating
     //--the values of its digits into numValue.  wholePlaces keeps

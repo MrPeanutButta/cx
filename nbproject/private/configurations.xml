@@ -30,8 +30,10 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" tests/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/newton.Cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/example/hex.Cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/hex.Cx</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/newton.Cx</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/hex.Cx</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
