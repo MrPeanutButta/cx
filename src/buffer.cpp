@@ -129,17 +129,6 @@ TSourceBuffer::TSourceBuffer(const char *pSourceFileName)
 //          end-of-file character if at the end of the file
 //--------------------------------------------------------------
 
-void snip_line_comment(char *text) {
-    // clear comments
-    for (uint8_t i(0); i < strlen(text); ++i) {
-        if (text[i + 1] == eofChar)return;
-        if (text[i] == '/' && text[i + 1] == '/') {
-            text[i] = '\0';
-            return;
-        }
-    }
-}
-
 char TSourceBuffer::GetLine(void) {
     extern int currentlineNumber, currentNestingLevel;
 
@@ -165,8 +154,6 @@ char TSourceBuffer::GetLine(void) {
                     currentNestingLevel
                     );
         }
-
-        snip_line_comment(text);
 
     }
 

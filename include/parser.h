@@ -42,8 +42,8 @@ class TParser {
     TTextScanner * const pScanner; // ptr to the scanner
     TToken *pToken; // ptr to the current token
     TTokenCode token; // code of current token
-    
-    const string file_name;
+
+    const char *file_name;
     //TRuntimeStack runStack;
     //TCompactListBuffer * const pCompact; // compact list buffer
 
@@ -69,7 +69,9 @@ class TParser {
 
     void ParseVariableDeclarations(TSymtabNode *pRoutineId);
     void ParseFieldDeclarations(TType *pRecordType, int offset);
-    void ParseVarOrFieldDecls(TSymtabNode *pRoutineId, TType *pRecordType);
+    void ParseVarOrFieldDecls(TSymtabNode *pRoutineId,
+            TType *pRecordType,
+            int offset);
     TSymtabNode *ParseIdSublist(const TSymtabNode *pRoutineId,
             const TType *pRecordType, TSymtabNode *&pLastId);
 
@@ -112,24 +114,24 @@ class TParser {
     TSymtabNode *SearchAll(const char *pString) const {
         return globalSymtab.Search(pString);
     }
-    
+
     TSymtabNode *Find(const char *pString) const {
         TSymtabNode *pNode = SearchAll(pString);
-        
-        if(!pNode){
+
+        if (!pNode) {
             Error(errUndefinedIdentifier);
             pNode = globalSymtab.Enter(pString);
         }
-        
+
         return pNode;
     }
 
-    void CopyQuotedString(char *pString, const char *pQuotedString) const{
+    void CopyQuotedString(char *pString, const char *pQuotedString) const {
         int length = strlen(pQuotedString) - 2;
-        strcpy(pString, &pQuotedString[1], length);
+        strncpy(pString, &pQuotedString[1], length);
         pString[length] = '\0';
     }
-    
+
     TSymtabNode *EnterLocal(const char *pString,
             TDefnCode dc = dcUndefined) const {
         return globalSymtab.Enter(pString, dc);
@@ -158,14 +160,14 @@ public:
 
     TParser(TTextInBuffer *pBuffer)
     : pScanner(new TTextScanner(pBuffer)) {
-        
+
         file_name = pBuffer->FileName();
-        
+
         EnterLocal("input");
         EnterLocal("output");
-        
+
         InitializePredefinedTypes(&globalSymtab);
-        
+
     }
 
     ~TParser(void) {

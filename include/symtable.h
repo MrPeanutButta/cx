@@ -156,7 +156,7 @@ public:
 
     TSymtabNode *Search(const char *pString) const;
     TSymtabNode *Enter(const char *pString, TDefnCode dc = dcUndefined);
-    TSymtabNode *EnterNew(const char *pString, TDefnCode dc);
+    TSymtabNode *EnterNew(const char *pString, TDefnCode dc = dcUndefined);
 
     TSymtabNode *Root(void) const {
         return root;

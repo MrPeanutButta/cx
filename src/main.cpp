@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
     extern bool xrefFlag;
 
     //--Check the command line arguments.
-     if (argc < 2) {
-         cerr << "Usage: Cx <source file>" << endl;
-         AbortTranslation(abortInvalidCommandLineArgs);
-     }
+    if (argc < 2) {
+        cerr << "Usage: Cx <source file>" << endl;
+        AbortTranslation(abortInvalidCommandLineArgs);
+    }
 
     listFlag = true;
     errorArrowFlag = true;
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     TParser *parser = new TParser(new TSourceBuffer(argv[1]));
     parser->Parse();
     delete parser;
-    
+
     if (xrefFlag) {
         list.PutLine();
         list.PutLine("--x ref---");
@@ -59,15 +59,15 @@ int main(int argc, char *argv[]) {
         globalSymtab.Print();
     }
 
-    if(errorCount ==0){
+    if (errorCount == 0) {
         vpSymtabs = new TSymtab *[cntSymtabs];
-        for(TSymtab *pSt = pSymtabList; pSt; pSt = pSt->Next()){
+        for (TSymtab *pSt = pSymtabList; pSt; pSt = pSt->Next()) {
             pSt->Convert(vpSymtabs);
         }
-        
+
         TBackend *pBackend = new TExecutor;
         pBackend->Go();
-        
+
         delete[] vpSymtabs;
         delete pBackend;
     }

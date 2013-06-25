@@ -107,8 +107,8 @@ enum TErrorCode {
 
 void Error(TErrorCode ec);
 
-enum TRuntimeErrorCode{
-    rteNone, 
+enum TRuntimeErrorCode {
+    rteNone,
     rteStackOverflow,
     rteValueOutOfRange,
     rteInvalidCaseValue,

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   backend.h
  * Author: aaro3965
  *
@@ -34,9 +34,11 @@ protected:
     int CurrentLocation(void) const {
         return icode.CurrentLocation();
     }
-    
+
 public:
-    virtual ~TBackend(){}
+
+    virtual ~TBackend() {
+    }
     virtual void Go(void) = 0;
 };
 

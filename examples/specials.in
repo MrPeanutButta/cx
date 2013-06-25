@@ -6,7 +6,6 @@ c = 1;
 d = (cent++ * c) + (cent-- / 5 + (r--));
 a = (c++ - (r-- + d++)) + (cent-- - e);
 cc = 5;
-// bitwise not
 c = 32;
 // bitshift left 1, should = 64
 cc = c << 1;
@@ -15,21 +14,14 @@ c = 32;
 cc = c >> 1;
 a = 5;
 b = 6;
-// c should == 4
 c = a++ & b;
-// c should == 7
 c = a-- | b;
-// c should == 3
 c = a ^ b++;
-// c should == 22
 c = (a << 1) + (b++ << 1);
-// c should == 16
 c = (a-- << 1) + (b << 1) / ((a>>2) * 2);
 a = 0;
-// c should == 1 or true;
 c = !a;
 a = 1;
-// c should == 0 or false;
 c = !a++;
 a = 20;
 c += (a << 1) + (b << 1) / ((a>>2) * 2);;

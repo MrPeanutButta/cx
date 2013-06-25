@@ -55,7 +55,7 @@ extern const TTokenCode tlRParen[];
 extern const TTokenCode tlLParen[];
 
 extern const TTokenCode tlDeclarationStart[];
-extern const TTokenCode tlDeclarationFollow[] ;
+extern const TTokenCode tlDeclarationFollow[];
 extern const TTokenCode tlIdentifierStart[];
 extern const TTokenCode tlSublistFollow[];
 extern const TTokenCode tlFieldDeclFollow[];
@@ -63,7 +63,7 @@ extern const TTokenCode tlEnumConstStart[];
 extern const TTokenCode tlEnumConstFollow[];
 extern const TTokenCode tlSubrangeLimitFollow[];
 extern const TTokenCode tlIndexStart[];
-extern const TTokenCode tlIndexFollow[] ;
+extern const TTokenCode tlIndexFollow[];
 extern const TTokenCode tlIndexListFollow[];
 extern const TTokenCode tlSubscriptOrFieldStart[];
 extern const TTokenCode tlIdentifierFollow[];

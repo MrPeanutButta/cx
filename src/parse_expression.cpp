@@ -5,11 +5,11 @@
 void TParser::ParseExpression(void) {
     ParseSimpleExpression();
 
-    if(TokenIn(token, tlRelOps)){
-       GetTokenAppend();
-       ParseSimpleExpression();
+    if (TokenIn(token, tlRelOps)) {
+        GetTokenAppend();
+        ParseSimpleExpression();
     }
-    
+
     Resync(tlExpressionFollow, tlStatementFollow, tlStatementStart);
 }
 
@@ -23,23 +23,23 @@ void TParser::ParseSuffix(TSymtabNode *pNode) {
 
 void TParser::ParseSimpleExpression(void) {
 
-    if(TokenIn(token, tlUnaryOps)){
+    if (TokenIn(token, tlUnaryOps)) {
         GetTokenAppend();
     }
 
     ParseTerm();
 
-    while(TokenIn(token, tlAddOps)){
+    while (TokenIn(token, tlAddOps)) {
         GetTokenAppend();
         ParseTerm();
     }
 }
 
 void TParser::ParseTerm(void) {
- 
+
     ParseFactor();
 
-    while(TokenIn(token, tlMulOps)){
+    while (TokenIn(token, tlMulOps)) {
         GetTokenAppend();
         ParseFactor();
     }
