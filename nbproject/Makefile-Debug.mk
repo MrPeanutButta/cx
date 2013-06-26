@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=None-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -48,6 +48,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/parse_expression.o \
 	${OBJECTDIR}/src/parse_statement.o \
 	${OBJECTDIR}/src/parse_type1.o \
+	${OBJECTDIR}/src/parse_type2.o \
 	${OBJECTDIR}/src/parser.o \
 	${OBJECTDIR}/src/scanner.o \
 	${OBJECTDIR}/src/symtable.o \
@@ -145,6 +146,11 @@ ${OBJECTDIR}/src/parse_type1.o: src/parse_type1.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -O -w -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_type1.o src/parse_type1.cpp
+
+${OBJECTDIR}/src/parse_type2.o: src/parse_type2.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -O -w -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_type2.o src/parse_type2.cpp
 
 ${OBJECTDIR}/src/parser.o: src/parser.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

@@ -1,0 +1,10 @@
+const
+    ten = 10;
+    ch = "x";
+    hello = "hello world";
+
+type
+    e = { alpha, beta, gamma };
+    cr = 'a'..ch;
+
+ar1 = int [1..ten] int;

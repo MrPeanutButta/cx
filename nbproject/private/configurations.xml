@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="89">
+<configurationDescriptor version="88">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -78,7 +78,7 @@
     <conf name="Mac_-_debug" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <platform>3</platform>
+        <platform>4</platform>
       </toolsSet>
       <dbx_gdbdebugger version="1">
         <gdb_pathmaps>
@@ -97,7 +97,6 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" test/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
@@ -107,8 +106,9 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/if_test.cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/switch_test.cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/newton.Cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/newton.Cx</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

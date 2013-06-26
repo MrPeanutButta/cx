@@ -33,13 +33,13 @@
 
 void TParser::Parse(void) {
 
-    //    TSymtabNode *pProgramId = new TSymtabNode("dummy", dcProgram);
-    //    pProgramId->defn.routine.locals.pParmsIds = nullptr;
-    //    pProgramId->defn.routine.locals.pConstantIds = nullptr;
-    //    pProgramId->defn.routine.locals.pTypeIds = nullptr;
-    //    pProgramId->defn.routine.locals.pVariableIds = nullptr;
-    //    pProgramId->defn.routine.pSymtab = nullptr;
-    //    pProgramId->defn.routine.pIcode = nullptr;
+        TSymtabNode *pProgramId = new TSymtabNode("dummy", dcProgram);
+        pProgramId->defn.routine.locals.pParmsIds = nullptr;
+        pProgramId->defn.routine.locals.pConstantIds = nullptr;
+        pProgramId->defn.routine.locals.pTypeIds = nullptr;
+        pProgramId->defn.routine.locals.pVariableIds = nullptr;
+        pProgramId->defn.routine.pSymtab = nullptr;
+        pProgramId->defn.routine.pIcode = nullptr;
 
     //bool currIsDelimiter(false); // true if current token is delimeter
     //bool prevIsDelimiter(true); // likewise for previous token
@@ -47,8 +47,8 @@ void TParser::Parse(void) {
     //pIcode->Put(0);
 
     GetTokenAppend();
-    ParseStatement();
-    //    ParseDeclarations(pProgramId);
+    ///ParseStatement();
+    ParseDeclarations(pProgramId);
 
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
