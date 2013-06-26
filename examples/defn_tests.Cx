@@ -1,10 +1,39 @@
-const
-    ten = 10;
-    ch = "x";
-    hello = "hello world";
+const int ten = 10;
+const char ch = 'x';
 
-type
-    e = { alpha, beta, gamma };
-    cr = 'a'..ch;
+const string hello = "hello world!";
+const string _h = "hello world!";
 
-ar1 = int [1..ten] int;
+const string hllo = "hello world!";
+const string h = "hello world!";
+const string helo = "hello world!";
+const string _h = "hello world!";
+const string hell = "hello world!";
+const string _h = "hello world!";
+const string ello = "hello world!";
+const string _h = "hello world!";
+const string llo = "hello world!";
+const string _9 = "hello world!";
+const string e = "hello world!";
+const string _a = "hello world!";
+const string h5 = "hello world!";
+const string __h = "hello world!";
+const string he__o = "hello world!";
+const string _h_ = "hello world!";
+
+enum greek{
+    alpha,
+    beta,
+    gamma
+};
+
+{
+
+
+
+typedef cr 'a'..ch;
+
+int ar1[ten];
+int ar2[ten][ten];
+char ar3[ten][ten][ten];
+}

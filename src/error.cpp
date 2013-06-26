@@ -122,7 +122,8 @@ const char *errorMessages[] = {
     "Missing variable",
     "Code segment overflow",
     "Unimplemented feature",
-    "Missing ("
+    "Missing (",
+    "Missing '"
 };
 
 //--------------------------------------------------------------

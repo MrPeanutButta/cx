@@ -62,7 +62,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("else", tcElse),
     std::make_pair("namespace", tcNameSpace),
     std::make_pair("using", tcUsing),
-    std::make_pair("char", tcChar),
+    std::make_pair("char", tcCharDef),
     std::make_pair("enum", tcEnum),
     std::make_pair("new", tcNew),
     std::make_pair("virtual", tcVirtual),

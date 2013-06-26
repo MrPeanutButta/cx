@@ -102,7 +102,8 @@ enum TErrorCode {
     errMissingVariable,
     errCodeSegmentOverflow,
     errUnimplementedFeature,
-    errMissingLeftParen
+    errMissingLeftParen,
+    errMissingSingleQuote
 };
 
 void Error(TErrorCode ec);

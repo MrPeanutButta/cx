@@ -84,18 +84,18 @@ class TParser {
     void ParseFactor(void);
 
     // statements
-    void ParseStatement(void);
-    void ParseAssignment(void);
-    void ParseStatementList(TTokenCode terminator);
-    void ParseDO(void);
-    void ParseWHILE(void);
-    void ParseIF(void);
-    void ParseFOR(void);
-    void ParseSWITCH(void);
-    void ParseCaseBranch(void);
-    void ParseCaseLabel(void);
-    void ParseCompound(void);
-    void ParseRETURN(void);
+    void ParseStatement(TSymtabNode* pRoutineId);
+    void ParseAssignment(TSymtabNode* pRoutineId);
+    void ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator);
+    void ParseDO(TSymtabNode* pRoutineId);
+    void ParseWHILE(TSymtabNode* pRoutineId);
+    void ParseIF(TSymtabNode* pRoutineId);
+    void ParseFOR(TSymtabNode* pRoutineId);
+    void ParseSWITCH(TSymtabNode* pRoutineId);
+    void ParseCaseBranch(TSymtabNode* pRoutineId);
+    void ParseCaseLabel(TSymtabNode* pRoutineId);
+    void ParseCompound(TSymtabNode* pRoutineId);
+    void ParseRETURN(TSymtabNode* pRoutineId);
 
     void GetToken(void) {
         pToken = pScanner->Get();

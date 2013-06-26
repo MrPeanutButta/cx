@@ -99,7 +99,7 @@ extern const TTokenCode tlStatementStart[] = {
     tcEnum, tcVirtual, tcChar16_t, tcChar32_t, tcExport,
     tcStruct, tcVoid, tcClass, tcExtern, tcTemplate, tcConst,
     tcPrivate, tcThis, tcFloat, tcProtected, tcThreadLocal,
-    tcPublic, tcThrow, tcTypeDef, tcStringDef, tcPound,
+    tcPublic, tcThrow, tcTypeDef, tcStringDef, tcPound, tcLBracket,
     tcDummy
 };
 

@@ -63,6 +63,30 @@ void TStringToken::Get(TTextInBuffer &buffer) {
     *ps = '\0';
 }
 
+void TCharToken::Get(TTextInBuffer &buffer) {
+    char ch; // current character
+    char *ps = string; // ptr to char in string
+
+    *ps++ = '\''; // opening quote
+    //--Get the string.
+    ch = buffer.GetChar(); // first char after opening quote
+    *ps++ = ch;
+    //--Append current char to string, then get the next char.
+    ch = buffer.GetChar();
+
+    if (ch != '\'') Error(errMissingSingleQuote);
+    if (ch == eofChar) Error(errUnexpectedEndOfFile);
+
+    ch = buffer.GetChar();
+    *ps++ = '\''; // closing quote
+    *ps = '\0';
+}
+
+void TCharToken::Print(void) const {
+    sprintf(list.text, "\t%-18s %-s", ">> char:", string);
+    list.PutLine();
+}
+
 //--------------------------------------------------------------
 //  Print       Print the token to the list file.
 //--------------------------------------------------------------

@@ -6,7 +6,7 @@
 bool execFlag(true);
 
 void TParser::ParseDeclarations(TSymtabNode *pRoutineId) {
-    switch(token){
+    switch (token) {
         case tcConst:
             GetToken();
             ParseConstantDeclarations(pRoutineId);
@@ -22,22 +22,47 @@ void TParser::ParseDeclarations(TSymtabNode *pRoutineId) {
     }
 }
 
-void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId){
-    TSymtabNode *pLastId = nullptr;
+void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId) {
+    TSymtabNode *pConstId = nullptr;
 
-    while(token == tcIdentifier) {
-        TSymtabNode *pConstId = EnterNewLocal(pToken->String());
+    //GetToken();
+    TTokenCode type_code = token;
+    GetToken();
 
-        if(!pRoutineId->defn.routine.locals.pConstantIds){
+    if (token == tcIdentifier) {
+        pConstId = EnterNewLocal(pToken->String());
+
+        TSymtabNode *__consts = nullptr;
+        //TSymtabNode *__next = nullptr;
+
+        // find next null node to link new constant to
+        if (!pRoutineId->defn.routine.locals.pConstantIds) {
             pRoutineId->defn.routine.locals.pConstantIds = pConstId;
         } else {
-            pLastId->next = pConstId;
-        }
+            __consts = pRoutineId->defn.routine.locals.pConstantIds;
 
-        pLastId = pConstId;
+            while (__consts->next)
+                __consts = __consts->next;
+
+            __consts->next = pConstId;
+        }
 
         GetToken();
         CondGetToken(tcEqual, errMissingEqual);
+
+        switch (type_code) {
+            case tcInt:
+                SetType(pConstId->pType, pIntegerType);
+                break;
+            case tcFloat:
+            case tcDouble:
+                SetType(pConstId->pType, pRealType);
+                break;
+            case tcStringDef:
+            case tcCharDef:
+                SetType(pConstId->pType, pCharType);
+                break;
+        }
 
         ParseConstant(pConstId);
         pConstId->defn.how = dcConstant;
@@ -46,31 +71,33 @@ void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId){
 
         CondGetToken(tcSemicolon, errMissingSemicolon);
 
-        while(token == tcSemicolon) GetToken();
+        while (token == tcSemicolon) GetToken();
         Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-    }
+    } else Error(errMissingIdentifier);
 }
 
-void TParser::ParseConstant(TSymtabNode *pConstId){
+void TParser::ParseConstant(TSymtabNode *pConstId) {
     TTokenCode sign = tcDummy;
 
-    if(TokenIn(token, tlUnaryOps)) {
+    if (TokenIn(token, tlUnaryOps)) {
         if (token == tcMinus) sign = tcMinus;
         GetToken();
     }
 
-    switch(token){
+    switch (token) {
         case tcNumber:
-            if(pToken->Type() == tyInteger){
+            if (pConstId->pType == pIntegerType) {
+
                 pConstId->defn.constant.value.integer = sign == tcMinus ?
-                    -pToken->Value().integer : pToken->Value().integer;
+                        -pToken->Value().integer : pToken->Value().integer;
 
-                SetType(pConstId->pType, pIntegerType);
-            }else{
+                //SetType(pConstId->pType, pIntegerType);
+            } else if (pConstId->pType == pRealType) {
+
                 pConstId->defn.constant.value.real = sign == tcMinus ?
-                    -pToken->Value().real : pToken->Value().real;
+                        -pToken->Value().real : pToken->Value().real;
 
-                SetType(pConstId->pType, pRealType);
+                //SetType(pConstId->pType, pRealType);
             }
 
             GetToken();
@@ -80,63 +107,66 @@ void TParser::ParseConstant(TSymtabNode *pConstId){
             ParseIdentifierConstant(pConstId, sign);
             break;
         case tcString:
+        case tcChar:
+        {
+
             int length = strlen(pToken->String()) - 2;
 
-            if(sign != tcDummy) Error(errInvalidConstant);
+            if (sign != tcDummy) Error(errInvalidConstant);
 
-            if(length == 1){
+            if (length == 1) {
                 pConstId->defn.constant.value.character = pToken->String()[1];
 
-                SetType(pConstId->pType, pCharType);
-            }else {
+                //SetType(pConstId->pType, pCharType);
+            } else {
                 char *pString = new char[length];
                 CopyQuotedString(pString, pToken->String());
 
                 pConstId->defn.constant.value.pString = pString;
 
-                SetType(pConstId->pType, new TType(length));
+                //SetType(pConstId->pType, new TType(length));
             }
-
+        }
             GetToken();
             break;
     }
 }
 
-void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign){
+void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign) {
     TSymtabNode *pId2 = Find(pToken->String());
 
-    if(pId2->defn.how != dcConstant){
+    if (pId2->defn.how != dcConstant) {
         Error(errNotAConstantIdentifier);
         SetType(pId1->pType, pDummyType);
         GetToken();
         return;
     }
 
-    if(pId2->pType == pIntegerType){
+    if (pId2->pType == pIntegerType) {
         pId2->defn.constant.value.integer = sign == tcMinus ?
-            -pId2->defn.constant.value.integer :
-            pId2->defn.constant.value.integer;
+                -pId2->defn.constant.value.integer :
+                pId2->defn.constant.value.integer;
 
         SetType(pId1->pType, pIntegerType);
-    } else if(pId2->pType == pRealType){
+    } else if (pId2->pType == pRealType) {
         pId1->defn.constant.value.real = sign == tcMinus ?
-            -pId2->defn.constant.value.real :
-            pId2->defn.constant.value.real;
+                -pId2->defn.constant.value.real :
+                pId2->defn.constant.value.real;
         SetType(pId1->pType, pRealType);
-    }else if(pId2->pType == pCharType){
-        if(sign != tcDummy) Error(errInvalidConstant);
+    } else if (pId2->pType == pCharType) {
+        if (sign != tcDummy) Error(errInvalidConstant);
 
         pId1->defn.constant.value.character = pId2->defn.constant.value.character;
 
         SetType(pId1->pType, pCharType);
-    }else if(pId2->pType->form == fcEnum) {
+    } else if (pId2->pType->form == fcEnum) {
         if (sign != tcDummy)Error(errInvalidConstant);
 
         pId1->defn.constant.value.integer = pId2->defn.constant.value.integer;
 
         SetType(pId1->pType, pId2->pType);
-    } else if(pId2->pType->form == fcArray){
-        if((sign != tcDummy) || (pId2->pType->array.pElmtType != pCharType)){
+    } else if (pId2->pType->form == fcArray) {
+        if ((sign != tcDummy) || (pId2->pType->array.pElmtType != pCharType)) {
             Error(errInvalidConstant);
         }
 
@@ -148,8 +178,8 @@ void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign){
     GetToken();
 }
 
-void TParser::ParseVariableDeclarations(TSymtabNode* pRoutineId){
-    if(execFlag) {
+void TParser::ParseVariableDeclarations(TSymtabNode* pRoutineId) {
+    if (execFlag) {
         ParseVarOrFieldDecls(pRoutineId, nullptr, 0);
     }
 }
@@ -159,13 +189,13 @@ void TParser::ParseFieldDeclarations(TType* pRecordType, int offset) {
 }
 
 void TParser::ParseVarOrFieldDecls(TSymtabNode* pRoutineId,
-        TType* pRecordType, int offset){
+        TType* pRecordType, int offset) {
     TSymtabNode *pId, *pFirstId, *pLastId;
     TSymtabNode *pPrevSublistLastId = nullptr;
 
     int totalSize = 0;
 
-    while(token == tcIdentifier){
+    while (token == tcIdentifier) {
         pFirstId = ParseIdSublist(pRoutineId, pRecordType, pLastId);
 
         Resync(tlSublistFollow, tlDeclarationFollow);
@@ -173,71 +203,71 @@ void TParser::ParseVarOrFieldDecls(TSymtabNode* pRoutineId,
 
         TType *pType = ParseTypeSpec();
 
-        for(pId = pFirstId; pId; pId = pId->next){
+        for (pId = pFirstId; pId; pId = pId->next) {
             SetType(pId->pType, pType);
 
-            if(pRoutineId){
-                if(execFlag){
+            if (pRoutineId) {
+                if (execFlag) {
                     pId->defn.data.offset = offset++;
                 }
-                totalSize+=pType->size;
+                totalSize += pType->size;
             } else {
                 pId->defn.data.offset = offset;
                 offset += pType->size;
             }
         }
 
-        if(pFirstId){
-            if(pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)){
+        if (pFirstId) {
+            if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
                 pRoutineId->defn.routine.locals.pVariableIds = pFirstId;
             }
 
-            if(pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
+            if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
             pPrevSublistLastId = pLastId;
         }
 
-        if(pRoutineId){
+        if (pRoutineId) {
             Resync(tlDeclarationFollow, tlStatementStart);
             CondGetToken(tcSemicolon, errMissingSemicolon);
 
-            while(token == tcSemicolon) GetToken();
+            while (token == tcSemicolon) GetToken();
 
             Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
         } else {
             Resync(tlFieldDeclFollow);
-            if(token != tcRBracket){
+            if (token != tcRBracket) {
                 CondGetToken(tcSemicolon, errMissingSemicolon);
 
-                while(token == tcSemicolon)GetToken();
+                while (token == tcSemicolon)GetToken();
                 Resync(tlFieldDeclFollow, tlDeclarationStart, tlStatementStart);
             }
         }
     }
 
-    if(pRoutineId){
+    if (pRoutineId) {
         pRoutineId->defn.routine.totalLocalSize = totalSize;
-    }else{
+    } else {
         pRecordType->size = offset;
     }
 }
 
 TSymtabNode *TParser::ParseIdSublist(const TSymtabNode* pRoutineId,
         const TType* pRecordType,
-        TSymtabNode*& pLastId){
+        TSymtabNode*& pLastId) {
 
     TSymtabNode *pId;
     TSymtabNode *pFirstId = nullptr;
 
     pLastId = nullptr;
 
-    while(token == tcIdentifier){
+    while (token == tcIdentifier) {
         pId = pRoutineId ?
-            EnterNewLocal(pToken->String()) :
-            pRecordType->record.pSymtab->EnterNew(pToken->String());
+                EnterNewLocal(pToken->String()) :
+                pRecordType->record.pSymtab->EnterNew(pToken->String());
 
-        if(pId->defn.how == dcUndefined){
+        if (pId->defn.how == dcUndefined) {
             pId->defn.how = pRoutineId ? dcVariable : dcField;
-            if(!pFirstId) pFirstId = pLastId = pId;
+            if (!pFirstId) pFirstId = pLastId = pId;
             else {
                 pLastId->next = pId;
                 pLastId = pId;
@@ -247,15 +277,15 @@ TSymtabNode *TParser::ParseIdSublist(const TSymtabNode* pRoutineId,
         GetToken();
 
         Resync(tlIdentifierFollow);
-        if(token == tcComma){
-            do{
+        if (token == tcComma) {
+            do {
                 GetToken();
                 Resync(tlIdentifierStart, tlIdentifierFollow);
-                if(token ==tcComma) Error(errMissingIdentifier);
-            }while ( token == tcComma);
+                if (token == tcComma) Error(errMissingIdentifier);
+            } while (token == tcComma);
 
-            if(token != tcIdentifier) Error(errMissingIdentifier);
-        }else if(token == tcIdentifier) Error(errMissingComma);
+            if (token != tcIdentifier) Error(errMissingIdentifier);
+        } else if (token == tcIdentifier) Error(errMissingComma);
     }
 
     return pFirstId;

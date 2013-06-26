@@ -47,8 +47,11 @@ void TParser::Parse(void) {
     //pIcode->Put(0);
 
     GetTokenAppend();
-    ///ParseStatement();
-    ParseDeclarations(pProgramId);
+
+    ParseStatementList(pProgramId, tcEndOfFile);
+
+    //    ParseDeclarations(pProgramId);
+    //    ParseStatement(pProgramId);
 
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);

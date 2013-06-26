@@ -134,6 +134,21 @@ public:
     virtual void Print(void) const;
 };
 
+class TCharToken : public TToken {
+public:
+
+    TCharToken() {
+        code = tcChar;
+    }
+
+    virtual void Get(TTextInBuffer &buffer);
+
+    virtual int IsDelimiter(void) const {
+        return true;
+    }
+    virtual void Print(void) const;
+};
+
 //--------------------------------------------------------------
 //  TSpecialToken       Special token subclass of TToken.
 //--------------------------------------------------------------

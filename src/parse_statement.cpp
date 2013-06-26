@@ -2,30 +2,34 @@
 #include "parser.h"
 #include "common.h"
 
-void TParser::ParseStatement(void) {
+void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
     switch (token) {
-        case tcIdentifier: ParseAssignment();
+        case tcIdentifier: ParseAssignment(pRoutineId);
             break;
-        case tcDo: ParseDO();
+        case tcConst:
+            GetToken();
+            ParseConstantDeclarations(pRoutineId);
             break;
-        case tcWhile: ParseWHILE();
+        case tcDo: ParseDO(pRoutineId);
             break;
-        case tcIf: ParseIF();
+        case tcWhile: ParseWHILE(pRoutineId);
             break;
-        case tcFor: ParseFOR();
+        case tcIf: ParseIF(pRoutineId);
             break;
-        case tcSwitch: ParseSWITCH();
+        case tcFor: ParseFOR(pRoutineId);
+            break;
+        case tcSwitch: ParseSWITCH(pRoutineId);
             break;
         case tcCase:
-        case tcDefault:ParseCaseLabel();
+        case tcDefault:ParseCaseLabel(pRoutineId);
             break;
         case tcBreak: GetTokenAppend();
             break;
-        case tcLBracket: ParseCompound();
+        case tcLBracket: ParseCompound(pRoutineId);
             break;
-        case tcReturn: ParseRETURN();
+        case tcReturn: ParseRETURN(pRoutineId);
             break;
     }
 
@@ -34,10 +38,10 @@ void TParser::ParseStatement(void) {
     }
 }
 
-void TParser::ParseStatementList(TTokenCode terminator) {
+void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator) {
 
     do {
-        ParseStatement();
+        ParseStatement(pRoutineId);
 
         //if (TokenIn(token, tlStatementStart)) {
         //  Error(errMissingSemicolon);
@@ -46,7 +50,7 @@ void TParser::ParseStatementList(TTokenCode terminator) {
     } while ((token != terminator) && (token != tcEndOfFile));
 }
 
-void TParser::ParseAssignment(void) {
+void TParser::ParseAssignment(TSymtabNode* pRoutineId) {
     TSymtabNode *pTargetNode = SearchAll(pToken->String());
 
     if (!pTargetNode) pTargetNode = EnterLocal(pToken->String());
@@ -125,10 +129,10 @@ void TParser::ParseAssignment(void) {
     }
 }
 
-void TParser::ParseDO(void) {
+void TParser::ParseDO(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
-    ParseStatementList(tcWhile);
+    ParseStatementList(pRoutineId, tcWhile);
 
     CondGetTokenAppend(tcWhile, errMissingWHILE);
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -140,16 +144,16 @@ void TParser::ParseDO(void) {
 
 }
 
-void TParser::ParseWHILE(void) {
+void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
     GetTokenAppend();
     ParseExpression();
 
     CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 }
 
-void TParser::ParseIF(void) {
+void TParser::ParseIF(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -158,17 +162,17 @@ void TParser::ParseIF(void) {
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 
     if (token == tcSemicolon) GetTokenAppend();
 
     if (token == tcElse) {
         GetTokenAppend();
-        ParseStatement();
+        ParseStatement(pRoutineId);
     }
 }
 
-void TParser::ParseFOR(void) {
+void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -208,10 +212,10 @@ void TParser::ParseFOR(void) {
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 }
 
-void TParser::ParseSWITCH(void) {
+void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -220,15 +224,15 @@ void TParser::ParseSWITCH(void) {
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 
 }
 
-void TParser::ParseCaseBranch(void) {
+void TParser::ParseCaseBranch(TSymtabNode* pRoutineId) {
     // c switch easier to parse that Pascal???
 }
 
-void TParser::ParseCaseLabel(void) {
+void TParser::ParseCaseLabel(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
     bool signFlag(false);
@@ -258,19 +262,19 @@ void TParser::ParseCaseLabel(void) {
 
     CondGetTokenAppend(tcColon, errMissingColon);
 
-    ParseStatementList(tcBreak);
+    ParseStatementList(pRoutineId, tcBreak);
 }
 
-void TParser::ParseCompound(void) {
+void TParser::ParseCompound(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
-    ParseStatementList(tcRBracket);
+    ParseStatementList(pRoutineId, tcRBracket);
 
     CondGetTokenAppend(tcRBracket, errMissingRightBracket);
 
 }
 
-void TParser::ParseRETURN(void) {
+void TParser::ParseRETURN(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
     ParseExpression();

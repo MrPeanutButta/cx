@@ -124,6 +124,8 @@ TToken * TTextScanner::Get(void) {
             break;
         case ccQuoteQuote: pToken = &stringToken;
             break;
+        case ccQuote: pToken = &charToken;
+            break;
         case ccSpecial: pToken = &specialToken;
             break;
         case ccEndOfFile: pToken = &eofToken;
