@@ -67,15 +67,16 @@ extern const TTokenCode tlSubrangeLimitFollow[] = {
 };
 
 extern const TTokenCode tlIndexStart[] = {
-    tcIdentifier, tcNumber, tcString, tcLParen, tcPlus, tcMinus, tcDummy
+    tcIdentifier, tcNumber, tcString, tcLParen, tcPlus, tcMinus,
+    tcRightSubscript, tcDummy
 };
 
 extern const TTokenCode tlIndexFollow[] = {
-    tcComma, tcLeftSubscript, tcSemicolon, tcDummy
+    tcComma, tcRightSubscript, tcSemicolon, tcDummy
 };
 
 extern const TTokenCode tlIndexListFollow[] = {
-    tcIdentifier, tcLParen, tcPlus, tcMinus, tcNumber, tcString, tcSemicolon,
+    tcIdentifier, tcRightSubscript, tcLParen, tcPlus, tcMinus, tcNumber, tcString, tcSemicolon,
     tcDummy
 };
 

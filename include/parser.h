@@ -58,7 +58,10 @@ class TParser {
     TType *ParseTypeSpec(void);
 
     TType *ParseIdentifierType(const TSymtabNode *pId2);
+
+    TType *ParseEnumHeader(TSymtabNode *pRoutineId);
     TType *ParseEnumerationType(void);
+
     TType *ParseSubrangeType(TSymtabNode *pMinId);
     TType *ParseSubrangeLimit(TSymtabNode *pLimitId, int &limit);
 

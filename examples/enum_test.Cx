@@ -1,14 +1,13 @@
-enum greek {
+/*main*/{
+
+enum greek{
     alpha,
     beta,
     delta
 };
 
-greek_instance = greek;
-
-/*main*/{
-
-    greek_instance = delta;
+greek greek_instance;
+greek_instance = beta;
 
     return 0;
 }

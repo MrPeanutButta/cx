@@ -1,7 +1,0 @@
-const int ten = 10;
-const char ch = 'x';
-const char __array = "hello world!";
-{
-
-    return 1;
-}

@@ -46,7 +46,6 @@ void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId) {
         }
 
         GetToken();
-        CondGetToken(tcEqual, errMissingEqual);
 
         switch (type_code) {
             case tcInt:
@@ -62,6 +61,10 @@ void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId) {
                 break;
         }
 
+        TType *__a = nullptr;
+        if (token == tcLeftSubscript)__a = ParseArrayType();
+        else CondGetToken(tcEqual, errMissingEqual);
+        
         ParseConstant(pConstId);
         pConstId->defn.how = dcConstant;
 

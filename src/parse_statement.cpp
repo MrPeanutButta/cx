@@ -6,8 +6,9 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
     switch (token) {
-        case tcIdentifier: 
-            ParseAssignment(pRoutineId);
+        case tcIdentifier:
+            ParseTypeDefinitions(pRoutineId);
+            //ParseAssignment(pRoutineId);
             break;
         case tcConst:
             GetToken();
@@ -15,7 +16,7 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             break;
         case tcEnum:
             GetToken();
-            ParseTypeDefinitions(pRoutineId);
+            ParseEnumHeader(pRoutineId);
             break;
         case tcDo: ParseDO(pRoutineId);
             break;

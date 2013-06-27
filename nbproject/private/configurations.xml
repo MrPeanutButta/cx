@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="88">
+<configurationDescriptor version="89">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -24,8 +24,6 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" test/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" tests/specials.in spc.icode</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" tests/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
@@ -33,8 +31,11 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/example/hex.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/hex.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/enum_test.Cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/const_tests.Cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/const_test.Cx</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/const_test.Cx</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
@@ -79,7 +80,7 @@
     <conf name="Mac_-_debug" type="1">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <platform>4</platform>
+        <platform>3</platform>
       </toolsSet>
       <dbx_gdbdebugger version="1">
         <gdb_pathmaps>
@@ -98,6 +99,9 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" test/specials.in</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/specials.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/exp_test.cx.in</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/exp_test.cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/for_test.cx</runcommandpicklistitem>
@@ -105,11 +109,8 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/switch_test.cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/tests/newton.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/const_tests.Cx</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/enum_tests.Cx</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/enum_test.Cx</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/enum_test.Cx</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /Users/aaro3965/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
