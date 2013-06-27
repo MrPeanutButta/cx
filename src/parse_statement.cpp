@@ -6,7 +6,8 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
     switch (token) {
-        case tcIdentifier: ParseAssignment(pRoutineId);
+        case tcIdentifier: 
+            ParseAssignment(pRoutineId);
             break;
         case tcConst:
             GetToken();
