@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="89">
+<configurationDescriptor version="88">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="f1" displayName="Examples" projectFiles="true">
-      <itemPath>examples/defn_tests.Cx</itemPath>
+      <itemPath>examples/const_tests.Cx</itemPath>
+      <itemPath>examples/enum_test.Cx</itemPath>
       <itemPath>examples/exp_test.cx</itemPath>
       <itemPath>examples/for_test.cx</itemPath>
       <itemPath>examples/hex.Cx</itemPath>
@@ -88,7 +89,9 @@
           <warningLevel>0</warningLevel>
         </ccTool>
       </compileType>
-      <item path="examples/defn_tests.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/const_tests.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/enum_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/exp_test.cx" ex="false" tool="3" flavor2="0">
       </item>
@@ -194,7 +197,9 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="examples/defn_tests.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/const_tests.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/enum_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/exp_test.cx" ex="false" tool="3" flavor2="0">
       </item>
@@ -296,7 +301,9 @@
           <warningLevel>0</warningLevel>
         </ccTool>
       </compileType>
-      <item path="examples/defn_tests.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/const_tests.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/enum_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/exp_test.cx" ex="false" tool="3" flavor2="0">
       </item>

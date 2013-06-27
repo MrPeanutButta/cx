@@ -25,7 +25,6 @@ void TParser::ParseDeclarations(TSymtabNode *pRoutineId) {
 void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId) {
     TSymtabNode *pConstId = nullptr;
 
-    //GetToken();
     TTokenCode type_code = token;
     GetToken();
 
@@ -33,7 +32,6 @@ void TParser::ParseConstantDeclarations(TSymtabNode* pRoutineId) {
         pConstId = EnterNewLocal(pToken->String());
 
         TSymtabNode *__consts = nullptr;
-        //TSymtabNode *__next = nullptr;
 
         // find next null node to link new constant to
         if (!pRoutineId->defn.routine.locals.pConstantIds) {
@@ -90,14 +88,10 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
 
                 pConstId->defn.constant.value.integer = sign == tcMinus ?
                         -pToken->Value().integer : pToken->Value().integer;
-
-                //SetType(pConstId->pType, pIntegerType);
             } else if (pConstId->pType == pRealType) {
 
                 pConstId->defn.constant.value.real = sign == tcMinus ?
                         -pToken->Value().real : pToken->Value().real;
-
-                //SetType(pConstId->pType, pRealType);
             }
 
             GetToken();
@@ -116,15 +110,11 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
 
             if (length == 1) {
                 pConstId->defn.constant.value.character = pToken->String()[1];
-
-                //SetType(pConstId->pType, pCharType);
             } else {
                 char *pString = new char[length];
                 CopyQuotedString(pString, pToken->String());
 
                 pConstId->defn.constant.value.pString = pString;
-
-                //SetType(pConstId->pType, new TType(length));
             }
         }
             GetToken();

@@ -4,7 +4,7 @@
 void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
     TSymtabNode *pLastId = nullptr;
 
-    while (token == tcIdentifier) {
+    if(token == tcIdentifier) {
         TSymtabNode *pTypeId = EnterNewLocal(pToken->String());
 
         if (!pRoutineId->defn.routine.locals.pTypeIds) {
@@ -16,7 +16,7 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
         pLastId = pTypeId;
 
         GetToken();
-        CondGetToken(tcEqual, errMissingEqual);
+        //CondGetToken(tcEqual, errMissingEqual);
 
         SetType(pTypeId->pType, ParseTypeSpec());
         pTypeId->defn.how = dcType;

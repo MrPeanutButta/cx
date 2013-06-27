@@ -1,0 +1,14 @@
+enum greek {
+    alpha,
+    beta,
+    delta
+};
+
+greek_instance = greek;
+
+/*main*/{
+
+    greek_instance = delta;
+
+    return 0;
+}

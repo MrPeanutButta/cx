@@ -12,6 +12,10 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             GetToken();
             ParseConstantDeclarations(pRoutineId);
             break;
+        case tcEnum:
+            GetToken();
+            ParseTypeDefinitions(pRoutineId);
+            break;
         case tcDo: ParseDO(pRoutineId);
             break;
         case tcWhile: ParseWHILE(pRoutineId);

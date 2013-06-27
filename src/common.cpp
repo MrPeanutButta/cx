@@ -54,11 +54,11 @@ extern const TTokenCode tlFieldDeclFollow[] = {
 };
 
 extern const TTokenCode tlEnumConstStart[] = {
-    tcEnum, tcDummy
+    tcIdentifier, tcDummy
 };
 
 extern const TTokenCode tlEnumConstFollow[] = {
-    tcRBracket, tcSemicolon, tcDummy
+    tcRBracket, tcComma, tcSemicolon, tcDummy
 };
 
 extern const TTokenCode tlSubrangeLimitFollow[] = {
