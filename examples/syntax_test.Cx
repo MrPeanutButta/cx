@@ -25,7 +25,7 @@ rec1 = record
 
 {
 
-    if(ch != 'a'){
+    if(cr != ch){
         ee = alpha;
     }else{
         ee = beta'
