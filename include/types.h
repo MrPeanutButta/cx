@@ -80,7 +80,7 @@ public:
 
     friend void CheckRelOpOperands(const TType *pType1,
             const TType *pType2);
-    friend void CheckInterOrReal(const TType *pType1,
+    friend void CheckIntegerOrReal(const TType *pType1,
             const TType *Type2 = nullptr);
     friend void CheckBoolean(const TType *pType1,
             const TType *pType2 = nullptr);

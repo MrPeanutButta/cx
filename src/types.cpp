@@ -214,7 +214,7 @@ void RemoveType(TType *&pType) {
     }
 }
 
-void CheckRelOpOperamds(const TType *pType1, const TType *pType2) {
+void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
 
@@ -223,8 +223,8 @@ void CheckRelOpOperamds(const TType *pType1, const TType *pType2) {
         return;
     }
 
-    if ((pType1 == pIntegerType) && (pType2 == pRealType)
-            || (pType2 == pIntegerType) && (pType2 == pRealType)) {
+    if (((pType1 == pIntegerType) && (pType2 == pRealType))
+            || ((pType2 == pIntegerType) && (pType2 == pRealType))) {
         return;
     }
 
@@ -262,7 +262,7 @@ void CheckBoolean(const TType *pType1, const TType *pType2) {
     }
 }
 
-void CheckAssigntmentTypeCompatible(const TType *pTargetType,
+void CheckAssignmentTypeCompatible(const TType *pTargetType,
         const TType *pValueType, TErrorCode ec) {
 
     pTargetType = pTargetType->Base();

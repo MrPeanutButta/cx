@@ -47,7 +47,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("typeid", tcTypeId),
     std::make_pair("bool", tcBool),
     std::make_pair("do", tcDo),
-    std::make_pair("int", tcInt),
+    //std::make_pair("int", tcInt),
     std::make_pair("signed", tcSigned),
     std::make_pair("typename", tcTypeName),
     std::make_pair("break", tcBreak),
@@ -62,7 +62,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("else", tcElse),
     std::make_pair("namespace", tcNameSpace),
     std::make_pair("using", tcUsing),
-    std::make_pair("char", tcCharDef),
+    //std::make_pair("char", tcCharDef),
     std::make_pair("enum", tcEnum),
     std::make_pair("new", tcNew),
     std::make_pair("virtual", tcVirtual),
@@ -84,7 +84,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("private", tcPrivate),
     std::make_pair("this", tcThis),
     std::make_pair("while", tcWhile),
-    std::make_pair("float", tcFloat),
+    //std::make_pair("float", tcFloat),
     std::make_pair("protected", tcProtected),
     std::make_pair("thread_local", tcThreadLocal),
     std::make_pair("for", tcFor),
@@ -95,7 +95,10 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("mutable", tcMutable),
     std::make_pair("include", tcInclude),
     std::make_pair("string", tcStringDef),
-
+    std::make_pair("record", tcRecord),
+    std::make_pair("array", tcArray),
+    std::make_pair("of", tcOf),
+    std::make_pair("var", tcVar)
 };
 
 

@@ -1,0 +1,39 @@
+const
+    ten         =  10;
+    minusten    = -10;
+    hundred     =  100;
+    maxlength   =  80;
+    pi          =  3.1415926;
+    ch          =  'x';
+    hello       =  "hello world";
+
+typedef
+    e = { alpha, beta, gamma };
+    ee = e;
+    sr = alpha..gamma;
+    cr = 'a'..ch;
+
+    ar1 = array[1..-minusten] of int;
+
+rec1 = record
+    i: int;
+    x: float;
+    ch: char;
+};
+
+
+
+{
+
+    if(ch != 'a'){
+        ee = alpha;
+    }else{
+        ee = beta'
+    }
+
+    for(iter = 0; iter < hundred; iter++){
+        output = iter;
+    }
+
+    return 1;
+}

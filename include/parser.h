@@ -79,12 +79,15 @@ class TParser {
             const TType *pRecordType, TSymtabNode *&pLastId);
 
     // expressions
-    void ParseExpression(void);
-    void ParseSuffix(TSymtabNode *pNode);
-    void ParseSizeOf(void);
-    void ParseSimpleExpression(void);
-    void ParseTerm(void);
-    void ParseFactor(void);
+    TType *ParseExpression(void);
+    TType *ParseSuffix(TSymtabNode *pNode);
+    //void ParseSizeOf(void);
+    TType *ParseSimpleExpression(void);
+    TType *ParseTerm(void);
+    TType *ParseFactor(void);
+    TType *ParseVariable(const TSymtabNode *pId);
+    TType *ParseSubscripts(const TType *pType);
+    TType *ParseField(const TType *pType);
 
     // statements
     void ParseStatement(TSymtabNode* pRoutineId);
@@ -95,8 +98,8 @@ class TParser {
     void ParseIF(TSymtabNode* pRoutineId);
     void ParseFOR(TSymtabNode* pRoutineId);
     void ParseSWITCH(TSymtabNode* pRoutineId);
-    void ParseCaseBranch(TSymtabNode* pRoutineId);
-    void ParseCaseLabel(TSymtabNode* pRoutineId);
+    void ParseCaseBranch(TSymtabNode* pRoutineId, const TType *pExprType);
+    void ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType);
     void ParseCompound(TSymtabNode* pRoutineId);
     void ParseRETURN(TSymtabNode* pRoutineId);
 

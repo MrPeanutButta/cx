@@ -2,49 +2,27 @@
 #include "parser.h"
 
 void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
-    // type instance pointer
-    TSymtabNode *__inst1 = nullptr;
-    TType *__inst2 = nullptr;
+    TSymtabNode *pLastId = nullptr;
 
-    TSymtabNode *pTypeId = nullptr;
+    while (token == tcIdentifier) {
+        TSymtabNode *pTypeId = EnterNewLocal(pToken->String());
 
-    // find base type
-    if (token == tcIdentifier) {
-        __inst1 = Find(pToken->String());
-        __inst1->pType = ParseTypeSpec();
-
-        if (token != tcEqual) {
-            pTypeId = EnterNewLocal(pToken->String());
-            TSymtabNode *__type = nullptr;
-
-            if (!pRoutineId->defn.routine.locals.pTypeIds) {
-                pRoutineId->defn.routine.locals.pTypeIds = pTypeId;
-            } else {
-                __type = pRoutineId->defn.routine.locals.pTypeIds;
-
-                while (__type->next)
-                    __type = __type->next;
-
-                __type->next = pTypeId;
-            }
-
-            CondGetToken(tcIdentifier, errMissingIdentifier);
-
-            SetType(pTypeId->pType, __inst1->pType);
-
-            pTypeId->defn.how = dcType;
-
-            if (!pTypeId->pType->pTypeId) {
-                pTypeId->pType->pTypeId = pTypeId;
-            }
+        if (!pRoutineId->defn.routine.locals.pTypeIds) {
+            pRoutineId->defn.routine.locals.pTypeIds = pTypeId;
         } else {
-            CondGetToken(tcEqual, errMissingEqual);
-            __inst2 = ParseTypeSpec();
+            pLastId->next = pTypeId;
+        }
 
-            if (__inst1->pType->Base() != __inst2->Base())
-                Error(errIncompatibleTypes);
+        pLastId = pTypeId;
 
-            GetToken();
+        GetToken();
+        CondGetToken(tcEqual, errMissingEqual);
+
+        SetType(pTypeId->pType, ParseTypeSpec());
+        pTypeId->defn.how = dcType;
+
+        if (!pTypeId->pType->pTypeId) {
+            pTypeId->pType->pTypeId = pTypeId;
         }
 
         Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
@@ -53,6 +31,7 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
         while (token == tcSemicolon)GetToken();
 
         Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
+
     }
 }
 
@@ -64,15 +43,7 @@ TType *TParser::ParseTypeSpec(void) {
 
             switch (pId->defn.how) {
                 case dcType: return ParseIdentifierType(pId);
-                case dcConstant:
-                    switch (pId->pType->form) {
-                        case fcEnum:
-                            return pId->pType;
-                        default:
-                            return ParseSubrangeType(pId);
-                    }
-                    break;
-
+                case dcConstant: return ParseSubrangeType(pId);
                 default:
                     Error(errNotATypeIdentifier);
                     GetToken();
@@ -81,11 +52,12 @@ TType *TParser::ParseTypeSpec(void) {
         }
 
         case tcLBracket: return ParseEnumerationType();
-        case tcRightSubscript: return pIntegerType; //ParseArrayType();
-        case tcStruct: return ParseRecordType();
+        case tcArray: return ParseArrayType();
+        case tcRecord: return ParseRecordType();
         case tcPlus:
         case tcMinus:
         case tcNumber:
+        case tcChar:
         case tcString: return ParseSubrangeType(nullptr);
 
         default:
@@ -100,53 +72,13 @@ TType *TParser::ParseIdentifierType(const TSymtabNode *pId2) {
     return pId2->pType;
 }
 
-TType *TParser::ParseEnumHeader(TSymtabNode *pRoutineId) {
-    //TSymtabNode *pLastId = nullptr;
-
-    if (token == tcIdentifier) {
-
-        TSymtabNode *pTypeId = EnterNewLocal(pToken->String());
-
-        TSymtabNode *__type = nullptr;
-
-        if (!pRoutineId->defn.routine.locals.pTypeIds) {
-            pRoutineId->defn.routine.locals.pTypeIds = pTypeId;
-        } else {
-            __type = pRoutineId->defn.routine.locals.pTypeIds;
-
-            while (__type->next)
-                __type = __type->next;
-
-            __type->next = pTypeId;
-        }
-
-        GetToken();
-        CondGetToken(tcLBracket, errMissingLeftBracket);
-
-        SetType(pTypeId->pType, ParseEnumerationType());
-        pTypeId->defn.how = dcType;
-
-        if (!pTypeId->pType->pTypeId) {
-            pTypeId->pType->pTypeId = pTypeId;
-        }
-
-        Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-        CondGetToken(tcSemicolon, errMissingSemicolon);
-
-        while (token == tcSemicolon)GetToken();
-
-        Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-
-    } else Error(errMissingIdentifier);
-}
-
 TType *TParser::ParseEnumerationType(void) {
     TType *pType = new TType(fcEnum, sizeof (int), nullptr);
     TSymtabNode *pLastId = nullptr;
 
     int constValue = -1;
 
-    //GetToken();
+    GetToken();
     Resync(tlEnumConstStart);
 
     while (token == tcIdentifier) {
@@ -192,8 +124,8 @@ TType *TParser::ParseSubrangeType(TSymtabNode* pMinId) {
 
     SetType(pType->subrange.pBaseType, ParseSubrangeLimit(pMinId, pType->subrange.min));
 
-    //Resync(tlSubrangeLimitFollow, tlDeclarationStart);
-    //CondGetToken(tcDotDot, errMissingDotDot);
+    Resync(tlSubrangeLimitFollow, tlDeclarationStart);
+    CondGetToken(tcDotDot, errMissingDotDot);
 
     TType *pMaxType = ParseSubrangeLimit(nullptr, pType->subrange.max);
 
@@ -262,23 +194,24 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
             } else Error(errNotAConstantIdentifier);
 
             break;
-
+            
+        case tcChar:
         case tcString:
-            if (sign != tcDummy) Error(errInvalidConstant);
-
-            if (strlen(pToken->String()) != 3) {
+            if(sign != tcDummy) Error(errInvalidConstant);
+            
+            if(strlen(pToken->String()) != 3){
                 Error(errInvalidSubrangeType);
             }
-
+            
             limit = pToken->String()[1];
             pType = pCharType;
             break;
-
+            
         default:
             Error(errMissingConstant);
             return pType;
     }
-
+    
     GetToken();
     return pType;
 }

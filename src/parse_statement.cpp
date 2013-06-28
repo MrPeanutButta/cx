@@ -5,18 +5,19 @@
 void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
+    ParseDeclarations(pRoutineId);
+
     switch (token) {
         case tcIdentifier:
-            ParseTypeDefinitions(pRoutineId);
-            //ParseAssignment(pRoutineId);
+            ParseAssignment(pRoutineId);
             break;
-        case tcConst:
-            GetToken();
-            ParseConstantDeclarations(pRoutineId);
-            break;
-        case tcEnum:
-            GetToken();
-            ParseEnumHeader(pRoutineId);
+            //        case tcConst:
+            //            GetToken();
+            //            ParseConstantDeclarations(pRoutineId);
+            //            break;
+            //        case tcEnum:
+            //            GetToken();
+            //            ParseEnumHeader(pRoutineId);
             break;
         case tcDo: ParseDO(pRoutineId);
             break;
@@ -28,9 +29,9 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             break;
         case tcSwitch: ParseSWITCH(pRoutineId);
             break;
-        case tcCase:
-        case tcDefault:ParseCaseLabel(pRoutineId);
-            break;
+        //case tcCase:
+        //case tcDefault:ParseCaseLabel(pRoutineId);
+          //  break;
         case tcBreak: GetTokenAppend();
             break;
         case tcLBracket: ParseCompound(pRoutineId);
@@ -57,19 +58,27 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 }
 
 void TParser::ParseAssignment(TSymtabNode* pRoutineId) {
-    TSymtabNode *pTargetNode = SearchAll(pToken->String());
+    TSymtabNode *pTargetNode = Find(pToken->String());
 
-    if (!pTargetNode) pTargetNode = EnterLocal(pToken->String());
+    if (pTargetNode->defn.how != dcUndefined)icode.Put(pTargetNode);
+    else {
+        pTargetNode->defn.how = dcVariable;
+        SetType(pTargetNode->pType, pDummyType);
+    }
 
-    icode.Put(pTargetNode);
+    TType *pTargetType = ParseVariable(pTargetNode);
+
     GetTokenAppend();
 
     switch (token) {
-        case tcEqual:
+        case tcEqual:{
             //Resync(tcEqual, tlExpressionStart);
             //CondGetTokenAppend(tcEqual, errMissingEqual);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcPlusPlus:
             //Resync(tcPlusPlus, tlExpressionFollow);
@@ -79,55 +88,85 @@ void TParser::ParseAssignment(TSymtabNode* pRoutineId) {
             //Resync(tcMinusMinus, tlExpressionFollow);
             GetTokenAppend();
             break;
-        case tcPlusEqual:
+        case tcPlusEqual:{
             //Resync(tcPlusEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcMinusEqual:
+        case tcMinusEqual:{
             //Resync(tcMinusEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcStarEqual:
+        case tcStarEqual:{
             //Resync(tcStarEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcForwardSlashEqual:
+        case tcForwardSlashEqual:{
             //Resync(tcForwardSlashEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcModEqual:
+        case tcModEqual:{
             //Resync(tcModEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcBitLeftShiftEqual:
+        case tcBitLeftShiftEqual:{
             //Resync(tcBitLeftShiftEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcBitRightShiftEqual:
+        case tcBitRightShiftEqual:{
             //Resync(tcBitRightShiftEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcBitANDEqual:
+        case tcBitANDEqual:{
             //Resync(tcBitANDEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcBitXOREqual:
+        case tcBitXOREqual:{
             //Resync(tcBitXOREqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
-        case tcBitOREqual:
+        case tcBitOREqual:{
             //Resync(tcBitOREqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            TType *pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         default:
             Error(errInvalidAssignment);
@@ -144,7 +183,7 @@ void TParser::ParseDO(TSymtabNode* pRoutineId) {
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
     InsertLineMarker();
-    ParseExpression();
+    CheckBoolean(ParseExpression());;
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
@@ -152,7 +191,7 @@ void TParser::ParseDO(TSymtabNode* pRoutineId) {
 
 void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
     GetTokenAppend();
-    ParseExpression();
+    CheckBoolean(ParseExpression());
 
     CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
 
@@ -164,7 +203,7 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    ParseExpression();
+    CheckBoolean(ParseExpression());
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
@@ -180,11 +219,28 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
 
 void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
+    TType *pControlType;
+    
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    if ((token == tcIdentifier) && (!SearchAll(pToken->String()))) {
-        Error(errUndefinedIdentifier);
+    if (token == tcIdentifier) {
+        TSymtabNode *pControlId = Find(pToken->String());
+        if(pControlId->defn.how != dcUndefined){
+            pControlType = pControlId->pType->Base();
+        }else {
+            pControlId->defn.how = dcVariable;
+            pControlType = pControlId->pType = pIntegerType;
+        }
+        
+        if((pControlType != pIntegerType)
+                && (pControlType != pCharType)
+                && (pControlType->form != fcEnum)){
+            Error(errIncompatibleTypes);
+            pControlType = pIntegerType;
+        }
+        
+        icode.Put(pControlId);
     }
 
     if (token != tcSemicolon) {
@@ -196,7 +252,8 @@ void TParser::ParseFOR(TSymtabNode* pRoutineId) {
         //Resync(tcEqual, tlExpressionStart);
         CondGetTokenAppend(tcEqual, errMissingEqual);
         // expr 1
-        ParseExpression();
+        CheckAssignmentTypeCompatible(pControlType, ParseExpression(),
+                errIncompatibleTypes);
 
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
@@ -205,7 +262,7 @@ void TParser::ParseFOR(TSymtabNode* pRoutineId) {
     if (token != tcSemicolon) {
 
         // expr 2
-        ParseExpression();
+        CheckBoolean(ParseExpression());
 
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
@@ -213,7 +270,6 @@ void TParser::ParseFOR(TSymtabNode* pRoutineId) {
     if (token != tcRParen) {
         // expr 3
         ParseExpression();
-
     }
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
@@ -226,19 +282,25 @@ void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    ParseExpression();
+    TType *pExprType = ParseExpression()->Base();
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
-
+    
+    if((pExprType != pIntegerType)
+            && (pExprType != pCharType)
+            && (pExprType->form != fcEnum)){
+        Error(errIncompatibleTypes);
+    }
+    
     ParseStatement(pRoutineId);
 
 }
 
-void TParser::ParseCaseBranch(TSymtabNode* pRoutineId) {
+void TParser::ParseCaseBranch(TSymtabNode* pRoutineId, const TType *pExprType) {
     // c switch easier to parse that Pascal???
 }
 
-void TParser::ParseCaseLabel(TSymtabNode* pRoutineId) {
+void TParser::ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType) {
     GetTokenAppend();
 
     bool signFlag(false);
