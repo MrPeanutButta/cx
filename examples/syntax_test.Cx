@@ -25,10 +25,12 @@ rec1 = record
 
 {
 
-    if(cr != ch){
-        ee = alpha;
-    }else{
-        ee = beta'
+  //  ar1 __a;
+
+    if(1 > minusten){
+
+    }else if(1){
+
     }
 
     for(iter = 0; iter < hundred; iter++){
