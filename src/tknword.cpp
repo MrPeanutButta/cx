@@ -47,7 +47,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("typeid", tcTypeId),
     std::make_pair("bool", tcBool),
     std::make_pair("do", tcDo),
-    //std::make_pair("int", tcInt),
+    std::make_pair("int", tcInt),
     std::make_pair("signed", tcSigned),
     std::make_pair("typename", tcTypeName),
     std::make_pair("break", tcBreak),

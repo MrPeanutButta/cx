@@ -54,6 +54,7 @@ class TParser {
     void ParseIdentifierConstant(TSymtabNode *pId1, TTokenCode sign);
 
     void ParseDefinitions(TSymtabNode *pRoutineId);
+    void ParseIntegerDeclaration(TSymtabNode *pRoutineId);
     void ParseTypeDefinitions(TSymtabNode *pRoutineId);
     TType *ParseTypeSpec(void);
 

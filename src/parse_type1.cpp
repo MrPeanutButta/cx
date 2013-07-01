@@ -1,6 +1,58 @@
 #include "common.h"
 #include "parser.h"
 
+void TParser::ParseIntegerDeclaration(TSymtabNode* pRoutineId) {
+
+    while (token == tcIdentifier) {
+        TSymtabNode *pIntId = EnterNewLocal(pToken->String());
+        TSymtabNode *__int = nullptr;
+
+        if (!pRoutineId->defn.routine.locals.pVariableIds) {
+            pRoutineId->defn.routine.locals.pVariableIds = pIntId;
+        } else {
+            __int = pRoutineId->defn.routine.locals.pVariableIds;
+
+            while (__int->next)
+                __int = __int->next;
+
+            __int->next = pIntId;
+
+        }
+
+        GetToken();
+
+        SetType(pIntId->pType, pIntegerType);
+        pIntId->defn.how = dcVariable;
+
+        if (!pIntId->pType->pTypeId) {
+            pIntId->pType->pTypeId = pIntId;
+        }
+
+        switch (token) {
+            case tcEqual:
+            {
+                TTokenCode sign;
+
+                GetToken();
+                if (TokenIn(token, tlUnaryOps)) {
+                    if (token == tcMinus) sign = tcMinus;
+                    GetToken();
+                }
+
+                CondGetToken(tcNumber, errInvalidNumber);
+            }
+                break;
+            case tcComma: GetToken();
+                break;
+        }
+    }
+
+    while (token == tcSemicolon)GetToken();
+
+    //Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
+    //CondGetToken(tcSemicolon, errMissingSemicolon);
+}
+
 void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
     TSymtabNode *pLastId = nullptr;
 
@@ -194,24 +246,24 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
             } else Error(errNotAConstantIdentifier);
 
             break;
-            
+
         case tcChar:
         case tcString:
-            if(sign != tcDummy) Error(errInvalidConstant);
-            
-            if(strlen(pToken->String()) != 3){
+            if (sign != tcDummy) Error(errInvalidConstant);
+
+            if (strlen(pToken->String()) != 3) {
                 Error(errInvalidSubrangeType);
             }
-            
+
             limit = pToken->String()[1];
             pType = pCharType;
             break;
-            
+
         default:
             Error(errMissingConstant);
             return pType;
     }
-    
+
     GetToken();
     return pType;
 }

@@ -1,33 +1,14 @@
-const
-    ten         =  10;
-    minusten    = -10;
-    hundred     =  100;
-    maxlength   =  80;
-    pi          =  3.1415926;
-    ch          =  'x';
-    hello       =  "hello world";
-
-typedef
-    e = { alpha, beta, gamma };
-    ee = e;
-    sr = alpha..gamma;
-    cr = 'a'..ch;
-
-    ar1 = array[1..-minusten] of int;
-
-rec1 = record
-    i: int;
-    x: float;
-    ch: char;
-};
-
+int a = -2;
+int b, c, d, e, f;
+int g;
 
 
 {
 
-  //  ar1 __a;
+   a = 1;
+    b = 2;
 
-    if(1 > minusten){
+    if(a > b){
 
     }else if(1){
 

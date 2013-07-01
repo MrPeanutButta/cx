@@ -11,13 +11,17 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
         case tcIdentifier:
             ParseAssignment(pRoutineId);
             break;
-            //        case tcConst:
-            //            GetToken();
-            //            ParseConstantDeclarations(pRoutineId);
-            //            break;
-            //        case tcEnum:
-            //            GetToken();
+        case tcConst:
+            GetToken();
+            ParseConstantDeclarations(pRoutineId);
+            break;
+        case tcEnum:
+            GetToken();
             //            ParseEnumHeader(pRoutineId);
+            break;
+        case tcInt:
+            GetToken();
+            ParseIntegerDeclaration(pRoutineId);
             break;
         case tcDo: ParseDO(pRoutineId);
             break;
@@ -68,7 +72,7 @@ void TParser::ParseAssignment(TSymtabNode* pRoutineId) {
 
     TType *pTargetType = ParseVariable(pTargetNode);
 
-    GetTokenAppend();
+    //GetTokenAppend();
 
     switch (token) {
         case tcEqual:{
@@ -220,7 +224,7 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
 void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
     TType *pControlType;
-    
+
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
@@ -232,14 +236,14 @@ void TParser::ParseFOR(TSymtabNode* pRoutineId) {
             pControlId->defn.how = dcVariable;
             pControlType = pControlId->pType = pIntegerType;
         }
-        
+
         if((pControlType != pIntegerType)
                 && (pControlType != pCharType)
                 && (pControlType->form != fcEnum)){
             Error(errIncompatibleTypes);
             pControlType = pIntegerType;
         }
-        
+
         icode.Put(pControlId);
     }
 
@@ -285,13 +289,13 @@ void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
     TType *pExprType = ParseExpression()->Base();
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
-    
+
     if((pExprType != pIntegerType)
             && (pExprType != pCharType)
             && (pExprType->form != fcEnum)){
         Error(errIncompatibleTypes);
     }
-    
+
     ParseStatement(pRoutineId);
 
 }
