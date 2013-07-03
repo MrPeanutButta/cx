@@ -48,7 +48,7 @@ class TParser {
     //TCompactListBuffer * const pCompact; // compact list buffer
 
     // declarations
-    void ParseDeclarations(TSymtabNode *pRoutineId);
+    void ParseDeclarations(TSymtabNode *pNode);
     void ParseConstantDeclaration(TSymtabNode *pRoutineId);
     void ParseConstant(TSymtabNode *pConstId);
     void ParseIdentifierConstant(TSymtabNode *pId1, TTokenCode sign);
@@ -92,7 +92,7 @@ class TParser {
 
     // statements
     void ParseStatement(TSymtabNode* pRoutineId);
-    void ParseAssignment(TSymtabNode* pRoutineId);
+    void ParseAssignment(const TSymtabNode* pTargetId);
     void ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator);
     void ParseDO(TSymtabNode* pRoutineId);
     void ParseWHILE(TSymtabNode* pRoutineId);

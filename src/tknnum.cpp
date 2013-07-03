@@ -132,8 +132,8 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
             Error(errIntegerOutOfRange);
             return;
         }
-        value.integer = int(numValue);
-    } else value.real = numValue;
+        value.__int = int(numValue);
+    } else value.__float = numValue;
 
     *ps = '\0';
     code = tcNumber;
@@ -183,10 +183,10 @@ int TNumberToken::AccumulateValue(TTextInBuffer &buffer,
 void TNumberToken::Print(void) const {
     if (type == tyInteger) {
         sprintf(list.text, "\t%-18s =%d", ">> integer:",
-                value.integer);
+                value.__int);
     } else {
         sprintf(list.text, "\t%-18s =%g", ">> real:",
-                value.real);
+                value.__float);
     }
 
     list.PutLine();

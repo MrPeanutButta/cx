@@ -97,7 +97,10 @@ void TTextScanner::SkipWhiteSpace(void) {
                         }
                     }
                 }
-            } else pTextInBuffer->PutBackChar();
+            } else {
+                pTextInBuffer->PutBackChar();
+                break;
+            }
         }
     } while ((charCodeMap[ch] == ccWhiteSpace)
             || (ch == '/'));

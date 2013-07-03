@@ -1,23 +1,25 @@
-int a = -2;
-int b, c, d, e, f;
-int g;
 const int h = 100;
+int a = -2;
+int b, c, d = 5, f;
+int g = 0;
+float aa = 0.23;
 
+bool hi = true;
+bool failed = false;
+
+char some_char = 'x';
+const char some_const_char = '|';
+
+const float pi = 3.14159265359;
+const double e = 2.718281828460000006;
+
+double aa_aa = (500 / 3) * e;
 
 {
 
    a = 1;
    b = 2;
-
-    if(a > b){
-
-    }else if(1){
-
-    }
-
-    for(iter = 0; iter < hundred; iter++){
-        output = iter;
-    }
+   //h = 1; // error modifying constant
 
     return 1;
 }

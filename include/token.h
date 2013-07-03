@@ -47,7 +47,7 @@ public:
     TToken(void) {
         code = tcDummy;
         type = tyDummy;
-        value.integer = 0;
+        value.__int = 0;
         string[0] = '\0';
     }
 

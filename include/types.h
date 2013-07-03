@@ -11,7 +11,7 @@
 #include "error.h"
 #include "symtable.h"
 
-extern TType *pIntegerType, *pRealType, *pBooleanType, *pCharType,
+extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
         *pDummyType;
 
 enum TFormCode {

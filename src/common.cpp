@@ -76,13 +76,13 @@ extern const TTokenCode tlIndexFollow[] = {
 };
 
 extern const TTokenCode tlIndexListFollow[] = {
-    tcIdentifier, tcRightSubscript, tcLParen, tcPlus, tcMinus, tcNumber, 
+    tcIdentifier, tcRightSubscript, tcLParen, tcPlus, tcMinus, tcNumber,
     tcString, tcOf, tcSemicolon,
     tcDummy
 };
 
 extern const TTokenCode tlSubscriptOrFieldStart[] = {
-    tcColonColon, tcSemicolon,
+    tcColonColon,
     tcPointerMember, tcMemberPointer, tcDot, tcLeftSubscript, tcDummy
 };
 

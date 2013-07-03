@@ -28,7 +28,7 @@ TType * TParser::ParseSuffix(TSymtabNode *pNode) {
     } else if (token == tcMinusMinus) {
         GetTokenAppend();
     }
-    
+
     return pNode->pType;
 }
 
@@ -59,7 +59,7 @@ TType *TParser::ParseSimpleExpression(void) {
                 if (IntegerOperands(pResultType, pOperandType)) {
                     pResultType = pIntegerType;
                 } else if (RealOperands(pResultType, pOperandType)) {
-                    pResultType = pRealType;
+                    pResultType = pFloatType;
                 } else Error(errIncompatibleTypes);
                 break;
             case tcLogicOr:
@@ -91,13 +91,13 @@ TType *TParser::ParseTerm(void) {
                 if (IntegerOperands(pResultType, pOperandType)) {
                     pResultType = pIntegerType;
                 } else if (RealOperands(pResultType, pOperandType)) {
-                    pResultType = pRealType;
+                    pResultType = pFloatType;
                 } else Error(errIncompatibleTypes);
                 break;
             case tcForwardSlash:
                 if (IntegerOperands(pResultType, pOperandType) ||
                         RealOperands(pResultType, pOperandType)) {
-                    pResultType = pRealType;
+                    pResultType = pFloatType;
                 } else Error(errIncompatibleTypes);
                 break;
             case tcMod:
@@ -128,7 +128,7 @@ TType *TParser::ParseFactor(void) {
                 GetTokenAppend();
 
                 if ((pNode->pType == pIntegerType) ||
-                        (pNode->pType == pRealType))ParseSuffix(pNode);
+                        (pNode->pType == pFloatType))ParseSuffix(pNode);
 
             } else {
                 pNode->defn.how = dcVariable;
@@ -155,10 +155,10 @@ TType *TParser::ParseFactor(void) {
 
                 if (pToken->Type() == tyInteger) {
                     pResultType = pIntegerType;
-                    pNode->defn.constant.value.integer = pToken->Value().integer;
+                    pNode->defn.constant.value.__int = pToken->Value().__int;
                 } else {
-                    pResultType = pRealType;
-                    pNode->defn.constant.value.real = pToken->Value().real;
+                    pResultType = pFloatType;
+                    pNode->defn.constant.value.__float = pToken->Value().__float;
                 }
                 SetType(pNode->pType, pResultType);
             }
@@ -166,16 +166,23 @@ TType *TParser::ParseFactor(void) {
             icode.Put(pNode);
 
             pResultType = pNode->pType;
-                    GetTokenAppend();
+
         }
+            GetTokenAppend();
             break;
 
+        case tcChar:
         case tcString:
         {
 
             char *pString = pToken->String();
             TSymtabNode *pNode = SearchAll(pString);
 
+            if (!pNode) {
+                pNode = EnterLocal(pString);
+            }
+
+            pString = pNode->String();
             int length = strlen(pString) - 2;
 
             pResultType = length == 1 ?
@@ -184,9 +191,15 @@ TType *TParser::ParseFactor(void) {
             SetType(pNode->pType, pResultType);
 
             if (length == 1) {
-                pNode->defn.constant.value.character = pString[1];
+                pNode->defn.constant.value.__char = pString[1];
             } else {
                 pNode->defn.constant.value.pString = &pString[1];
+                pNode->pType->form = fcArray;
+                pNode->pType->array.elmtCount = length;
+                pNode->pType->array.maxIndex = (pNode->pType->array.elmtCount - 1);
+                pNode->pType->array.minIndex = 0;
+                pNode->pType->array.pElmtType = pCharType;
+                pNode->pType->array.pIndexType = pIntegerType;
             }
 
             icode.Put(pNode);
@@ -218,77 +231,78 @@ TType *TParser::ParseFactor(void) {
             pResultType = pDummyType;
             break;
     }
-    
+
     return pResultType;
 }
 
-TType *TParser::ParseVariable(const TSymtabNode* pId){
+TType *TParser::ParseVariable(const TSymtabNode* pId) {
     TType *pResultType = pId->pType;
-    
-    switch(pId->defn.how){
+
+    switch (pId->defn.how) {
         case dcVariable:
         case dcValueParm:
         case dcVarParm:
         case dcFunction:
-        case dcUndefined: break;
-        
+        case dcUndefined:
+            break;
+
         default:
             pResultType = pDummyType;
             Error(errInvalidIdentifierUsage);
             break;
     }
-    
+
     GetTokenAppend();
-    
-    while(TokenIn(token, tlSubscriptOrFieldStart)){
+
+    while (TokenIn(token, tlSubscriptOrFieldStart)) {
         pResultType = token == tcLeftSubscript ? ParseSubscripts(pResultType)
                 : ParseField(pResultType);
     }
-    
+
     return pResultType;
 }
 
-TType *TParser::ParseSubscripts(const TType* pType){
-    do{
+TType *TParser::ParseSubscripts(const TType* pType) {
+    do {
         GetTokenAppend();
-        
-        if(pType->form == fcArray){
+
+        if (pType->form == fcArray) {
             CheckAssignmentTypeCompatible(pType->array.pIndexType,
-                                          ParseExpression(),
-                                          errIncompatibleTypes);
-            
+                    ParseExpression(),
+                    errIncompatibleTypes);
+
             pType = pType->array.pElmtType;
         } else {
             Error(errTooManySubscripts);
             ParseExpression();
         }
-        
-    }while(token == tcComma);
-    
+
+    } while (token == tcComma);
+
     CondGetTokenAppend(tcRightSubscript, errMissingRightSubscript);
-    
-    return (TType *)pType;
+
+    return (TType *) pType;
 }
 
-TType *TParser::ParseField(const TType* pType){
+TType *TParser::ParseField(const TType* pType) {
     GetTokenAppend();
-    
-    if((token == tcIdentifier) && (pType->form == fcRecord)){
+
+    if ((token == tcIdentifier) && (pType->form == fcRecord)) {
         TSymtabNode *pFieldId = pType->record.pSymtab->Search(pToken->String());
-    
-        if(!pFieldId) Error(errInvalidField);
-        
+
+        if (!pFieldId) Error(errInvalidField);
+
         icode.Put(pFieldId);
-        
+
         GetTokenAppend();
-        
+
         return pFieldId ? pFieldId->pType : pDummyType;
     } else {
-        
+
         Error(errInvalidField);
         GetTokenAppend();
         return pDummyType;
-                
+
     }
 }
 

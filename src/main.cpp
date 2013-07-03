@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser *parser = new TParser(new TSourceBuffer(argv[1]));
+
     parser->Parse();
     delete parser;
 

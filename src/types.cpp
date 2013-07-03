@@ -9,7 +9,9 @@ const char *formStrings[] = {
 };
 
 TType *pIntegerType = nullptr;
-TType *pRealType = nullptr;
+//TType *pFloatType = nullptr;
+TType *pFloatType = nullptr;
+TType *pDoubleType = nullptr;
 TType *pBooleanType = nullptr;
 TType *pCharType = nullptr;
 TType *pDummyType = nullptr;
@@ -92,7 +94,7 @@ void TType::PrintEnumType(TVerbosityCode vc) const {
     for (TSymtabNode *pConstId = enumeration.pConstIds;
             pConstId; pConstId = pConstId->next) {
         sprintf(list.text, "%d = %s",
-                pConstId->defn.constant.value.integer,
+                pConstId->defn.constant.value.__int,
                 pConstId->String());
 
         list.PutLine();
@@ -148,7 +150,9 @@ void TType::PrintRecordType(TVerbosityCode vc) const {
 
 void InitializePredefinedTypes(TSymtab *pSymtab) {
     TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
-    TSymtabNode *pRealId = pSymtab->Enter("float", dcType);
+    TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
+    TSymtabNode *pDoubleId = pSymtab->Enter("double", dcType);
+
     TSymtabNode *pBooleanId = pSymtab->Enter("bool", dcType);
     TSymtabNode *pCharId = pSymtab->Enter("char", dcType);
     TSymtabNode *pFalseId = pSymtab->Enter("false", dcConstant);
@@ -157,8 +161,11 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     if (!pIntegerType) {
         SetType(pIntegerType, new TType(fcScalar, sizeof (int), pIntegerId));
     }
-    if (!pRealType) {
-        SetType(pRealType, new TType(fcScalar, sizeof (float), pRealId));
+    if (!pFloatType) {
+        SetType(pFloatType, new TType(fcScalar, sizeof (float), pFloatId));
+    }
+    if (!pDoubleType) {
+        SetType(pDoubleType, new TType(fcScalar, sizeof (float), pDoubleId));
     }
     if (!pBooleanType) {
         SetType(pBooleanType, new TType(fcEnum, sizeof (int), pBooleanId));
@@ -169,15 +176,18 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
-    SetType(pRealId->pType, pRealType);
+
+    SetType(pFloatId->pType, pFloatType);
+    SetType(pDoubleId->pType, pDoubleType);
+
     SetType(pBooleanId->pType, pBooleanType);
     SetType(pCharId->pType, pCharType);
 
     pBooleanType->enumeration.max = 1;
     pBooleanType->enumeration.pConstIds = pFalseId;
 
-    pFalseId->defn.constant.value.integer = 0;
-    pTrueId->defn.constant.value.integer = 1;
+    pFalseId->defn.constant.value.__bool = false;
+    pTrueId->defn.constant.value.__bool = true;
 
     SetType(pTrueId->pType, pBooleanType);
     SetType(pFalseId->pType, pBooleanType);
@@ -189,7 +199,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 
 void RemovePredefinedTypes(void) {
     RemoveType(pIntegerType);
-    RemoveType(pRealType);
+    RemoveType(pFloatType);
+    RemoveType(pDoubleType);
     RemoveType(pBooleanType);
     RemoveType(pCharType);
     RemoveType(pDummyType);
@@ -223,8 +234,8 @@ void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
         return;
     }
 
-    if (((pType1 == pIntegerType) && (pType2 == pRealType))
-            || ((pType2 == pIntegerType) && (pType2 == pRealType))) {
+    if (((pType1 == pIntegerType) && (pType2 == pFloatType))
+            || ((pType2 == pIntegerType) && (pType2 == pFloatType))) {
         return;
     }
 
@@ -242,14 +253,14 @@ void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
 void CheckIntegerOrReal(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
 
-    if ((pType1 != pIntegerType) && (pType1 != pRealType)) {
+    if ((pType1 != pIntegerType) && (pType1 != pFloatType)) {
         Error(errIncompatibleTypes);
     }
 
     if (pType2) {
         pType2 = pType2->Base();
 
-        if ((pType2 != pIntegerType) && (pType2 != pRealType)) {
+        if ((pType2 != pIntegerType) && (pType2 != pFloatType)) {
             Error(errIncompatibleTypes);
         }
     }
@@ -270,8 +281,23 @@ void CheckAssignmentTypeCompatible(const TType *pTargetType,
 
     if (pTargetType == pValueType) return;
 
-    if ((pTargetType == pRealType)
+    if ((pTargetType == pFloatType)
             && (pValueType == pIntegerType)) return;
+
+    if ((pTargetType == pFloatType)
+            && (pValueType == pDoubleType)) return;
+
+    if ((pTargetType == pDoubleType)
+            && (pValueType == pIntegerType)) return;
+
+    if ((pTargetType == pDoubleType)
+            && (pValueType == pFloatType)) return;
+
+    if ((pTargetType == pIntegerType)
+            && (pValueType == pFloatType)) return;
+
+    if ((pTargetType == pIntegerType)
+            && (pValueType == pDoubleType)) return;
 
     if ((pTargetType->form == fcArray)
             && (pValueType->form == fcArray)
@@ -295,7 +321,13 @@ bool RealOperands(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
 
-    return (pType1 == pRealType) && (pType2 == pRealType)
-            || (pType1 == pRealType) && (pType2 == pIntegerType)
-            || (pType2 == pRealType) && (pType1 == pIntegerType);
+    return (pType1 == pFloatType) && (pType2 == pFloatType)
+            || (pType1 == pFloatType) && (pType2 == pIntegerType)
+            || (pType2 == pFloatType) && (pType1 == pIntegerType)
+            || (pType1 == pFloatType) && (pType2 == pDoubleType)
+            || (pType2 == pFloatType) && (pType1 == pDoubleType)
+            || (pType1 == pDoubleType) && (pType2 == pIntegerType)
+            || (pType2 == pDoubleType) && (pType1 == pIntegerType)
+            || (pType1 == pDoubleType) && (pType2 == pFloatType)
+            || (pType2 == pDoubleType) && (pType1 == pFloatType);
 }

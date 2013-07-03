@@ -113,7 +113,7 @@ enum TTokenCode {
     tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude,
     tcStringDef, tcBlockCommentStart, tcBlockCommentEnd, tcArray, tcRecord, tcOf,
     tcVar
-            
+
 };
 //endfig
 
@@ -130,10 +130,16 @@ enum TDataType {
 //--------------------------------------------------------------
 
 union TDataValue {
-    int integer;
-    unsigned int u_integer;
-    float real;
-    char character;
+    int __int;
+    unsigned int __u_int;
+    float __float;
+    double __double;
+    char __char;
+    unsigned char __u_char;
+
+    bool __bool;
+
+    //needed???
     char *pString;
 };
 

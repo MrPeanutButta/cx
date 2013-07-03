@@ -88,7 +88,7 @@ TType *TParser::ParseEnumerationType(void) {
         if (pConstId->defn.how == dcUndefined) {
             pConstId->defn.how = dcConstant;
 
-            pConstId->defn.constant.value.integer = constValue;
+            pConstId->defn.constant.value.__int = constValue;
             SetType(pConstId->pType, pType);
 
             if (!pLastId) {
@@ -159,8 +159,8 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
         case tcNumber:
             if (pToken->Type() == tyInteger) {
                 limit = sign == tcMinus ?
-                        -pToken->Value().integer :
-                        pToken->Value().integer;
+                        -pToken->Value().__int :
+                        pToken->Value().__int;
 
                 pType = pIntegerType;
 
@@ -173,7 +173,7 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
                 pLimitId->defn.how = dcConstant;
                 pType = SetType(pLimitId->pType, pDummyType);
                 break;
-            } else if ((pLimitId->pType == pRealType) ||
+            } else if ((pLimitId->pType == pFloatType) ||
                     (pLimitId->pType == pDummyType) ||
                     (pLimitId->pType->form == fcArray)) {
                 Error(errInvalidSubrangeType);
@@ -181,14 +181,14 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
 
                 if (pLimitId->pType == pIntegerType) {
                     limit = sign == tcMinus
-                            ? -pLimitId->defn.constant.value.integer
-                            : pLimitId->defn.constant.value.integer;
+                            ? -pLimitId->defn.constant.value.__int
+                            : pLimitId->defn.constant.value.__int;
                 } else if (pLimitId->pType == pCharType) {
                     if (sign != tcDummy) Error(errInvalidConstant);
-                    limit = pLimitId->defn.constant.value.character;
+                    limit = pLimitId->defn.constant.value.__char;
                 } else if (pLimitId->pType->form == fcEnum) {
                     if (sign != tcDummy) Error(errInvalidConstant);
-                    limit = pLimitId->defn.constant.value.integer;
+                    limit = pLimitId->defn.constant.value.__int;
                 }
                 pType = pLimitId->pType;
             } else Error(errNotAConstantIdentifier);

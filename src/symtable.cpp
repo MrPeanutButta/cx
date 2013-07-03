@@ -102,11 +102,13 @@ void TSymtabNode::PrintConstant(void) const {
     if ((pType == pIntegerType) ||
             (pType->form == fcEnum)) {
 
-        sprintf(list.text, "value = %d", defn.constant.value.integer);
-    } else if (pType == pRealType) {
-        sprintf(list.text, "value = %g", defn.constant.value.real);
+        sprintf(list.text, "value = %d", defn.constant.value.__int);
+    } else if (pType == pFloatType) {
+        sprintf(list.text, "value = %g", defn.constant.value.__float);
+    } else if (pType == pDoubleType) {
+        sprintf(list.text, "value = %lf", defn.constant.value.__double);
     } else if (pType == pCharType) {
-        sprintf(list.text, "value = '%c'", defn.constant.value.character);
+        sprintf(list.text, "value = '%c'", defn.constant.value.__char);
     } else if (pType->form == fcArray) {
         sprintf(list.text, "value = '%s'", defn.constant.value.pString);
     }
