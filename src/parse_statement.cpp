@@ -13,16 +13,16 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             break;
         case tcConst:
             GetToken();
-            ParseConstantDeclarations(pRoutineId);
+            ParseConstantDeclaration(pRoutineId);
             break;
         case tcEnum:
             GetToken();
             //            ParseEnumHeader(pRoutineId);
             break;
-        case tcInt:
-            GetToken();
-            ParseIntegerDeclaration(pRoutineId);
-            break;
+        //case tcInt:
+          //  GetToken();
+            //ParseIntegerDeclaration(pRoutineId);
+            //break;
         case tcDo: ParseDO(pRoutineId);
             break;
         case tcWhile: ParseWHILE(pRoutineId);
@@ -64,6 +64,18 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 void TParser::ParseAssignment(TSymtabNode* pRoutineId) {
     TSymtabNode *pTargetNode = Find(pToken->String());
 
+    switch(pTargetNode->defn.how){
+        case dcUndefined:
+            Error(errUndefinedIdentifier);
+            break;
+        case dcType:
+            GetToken();
+            // new type declaration //
+            break;
+    }
+    
+    
+    
     if (pTargetNode->defn.how != dcUndefined)icode.Put(pTargetNode);
     else {
         pTargetNode->defn.how = dcVariable;

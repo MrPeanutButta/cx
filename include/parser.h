@@ -49,7 +49,7 @@ class TParser {
 
     // declarations
     void ParseDeclarations(TSymtabNode *pRoutineId);
-    void ParseConstantDeclarations(TSymtabNode *pRoutineId);
+    void ParseConstantDeclaration(TSymtabNode *pRoutineId);
     void ParseConstant(TSymtabNode *pConstId);
     void ParseIdentifierConstant(TSymtabNode *pId1, TTokenCode sign);
 

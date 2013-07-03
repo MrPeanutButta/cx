@@ -91,7 +91,7 @@ void TType::PrintEnumType(TVerbosityCode vc) const {
 
     for (TSymtabNode *pConstId = enumeration.pConstIds;
             pConstId; pConstId = pConstId->next) {
-        sprintf(list.text, "\t%d = %s",
+        sprintf(list.text, "%d = %s",
                 pConstId->defn.constant.value.integer,
                 pConstId->String());
 

@@ -93,9 +93,6 @@ public:
     int level;
     int labelIndex;
 
-    //legacy
-    float value;
-
     TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();
 
@@ -109,6 +106,16 @@ public:
 
     char *String(void) const {
         return pString;
+    }
+    
+    void RenameNode(const char *pStr){
+        if(pString != nullptr){
+            delete pString;
+            pString = nullptr;
+        }
+        
+        pString = new char[strlen(pStr)];
+        strcpy(pString, pStr);
     }
 
     short SymtabIndex(void) const {

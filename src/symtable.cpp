@@ -42,7 +42,7 @@ void TSymtabNode::Convert(TSymtabNode* vpNodes[]) {
 }
 
 TSymtabNode::TSymtabNode(const char* pStr, TDefnCode dc) :
-pString(new char[strlen(pStr) + 1]), xNode(0), value(0.0),
+pString(new char[strlen(pStr) + 1]), xNode(0),
 defn(dc), level(currentNestingLevel), labelIndex(++asmLabelIndex) {
     left = right = next = nullptr;
     pLineNumList = nullptr;

@@ -48,11 +48,11 @@ void TExecutor::ExecuteSuffix(TSymtabNode *pNode) {
 
     if (token == tcPlusPlus) {
         runStack.Push(runStack.Pop() + 1);
-        ++__n->value;
+        //        ++__n->value;
         GetToken();
     } else if (token == tcMinusMinus) {
         runStack.Push(runStack.Pop() - 1);
-        --__n->value;
+        //        --__n->value;
         GetToken();
     }
 }
@@ -169,11 +169,11 @@ void TExecutor::ExecuteFactor(void) {
 
             if (pNode == pInputNode) {
                 cout << "input = ";
-                cin >> pNode->value;
+                //                cin >> pNode->value;
                 if (!cin.good())RuntimeError(rteInvalidUserInput);
             }
 
-            runStack.Push(pNode->value);
+            //            runStack.Push(pNode->value);
 
             if (pNode != pInputNode)ExecuteSuffix(pNode);
             else GetToken();
@@ -182,7 +182,7 @@ void TExecutor::ExecuteFactor(void) {
             break;
         case tcNumber:
         {
-            runStack.Push(pNode->value);
+            //           runStack.Push(pNode->value);
             GetToken();
         }
             break;

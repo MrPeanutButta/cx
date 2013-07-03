@@ -48,96 +48,96 @@ void TExecutor::ExecuteAssignment(void) {
         case tcEqual:
             GetToken();
             ExecuteExpression();
-            pTargetNode->value = runStack.Pop();
+//            pTargetNode->value = runStack.Pop();
             break;
         case tcPlusPlus:
-            ++pTargetNode->value;
-            runStack.Push(pTargetNode->value);
+//            ++pTargetNode->value;
+ //           runStack.Push(pTargetNode->value);
             GetToken();
             break;
         case tcMinusMinus:
-            --pTargetNode->value;
-            runStack.Push(pTargetNode->value);
+//            --pTargetNode->value;
+ //           runStack.Push(pTargetNode->value);
             GetToken();
             break;
         case tcPlusEqual:
             GetToken();
             ExecuteExpression();
-            pTargetNode->value += runStack.Pop();
+//            pTargetNode->value += runStack.Pop();
             break;
         case tcMinusEqual:
             GetToken();
             ExecuteExpression();
-            pTargetNode->value -= runStack.Pop();
+//            pTargetNode->value -= runStack.Pop();
             break;
         case tcStarEqual:
             GetToken();
             ExecuteExpression();
-            pTargetNode->value *= runStack.Pop();
+//            pTargetNode->value *= runStack.Pop();
             break;
         case tcForwardSlashEqual:
             GetToken();
             ExecuteExpression();
-            pTargetNode->value /= runStack.Pop();
+//            pTargetNode->value /= runStack.Pop();
             break;
         case tcModEqual:
         {
             GetToken();
             ExecuteExpression();
-            int __1 = (int) pTargetNode->value;
+//            int __1 = (int) pTargetNode->value;
             int __2 = (int) runStack.Pop();
 
-            pTargetNode->value = (__1 %= __2);
+//            pTargetNode->value = (__1 %= __2);
         }
             break;
         case tcBitLeftShiftEqual:
         {
             GetToken();
             ExecuteExpression();
-            int __1 = (int) pTargetNode->value;
+ //           int __1 = (int) pTargetNode->value;
             int __2 = (int) runStack.Pop();
 
-            pTargetNode->value = (__1 <<= __2);
+   //         pTargetNode->value = (__1 <<= __2);
         }
             break;
         case tcBitRightShiftEqual:
         {
             GetToken();
             ExecuteExpression();
-            int __1 = (int) pTargetNode->value;
+     //       int __1 = (int) pTargetNode->value;
             int __2 = (int) runStack.Pop();
 
-            pTargetNode->value = (__1 >>= __2);
+       //     pTargetNode->value = (__1 >>= __2);
         }
             break;
         case tcBitANDEqual:
         {
             GetToken();
             ExecuteExpression();
-            int __1 = (int) pTargetNode->value;
+  //          int __1 = (int) pTargetNode->value;
             int __2 = (int) runStack.Pop();
 
-            pTargetNode->value = (__1 &= __2);
+    //        pTargetNode->value = (__1 &= __2);
         }
             break;
         case tcBitXOREqual:
         {
             GetToken();
             ExecuteExpression();
-            int __1 = (int) pTargetNode->value;
+      //      int __1 = (int) pTargetNode->value;
             int __2 = (int) runStack.Pop();
 
-            pTargetNode->value = (__1 ^= __2);
+        //    pTargetNode->value = (__1 ^= __2);
         }
             break;
         case tcBitOREqual:
         {
             GetToken();
             ExecuteExpression();
-            int __1 = (int) pTargetNode->value;
+//            int __1 = (int) pTargetNode->value;
             int __2 = (int) runStack.Pop();
 
-            pTargetNode->value = (__1 |= __2);
+  //          pTargetNode->value = (__1 |= __2);
         }
             break;
         default:
@@ -146,7 +146,7 @@ void TExecutor::ExecuteAssignment(void) {
     }
 
     if (pTargetNode == pOutputNode) {
-        cout << " output == " << pTargetNode->value << endl;
+    //    cout << " output == " << pTargetNode->value << endl;
     }
 
 }

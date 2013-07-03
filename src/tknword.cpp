@@ -39,7 +39,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("return", tcReturn),
     std::make_pair("continue", tcContinue),
     std::make_pair("friend", tcFriend),
-    std::make_pair("true", tcTrue),
+    //std::make_pair("true", tcTrue),
     std::make_pair("goto", tcGoto),
     std::make_pair("try", tcTry),
     std::make_pair("delete", tcDelete),
@@ -47,7 +47,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("typeid", tcTypeId),
     std::make_pair("bool", tcBool),
     std::make_pair("do", tcDo),
-    std::make_pair("int", tcInt),
+    //std::make_pair("int", tcInt),
     std::make_pair("signed", tcSigned),
     std::make_pair("typename", tcTypeName),
     std::make_pair("break", tcBreak),
@@ -62,7 +62,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("else", tcElse),
     std::make_pair("namespace", tcNameSpace),
     std::make_pair("using", tcUsing),
-    //std::make_pair("char", tcCharDef),
+    std::make_pair("char", tcCharDef),
     std::make_pair("enum", tcEnum),
     std::make_pair("new", tcNew),
     std::make_pair("virtual", tcVirtual),
@@ -80,7 +80,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("operator", tcOperator),
     std::make_pair("template", tcTemplate),
     std::make_pair("const", tcConst),
-    std::make_pair("false", tcFalse),
+    //std::make_pair("false", tcFalse),
     std::make_pair("private", tcPrivate),
     std::make_pair("this", tcThis),
     std::make_pair("while", tcWhile),
@@ -94,11 +94,11 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("typedef", tcTypeDef),
     std::make_pair("mutable", tcMutable),
     std::make_pair("include", tcInclude),
-    std::make_pair("string", tcStringDef),
-    std::make_pair("record", tcRecord),
-    std::make_pair("array", tcArray),
-    std::make_pair("of", tcOf),
-    std::make_pair("var", tcVar)
+    //std::make_pair("string", tcStringDef),
+    //std::make_pair("record", tcRecord),
+    //std::make_pair("array", tcArray),
+    //std::make_pair("of", tcOf),
+    //std::make_pair("var", tcVar)
 };
 
 
