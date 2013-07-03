@@ -56,7 +56,7 @@ class TParser {
     void ParseDefinitions(TSymtabNode *pRoutineId);
     void ParseIntegerDeclaration(TSymtabNode *pRoutineId);
     void ParseTypeDefinitions(TSymtabNode *pRoutineId);
-    TType *ParseTypeSpec(void);
+    TType *ParseTypeSpec(TSymtabNode *pNode);
 
     TType *ParseIdentifierType(const TSymtabNode *pId2);
 
@@ -66,8 +66,8 @@ class TParser {
     TType *ParseSubrangeType(TSymtabNode *pMinId);
     TType *ParseSubrangeLimit(TSymtabNode *pLimitId, int &limit);
 
-    TType*ParseArrayType(void);
-    void ParseIndexType(TType *pArrayType);
+    TType *ParseArrayType(TSymtabNode *pArrayNode);
+    void ParseIndexType(TSymtabNode *pArrayNode);
     int ArraySize(TType *pArrayType);
     TType *ParseRecordType(void);
 
@@ -92,7 +92,7 @@ class TParser {
 
     // statements
     void ParseStatement(TSymtabNode* pRoutineId);
-    void ParseAssignment(const TSymtabNode* pTargetId);
+    TType *ParseAssignment(const TSymtabNode* pTargetId);
     void ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator);
     void ParseDO(TSymtabNode* pRoutineId);
     void ParseWHILE(TSymtabNode* pRoutineId);

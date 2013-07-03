@@ -9,11 +9,12 @@ const char *formStrings[] = {
 };
 
 TType *pIntegerType = nullptr;
-//TType *pFloatType = nullptr;
 TType *pFloatType = nullptr;
 TType *pDoubleType = nullptr;
 TType *pBooleanType = nullptr;
 TType *pCharType = nullptr;
+TType *pClassType = nullptr;
+
 TType *pDummyType = nullptr;
 
 TType::TType(TFormCode fc, int s, TSymtabNode* pId)
@@ -302,8 +303,8 @@ void CheckAssignmentTypeCompatible(const TType *pTargetType,
     if ((pTargetType->form == fcArray)
             && (pValueType->form == fcArray)
             && (pTargetType->array.pElmtType == pCharType)
-            && (pValueType->array.pElmtType == pCharType)
-            && (pTargetType->array.elmtCount == pValueType->array.elmtCount)) {
+            && (pValueType->array.pElmtType == pCharType)) {
+            //&& (pTargetType->array.elmtCount == pValueType->array.elmtCount)) {
         return;
     }
 

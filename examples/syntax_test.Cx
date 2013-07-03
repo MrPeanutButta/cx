@@ -1,3 +1,4 @@
+char char_array[] = "hello world!\n";
 const int h = 100;
 int a = -2;
 int b, c, d = 5, f;

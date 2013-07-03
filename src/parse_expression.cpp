@@ -185,10 +185,10 @@ TType *TParser::ParseFactor(void) {
             pString = pNode->String();
             int length = strlen(pString) - 2;
 
-            pResultType = length == 1 ?
-                    pCharType : new TType(length);
+            //pResultType = length == 1 ?
+            // pCharType : new TType(length);
 
-            SetType(pNode->pType, pResultType);
+            SetType(pNode->pType, pCharType);
 
             if (length == 1) {
                 pNode->defn.constant.value.__char = pString[1];

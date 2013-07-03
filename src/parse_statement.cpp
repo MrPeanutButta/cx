@@ -28,6 +28,13 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
 
                     // set type
                     SetType(pNewId->pType, pNode->pType);
+
+                    GetToken();
+
+                    // check for array type
+                    if (token == tcLeftSubscript)
+                        ParseArrayType(pNewId);
+
                     // check for assignment
                     ParseAssignment(pNewId);
 
@@ -107,10 +114,10 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
     } while ((token != terminator) && (token != tcEndOfFile));
 }
 
-void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
+TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
     TType *pTargetType = ParseVariable(pTargetId);
-
+    TType *pExprType = nullptr;
     //
 
     switch (token) {
@@ -119,7 +126,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
             //Resync(tcEqual, tlExpressionStart);
             //CondGetTokenAppend(tcEqual, errMissingEqual);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -136,7 +143,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcPlusEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -145,7 +152,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcMinusEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -154,7 +161,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcStarEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -163,7 +170,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcForwardSlashEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -172,7 +179,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcModEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -181,7 +188,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcBitLeftShiftEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -190,7 +197,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcBitRightShiftEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -199,7 +206,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcBitANDEqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -208,7 +215,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcBitXOREqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -217,7 +224,7 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             //Resync(tcBitOREqual, tlExpressionStart);
             GetTokenAppend();
-            TType *pExprType = ParseExpression();
+            pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
@@ -229,6 +236,8 @@ void TParser::ParseAssignment(const TSymtabNode *pTargetId) {
             Error(errInvalidAssignment);
             break;
     }
+
+    return pExprType;
 }
 
 void TParser::ParseDO(TSymtabNode* pRoutineId) {

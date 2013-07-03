@@ -275,19 +275,19 @@ void TParser::ParseVarOrFieldDecls(TSymtabNode* pRoutineId,
         Resync(tlSublistFollow, tlDeclarationFollow);
         CondGetToken(tcColon, errMissingColon);
 
-        TType *pType = ParseTypeSpec();
+        //        TType *pType = ParseTypeSpec();
 
         for (pId = pFirstId; pId; pId = pId->next) {
-            SetType(pId->pType, pType);
+            //            SetType(pId->pType, pType);
 
             if (pRoutineId) {
                 if (execFlag) {
                     pId->defn.data.offset = offset++;
                 }
-                totalSize += pType->size;
+                //           totalSize += pType->size;
             } else {
                 pId->defn.data.offset = offset;
-                offset += pType->size;
+                //         offset += pType->size;
             }
         }
 

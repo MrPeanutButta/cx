@@ -18,7 +18,7 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
         GetToken();
         CondGetToken(tcEqual, errMissingEqual);
 
-        SetType(pTypeId->pType, ParseTypeSpec());
+        //        SetType(pTypeId->pType, ParseTypeSpec());
         pTypeId->defn.how = dcType;
 
         if (!pTypeId->pType->pTypeId) {
@@ -35,7 +35,7 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
     }
 }
 
-TType *TParser::ParseTypeSpec(void) {
+TType *TParser::ParseTypeSpec(TSymtabNode *pNode) {
     switch (token) {
         case tcIdentifier:
         {
@@ -52,7 +52,10 @@ TType *TParser::ParseTypeSpec(void) {
         }
 
         case tcLBracket: return ParseEnumerationType();
-        case tcArray: return ParseArrayType();
+
+            /* found empty subscript.
+             * array must have initializer */
+        case tcRightSubscript: return ParseAssignment(pNode);
         case tcRecord: return ParseRecordType();
         case tcPlus:
         case tcMinus:
