@@ -57,7 +57,7 @@ TType::~TType() {
             RemoveType(array.pElmtType);
             break;
         case fcComplex:
-            delete complex.pSymtabPublic;
+            // delete complex.pSymtabPublic;
             break;
 
         default:
@@ -65,8 +65,8 @@ TType::~TType() {
     }
 }
 
-void TType::PrintTypeSpec(TVerbosityCode vc) const {
-    sprintf(list.text, "%s, size &d bytes. type id: ", formStrings[form], size);
+void TType::PrintTypeSpec(TVerbosityCode vc) {
+    sprintf(list.text, "%s, size %d bytes. type id: ", formStrings[form], size);
 
     if (pTypeId) strcat(list.text, pTypeId->String());
     else {
@@ -134,19 +134,59 @@ void TType::PrintArrayType(TVerbosityCode vc) const {
     }
 }
 
-void TType::PrintRecordType(TVerbosityCode vc) const {
+void TType::PrintRecordType(TVerbosityCode vc) {
     if (vc == vcTerse) return;
 
-    list.PutLine("record field identifiers (offset : name)---");
+    list.PutLine("member identifiers (offset : name)---");
     list.PutLine();
 
-    for (TSymtabNode *pFieldId = complex.pSymtabPublic->Root();
+    if (complex.MemberTable.empty()) {
+        list.PutLine("empty type");
+        return;
+    }
+
+    list.PutLine("public:\n");
+
+    for (TSymtabNode *pFieldId = complex.MemberTable[tcPublic]->Root();
             pFieldId; pFieldId = pFieldId->next) {
         sprintf(list.text, "\t%d : %s",
                 pFieldId->defn.data.offset,
                 pFieldId->String());
         list.PutLine();
         pFieldId->PrintVarOrField();
+    }
+
+    list.PutLine();
+    list.PutLine("private:\n");
+
+    if (!complex.MemberTable[tcPrivate]) {
+        list.PutLine("empty scope");
+    } else {
+
+        for (TSymtabNode *pFieldId = complex.MemberTable[tcPrivate]->Root();
+                pFieldId; pFieldId = pFieldId->next) {
+            sprintf(list.text, "\t%d : %s",
+                    pFieldId->defn.data.offset,
+                    pFieldId->String());
+            list.PutLine();
+            pFieldId->PrintVarOrField();
+        }
+    }
+
+    list.PutLine();
+    list.PutLine("protected:\n");
+
+    if (!complex.MemberTable[tcProtected]) {
+        list.PutLine("empty scope");
+    } else {
+        for (TSymtabNode *pFieldId = complex.MemberTable[tcProtected]->Root();
+                pFieldId; pFieldId = pFieldId->next) {
+            sprintf(list.text, "\t%d : %s",
+                    pFieldId->defn.data.offset,
+                    pFieldId->String());
+            list.PutLine();
+            pFieldId->PrintVarOrField();
+        }
     }
 }
 
@@ -155,8 +195,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
     TSymtabNode *pDoubleId = pSymtab->Enter("double", dcType);
 
-    //TSymtabNode *pComplexId = pSymtab->Enter("class", dcType);
-    
+    TSymtabNode *pComplexId = pSymtab->Enter("class", dcType);
+
     TSymtabNode *pBooleanId = pSymtab->Enter("bool", dcType);
     TSymtabNode *pCharId = pSymtab->Enter("char", dcType);
     TSymtabNode *pFalseId = pSymtab->Enter("false", dcConstant);
@@ -177,9 +217,9 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     if (!pCharType) {
         SetType(pCharType, new TType(fcScalar, sizeof (char), pCharId));
     }
-    /*if(!pComplexType){
-        SetType(pComplexType, new TType(fcComplex, sizeof(TType), pComplexId));
-    }*/
+    if (!pComplexType) {
+        SetType(pComplexType, new TType(fcComplex, sizeof (TType), pComplexId));
+    }
 
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
@@ -189,8 +229,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 
     SetType(pBooleanId->pType, pBooleanType);
     SetType(pCharId->pType, pCharType);
-    
-    //SetType(pComplexId->pType, pComplexType);
+
+    SetType(pComplexId->pType, pComplexType);
 
     pBooleanType->enumeration.max = 1;
     pBooleanType->enumeration.pConstIds = pFalseId;
@@ -207,7 +247,7 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 }
 
 void RemovePredefinedTypes(void) {
-    //RemoveType(pComplexType);
+    RemoveType(pComplexType);
     RemoveType(pIntegerType);
     RemoveType(pFloatType);
     RemoveType(pDoubleType);
@@ -313,7 +353,7 @@ void CheckAssignmentTypeCompatible(const TType *pTargetType,
             && (pValueType->form == fcArray)
             && (pTargetType->array.pElmtType == pCharType)
             && (pValueType->array.pElmtType == pCharType)) {
-            //&& (pTargetType->array.elmtCount == pValueType->array.elmtCount)) {
+        //&& (pTargetType->array.elmtCount == pValueType->array.elmtCount)) {
         return;
     }
 

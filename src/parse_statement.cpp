@@ -9,8 +9,12 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
 
     switch (token) {
         case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
-        
+
             break;
+            /* case tcClass:
+                      GetToken();
+                 ParseComplexType(pRoutineId);
+                 break;*/
             // not a type but a cv-qualifier
         case tcConst:
             GetToken();
@@ -178,6 +182,9 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
             break;
         case tcComma:
         case tcSemicolon:
+            break;
+        case tcIdentifier:
+            pExprType = ParseAssignment(pTargetId);
             break;
         default:
             Error(errInvalidAssignment);

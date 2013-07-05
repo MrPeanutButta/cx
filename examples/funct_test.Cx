@@ -1,0 +1,12 @@
+int global_int;
+
+int some_f(int a, char b);
+
+int f(int a, int b){
+
+    a++;
+
+    global_int = b++ + (a * 2);
+
+    return global_int++;
+}

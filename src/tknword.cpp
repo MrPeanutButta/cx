@@ -75,7 +75,7 @@ std::pair<std::string, TTokenCode> map_data[] = {
     std::make_pair("switch", tcSwitch),
     std::make_pair("struct", tcStruct),
     std::make_pair("void", tcVoid),
-    //std::make_pair("class", tcClass),
+    // std::make_pair("class", tcClass),
     std::make_pair("extern", tcExtern),
     std::make_pair("operator", tcOperator),
     std::make_pair("template", tcTemplate),

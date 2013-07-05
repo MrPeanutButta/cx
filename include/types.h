@@ -8,8 +8,15 @@
 #ifndef TYPES_H
 #define	TYPES_H
 
+
+#include <map>
 #include "error.h"
 #include "symtable.h"
+
+using namespace std;
+
+// for public, private and protected scopes
+typedef map<TTokenCode, TSymtab *> ScopedSymtab;
 
 extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
         *pDummyType, *pComplexType;
@@ -46,12 +53,15 @@ public:
             int elmtCount;
         } array;
 
-        struct {
-            TSymtab *pSymtabPublic;
-            TSymtab *pSymtabPrivate;
-            TSymtab *pSymtabProtected;
-        } complex;
     };
+
+    struct {
+        /*TSymtab *pSymtabPublic;
+        TSymtab *pSymtabPrivate;
+        TSymtab *pSymtabProtected;*/
+
+        ScopedSymtab MemberTable;
+    } complex;
 
     TType(TFormCode fc, int s, TSymtabNode *pId);
     TType(int length);
@@ -71,11 +81,11 @@ public:
         vcVerbose, vcTerse
     };
 
-    void PrintTypeSpec(TVerbosityCode vc) const;
+    void PrintTypeSpec(TVerbosityCode vc) ;
     void PrintEnumType(TVerbosityCode vc) const;
     void PrintSubrangeType(TVerbosityCode vc) const;
     void PrintArrayType(TVerbosityCode vc) const;
-    void PrintRecordType(TVerbosityCode vc) const;
+    void PrintRecordType(TVerbosityCode vc);
 
     friend TType *SetType(TType *&pTargetType, TType *pSourceType);
     friend void RemoveType(TType *&pType);

@@ -20,8 +20,8 @@ int currentNestingLevel = 0;
 int currentLineNumber = 0;
 //endfig
 
-//TSymtab globalSymtab;
-//int cntSymtabs = 0;
+TSymtab globalSymtab;
+int cntSymtabs = 0;
 TSymtab *pSymtabList = nullptr;
 TSymtab **vpSymtabs = nullptr;
 
@@ -88,7 +88,7 @@ extern const TTokenCode tlSubscriptOrFieldStart[] = {
 
 extern const TTokenCode tlIdentifierFollow[] = {
     tcComma, tcIdentifier, tcColon, tcColonColon, tcSemicolon,
-    tcPointerMember, tcMemberPointer, tcDot, tcDummy
+    tcPointerMember, tcRParen, tcMemberPointer, tcDot, tcDummy
 };
 
 // tokens that can start a statement

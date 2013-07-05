@@ -123,7 +123,7 @@ void TSymtabNode::PrintVarOrField(void) const {
     extern TListBuffer list;
 
     list.PutLine();
-    list.PutLine(defn.how == dcVariable ? "declared variable" : "declared record field");
+    list.PutLine(defn.how == dcVariable ? "declared variable" : "declared member");
 
     if (pType)pType->PrintTypeSpec(TType::vcTerse);
     if ((defn.how == dcVariable) || (this->next)) list.PutLine();
@@ -256,7 +256,7 @@ TSymtabStack::TSymtabStack(void)
 
 TSymtabStack::~TSymtabStack(void)
 {
-    RemovePredefinedTypes();      
+    RemovePredefinedTypes();
 }
 
 //--------------------------------------------------------------

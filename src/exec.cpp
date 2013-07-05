@@ -4,7 +4,7 @@
 using namespace std;
 
 void TExecutor::Go(void) {
-    icode.Reset();
+    //icode.Reset();
     GetToken();
 
     do {

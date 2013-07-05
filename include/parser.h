@@ -49,8 +49,8 @@ class TParser {
     //TRuntimeStack runStack;
     //TCompactListBuffer * const pCompact; // compact list buffer
 
-    TSymtabNode *ParseSubroutine(void);
-    TSymtabNode *ParseFunctionHeader(void);
+    //TSymtabNode *ParseSubroutine(void);
+    TSymtabNode *ParseFunctionHeader(TSymtabNode *pFunctionNode);
 
     void ParseBlock(TSymtabNode *pRoutineId);
 
@@ -65,7 +65,7 @@ class TParser {
             int parmCheckFlag);
     void ParseActualParm(const TSymtabNode *pFormalId,
             int parmCheckFlag);
-    
+
     // declarations
     void ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId);
     void ParseConstantDeclaration(TSymtabNode *pRoutineId);
@@ -88,10 +88,10 @@ class TParser {
     TType *ParseArrayType(TSymtabNode *pArrayNode);
     void ParseIndexType(TSymtabNode *pArrayNode);
     int ArraySize(TType *pArrayType);
-    TType *ParseComplexType(TSymtabNode *pNode);
+    TType *ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode *pNode);
 
     void ParseVariableDeclarations(TSymtabNode *pRoutineId);
-    void ParseMemberDecls(TSymtabNode *pComplexNode, int offset);
+    void ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int offset);
     void ParseVarOrFieldDecls(TSymtabNode *pRoutineId,
             TType *pComplexType,
             int offset);
@@ -136,7 +136,7 @@ class TParser {
     void InsertLineMarker(void) {
         icode.InsertLineMarker();
     }
-    
+
     TSymtabNode *SearchLocal(const char *pString){
         return symtabStack.SearchLocal(pString);
     }
@@ -146,13 +146,6 @@ class TParser {
     }
 
     TSymtabNode *Find(const char *pString) const {
-//        TSymtabNode *pNode = SearchAll(pString);
-//
-//        if (!pNode) {
-//            Error(errUndefinedIdentifier);
-//            pNode = globalSymtab.Enter(pString);
-//        }
-
         return symtabStack.Find(pString);
     }
 
@@ -163,12 +156,12 @@ class TParser {
     }
 
     TSymtabNode *EnterLocal(const char *pString,
-            TDefnCode dc = dcUndefined) const {
+            TDefnCode dc = dcUndefined)  {
         return symtabStack.EnterLocal(pString, dc);
     }
 
     TSymtabNode *EnterNewLocal(const char *pString,
-            TDefnCode dc = dcUndefined) const {
+            TDefnCode dc = dcUndefined)  {
         return symtabStack.EnterNewLocal(pString, dc);
     }
 

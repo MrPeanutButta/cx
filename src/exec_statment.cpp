@@ -163,7 +163,7 @@ void TExecutor::ExecuteDO(void) {
         GetToken(); //while
         ExecuteExpression(); // (condition)
 
-        if (runStack.Pop() == 1.0)Goto(atLoopStart);
+        if (runStack.Pop() == 1.0) this->GoTo(atLoopStart);
     } while (CurrentLocation() == atLoopStart);
 }
 

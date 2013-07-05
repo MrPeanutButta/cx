@@ -108,13 +108,13 @@ public:
     char *String(void) const {
         return pString;
     }
-    
+
     void RenameNode(const char *pStr){
         if(pString != nullptr){
             delete pString;
             pString = nullptr;
         }
-        
+
         pString = new char[strlen(pStr)];
         strcpy(pString, pStr);
     }
@@ -262,6 +262,10 @@ public:
     void SetCurrentSymtab(TSymtab *pSymtab)
     {
 	pSymtabs[currentNestingLevel] = pSymtab;
+    }
+
+    void SetScope(int &scopeLevel) {
+        currentNestingLevel = scopeLevel;
     }
 
     TSymtabNode *SearchAll (const char *pString) const;

@@ -42,7 +42,7 @@ public:
     }
 };
 
-class TExecutor : public TBackend {
+class TExecutor : protected TBackend {
     long stmtCount;
     TRuntimeStack runStack;
 

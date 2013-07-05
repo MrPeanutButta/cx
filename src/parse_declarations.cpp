@@ -11,7 +11,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
-        ParseComplexType(pNode);
+        ParseComplexType(pRoutineId, pNode);
         // predefined type name found
     } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex)) {
         do {
@@ -26,7 +26,6 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
             // enter new local
             pNewId = EnterNewLocal(pToken->String());
-            pNewId->defn.how = dcVariable;
 
             // set type
             SetType(pNewId->pType, pNode->pType);
@@ -36,22 +35,41 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
             // check for array type
             if (token == tcLeftSubscript) {
                 ParseArrayType(pNewId);
+                pNewId->defn.how = dcVariable;
+            } else if (token == tcLParen) {
+                ParseFunctionHeader(pNewId);
             } else if (token != tcComma) {
                 // check for assignment
                 ParseAssignment(pNewId);
+                pNewId->defn.how = dcVariable;
             }
 
-            // add to routines variable list
-            if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-                pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-            } else {
-                TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
 
-                while (__var->next)
-                    __var = __var->next;
+            if (pNewId->defn.how == dcVariable) {
+                // add to routines variable list
+                if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
+                    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+                } else {
+                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
 
-                __var->next = pNewId;
+                    while (__var->next)
+                        __var = __var->next;
 
+                    __var->next = pNewId;
+
+                }
+            } else if (pNewId->defn.how == dcFunction) {
+                if (pRoutineId && (!pRoutineId->defn.routine.locals.pRoutineIds)) {
+                    pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
+                } else {
+                    TSymtabNode *__fun = pRoutineId->defn.routine.locals.pRoutineIds;
+
+                    while (__fun->next)
+                        __fun = __fun->next;
+
+                    __fun->next = pNewId;
+
+                }
             }
 
         } while (token == tcComma);
@@ -216,156 +234,6 @@ void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign) {
     GetToken();
 }
 
-/**
- * deprecated
- * @param pRoutineId
- *//*
-void TParser::ParseIntegerDeclaration(TSymtabNode* pRoutineId) {
-    TSymtabNode *__int = nullptr;
-    TSymtabNode *pIntId = nullptr;
-
-    while (token == tcIdentifier) {
-        // check if this int follows a const qualifier
-        TSymtabNode *pNode = SearchAll("__un_const__");
-
-        // we found an unamed constant
-        if (pNode) {
-
-            if (pNode->pType->form == dcConstant) {
-                pNode->RenameNode(pToken->String());
-                pIntId = pNode;
-            }
-            // else - new scalar variable
-        } else {
-            if (!pRoutineId->defn.routine.locals.pVariableIds) {
-                pRoutineId->defn.routine.locals.pVariableIds = pIntId;
-            } else {
-                __int = pRoutineId->defn.routine.locals.pVariableIds;
-
-                while (__int->next)
-                    __int = __int->next;
-
-                __int->next = pIntId;
-
-            }
-        }
-
-        SetType(pIntId->pType, pIntegerType);
-        pIntId->defn.how = dcVariable;
-
-        if (!pIntId->pType->pTypeId) {
-            pIntId->pType->pTypeId = pIntId;
-        }
-
-        GetToken();
-
-        switch (token) {
-            case tcEqual:
-            {
-                TTokenCode sign;
-
-                GetToken();
-                if (TokenIn(token, tlUnaryOps)) {
-                    if (token == tcMinus) sign = tcMinus;
-                    GetToken();
-                }
-
-                CondGetToken(tcNumber, errInvalidNumber);
-            }
-                break;
-            case tcComma: GetToken();
-                break;
-            case tcLeftSubscript:
-                //found array form
-                break;
-        }
-    }
-
-    while (token == tcSemicolon)GetToken();
-
-    //Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-    //CondGetToken(tcSemicolon, errMissingSemicolon);
-}*/
-/*
-void TParser::ParseVariableDeclarations(TSymtabNode* pRoutineId) {
-    if (execFlag) {
-        ParseVarOrFieldDecls(pRoutineId, nullptr, 0);
-    }
-}*/
-
-/*
-void TParser::ParseFieldDeclarations(TType* pComplexType, int offset) {
-    ParseVarOrFieldDecls(nullptr, pComplexType, offset);
-}*/
-
-void TParser::ParseMemberDecls(TSymtabNode *pComplexNode, int offset) {
-    // copy of base class would go here
-    if (token == ::tcLBracket)
-        ParseCompound(pComplexNode);
-
-    //    TSymtabNode *pId, *pFirstId, *pLastId;
-    //    TSymtabNode *pPrevSublistLastId = nullptr;
-    //    
-    //    TSymtabNode *pTypeNode = nullptr;
-    //
-    //    //int totalSize = 0;
-    //
-    //    while (token == tcIdentifier) {
-    //        //pFirstId = ParseIdSublist(nullptr, pComplexType, pLastId);
-    //
-    //        Resync(tlSublistFollow, tlDeclarationFollow);
-    //        CondGetToken(tcColon, errMissingColon);
-    //
-    //        //TType *pType = ParseTypeSpec();
-    //
-    //        for (pId = pFirstId; pId; pId = pId->next) {
-    //            //SetType(pId->pType, pType);
-    //
-    //            /*if (pRoutineId) {
-    //                if (execFlag) {
-    //                    pId->defn.data.offset = offset++;
-    //                }
-    //                //           totalSize += pType->size;
-    //            } else {*/
-    //            pId->defn.data.offset = offset;
-    //            //         offset += pType->size;
-    //            //}
-    //        }
-    //
-    //        if (pFirstId) {
-    //            //if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-    //            //  pRoutineId->defn.routine.locals.pVariableIds = pFirstId;
-    //        }
-    //
-    //        if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
-    //        pPrevSublistLastId = pLastId;
-    //    }
-    //
-    //    //if (pRoutineId) {
-    //    //Resync(tlDeclarationFollow, tlStatementStart);
-    //    //CondGetToken(tcSemicolon, errMissingSemicolon);
-    //
-    //    // while (token == tcSemicolon) GetToken();
-    //
-    //    // Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-    //    //} else {
-    //    Resync(tlFieldDeclFollow);
-    //    if (token != tcRBracket) {
-    //        CondGetToken(tcSemicolon, errMissingSemicolon);
-    //
-    //        while (token == tcSemicolon)GetToken();
-    //        Resync(tlFieldDeclFollow, tlDeclarationStart, tlStatementStart);
-    //    }
-    //    //}
-    //    //}/
-    //
-    //    //if (pRoutineId) {
-    //    //pRoutineId->defn.routine.totalLocalSize = totalSize;
-    //    //} else {
-    //    pComplexType->size = offset;
-    //    //}
-}
-
 TSymtabNode *TParser::ParseIdSublist(const TSymtabNode* pRoutineId,
         const TType* pComplexType,
         TSymtabNode*& pLastId) {
@@ -376,9 +244,9 @@ TSymtabNode *TParser::ParseIdSublist(const TSymtabNode* pRoutineId,
     pLastId = nullptr;
 
     while (token == tcIdentifier) {
-        pId = pRoutineId ?
-                EnterNewLocal(pToken->String()) :
-                pComplexType->complex.pSymtabPublic->EnterNew(pToken->String());
+        //  pId = pRoutineId ?
+        //EnterNewLocal(pToken->String()) :
+        //pComplexType->complex.pSymtabPublic->EnterNew(pToken->String());
 
         if (pId->defn.how == dcUndefined) {
             pId->defn.how = pRoutineId ? dcVariable : dcMember;

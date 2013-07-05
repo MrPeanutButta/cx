@@ -6,14 +6,19 @@ class test{
     char a_char;
 };
 
-test inst_test;
-
 class test_object {
-//public:
-    
-//private:
+public:
+    int first;
+    bool is_working;
+    char a_char;
 
-//protected:
-test inst_test2;
+private:
+    float another_member;
+
+protected:
+    double __doub_member;
 
 };
+
+test_object to_1;
+test t1;
