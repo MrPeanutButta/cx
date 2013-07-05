@@ -31,7 +31,7 @@
 //              source line, extract and list its tokens.
 //--------------------------------------------------------------
 
-void TParser::Parse(void) {
+TSymtabNode *TParser::Parse(void) {
 
         TSymtabNode *pProgramId = new TSymtabNode("dummy", dcProgram);
         pProgramId->defn.routine.locals.pParmsIds = nullptr;
@@ -128,6 +128,8 @@ void TParser::Parse(void) {
     list.PutLine();
     sprintf(list.text, "%20d syntax errors.", errorCount);
     list.PutLine();
+    
+    return pProgramId;
 
 }
 //endfig

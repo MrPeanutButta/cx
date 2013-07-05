@@ -20,12 +20,12 @@ int currentNestingLevel = 0;
 int currentLineNumber = 0;
 //endfig
 
-TSymtab globalSymtab;
+//TSymtab globalSymtab;
 int cntSymtabs = 0;
 TSymtab *pSymtabList = nullptr;
 TSymtab **vpSymtabs = nullptr;
 
-TIcode icode;
+//TIcode icode;
 
 extern const TTokenCode tlDeclarationStart[] = {
     tcShort, tcBool, tcInt, tcSigned, tcDouble,
