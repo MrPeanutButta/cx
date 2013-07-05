@@ -8,60 +8,8 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     //ParseDeclarations(pRoutineId);
 
     switch (token) {
-        case tcIdentifier:
-        {
-
-            TSymtabNode *pNode = Find(pToken->String());
-
-            // predefined type name found
-            if (pNode->defn.how == dcType) {
-                do {
-                    GetToken();
-                    TSymtabNode *pNewId = SearchAll(pToken->String());
-
-                    // if not nullptr, it's already defined
-                    if (pNewId != nullptr)
-                        Error(errRedefinedIdentifier);
-
-                    // enter new local
-                    pNewId = EnterNewLocal(pToken->String());
-
-                    // set type
-                    SetType(pNewId->pType, pNode->pType);
-
-                    GetToken();
-
-                    // check for array type
-                    if (token == tcLeftSubscript)
-                        ParseArrayType(pNewId);
-
-                    // check for assignment
-                    ParseAssignment(pNewId);
-
-                    // add to routines variable list
-                    if (pNewId) {
-                        if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-                            pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-                        } else {
-                            TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
-
-                            while (__var->next)
-                                __var = __var->next;
-
-                            __var->next = pNewId;
-
-                        }
-
-                        pNewId->defn.how = dcVariable;
-                    }
-
-                } while (token == tcComma);
-            } else {
-                //licNetGetTokenAppend();
-                ParseAssignment(pNode);
-            }
-
-        }
+        case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
+        
             break;
             // not a type but a cv-qualifier
         case tcConst:
@@ -118,7 +66,6 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
     TType *pTargetType = ParseVariable(pTargetId);
     TType *pExprType = nullptr;
-    //
 
     switch (token) {
         case tcEqual:

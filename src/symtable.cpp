@@ -88,7 +88,7 @@ void TSymtabNode::PrintIdentifier(void) const {
         case dcType: PrintType();
             break;
         case dcVariable:
-        case dcField: PrintVarOrField();
+        case dcMember: PrintVarOrField();
             break;
     }
 }
@@ -223,3 +223,114 @@ void TLineNumList::Print(int newLineFlag, int indent) const {
     list.PutLine();
 
 }
+
+//              ************************
+//              *		       *
+//              *  Symbol Table Stack  *
+//              *		       *
+//              ************************
+
+//fig 8-6
+//--------------------------------------------------------------
+//  Constructor	    Initialize the global (level 0) symbol
+//		    table, and set the others to NULL.
+//--------------------------------------------------------------
+
+TSymtabStack::TSymtabStack(void)
+{
+    extern TSymtab globalSymtab;
+    void InitializeStandardRoutines(TSymtab *pSymtab);
+
+    currentNestingLevel = 0;
+    for (int i = 1; i < maxNestingLevel; ++i) pSymtabs[i] = NULL;
+
+    //--Initialize the global nesting level.
+    pSymtabs[0] = &globalSymtab;
+    InitializePredefinedTypes (pSymtabs[0]);
+    //InitializeStandardRoutines(pSymtabs[0]);
+}
+
+//--------------------------------------------------------------
+//  Destructor	    Remove the predefined types.
+//--------------------------------------------------------------
+
+TSymtabStack::~TSymtabStack(void)
+{
+    RemovePredefinedTypes();      
+}
+
+//--------------------------------------------------------------
+//  SearchAll   Search the symbol table stack for the given
+//              name string.
+//
+//      pString : ptr to name string to find
+//
+//  Return: ptr to symbol table node if found, else NULL
+//--------------------------------------------------------------
+
+TSymtabNode *TSymtabStack::SearchAll(const char *pString) const
+{
+    for (int i = currentNestingLevel; i >= 0; --i) {
+	TSymtabNode *pNode = pSymtabs[i]->Search(pString);
+	if (pNode) return pNode;
+    }
+
+    return NULL;
+}
+
+//--------------------------------------------------------------
+//  Find        Search the symbol table stack for the given
+//              name string.  If the name is not already in
+//              there, flag the undefined identifier error,
+//		and then enter the name into the local symbol
+//		table.
+//
+//      pString : ptr to name string to find
+//
+//  Return: ptr to symbol table node
+//--------------------------------------------------------------
+
+TSymtabNode *TSymtabStack::Find(const char *pString) const
+{
+    TSymtabNode *pNode = SearchAll(pString);
+
+    if (!pNode) {
+	Error(errUndefinedIdentifier);
+	pNode = pSymtabs[currentNestingLevel]->Enter(pString);
+    }
+
+    return pNode;
+}
+
+//--------------------------------------------------------------
+//  EnterScope	Enter a new nested scope.  Increment the nesting
+//		level.  Push new scope's symbol table onto the
+//		stack.
+//
+//      pSymtab : ptr to scope's symbol table
+//--------------------------------------------------------------
+
+void TSymtabStack::EnterScope(void)
+{
+    if (++currentNestingLevel > maxNestingLevel) {
+	Error(errNestingTooDeep);
+	AbortTranslation(abortNestingTooDeep);
+    }
+
+    SetCurrentSymtab(new TSymtab);
+}
+
+//--------------------------------------------------------------
+//  ExitScope	Exit the current scope and return to the
+//		enclosing scope.  Decrement the nesting level.
+//		Pop the closed scope's symbol table off the
+//		stack and return a pointer to it.
+//
+//  Return: ptr to closed scope's symbol table
+//--------------------------------------------------------------
+
+TSymtab *TSymtabStack::ExitScope(void)
+{
+    return pSymtabs[currentNestingLevel--];
+}
+//endfig

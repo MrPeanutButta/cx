@@ -5,7 +5,7 @@
 #include "types.h"
 
 const char *formStrings[] = {
-    "*error*", "scalar", "enum", "subrange", "array", "record"
+    "*error*", "scalar", "enum", "subrange", "array", "complex"
 };
 
 TType *pIntegerType = nullptr;
@@ -14,6 +14,7 @@ TType *pDoubleType = nullptr;
 TType *pBooleanType = nullptr;
 TType *pCharType = nullptr;
 TType *pClassType = nullptr;
+TType *pComplexType = nullptr;
 
 TType *pDummyType = nullptr;
 
@@ -55,8 +56,8 @@ TType::~TType() {
             RemoveType(array.pIndexType);
             RemoveType(array.pElmtType);
             break;
-        case fcRecord:
-            delete record.pSymtab;
+        case fcComplex:
+            delete complex.pSymtabPublic;
             break;
 
         default:
@@ -82,7 +83,7 @@ void TType::PrintTypeSpec(TVerbosityCode vc) const {
             break;
         case fcArray: PrintArrayType(vc);
             break;
-        case fcRecord: PrintRecordType(vc);
+        case fcComplex: PrintRecordType(vc);
             break;
     }
 }
@@ -139,7 +140,7 @@ void TType::PrintRecordType(TVerbosityCode vc) const {
     list.PutLine("record field identifiers (offset : name)---");
     list.PutLine();
 
-    for (TSymtabNode *pFieldId = record.pSymtab->Root();
+    for (TSymtabNode *pFieldId = complex.pSymtabPublic->Root();
             pFieldId; pFieldId = pFieldId->next) {
         sprintf(list.text, "\t%d : %s",
                 pFieldId->defn.data.offset,
@@ -154,6 +155,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
     TSymtabNode *pDoubleId = pSymtab->Enter("double", dcType);
 
+    //TSymtabNode *pComplexId = pSymtab->Enter("class", dcType);
+    
     TSymtabNode *pBooleanId = pSymtab->Enter("bool", dcType);
     TSymtabNode *pCharId = pSymtab->Enter("char", dcType);
     TSymtabNode *pFalseId = pSymtab->Enter("false", dcConstant);
@@ -174,6 +177,9 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     if (!pCharType) {
         SetType(pCharType, new TType(fcScalar, sizeof (char), pCharId));
     }
+    /*if(!pComplexType){
+        SetType(pComplexType, new TType(fcComplex, sizeof(TType), pComplexId));
+    }*/
 
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
@@ -183,6 +189,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 
     SetType(pBooleanId->pType, pBooleanType);
     SetType(pCharId->pType, pCharType);
+    
+    //SetType(pComplexId->pType, pComplexType);
 
     pBooleanType->enumeration.max = 1;
     pBooleanType->enumeration.pConstIds = pFalseId;
@@ -199,6 +207,7 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 }
 
 void RemovePredefinedTypes(void) {
+    //RemoveType(pComplexType);
     RemoveType(pIntegerType);
     RemoveType(pFloatType);
     RemoveType(pDoubleType);

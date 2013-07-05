@@ -1,0 +1,19 @@
+class test{
+    int first;
+    bool is_working;
+    float another_member;
+    double __doub_member;
+    char a_char;
+};
+
+test inst_test;
+
+class test_object {
+//public:
+    
+//private:
+
+//protected:
+test inst_test2;
+
+};

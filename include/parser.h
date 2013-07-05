@@ -31,7 +31,7 @@
 
 using namespace std;
 
-extern TIcode icode;
+//extern TIcode icode;
 extern TSymtab globalSymtab;
 
 //--------------------------------------------------------------
@@ -42,13 +42,20 @@ class TParser {
     TTextScanner * const pScanner; // ptr to the scanner
     TToken *pToken; // ptr to the current token
     TTokenCode token; // code of current token
-
+    TSymtabStack symtabStack;
+    TIcode icode;
+    
     const char *file_name;
     //TRuntimeStack runStack;
     //TCompactListBuffer * const pCompact; // compact list buffer
 
+    TSymtabNode *ParseSubroutine(void);
+    TSymtabNode *ParseFunctionHeader(void);
+    
+    void ParseBlock(TSymtabNode *pRoutineId);
+    
     // declarations
-    void ParseDeclarations(TSymtabNode *pNode);
+    void ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId);
     void ParseConstantDeclaration(TSymtabNode *pRoutineId);
     void ParseConstant(TSymtabNode *pConstId);
     void ParseIdentifierConstant(TSymtabNode *pId1, TTokenCode sign);
@@ -69,15 +76,15 @@ class TParser {
     TType *ParseArrayType(TSymtabNode *pArrayNode);
     void ParseIndexType(TSymtabNode *pArrayNode);
     int ArraySize(TType *pArrayType);
-    TType *ParseRecordType(void);
+    TType *ParseComplexType(TSymtabNode *pNode);
 
     void ParseVariableDeclarations(TSymtabNode *pRoutineId);
-    void ParseFieldDeclarations(TType *pRecordType, int offset);
+    void ParseMemberDecls(TSymtabNode *pComplexNode, int offset);
     void ParseVarOrFieldDecls(TSymtabNode *pRoutineId,
-            TType *pRecordType,
+            TType *pComplexType,
             int offset);
     TSymtabNode *ParseIdSublist(const TSymtabNode *pRoutineId,
-            const TType *pRecordType, TSymtabNode *&pLastId);
+            const TType *pComplexType, TSymtabNode *&pLastId);
 
     // expressions
     TType *ParseExpression(void);

@@ -12,10 +12,10 @@
 #include "symtable.h"
 
 extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
-        *pDummyType;
+        *pDummyType, *pComplexType;
 
 enum TFormCode {
-    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcRecord
+    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex
 };
 
 extern const char *formStrings[];
@@ -47,8 +47,10 @@ public:
         } array;
 
         struct {
-            TSymtab *pSymtab;
-        } record;
+            TSymtab *pSymtabPublic;
+            TSymtab *pSymtabPrivate;
+            TSymtab *pSymtabProtected;
+        } complex;
     };
 
     TType(TFormCode fc, int s, TSymtabNode *pId);
@@ -58,7 +60,7 @@ public:
 
     bool IsScalar(void) const {
         return (form != fcArray) &&
-                (form != fcRecord);
+                (form != fcComplex);
     }
 
     TType *Base(void) const {

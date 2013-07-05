@@ -3,8 +3,8 @@
 
 TType *TParser::ParseArrayType(TSymtabNode *pArrayNode) {
     TType *pArrayType = pArrayNode->pType;
-    TType *pElmtType = pArrayNode->pType;
-    bool indexFlag(false);
+    //TType *pElmtType = pArrayNode->pType;
+    //bool indexFlag(false);
 
     //GetToken();
     CondGetToken(tcLeftSubscript, errMissingLeftSubscript);
@@ -12,12 +12,17 @@ TType *TParser::ParseArrayType(TSymtabNode *pArrayNode) {
     pArrayNode->pType->form = fcArray;
     pArrayNode->pType->array.pElmtType = pArrayNode->pType;
 
-
-
-    CondGetToken(tcRightSubscript, errMissingRightSubscript);
-
-    SetType(pElmtType->array.pElmtType, ParseTypeSpec(pArrayNode));
-
+    SetType(pArrayType->array.pElmtType, pArrayType->pTypeId->pType);
+    SetType(pArrayType->array.pIndexType, pIntegerType);
+    
+    if(token == tcRightSubscript){
+        //CondGetToken(tcRightSubscript, errMissingRightSubscript);
+        ParseAssignment(pArrayNode);
+    }else{
+        int max_index = pToken->Value().__int;
+        CondGetToken(tcNumber, errInvalidNumber);
+    }
+        
     if (pArrayType->form != fcNone) {
         pArrayType->size = ArraySize(pArrayType);
     }
@@ -64,15 +69,20 @@ int TParser::ArraySize(TType* pArrayType) {
     return (pArrayType->array.elmtCount * pArrayType->array.pElmtType->size);
 }
 
-TType *TParser::ParseRecordType(void) {
-    TType *pType = new TType(fcRecord, 0, nullptr);
+TType *TParser::ParseComplexType(TSymtabNode *pNode) {
+    //TType *pType = new TType(fcComplex, 0, nullptr);
 
-    pType->record.pSymtab = new TSymtab;
+    pNode->pType->complex.pSymtabPublic = new TSymtab;
 
-    GetToken();
-    ParseFieldDeclarations(pType, 0);
+    //GetToken();
+    ParseMemberDecls(pNode, 0);
 
-    CondGetToken(tcRBracket, errMissingRightBracket);
-
-    return pType;
+    CondGetToken(tcSemicolon, errMissingSemicolon);
+    
+    SetType(pNode->pType, pComplexType);
+    pNode->defn.how = dcType;
+    
+    //TType *pId = pNode->pType->complex.pSymtabPublic
+    
+    return pNode->pType;
 }

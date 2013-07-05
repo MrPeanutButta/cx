@@ -252,7 +252,8 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    GetTokenAppend();
+    if(token == tcEqual) return pResultType;
+    if(token != tcSemicolon)GetTokenAppend();
 
     while (TokenIn(token, tlSubscriptOrFieldStart)) {
         pResultType = token == tcLeftSubscript ? ParseSubscripts(pResultType)
@@ -287,8 +288,8 @@ TType *TParser::ParseSubscripts(const TType* pType) {
 TType *TParser::ParseField(const TType* pType) {
     GetTokenAppend();
 
-    if ((token == tcIdentifier) && (pType->form == fcRecord)) {
-        TSymtabNode *pFieldId = pType->record.pSymtab->Search(pToken->String());
+    if ((token == tcIdentifier) && (pType->form == fcComplex)) {
+        TSymtabNode *pFieldId = pType->complex.pSymtabPublic->Search(pToken->String());
 
         if (!pFieldId) Error(errInvalidField);
 

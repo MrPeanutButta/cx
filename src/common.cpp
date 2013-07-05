@@ -107,7 +107,7 @@ extern const TTokenCode tlStatementStart[] = {
 
 // tokens that can follow a statement
 extern const TTokenCode tlStatementFollow[] = {
-    tcSemicolon, tcLBracket, tcElse, tcWhile,
+    tcSemicolon, tcLBracket, tcRBracket, tcElse, tcWhile,
     tcDummy
 };
 

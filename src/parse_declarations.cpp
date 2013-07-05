@@ -5,24 +5,59 @@
 
 bool execFlag(true);
 
-void TParser::ParseDeclarations(TSymtabNode *pNode) {
+void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
-    TSymtabNode *pNewNode = nullptr;
+    TSymtabNode *pNode = Find(pToken->String());
 
-    switch (token) {
-        case tcConst:
+    // if complex then this is an object
+    if (pNode->pType->form == fcComplex) {
+        ParseComplexType(pNode);
+        // predefined type name found
+    } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex)) {
+        do {
             GetToken();
-            ParseConstantDeclaration(pNode);
-            break;
-        case tcTypeDef:
+            TSymtabNode *pNewId = nullptr;
+
+            pNewId = SearchAll(pToken->String());
+
+            // if not nullptr, it's already defined
+            if (pNewId != nullptr)
+                Error(errRedefinedIdentifier);
+
+            // enter new local
+            pNewId = EnterNewLocal(pToken->String());
+            pNewId->defn.how = dcVariable;
+
+            // set type
+            SetType(pNewId->pType, pNode->pType);
+
             GetToken();
-            ParseTypeDefinitions(pNode);
-            break;
-        case tcInt:
-            GetToken();
-            pNewNode = new TSymtabNode(pToken->String(), dcVariable);
-            ParseIntegerDeclaration(pNewNode);
-            break;
+
+            // check for array type
+            if (token == tcLeftSubscript) {
+                ParseArrayType(pNewId);
+            } else if (token != tcComma) {
+                // check for assignment
+                ParseAssignment(pNewId);
+            }
+
+            // add to routines variable list
+            if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
+                pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+            } else {
+                TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
+
+                while (__var->next)
+                    __var = __var->next;
+
+                __var->next = pNewId;
+
+            }
+
+        } while (token == tcComma);
+    } else {
+        //licNetGetTokenAppend();
+        ParseAssignment(pNode);
     }
 }
 
@@ -184,7 +219,7 @@ void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign) {
 /**
  * deprecated
  * @param pRoutineId
- */
+ *//*
 void TParser::ParseIntegerDeclaration(TSymtabNode* pRoutineId) {
     TSymtabNode *__int = nullptr;
     TSymtabNode *pIntId = nullptr;
@@ -250,83 +285,89 @@ void TParser::ParseIntegerDeclaration(TSymtabNode* pRoutineId) {
 
     //Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
     //CondGetToken(tcSemicolon, errMissingSemicolon);
-}
-
+}*/
+/*
 void TParser::ParseVariableDeclarations(TSymtabNode* pRoutineId) {
     if (execFlag) {
         ParseVarOrFieldDecls(pRoutineId, nullptr, 0);
     }
-}
+}*/
 
-void TParser::ParseFieldDeclarations(TType* pRecordType, int offset) {
-    ParseVarOrFieldDecls(nullptr, pRecordType, offset);
-}
+/*
+void TParser::ParseFieldDeclarations(TType* pComplexType, int offset) {
+    ParseVarOrFieldDecls(nullptr, pComplexType, offset);
+}*/
 
-void TParser::ParseVarOrFieldDecls(TSymtabNode* pRoutineId,
-        TType* pRecordType, int offset) {
-    TSymtabNode *pId, *pFirstId, *pLastId;
-    TSymtabNode *pPrevSublistLastId = nullptr;
+void TParser::ParseMemberDecls(TSymtabNode *pComplexNode, int offset) {
+    // copy of base class would go here
+    if (token == ::tcLBracket)
+        ParseCompound(pComplexNode);
 
-    int totalSize = 0;
-
-    while (token == tcIdentifier) {
-        pFirstId = ParseIdSublist(pRoutineId, pRecordType, pLastId);
-
-        Resync(tlSublistFollow, tlDeclarationFollow);
-        CondGetToken(tcColon, errMissingColon);
-
-        //        TType *pType = ParseTypeSpec();
-
-        for (pId = pFirstId; pId; pId = pId->next) {
-            //            SetType(pId->pType, pType);
-
-            if (pRoutineId) {
-                if (execFlag) {
-                    pId->defn.data.offset = offset++;
-                }
-                //           totalSize += pType->size;
-            } else {
-                pId->defn.data.offset = offset;
-                //         offset += pType->size;
-            }
-        }
-
-        if (pFirstId) {
-            if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-                pRoutineId->defn.routine.locals.pVariableIds = pFirstId;
-            }
-
-            if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
-            pPrevSublistLastId = pLastId;
-        }
-
-        if (pRoutineId) {
-            Resync(tlDeclarationFollow, tlStatementStart);
-            CondGetToken(tcSemicolon, errMissingSemicolon);
-
-            while (token == tcSemicolon) GetToken();
-
-            Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-        } else {
-            Resync(tlFieldDeclFollow);
-            if (token != tcRBracket) {
-                CondGetToken(tcSemicolon, errMissingSemicolon);
-
-                while (token == tcSemicolon)GetToken();
-                Resync(tlFieldDeclFollow, tlDeclarationStart, tlStatementStart);
-            }
-        }
-    }
-
-    if (pRoutineId) {
-        pRoutineId->defn.routine.totalLocalSize = totalSize;
-    } else {
-        pRecordType->size = offset;
-    }
+    //    TSymtabNode *pId, *pFirstId, *pLastId;
+    //    TSymtabNode *pPrevSublistLastId = nullptr;
+    //    
+    //    TSymtabNode *pTypeNode = nullptr;
+    //
+    //    //int totalSize = 0;
+    //
+    //    while (token == tcIdentifier) {
+    //        //pFirstId = ParseIdSublist(nullptr, pComplexType, pLastId);
+    //
+    //        Resync(tlSublistFollow, tlDeclarationFollow);
+    //        CondGetToken(tcColon, errMissingColon);
+    //
+    //        //TType *pType = ParseTypeSpec();
+    //
+    //        for (pId = pFirstId; pId; pId = pId->next) {
+    //            //SetType(pId->pType, pType);
+    //
+    //            /*if (pRoutineId) {
+    //                if (execFlag) {
+    //                    pId->defn.data.offset = offset++;
+    //                }
+    //                //           totalSize += pType->size;
+    //            } else {*/
+    //            pId->defn.data.offset = offset;
+    //            //         offset += pType->size;
+    //            //}
+    //        }
+    //
+    //        if (pFirstId) {
+    //            //if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
+    //            //  pRoutineId->defn.routine.locals.pVariableIds = pFirstId;
+    //        }
+    //
+    //        if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
+    //        pPrevSublistLastId = pLastId;
+    //    }
+    //
+    //    //if (pRoutineId) {
+    //    //Resync(tlDeclarationFollow, tlStatementStart);
+    //    //CondGetToken(tcSemicolon, errMissingSemicolon);
+    //
+    //    // while (token == tcSemicolon) GetToken();
+    //
+    //    // Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
+    //    //} else {
+    //    Resync(tlFieldDeclFollow);
+    //    if (token != tcRBracket) {
+    //        CondGetToken(tcSemicolon, errMissingSemicolon);
+    //
+    //        while (token == tcSemicolon)GetToken();
+    //        Resync(tlFieldDeclFollow, tlDeclarationStart, tlStatementStart);
+    //    }
+    //    //}
+    //    //}/
+    //
+    //    //if (pRoutineId) {
+    //    //pRoutineId->defn.routine.totalLocalSize = totalSize;
+    //    //} else {
+    //    pComplexType->size = offset;
+    //    //}
 }
 
 TSymtabNode *TParser::ParseIdSublist(const TSymtabNode* pRoutineId,
-        const TType* pRecordType,
+        const TType* pComplexType,
         TSymtabNode*& pLastId) {
 
     TSymtabNode *pId;
@@ -337,10 +378,10 @@ TSymtabNode *TParser::ParseIdSublist(const TSymtabNode* pRoutineId,
     while (token == tcIdentifier) {
         pId = pRoutineId ?
                 EnterNewLocal(pToken->String()) :
-                pRecordType->record.pSymtab->EnterNew(pToken->String());
+                pComplexType->complex.pSymtabPublic->EnterNew(pToken->String());
 
         if (pId->defn.how == dcUndefined) {
-            pId->defn.how = pRoutineId ? dcVariable : dcField;
+            pId->defn.how = pRoutineId ? dcVariable : dcMember;
             if (!pFirstId) pFirstId = pLastId = pId;
             else {
                 pLastId->next = pId;
