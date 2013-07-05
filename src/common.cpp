@@ -21,7 +21,7 @@ int currentLineNumber = 0;
 //endfig
 
 //TSymtab globalSymtab;
-int cntSymtabs = 0;
+//int cntSymtabs = 0;
 TSymtab *pSymtabList = nullptr;
 TSymtab **vpSymtabs = nullptr;
 
