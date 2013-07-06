@@ -47,6 +47,10 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             break;
         case tcReturn: ParseRETURN(pRoutineId);
             break;
+        case tcPound:
+            GetToken();
+            ParseDirective(pRoutineId);
+            break;
     }
 
     if (token != tcEndOfFile) {
@@ -68,8 +72,10 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
-    TType *pTargetType = ParseVariable(pTargetId);
+    TType *pTargetType = pTargetId->pType;//ParseVariable(pTargetId);
     TType *pExprType = nullptr;
+    
+    //GetToken();
 
     switch (token) {
         case tcEqual:
@@ -183,9 +189,13 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         case tcComma:
         case tcSemicolon:
             break;
-        case tcIdentifier:
-            pExprType = ParseAssignment(pTargetId);
-            break;
+        case tcIdentifier:{
+            
+            
+            
+            pExprType = ParseFactor();
+        }
+        break;
         default:
             Error(errInvalidAssignment);
             break;

@@ -123,26 +123,55 @@ TType *TParser::ParseFactor(void) {
         case tcIdentifier:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
-            if (pNode->defn.how != dcUndefined) {
-                icode.Put(pNode);
-                GetTokenAppend();
+            icode.Put(pNode);
 
-                if ((pNode->pType == pIntegerType) ||
-                        (pNode->pType == pFloatType))ParseSuffix(pNode);
+            switch (pNode->defn.how) {
+                case dcFunction:
+                    pResultType = ParseSubroutineCall(pNode, true);
+                    break;
+                case dcConstant:
+                    GetTokenAppend();
+                    pResultType = pNode->pType;
+                    break;
 
-            } else {
-                pNode->defn.how = dcVariable;
-                SetType(pNode->pType, pDummyType);
-            }/*else {
-                Error(errUndefinedIdentifier);
-                EnterLocal(pToken->String());
-                GetTokenAppend();
-            }*/
 
-            if (pNode->defn.how == dcConstant) {
-                pResultType = pNode->pType;
-                GetTokenAppend();
-            } else pResultType = ParseVariable(pNode);
+                case dcVariable:
+                case dcType:
+                case dcValueParm:
+                case dcVarParm:
+                case dcMember:
+                    
+                    GetTokenAppend();
+                    
+                    if ((pNode->pType == pIntegerType) ||
+                            (pNode->pType == pFloatType))ParseSuffix(pNode);
+                    
+                    pResultType = pNode->pType;
+                    break;
+                default:
+                    Error(errUndefinedIdentifier);
+                    break;
+
+            }
+//            if (pNode->defn.how != dcUndefined) {
+//                icode.Put(pNode);
+//                GetTokenAppend();
+//
+//
+//
+//            } else {
+//                pNode->defn.how = dcVariable;
+//                SetType(pNode->pType, pDummyType);
+//            }/*else {
+//                Error(errUndefinedIdentifier);
+//                EnterLocal(pToken->String());
+//                GetTokenAppend();
+//            }*/
+//
+//            if (pNode->defn.how == dcConstant) {
+//                pResultType = pNode->pType;
+//                GetTokenAppend();
+//            } else pResultType = pNode->pType;
         }
             break;
 
@@ -252,10 +281,13 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    if (token == tcEqual) return pResultType;
+    //GetTokenAppend();
+    //if (token == tcEqual) return pResultType;
     //if (token == tcIdentifier)GetTokenAppend();
     //;
-    //    if(token != tcSemicolon)GetTokenAppend();
+    if (token != tcSemicolon)GetTokenAppend();
+
+    //GetTokenAppend();
 
     while (TokenIn(token, tlSubscriptOrFieldStart)) {
         pResultType = token == tcLeftSubscript ? ParseSubscripts(pResultType)

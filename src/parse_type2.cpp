@@ -211,8 +211,16 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 GetToken();
 
                 // check for array type
+                // check for array type
                 if (token == tcLeftSubscript) {
                     ParseArrayType(member);
+                    member->defn.how = dcVariable;
+                } else if (token == tcLParen) {
+                    ParseFunctionHeader(member);
+                } else if (token != tcComma) {
+                    // check for assignment
+                    //ParseAssignment(pNewId);
+                    member->defn.how = dcVariable;
                 }
 
                 if (!pFirstId) pFirstId = pLastId = member;

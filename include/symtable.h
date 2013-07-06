@@ -25,15 +25,11 @@ class TType;
 enum TDefnCode {
     dcUndefined, dcConstant, dcType, dcVariable, dcMember,
     dcValueParm, dcVarParm,
-    dcProgram, dcProcedure, dcFunction
+    dcProgram, dcFunction
 };
 
 enum TRoutineCode {
     rcDeclared, rcForward,
-    rcRead, rcReadln, rcWrite, rcWriteln,
-    rcAbs, rcArctan, rcChr, rcCos, rcEof, rcEoln,
-    rcExp, rcLn, rcOdd, rcOrd, rcPred, rcRound,
-    rcSin, rcSqr, rcSqrt, rcSucc, rcTrunc
 };
 
 struct TLocalIds {

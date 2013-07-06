@@ -122,6 +122,8 @@ class TParser {
     void ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType);
     void ParseCompound(TSymtabNode* pRoutineId);
     void ParseRETURN(TSymtabNode* pRoutineId);
+    
+    void ParseDirective(TSymtabNode *pRoutineId);
 
     void GetToken(void) {
         pToken = pScanner->Get();

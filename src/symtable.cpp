@@ -13,7 +13,6 @@ bool xrefFlag(false);
 TDefn::~TDefn() {
     switch (how) {
         case dcProgram:
-        case dcProcedure:
         case dcFunction:
 
             if (routine.which == rcDeclared) {

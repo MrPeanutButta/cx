@@ -13,7 +13,8 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
     if (pNode->pType->form == fcComplex) {
         ParseComplexType(pRoutineId, pNode);
         // predefined type name found
-    } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex)) {
+    } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
+            (pNode->defn.how != dcFunction)) {
         do {
             GetToken();
             TSymtabNode *pNewId = nullptr;
@@ -73,8 +74,11 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
             }
 
         } while (token == tcComma);
-    } else {
+    } else if(pNode->defn.how == dcFunction){
+        ParseSubroutineCall(pNode, true);
+    }else{
         //licNetGetTokenAppend();
+        GetTokenAppend();
         ParseAssignment(pNode);
     }
 }
