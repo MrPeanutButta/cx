@@ -127,6 +127,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
 
     // pointer to scoped table
     TSymtab *member_table = nullptr;
+    
     TSymtabNode *pNode = nullptr;
 
     TSymtabNode *pLastId = nullptr; // ptrs to symtab nodes
@@ -238,6 +239,10 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
 
     } while (token != tcRBracket);
 
+    // connect all symtabs for use within the class
+    pComplexType->complex.pSymtabClassScope = new TSymtab;
+    pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
+    
     CondGetToken(tcRBracket, errMissingRightBracket);
     CondGetToken(tcSemicolon, errMissingSemicolon);
 }

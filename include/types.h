@@ -8,15 +8,10 @@
 #ifndef TYPES_H
 #define	TYPES_H
 
-
-#include <map>
 #include "error.h"
 #include "symtable.h"
 
 using namespace std;
-
-// for public, private and protected scopes
-typedef map<TTokenCode, TSymtab *> ScopedSymtab;
 
 extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
         *pDummyType, *pComplexType;
@@ -56,10 +51,11 @@ public:
     };
 
     struct {
-        /*TSymtab *pSymtabPublic;
-        TSymtab *pSymtabPrivate;
-        TSymtab *pSymtabProtected;*/
-
+        /* used only for internal to class.
+         * connects all scopes to a single table */
+        TSymtab *pSymtabClassScope;
+        
+        // seperate public, private and protected tables
         ScopedSymtab MemberTable;
     } complex;
 

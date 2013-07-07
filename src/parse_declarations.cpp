@@ -8,7 +8,8 @@ bool execFlag(true);
 void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
     TSymtabNode *pNode = Find(pToken->String());
-
+    icode.Put(pNode);
+    
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
         ParseComplexType(pRoutineId, pNode);
@@ -74,9 +75,9 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
             }
 
         } while (token == tcComma);
-    } else if(pNode->defn.how == dcFunction){
+    } else if (pNode->defn.how == dcFunction) {
         ParseSubroutineCall(pNode, true);
-    }else{
+    } else {
         //licNetGetTokenAppend();
         GetTokenAppend();
         ParseAssignment(pNode);

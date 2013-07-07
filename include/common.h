@@ -21,6 +21,10 @@
 
 extern int currentLineNumber;
 extern int currentNestingLevel;
+extern TSymtab globalSymtab;
+extern int cntSymtabs;
+extern TSymtab *pSymtabList;
+extern TSymtab **vpSymtabs;
 
 extern TSymtab globalSymtab;
 

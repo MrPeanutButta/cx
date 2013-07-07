@@ -8,8 +8,11 @@
 #ifndef SYMTABLE_H
 #define	SYMTABLE_H
 
+#include <map>
 #include <cstring>
 #include "misc.h"
+
+using namespace std;
 
 extern bool xrefFlag;
 extern int currentLineNumber;
@@ -21,6 +24,9 @@ class TSymtabNode;
 class TLineNumList;
 class TIcode;
 class TType;
+
+// for public, private and protected scopes
+typedef map<TTokenCode, TSymtab *> ScopedSymtab;
 
 enum TDefnCode {
     dcUndefined, dcConstant, dcType, dcVariable, dcMember,
@@ -164,6 +170,13 @@ public:
 
     TSymtabNode *Root(void) const {
         return root;
+    }
+    
+    void ConnectTables(ScopedSymtab &classSymtab){
+        
+        root = classSymtab[tcPublic]->root;
+        root->left = classSymtab[tcProtected]->root;
+        root->right = classSymtab[tcPrivate]->root;
     }
 
     TSymtabNode *Get(short xNode) const {

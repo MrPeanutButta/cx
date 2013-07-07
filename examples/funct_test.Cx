@@ -1,5 +1,5 @@
 
-#include class_test.Cx
+#include class_test
 
 int global_int;
 

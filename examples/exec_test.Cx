@@ -1,0 +1,10 @@
+int global_int = 0;
+
+int main(int argc){
+
+    int a = argc;
+    int b = 2;
+    int c = a * b;
+
+    return c;
+}

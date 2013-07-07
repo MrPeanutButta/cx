@@ -144,6 +144,15 @@ void TType::PrintRecordType(TVerbosityCode vc) {
         list.PutLine("empty type");
         return;
     }
+    
+    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
+            pFieldId; pFieldId = pFieldId->next) {
+        sprintf(list.text, "\t%d : %s",
+                pFieldId->defn.data.offset,
+                pFieldId->String());
+        list.PutLine();
+        pFieldId->PrintVarOrField();
+    }
 
     list.PutLine("public:\n");
 
