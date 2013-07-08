@@ -74,7 +74,7 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
     TType *pTargetType = pTargetId->pType;//ParseVariable(pTargetId);
     TType *pExprType = nullptr;
-    
+
     //GetTokenAppend();
 
     switch (token) {
@@ -187,13 +187,11 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         case tcComma:
         case tcSemicolon:
             break;
-        /*case tcIdentifier:{
-            
-            
-            
+        case tcIdentifier:
+        {
             pExprType = ParseFactor();
         }
-        break;*/
+        break;
         default:
             Error(errInvalidAssignment);
             break;
@@ -374,5 +372,7 @@ void TParser::ParseCompound(TSymtabNode* pRoutineId) {
 void TParser::ParseRETURN(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
-    ParseExpression();
+    // expr 1
+    CheckAssignmentTypeCompatible(pRoutineId->pType, ParseExpression(),
+            errIncompatibleTypes);
 }

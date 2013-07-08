@@ -1,11 +1,15 @@
-
+int pow(int a, int b){
+        return a * b;
+}
 
 int main(){
 
     int a = 0;
     int c = 5;
 
-    a = c * c;  
+    a = pow(c, c);
+
+    c = a + a;
+
+    return c;
 }
-
-

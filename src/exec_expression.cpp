@@ -136,19 +136,6 @@ TType *TExecutor::ExecuteExpression(void) {
     return pResultType;
 }
 
-/*void TExecutor::ExecuteSuffix(void) {
-    GetToken();
-
-    if (token == tcPlusPlus) {
-        Push(runStack.Pop() + 1);
-        pNode
-        GetToken();
-    } else if (token == tcMinusMinus) {
-        Push(runStack.Pop() - 1);
-        GetToken();
-    }
-}*/
-
 TType *TExecutor::ExecuteSimpleExpression(void) {
 
     TType *pOperandType; // ptr to operand's type
@@ -404,7 +391,6 @@ TType *TExecutor::ExecuteFactor(void) {
 
                 default:
                     pResultType = ExecuteVariable(pNode, false);
-                    //ExecuteSuffix(pNode);
                     break;
             }
             //ExecuteSuffix(pNode);
@@ -479,15 +465,14 @@ TType *TExecutor::ExecuteFactor(void) {
 //  Return: ptr to constant's type object
 //--------------------------------------------------------------
 
-TType *TExecutor::ExecuteConstant(const TSymtabNode *pId)
-{
-    TType      *pType = pId->pType;
-    TDataValue  value = pId->defn.constant.value;
+TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
+    TType *pType = pId->pType;
+    TDataValue value = pId->defn.constant.value;
 
-    if      (pType == pFloatType)     Push(value.__float);
-    else if (pType == pCharType)     Push(value.__char);
+    if (pType == pFloatType) Push(value.__float);
+    else if (pType == pCharType) Push(value.__char);
     else if (pType->form == fcArray) Push(value.pString);
-    else                             Push(value.__int);
+    else Push(value.__int);
 
     GetToken();
     TraceDataFetch(pId, TOS(), pType);
@@ -505,8 +490,7 @@ TType *TExecutor::ExecuteConstant(const TSymtabNode *pId)
 //--------------------------------------------------------------
 
 TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
-				  int addressFlag)
-{
+        int addressFlag) {
     TType *pType = pId->pType;
 
     //--Get the variable's runtime stack address.
@@ -515,9 +499,9 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     //--If it's a VAR formal parameter, or the type is an array
     //--or record, then the stack item contains the address
     //--of the data.  Push the data address onto the stack.
-    Push((pId->defn.how == dcVarParm) || (! pType->IsScalar())
-		? pEntry->__addr
-		: pEntry);
+    Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
+            ? pEntry->__addr
+            : pEntry);
 
     GetToken();
 
@@ -525,39 +509,64 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     //--which will modify the data address at the top of the stack.
     int doneFlag = false;
     do {
-	switch (token) {
+        switch (token) {
 
-	    case tcLeftSubscript:
-		pType = ExecuteSubscripts(pType);
-		break;
-
-	    case tcDot:
-		pType = ExecuteField();
-		break;
-
-	    default:  doneFlag = true;
-	}
+            case tcLeftSubscript:
+                pType = ExecuteSubscripts(pType);
+                break;
+            case tcDot:
+                pType = ExecuteField();
+                break;
+            default: doneFlag = true;
+        }
     } while (!doneFlag);
 
-    //--If addressFlag is false, and the data is not an array
-    //--or a record, replace the address at the top of the stack
-    //--with the data value.
-    if ((!addressFlag) && (pType->IsScalar())) {
-	if (pType == pFloatType) {
-	    Push(((TStackItem *) Pop()->__addr)->__float);
-	}
-	else if (pType->Base() == pCharType) {
-	    Push(((TStackItem *) Pop()->__addr)->__char);
-	}
-	else {
-	    Push(((TStackItem *) Pop()->__addr)->__int);
-	}
+    switch (token) {
+        case tcPlusPlus:
+            GetToken();
+            if ((!addressFlag) && (pType->IsScalar())) {
+                if (pType == pFloatType) {
+                    Push(((TStackItem *) Pop()->__addr)->__float++);
+                } else if (pType->Base() == pCharType) {
+                    Push(((TStackItem *) Pop()->__addr)->__char++);
+                } else {
+                    Push(((TStackItem *) Pop()->__addr)->__int++);
+                }
+            }
+            break;
+        case tcMinusMinus:
+            GetToken();
+            if ((!addressFlag) && (pType->IsScalar())) {
+                if (pType == pFloatType) {
+                    Push(((TStackItem *) Pop()->__addr)->__float--);
+                } else if (pType->Base() == pCharType) {
+                    Push(((TStackItem *) Pop()->__addr)->__char--);
+                } else {
+                    Push(((TStackItem *) Pop()->__addr)->__int--);
+                }
+            }
+            break;
+        default:
+            //--If addressFlag is false, and the data is not an array
+            //--or a record, replace the address at the top of the stack
+            //--with the data value.
+            if ((!addressFlag) && (pType->IsScalar())) {
+                if (pType == pFloatType) {
+                    Push(((TStackItem *) Pop()->__addr)->__float);
+                } else if (pType->Base() == pCharType) {
+                    Push(((TStackItem *) Pop()->__addr)->__char);
+                } else {
+                    Push(((TStackItem *) Pop()->__addr)->__int);
+                }
+            }
     }
 
-    if (!addressFlag) {
-	void *pDataValue = pType->IsScalar() ? TOS() : TOS()->__addr;
 
-	TraceDataFetch(pId, pDataValue, pType);
+
+    if (!addressFlag) {
+        void *pDataValue = pType->IsScalar() ? TOS() : TOS()->__addr;
+
+        TraceDataFetch(pId, pDataValue, pType);
     }
 
     return pType;
@@ -573,34 +582,33 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
 //  Return: ptr to subscripted variable's type object
 //--------------------------------------------------------------
 
-TType *TExecutor::ExecuteSubscripts(const TType *pType)
-{
+TType *TExecutor::ExecuteSubscripts(const TType *pType) {
     //--Loop to executed subscript lists enclosed in brackets.
     while (token == tcLeftSubscript) {
 
-	//--Loop to execute comma-separated subscript expressions
-	//--within a subscript list.
-	do {
-	    GetToken();
-	    ExecuteExpression();
+        //--Loop to execute comma-separated subscript expressions
+        //--within a subscript list.
+        do {
+            GetToken();
+            ExecuteExpression();
 
-	    //--Evaluate and range check the subscript.
-	    int value = Pop()->__int;
-	    RangeCheck(pType, value);
+            //--Evaluate and range check the subscript.
+            int value = Pop()->__int;
+            RangeCheck(pType, value);
 
-	    //--Modify the data address at the top of the stack.
-	    Push(((char *) Pop()->__addr) +
-				 pType->array.pElmtType->size
-				*(value - pType->array.minIndex));
+            //--Modify the data address at the top of the stack.
+            Push(((char *) Pop()->__addr) +
+                    pType->array.pElmtType->size
+                    * (value - pType->array.minIndex));
 
-	    //--Prepare for another subscript in this list.
-	    if (token == tcComma) pType = pType->array.pElmtType;
+            //--Prepare for another subscript in this list.
+            if (token == tcComma) pType = pType->array.pElmtType;
 
-	} while (token == tcComma);
+        } while (token == tcComma);
 
-	//--Prepare for another subscript list.
-	GetToken();
-	if (token == tcLBracket) pType = pType->array.pElmtType;
+        //--Prepare for another subscript list.
+        GetToken();
+        if (token == tcLBracket) pType = pType->array.pElmtType;
     }
 
     return pType->array.pElmtType;
@@ -614,8 +622,7 @@ TType *TExecutor::ExecuteSubscripts(const TType *pType)
 //  Return: ptr to record field's type object
 //--------------------------------------------------------------
 
-TType *TExecutor::ExecuteField(void)
-{
+TType *TExecutor::ExecuteField(void) {
     GetToken();
     TSymtabNode *pFieldId = pNode;
 

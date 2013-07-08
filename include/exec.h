@@ -128,15 +128,16 @@ class TExecutor : public TBackend {
     void   ExecuteActualParameters      (const TSymtabNode *pRoutineId);
 
     //--Statements
-    void ExecuteStatement(void);
-    void ExecuteStatementList(TTokenCode terminator);
+    void ExecuteStatement(const TSymtabNode *pRoutine);
+    void ExecuteStatementList(const TSymtabNode *pRoutine, TTokenCode terminator);
     void ExecuteAssignment(const TSymtabNode *pTargetId);
-    void ExecuteDO(void);
-    void ExecuteWHILE(void);
-    void ExecuteIF(void);
-    void ExecuteFOR(void);
-    void ExecuteSWITCH(void);
-    void ExecuteCompound(void);
+    void ExecuteDO(const TSymtabNode *pRoutine);
+    void ExecuteWHILE(const TSymtabNode *pRoutine);
+    void ExecuteIF(const TSymtabNode *pRoutine);
+    void ExecuteFOR(const TSymtabNode *pRoutine);
+    void ExecuteSWITCH(const TSymtabNode *pRoutine);
+    void ExecuteRETURN(const TSymtabNode *pRoutine);
+    void ExecuteCompound(const TSymtabNode *pRoutine);
 
     //--Expressions
     TType *ExecuteExpression(void);
@@ -147,7 +148,6 @@ class TExecutor : public TBackend {
     TType *ExecuteVariable  (const TSymtabNode *pId, int addressFlag);
     TType *ExecuteSubscripts(const TType *pType);
     TType *ExecuteField(void);
-    //TType *ExecuteSuffix(void)
 
     //--Tracing
     void TraceRoutineEntry(const TSymtabNode *pRoutineId);

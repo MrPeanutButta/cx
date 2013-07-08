@@ -15,6 +15,7 @@
 //  Return: ptr to function id's symbol table node
 //--------------------------------------------------------------
 
+#include <cstring>
 #include "common.h"
 #include "parser.h"
 
@@ -24,10 +25,13 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
 
     //--Enter the next nesting level and open a new scope
     //--for the function.
-    symtabStack.EnterScope();
+    if (!strcmp(pFunctionNode->String(), "main")) {
+        GetToken();
+        symtabStack.SetScope(1);
+    } else symtabStack.EnterScope();
 
-
-    CondGetToken(tcLParen, errMissingLeftParen);
+    //-- (
+    CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
 
     int parmCount; // count of formal parms
@@ -36,12 +40,15 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     TSymtabNode *pParmList = ParseFormalParmList(parmCount,
             totalParmSize);
 
-    //CondGetToken(tcRParen, errMissingRightParen);
+    //-- )
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
 
     //--Not forwarded.
     pFuncId->defn.routine.parmCount = parmCount;
     pFuncId->defn.routine.totalParmSize = totalParmSize;
     pFuncId->defn.routine.locals.pParmsIds = pParmList;
+
+    pFuncId->level = currentNestingLevel;
 
     pFuncId->defn.routine.locals.pConstantIds = NULL;
     pFuncId->defn.routine.locals.pTypeIds = NULL;

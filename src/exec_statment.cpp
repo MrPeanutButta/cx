@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void TExecutor::ExecuteStatement(void) {
+void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
     if (token != tcLBracket) {
         ++stmtCount;
         TraceStatement();
@@ -19,7 +19,7 @@ void TExecutor::ExecuteStatement(void) {
             }
         }
             break;
-        case tcDo: ExecuteDO();
+        case tcDo: ExecuteDO(pRoutine);
             break;
         case tcWhile: //ParseWHILE();
             break;
@@ -34,18 +34,18 @@ void TExecutor::ExecuteStatement(void) {
             break;
         case tcBreak: //GetToken();
             break;
-        case tcLBracket: ExecuteCompound();
+        case tcLBracket: ExecuteCompound(pRoutine);
             break;
-        case tcReturn: //ParseRETURN();
+        case tcReturn: ExecuteRETURN(pRoutine);
             break;
     }
 }
 
-void TExecutor::ExecuteStatementList(TTokenCode terminator) {
+void TExecutor::ExecuteStatementList(const TSymtabNode *pRoutine, TTokenCode terminator) {
     do {
-        ExecuteStatement();
+        ExecuteStatement(pRoutine);
         while (token == tcSemicolon) GetToken();
-    } while (token != terminator);
+    } while ((token != terminator) && (token != tcDummy));
 }
 
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
@@ -53,29 +53,27 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     TType *pTargetType; // ptr to target type object
     TType *pExprType; // ptr to expression type object
 
-    //--Assignment to function name.
     if (pTargetId->defn.how == dcFunction) {
         pTargetType = pTargetId->pType;
         pTarget = runStack.GetValueAddress(pTargetId);
-        GetToken();
-    }        //--Assignment to variable or formal parameter.
+        //GetToken();
+    }//--Assignment to variable or formal parameter.
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
     else {
         pTargetType = ExecuteVariable(pTargetId, true);
         pTarget = (TStackItem *) Pop()->__addr;
     }
-
     //--Execute the expression and leave its value
     //--on top of the runtime stack.
     //GetToken();
 
     switch (token) {
+        case tcReturn:
         case tcEqual:
         {
             GetToken();
             pExprType = ExecuteExpression();
-            //            pTargetNode->value = runStack.Pop();
             //--Do the assignment.
             if (pTargetType == pFloatType) {
                 pTarget->__float = pExprType->Base() == pIntegerType
@@ -139,7 +137,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //            int __1 = (int) pTargetNode->value;
-          //  int __2 = (int) runStack.Pop();
+            //  int __2 = (int) runStack.Pop();
 
             //            pTargetNode->value = (__1 %= __2);
         }
@@ -149,7 +147,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //           int __1 = (int) pTargetNode->value;
-          //  int __2 = (int) runStack.Pop();
+            //  int __2 = (int) runStack.Pop();
 
             //         pTargetNode->value = (__1 <<= __2);
         }
@@ -159,7 +157,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //       int __1 = (int) pTargetNode->value;
-           // int __2 = (int) runStack.Pop();
+            // int __2 = (int) runStack.Pop();
 
             //     pTargetNode->value = (__1 >>= __2);
         }
@@ -169,7 +167,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //          int __1 = (int) pTargetNode->value;
-           // int __2 = (int) runStack.Pop();
+            // int __2 = (int) runStack.Pop();
 
             //        pTargetNode->value = (__1 &= __2);
         }
@@ -179,7 +177,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //      int __1 = (int) pTargetNode->value;
-         //   int __2 = (int) runStack.Pop();
+            //   int __2 = (int) runStack.Pop();
 
             //    pTargetNode->value = (__1 ^= __2);
         }
@@ -189,27 +187,31 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //            int __1 = (int) pTargetNode->value;
-//            int __2 = (int) runStack.Pop();
+            //            int __2 = (int) runStack.Pop();
 
             //          pTargetNode->value = (__1 |= __2);
         }
             break;
         case tcSemicolon:
             break;
+        case tcIdentifier:
+        {
+            pExprType = ExecuteExpression();
+        }
         default:
             Error(errInvalidAssignment);
             break;
     }
 }
 
-void TExecutor::ExecuteDO(void) {
+void TExecutor::ExecuteDO(const TSymtabNode *pRoutine) {
 
     int atLoopStart = CurrentLocation(); // location of loop start in icode
 
     do {
         GetToken(); // do
 
-        ExecuteStatementList(tcWhile);
+        ExecuteStatementList(pRoutine, tcWhile);
 
         GetToken(); //while
         ExecuteExpression(); // (condition)
@@ -218,10 +220,10 @@ void TExecutor::ExecuteDO(void) {
     } while (CurrentLocation() == atLoopStart);
 }
 
-void TExecutor::ExecuteCompound(void) {
+void TExecutor::ExecuteCompound(const TSymtabNode *pRoutine) {
     GetToken();
 
-    ExecuteStatementList(tcRBracket);
+    ExecuteStatementList(pRoutine, tcRBracket);
 
-    GetToken();
+    //GetToken();
 }

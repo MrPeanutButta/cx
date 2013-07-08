@@ -24,13 +24,13 @@
 //			function.
 //--------------------------------------------------------------
 
-void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId)
-{
+void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId) {
     EnterRoutine(pRoutineId);
 
     //--Execute the routine's compound statement.
-    ExecuteCompound();
+    ExecuteCompound(pRoutineId);
 
+    //ExecuteRETURN(pRoutineId);
     ExitRoutine(pRoutineId);
 }
 
@@ -42,16 +42,15 @@ void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId)
 //	pRoutineId : ptr to routine name's symbol table node
 //--------------------------------------------------------------
 
-void TExecutor::EnterRoutine(const TSymtabNode *pRoutineId)
-{
-    TSymtabNode *pId;  // ptr to local variable's symtab node
+void TExecutor::EnterRoutine(const TSymtabNode *pRoutineId) {
+    TSymtabNode *pId; // ptr to local variable's symtab node
 
     TraceRoutineEntry(pRoutineId);
 
     //--Allocate the callee's local variables.
     for (pId = pRoutineId->defn.routine.locals.pVariableIds;
-	 pId;
-	 pId = pId->next) runStack.AllocateValue(pId);
+            pId;
+            pId = pId->next) runStack.AllocateValue(pId);
 
     //--Switch to the callee's intermediate code.
     pIcode = pRoutineId->defn.routine.pIcode;
@@ -67,19 +66,18 @@ void TExecutor::EnterRoutine(const TSymtabNode *pRoutineId)
 //	pRoutineId : ptr to routine name's symbol table node
 //--------------------------------------------------------------
 
-void TExecutor::ExitRoutine(const TSymtabNode *pRoutineId)
-{
-    TSymtabNode *pId;  // ptr to symtab node of local variable or parm
+void TExecutor::ExitRoutine(const TSymtabNode *pRoutineId) {
+    TSymtabNode *pId; // ptr to symtab node of local variable or parm
 
     TraceRoutineExit(pRoutineId);
 
     //--Deallocate local parameters and variables.
     for (pId = pRoutineId->defn.routine.locals.pParmsIds;
-	 pId;
-	 pId = pId->next) runStack.DeallocateValue(pId);
+            pId;
+            pId = pId->next) runStack.DeallocateValue(pId);
     for (pId = pRoutineId->defn.routine.locals.pVariableIds;
-	 pId;
-	 pId = pId->next) runStack.DeallocateValue(pId);
+            pId;
+            pId = pId->next) runStack.DeallocateValue(pId);
 
     //--Pop off the callee's stack frame and return to the caller's
     //--intermediate code.
@@ -95,11 +93,10 @@ void TExecutor::ExitRoutine(const TSymtabNode *pRoutineId)
 //  Return: ptr to the call's type object
 //--------------------------------------------------------------
 
-TType *TExecutor::ExecuteSubroutineCall(const TSymtabNode *pRoutineId)
-{
+TType *TExecutor::ExecuteSubroutineCall(const TSymtabNode *pRoutineId) {
     /*return pRoutineId->defn.routine.which == rcDeclared
-		? ExecuteDeclaredSubroutineCall(pRoutineId)
-		: ExecuteStandardSubroutineCall(pRoutineId);*/
+                ? ExecuteDeclaredSubroutineCall(pRoutineId)
+                : ExecuteStandardSubroutineCall(pRoutineId);*/
     return ExecuteDeclaredSubroutineCall(pRoutineId);
 }
 
@@ -112,21 +109,22 @@ TType *TExecutor::ExecuteSubroutineCall(const TSymtabNode *pRoutineId)
 //  Return: ptr to the call's type object
 //--------------------------------------------------------------
 
+int return_level;
+
 TType *TExecutor::ExecuteDeclaredSubroutineCall
-				(const TSymtabNode *pRoutineId)
-{
-    int oldLevel = currentNestingLevel;    // level of caller
-    int newLevel = pRoutineId->level + 1;  // level of callee's locals
+(const TSymtabNode *pRoutineId) {
+    int oldLevel = return_level = currentNestingLevel; // level of caller
+    int newLevel = pRoutineId->level; // + 1;  // level of callee's locals
 
     //--Set up a new stack frame for the callee.
     TStackItem *pNewFrameBase = runStack.PushFrameHeader
-					(oldLevel, newLevel, pIcode);
+            (oldLevel, newLevel, pIcode);
 
-    //--Push actual parameter values onto the stack.
+    //--Push actual paramet                                            er values onto the stack.
     GetToken();
     if (token == tcLParen) {
-	ExecuteActualParameters(pRoutineId);
-	GetToken();
+        ExecuteActualParameters(pRoutineId);
+        GetToken();
     }
 
     //--Activate the new stack frame ...
@@ -150,50 +148,56 @@ TType *TExecutor::ExecuteDeclaredSubroutineCall
 //	pRoutineId : ptr to the subroutine name's symtab node
 //--------------------------------------------------------------
 
-void TExecutor::ExecuteActualParameters(const TSymtabNode *pRoutineId)
-{
-    TSymtabNode *pFormalId;  // ptr to formal parm's symtab node
+void TExecutor::ExecuteActualParameters(const TSymtabNode *pRoutineId) {
+    TSymtabNode *pFormalId; // ptr to formal parm's symtab node
 
     //--Loop to execute each actual parameter.
     for (pFormalId = pRoutineId->defn.routine.locals.pParmsIds;
-	 pFormalId;
-	 pFormalId = pFormalId->next) {
+            pFormalId;
+            pFormalId = pFormalId->next) {
 
-	TType *pFormalType = pFormalId->pType;
-	GetToken();
+        TType *pFormalType = pFormalId->pType;
+        GetToken();
 
-	//--VAR parameter: ExecuteVariable will leave the actual
-	//--		   parameter's addresss on top of the stack.
-	if (pFormalId->defn.how == dcVarParm) {
-	    ExecuteVariable(pNode, true);
-	}
+        //--VAR parameter: ExecuteVariable will leave the actual
+        //--		   parameter's addresss on top of the stack.
+        if (pFormalId->defn.how == dcVarParm) {
+            ExecuteVariable(pNode, true);
+        }//--Value parameter
+        else {
+            TType *pActualType = ExecuteExpression();
 
-	//--Value parameter
-	else {
-	    TType *pActualType = ExecuteExpression();
+            if ((pFormalType == pFloatType) &&
+                    (pActualType->Base() == pIntegerType)) {
 
-	    if ((pFormalType == pFloatType) &&
-		(pActualType->Base() == pIntegerType)) {
+                //--real formal := integer actual:
+                //--Convert integer value to real.
+                Push(float(Pop()->__int));
+            } else if (!pFormalType->IsScalar()) {
 
-		//--real formal := integer actual:
-		//--Convert integer value to real.
-		Push(float(Pop()->__int));
-	    }
-	    else if (! pFormalType->IsScalar()) {
+                //--Formal parameter is an array or a record:
+                //--Make a copy of the actual parameter's value.
+                void *addr = new char[pFormalType->size];
+                memcpy(addr, Pop()->__addr, pFormalType->size);
+                Push(addr);
+            } else {
 
-		//--Formal parameter is an array or a record:
-		//--Make a copy of the actual parameter's value.
-		void *addr = new char[pFormalType->size];
-		memcpy(addr, Pop()->__addr, pFormalType->size);
-		Push(addr);
-	    }
-	    else {
-
-		//--Range check an integer or enumeration
-		//--formal parameter.
-		RangeCheck(pFormalType, TOS()->__int);
-	    }
-	}
+                //--Range check an integer or enumeration
+                //--formal parameter.
+                RangeCheck(pFormalType, TOS()->__int);
+            }
+        }
     }
+}
+
+void TExecutor::ExecuteRETURN(const TSymtabNode *pRoutine) {
+
+    ExecuteAssignment(pRoutine);
+    //ExitRoutine(pRoutine);
+
+    //--Return to the caller.  Restore the current token.
+    //currentNestingLevel = return_level;
+    //GetToken();
+
 }
 

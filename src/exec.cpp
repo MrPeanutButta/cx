@@ -181,7 +181,7 @@ void TRuntimeStack::DeallocateValue(const TSymtabNode *pId)
 {
     if ((! pId->pType->IsScalar()) && (pId->defn.how != dcVarParm)) {
 	TStackItem *pValue = ((TStackItem *) pFrameBase)
-						+ frameHeaderSize 
+						+ frameHeaderSize
 						+ pId->defn.data.offset;
 	delete[] pValue->__addr;
     }

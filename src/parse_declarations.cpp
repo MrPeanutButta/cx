@@ -8,33 +8,34 @@ bool execFlag(true);
 void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
     TSymtabNode *pNode = Find(pToken->String());
-    
+
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
         ParseComplexType(pRoutineId, pNode);
         // predefined type name found
     } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
             (pNode->defn.how != dcFunction)) {
-        
+
         GetToken();
-        
+
         do {
-            while(token == tcComma)GetTokenAppend();
-            
+            while (token == tcComma)GetTokenAppend();
+
             TSymtabNode *pNewId = nullptr;
 
-            pNewId = SearchAll(pToken->String());           
-            
+            pNewId = SearchAll(pToken->String());
+
             /* if not nullptr, it's already defined.
              * check if forwarded */
             if (pNewId != nullptr) {
-
-                Error(errRedefinedIdentifier);
+                if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
+                    ParseFunctionHeader(pNewId);
+                } else Error(errRedefinedIdentifier);
+            } else {
+                pNewId = EnterNewLocal(pToken->String());
+                icode.Put(pNewId);
             }
 
-            pNewId = EnterNewLocal(pToken->String());
-            icode.Put(pNewId);
-            
             // set type
             SetType(pNewId->pType, pNode->pType);
 
@@ -46,7 +47,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 pNewId->defn.how = dcVariable;
             } else if (token == tcLParen) {
                 ParseFunctionHeader(pNewId);
-            } else if (token != tcComma) {
+            } else if ((token != tcComma) && (token != tcEndOfFile)) {
                 // check for assignment
                 ParseAssignment(pNewId);
                 pNewId->defn.how = dcVariable;
@@ -63,7 +64,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                         __var = __var->next;
 
                     __var->next = pNewId;
-                    
+
                 }
             } else if (pNewId->defn.how == dcFunction) {
                 if (pRoutineId && (!pRoutineId->defn.routine.locals.pRoutineIds)) {
@@ -75,14 +76,22 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                         __fun = __fun->next;
 
                     __fun->next = pNewId;
-                    
+
                 }
             }
-            
+
         } while (token == tcComma);
     } else if (pNode->defn.how == dcFunction) {
         icode.Put(pNode);
-        ParseSubroutineCall(pNode, true);
+
+        GetTokenAppend();
+
+        if (token == tcLParen) {
+            ParseSubroutineCall(pNode, true);
+        } else {
+            ParseAssignment(pNode);
+        }
+
     } else {
         icode.Put(pNode);
         GetTokenAppend();

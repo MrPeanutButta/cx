@@ -124,7 +124,7 @@ TToken *TIcode::Get(void)
 	//--If it's a line marker, extract the line number.
 	if (token == mcLineMarker) {
 	    short number;
-	    
+
 	    memcpy((void *) &number, (const void *) cursor,
 		   sizeof(short));
 	    currentLineNumber = number;
@@ -172,6 +172,7 @@ TToken *TIcode::Get(void)
 	    pToken->string[0] = '\0';
 	    break;
         case tcEndOfFile:
+        case tcDummy:
             break;
 	default:
 	    pNode = NULL;

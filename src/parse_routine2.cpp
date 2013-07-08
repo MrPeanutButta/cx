@@ -132,11 +132,6 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
     //Resync(tlSublistFollow, tlDeclarationFollow);
     //CondGetToken(tcColon, errMissingColon);
 
-
-
-    //-- )
-    CondGetToken(tcRParen, errMissingRightParen);
-
     return pParmList;
 }
 

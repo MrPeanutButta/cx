@@ -171,9 +171,9 @@ public:
     TSymtabNode *Root(void) const {
         return root;
     }
-    
+
     void ConnectTables(ScopedSymtab &classSymtab){
-        
+
         /*root = classSymtab[tcPublic]->root;
         root->left = classSymtab[tcProtected]->root;
         root->right = classSymtab[tcPrivate]->root;*/
@@ -181,7 +181,7 @@ public:
 
     TSymtabNode *Get(short xNode) const {
         if(vpNodes == nullptr) return nullptr;
-        
+
         return vpNodes[xNode];
     }
 
@@ -242,7 +242,9 @@ public:
 class TSymtabStack {
     enum {maxNestingLevel = 8};
 
-    TSymtab *pSymtabs[maxNestingLevel];  // stack of symbol table ptrs
+    TSymtab *pSymtabs[maxNestingLevel]; // stack of symbol table ptrs
+
+    void InitializeMain(void);
 
 public:
     TSymtabStack(void);
@@ -275,7 +277,7 @@ public:
 	pSymtabs[currentNestingLevel] = pSymtab;
     }
 
-    void SetScope(int &scopeLevel) {
+    void SetScope(int scopeLevel) {
         currentNestingLevel = scopeLevel;
     }
 
