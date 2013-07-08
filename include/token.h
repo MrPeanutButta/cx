@@ -47,7 +47,7 @@ public:
     TToken(void) {
         code = tcDummy;
         type = tyDummy;
-        value.integer = 0;
+        value.__int = 0;
         string[0] = '\0';
     }
 
@@ -124,6 +124,21 @@ public:
 
     TStringToken() {
         code = tcString;
+    }
+
+    virtual void Get(TTextInBuffer &buffer);
+
+    virtual int IsDelimiter(void) const {
+        return true;
+    }
+    virtual void Print(void) const;
+};
+
+class TCharToken : public TToken {
+public:
+
+    TCharToken() {
+        code = tcChar;
     }
 
     virtual void Get(TTextInBuffer &buffer);

@@ -19,6 +19,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cmath>
+#include <sstream>
 #include "token.h"
 
 //              *******************
@@ -54,6 +55,11 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
     countErrorFlag = false;
     code = tcError; // we don't know what it is yet, but
     type = tyInteger; //    assume it'll be an integer
+
+    //    // first check if hex
+    //    if (ch == 'x') {
+    //
+    //    }
 
     //--Get the whole part of the number by accumulating
     //--the values of its digits into numValue.  wholePlaces keeps
@@ -126,8 +132,8 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
             Error(errIntegerOutOfRange);
             return;
         }
-        value.integer = int(numValue);
-    } else value.real = numValue;
+        value.__int = int(numValue);
+    } else value.__float = numValue;
 
     *ps = '\0';
     code = tcNumber;
@@ -177,10 +183,10 @@ int TNumberToken::AccumulateValue(TTextInBuffer &buffer,
 void TNumberToken::Print(void) const {
     if (type == tyInteger) {
         sprintf(list.text, "\t%-18s =%d", ">> integer:",
-                value.integer);
+                value.__int);
     } else {
         sprintf(list.text, "\t%-18s =%g", ">> real:",
-                value.real);
+                value.__float);
     }
 
     list.PutLine();

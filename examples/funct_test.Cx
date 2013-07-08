@@ -1,0 +1,22 @@
+
+#include class_test
+
+int global_int;
+
+int some_f(int a, char b);
+
+int f(int a, int b){
+
+    a++;
+
+    global_int = b++ + (a * 2);
+
+    return global_int++;
+}
+
+int main(int argc, char argv){
+
+    int a = f(2, 2);
+
+    return 0;
+}

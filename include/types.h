@@ -11,11 +11,13 @@
 #include "error.h"
 #include "symtable.h"
 
-extern TType *pIntegerType, *pRealType, *pBooleanType, *pCharType,
-        *pDummyType;
+using namespace std;
+
+extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
+        *pDummyType, *pComplexType;
 
 enum TFormCode {
-    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcRecord
+    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex
 };
 
 extern const char *formStrings[];
@@ -47,9 +49,23 @@ public:
         } array;
 
         struct {
-            TSymtab *pSymtab;
-        } record;
+            /* used only for internal to class.
+             * connects all scopes to a single table */
+            TSymtab *pSymtabClassScope;
+
+            // seperate public, private and protected tables
+            //ScopedSymtab MemberTable;
+        } complex;
     };
+
+    //struct {
+    /* used only for internal to class.
+     * connects all scopes to a single table */
+    //TSymtab *pSymtabClassScope;
+
+    // seperate public, private and protected tables
+    //ScopedSymtab MemberTable;
+    //} complex;
 
     TType(TFormCode fc, int s, TSymtabNode *pId);
     TType(int length);
@@ -58,7 +74,7 @@ public:
 
     bool IsScalar(void) const {
         return (form != fcArray) &&
-                (form != fcRecord);
+                (form != fcComplex);
     }
 
     TType *Base(void) const {
@@ -69,18 +85,18 @@ public:
         vcVerbose, vcTerse
     };
 
-    void PrintTypeSpec(TVerbosityCode vc) const;
+    void PrintTypeSpec(TVerbosityCode vc);
     void PrintEnumType(TVerbosityCode vc) const;
     void PrintSubrangeType(TVerbosityCode vc) const;
     void PrintArrayType(TVerbosityCode vc) const;
-    void PrintRecordType(TVerbosityCode vc) const;
+    void PrintRecordType(TVerbosityCode vc);
 
     friend TType *SetType(TType *&pTargetType, TType *pSourceType);
     friend void RemoveType(TType *&pType);
 
     friend void CheckRelOpOperands(const TType *pType1,
             const TType *pType2);
-    friend void CheckInterOrReal(const TType *pType1,
+    friend void CheckIntegerOrReal(const TType *pType1,
             const TType *Type2 = nullptr);
     friend void CheckBoolean(const TType *pType1,
             const TType *pType2 = nullptr);

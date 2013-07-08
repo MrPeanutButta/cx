@@ -1,0 +1,10 @@
+const int ten = 10;
+const char ch = 'x';
+const char array[] = "hello world!";
+//const char *ptr_ch_array = &array;
+
+
+{
+
+    return 1;
+}

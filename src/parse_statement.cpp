@@ -2,30 +2,54 @@
 #include "parser.h"
 #include "common.h"
 
-void TParser::ParseStatement(void) {
+void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
+    //ParseDeclarations(pRoutineId);
+
     switch (token) {
-        case tcIdentifier: ParseAssignment();
+        case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
+
             break;
-        case tcDo: ParseDO();
+            /* case tcClass:
+                      GetTokenAppend();
+                 ParseComplexType(pRoutineId);
+                 break;*/
+            // not a type but a cv-qualifier
+        case tcConst:
+            GetTokenAppend();
+            ParseConstantDeclaration(pRoutineId);
             break;
-        case tcWhile: ParseWHILE();
+        case tcEnum:
+            GetTokenAppend();
+            //            ParseEnumHeader(pRoutineId);
             break;
-        case tcIf: ParseIF();
+            //case tcInt:
+            //  GetTokenAppend();
+            //ParseIntegerDeclaration(pRoutineId);
+            //break;
+        case tcDo: ParseDO(pRoutineId);
             break;
-        case tcFor: ParseFOR();
+        case tcWhile: ParseWHILE(pRoutineId);
             break;
-        case tcSwitch: ParseSWITCH();
+        case tcIf: ParseIF(pRoutineId);
             break;
-        case tcCase:
-        case tcDefault:ParseCaseLabel();
+        case tcFor: ParseFOR(pRoutineId);
             break;
+        case tcSwitch: ParseSWITCH(pRoutineId);
+            break;
+            //case tcCase:
+            //case tcDefault:ParseCaseLabel(pRoutineId);
+            //  break;
         case tcBreak: GetTokenAppend();
             break;
-        case tcLBracket: ParseCompound();
+        case tcLBracket: ParseCompound(pRoutineId);
             break;
-        case tcReturn: ParseRETURN();
+        case tcReturn: ParseRETURN(pRoutineId);
+            break;
+        case tcPound:
+            GetTokenAppend();
+            ParseDirective(pRoutineId);
             break;
     }
 
@@ -34,10 +58,10 @@ void TParser::ParseStatement(void) {
     }
 }
 
-void TParser::ParseStatementList(TTokenCode terminator) {
+void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator) {
 
     do {
-        ParseStatement();
+        ParseStatement(pRoutineId);
 
         //if (TokenIn(token, tlStatementStart)) {
         //  Error(errMissingSemicolon);
@@ -46,20 +70,21 @@ void TParser::ParseStatementList(TTokenCode terminator) {
     } while ((token != terminator) && (token != tcEndOfFile));
 }
 
-void TParser::ParseAssignment(void) {
-    TSymtabNode *pTargetNode = SearchAll(pToken->String());
+TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
-    if (!pTargetNode) pTargetNode = EnterLocal(pToken->String());
+    TType *pTargetType = pTargetId->pType;//ParseVariable(pTargetId);
+    TType *pExprType = nullptr;
 
-    icode.Put(pTargetNode);
-    GetTokenAppend();
+    //GetTokenAppend();
 
     switch (token) {
         case tcEqual:
-            //Resync(tcEqual, tlExpressionStart);
-            //CondGetTokenAppend(tcEqual, errMissingEqual);
+        {
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcPlusPlus:
             //Resync(tcPlusPlus, tlExpressionFollow);
@@ -70,111 +95,179 @@ void TParser::ParseAssignment(void) {
             GetTokenAppend();
             break;
         case tcPlusEqual:
+        {
             //Resync(tcPlusEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcMinusEqual:
+        {
             //Resync(tcMinusEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcStarEqual:
+        {
             //Resync(tcStarEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcForwardSlashEqual:
+        {
             //Resync(tcForwardSlashEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcModEqual:
+        {
             //Resync(tcModEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcBitLeftShiftEqual:
+        {
             //Resync(tcBitLeftShiftEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcBitRightShiftEqual:
+        {
             //Resync(tcBitRightShiftEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcBitANDEqual:
+        {
             //Resync(tcBitANDEqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcBitXOREqual:
+        {
             //Resync(tcBitXOREqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
         case tcBitOREqual:
+        {
             //Resync(tcBitOREqual, tlExpressionStart);
             GetTokenAppend();
-            ParseExpression();
+            pExprType = ParseExpression();
+            CheckAssignmentTypeCompatible(pTargetType, pExprType,
+                    errIncompatibleAssignment);
+        }
             break;
+        case tcComma:
+        case tcSemicolon:
+            break;
+        case tcIdentifier:
+        {
+            pExprType = ParseFactor();
+        }
+        break;
         default:
             Error(errInvalidAssignment);
             break;
     }
+
+    return pExprType;
 }
 
-void TParser::ParseDO(void) {
+void TParser::ParseDO(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
-    ParseStatementList(tcWhile);
+    ParseStatementList(pRoutineId, tcWhile);
 
     CondGetTokenAppend(tcWhile, errMissingWHILE);
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
     InsertLineMarker();
-    ParseExpression();
+    CheckBoolean(ParseExpression());
+    ;
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
 }
 
-void TParser::ParseWHILE(void) {
+void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
     GetTokenAppend();
-    ParseExpression();
+    CheckBoolean(ParseExpression());
 
     CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 }
 
-void TParser::ParseIF(void) {
+void TParser::ParseIF(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    ParseExpression();
+    CheckBoolean(ParseExpression());
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 
     if (token == tcSemicolon) GetTokenAppend();
 
     if (token == tcElse) {
         GetTokenAppend();
-        ParseStatement();
+        ParseStatement(pRoutineId);
     }
 }
 
-void TParser::ParseFOR(void) {
+void TParser::ParseFOR(TSymtabNode* pRoutineId) {
+
+    TType *pControlType;
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    if ((token == tcIdentifier) && (!SearchAll(pToken->String()))) {
-        Error(errUndefinedIdentifier);
+    if (token == tcIdentifier) {
+        TSymtabNode *pControlId = Find(pToken->String());
+        if (pControlId->defn.how != dcUndefined) {
+            pControlType = pControlId->pType->Base();
+        } else {
+            pControlId->defn.how = dcVariable;
+            pControlType = pControlId->pType = pIntegerType;
+        }
+
+        if ((pControlType != pIntegerType)
+                && (pControlType != pCharType)
+                && (pControlType->form != fcEnum)) {
+            Error(errIncompatibleTypes);
+            pControlType = pIntegerType;
+        }
+
+        icode.Put(pControlId);
     }
 
     if (token != tcSemicolon) {
@@ -186,7 +279,8 @@ void TParser::ParseFOR(void) {
         //Resync(tcEqual, tlExpressionStart);
         CondGetTokenAppend(tcEqual, errMissingEqual);
         // expr 1
-        ParseExpression();
+        CheckAssignmentTypeCompatible(pControlType, ParseExpression(),
+                errIncompatibleTypes);
 
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
@@ -195,7 +289,7 @@ void TParser::ParseFOR(void) {
     if (token != tcSemicolon) {
 
         // expr 2
-        ParseExpression();
+        CheckBoolean(ParseExpression());
 
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
@@ -203,32 +297,37 @@ void TParser::ParseFOR(void) {
     if (token != tcRParen) {
         // expr 3
         ParseExpression();
-
     }
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
-    ParseStatement();
+    ParseStatement(pRoutineId);
 }
 
-void TParser::ParseSWITCH(void) {
+void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    ParseExpression();
+    TType *pExprType = ParseExpression()->Base();
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
-    ParseStatement();
+    if ((pExprType != pIntegerType)
+            && (pExprType != pCharType)
+            && (pExprType->form != fcEnum)) {
+        Error(errIncompatibleTypes);
+    }
+
+    ParseStatement(pRoutineId);
 
 }
 
-void TParser::ParseCaseBranch(void) {
+void TParser::ParseCaseBranch(TSymtabNode* pRoutineId, const TType *pExprType) {
     // c switch easier to parse that Pascal???
 }
 
-void TParser::ParseCaseLabel(void) {
+void TParser::ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType) {
     GetTokenAppend();
 
     bool signFlag(false);
@@ -258,20 +357,22 @@ void TParser::ParseCaseLabel(void) {
 
     CondGetTokenAppend(tcColon, errMissingColon);
 
-    ParseStatementList(tcBreak);
+    ParseStatementList(pRoutineId, tcBreak);
 }
 
-void TParser::ParseCompound(void) {
+void TParser::ParseCompound(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
-    ParseStatementList(tcRBracket);
+    ParseStatementList(pRoutineId, tcRBracket);
 
     CondGetTokenAppend(tcRBracket, errMissingRightBracket);
 
 }
 
-void TParser::ParseRETURN(void) {
+void TParser::ParseRETURN(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
-    ParseExpression();
+    // expr 1
+    CheckAssignmentTypeCompatible(pRoutineId->pType, ParseExpression(),
+            errIncompatibleTypes);
 }

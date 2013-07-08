@@ -97,7 +97,10 @@ void TTextScanner::SkipWhiteSpace(void) {
                         }
                     }
                 }
-            } else pTextInBuffer->PutBackChar();
+            } else {
+                pTextInBuffer->PutBackChar();
+                break;
+            }
         }
     } while ((charCodeMap[ch] == ccWhiteSpace)
             || (ch == '/'));
@@ -123,6 +126,8 @@ TToken * TTextScanner::Get(void) {
         case ccDigit: pToken = &numberToken;
             break;
         case ccQuoteQuote: pToken = &stringToken;
+            break;
+        case ccQuote: pToken = &charToken;
             break;
         case ccSpecial: pToken = &specialToken;
             break;

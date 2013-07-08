@@ -92,8 +92,8 @@ const char *errorMessages[] = {
     "Invalid constant",
     "Missing constant",
     "Missing :",
-    "Missing END",
-    "Missing TO or DOWNTO",
+    "Missing [",
+    "Missing ]",
     "Redefined identifier",
     "Missing ==",
     "Invalid type",
@@ -122,7 +122,8 @@ const char *errorMessages[] = {
     "Missing variable",
     "Code segment overflow",
     "Unimplemented feature",
-    "Missing ("
+    "Missing (",
+    "Missing '"
 };
 
 //--------------------------------------------------------------
