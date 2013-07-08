@@ -32,7 +32,7 @@ void TExecutor::ExecuteStatement(void) {
         case tcCase:
         case tcDefault://ParseCaseLabel();
             break;
-        case tcBreak: //GetTokenAppend();
+        case tcBreak: //GetToken();
             break;
         case tcLBracket: ExecuteCompound();
             break;
@@ -68,7 +68,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
 
     //--Execute the expression and leave its value
     //--on top of the runtime stack.
-    GetToken();
+    //GetToken();
 
     switch (token) {
         case tcEqual:

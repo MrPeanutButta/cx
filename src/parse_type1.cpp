@@ -15,7 +15,7 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
 
         pLastId = pTypeId;
 
-        GetToken();
+        GetTokenAppend();
         CondGetToken(tcEqual, errMissingEqual);
 
         //        SetType(pTypeId->pType, ParseTypeSpec());
@@ -28,7 +28,7 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
         Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
         CondGetToken(tcSemicolon, errMissingSemicolon);
 
-        while (token == tcSemicolon)GetToken();
+        while (token == tcSemicolon)GetTokenAppend();
 
         Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
 
@@ -46,7 +46,7 @@ TType *TParser::ParseTypeSpec(TSymtabNode *pNode) {
                 case dcConstant: return ParseSubrangeType(pId);
                 default:
                     Error(errNotATypeIdentifier);
-                    GetToken();
+                    GetTokenAppend();
                     return (pDummyType);
             }
         }
@@ -71,7 +71,7 @@ TType *TParser::ParseTypeSpec(TSymtabNode *pNode) {
 }
 
 TType *TParser::ParseIdentifierType(const TSymtabNode *pId2) {
-    GetToken();
+    GetTokenAppend();
     return pId2->pType;
 }
 
@@ -81,7 +81,7 @@ TType *TParser::ParseEnumerationType(void) {
 
     int constValue = -1;
 
-    GetToken();
+    GetTokenAppend();
     Resync(tlEnumConstStart);
 
     while (token == tcIdentifier) {
@@ -102,13 +102,13 @@ TType *TParser::ParseEnumerationType(void) {
             }
         }
 
-        GetToken();
+        GetTokenAppend();
         Resync(tlEnumConstFollow);
 
         if (token == tcComma) {
 
             do {
-                GetToken();
+                GetTokenAppend();
                 Resync(tlEnumConstStart, tlEnumConstFollow);
                 if (token == tcComma) Error(errMissingIdentifier);
             } while (token == tcComma);
@@ -155,7 +155,7 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
 
     if (TokenIn(token, tlUnaryOps)) {
         if (token == tcMinus) sign = tcMinus;
-        GetToken();
+        GetTokenAppend();
     }
 
     switch (token) {
@@ -215,7 +215,7 @@ TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
             return pType;
     }
 
-    GetToken();
+    GetTokenAppend();
     return pType;
 }
 

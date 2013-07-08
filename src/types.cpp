@@ -140,63 +140,63 @@ void TType::PrintRecordType(TVerbosityCode vc) {
     list.PutLine("member identifiers (offset : name)---");
     list.PutLine();
 
-    if (complex.MemberTable.empty()) {
-        list.PutLine("empty type");
-        return;
-    }
+//    if (complex.MemberTable.empty()) {
+//        list.PutLine("empty type");
+//        return;
+//    }
     
-    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
-            pFieldId; pFieldId = pFieldId->next) {
-        sprintf(list.text, "\t%d : %s",
-                pFieldId->defn.data.offset,
-                pFieldId->String());
-        list.PutLine();
-        pFieldId->PrintVarOrField();
-    }
-
-    list.PutLine("public:\n");
-
-    for (TSymtabNode *pFieldId = complex.MemberTable[tcPublic]->Root();
-            pFieldId; pFieldId = pFieldId->next) {
-        sprintf(list.text, "\t%d : %s",
-                pFieldId->defn.data.offset,
-                pFieldId->String());
-        list.PutLine();
-        pFieldId->PrintVarOrField();
-    }
-
-    list.PutLine();
-    list.PutLine("private:\n");
-
-    if (!complex.MemberTable[tcPrivate]) {
-        list.PutLine("empty scope");
-    } else {
-
-        for (TSymtabNode *pFieldId = complex.MemberTable[tcPrivate]->Root();
-                pFieldId; pFieldId = pFieldId->next) {
-            sprintf(list.text, "\t%d : %s",
-                    pFieldId->defn.data.offset,
-                    pFieldId->String());
-            list.PutLine();
-            pFieldId->PrintVarOrField();
-        }
-    }
-
-    list.PutLine();
-    list.PutLine("protected:\n");
-
-    if (!complex.MemberTable[tcProtected]) {
-        list.PutLine("empty scope");
-    } else {
-        for (TSymtabNode *pFieldId = complex.MemberTable[tcProtected]->Root();
-                pFieldId; pFieldId = pFieldId->next) {
-            sprintf(list.text, "\t%d : %s",
-                    pFieldId->defn.data.offset,
-                    pFieldId->String());
-            list.PutLine();
-            pFieldId->PrintVarOrField();
-        }
-    }
+//    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
+//            pFieldId; pFieldId = pFieldId->next) {
+//        sprintf(list.text, "\t%d : %s",
+//                pFieldId->defn.data.offset,
+//                pFieldId->String());
+//        list.PutLine();
+//        pFieldId->PrintVarOrField();
+//    }
+//
+//    list.PutLine("public:\n");
+//
+//    for (TSymtabNode *pFieldId = complex.MemberTable[tcPublic]->Root();
+//            pFieldId; pFieldId = pFieldId->next) {
+//        sprintf(list.text, "\t%d : %s",
+//                pFieldId->defn.data.offset,
+//                pFieldId->String());
+//        list.PutLine();
+//        pFieldId->PrintVarOrField();
+//    }
+//
+//    list.PutLine();
+//    list.PutLine("private:\n");
+//
+//    if (!complex.MemberTable[tcPrivate]) {
+//        list.PutLine("empty scope");
+//    } else {
+//
+//        for (TSymtabNode *pFieldId = complex.MemberTable[tcPrivate]->Root();
+//                pFieldId; pFieldId = pFieldId->next) {
+//            sprintf(list.text, "\t%d : %s",
+//                    pFieldId->defn.data.offset,
+//                    pFieldId->String());
+//            list.PutLine();
+//            pFieldId->PrintVarOrField();
+//        }
+//    }
+//
+//    list.PutLine();
+//    list.PutLine("protected:\n");
+//
+//    if (!complex.MemberTable[tcProtected]) {
+//        list.PutLine("empty scope");
+//    } else {
+//        for (TSymtabNode *pFieldId = complex.MemberTable[tcProtected]->Root();
+//                pFieldId; pFieldId = pFieldId->next) {
+//            sprintf(list.text, "\t%d : %s",
+//                    pFieldId->defn.data.offset,
+//                    pFieldId->String());
+//            list.PutLine();
+//            pFieldId->PrintVarOrField();
+//        }
+//    }
 }
 
 void InitializePredefinedTypes(TSymtab *pSymtab) {

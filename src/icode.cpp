@@ -5,14 +5,14 @@
 #include "icode.h"
 
 const char *symbolStrings[] = {
-    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+    NULL, NULL, NULL, NULL, NULL, NULL,
     //operators and punctuation
     //bitwise
     "^", "&", "|", "~", "~=", "^=", "&=", "|=", "<<",
     "<<=", ">>", ">>=", "-", "-=", "+", "+=", "=", "--",
     "++", "/", "/=", "*", "*=", "<", ">", "==", "<=", ">=",
-    "!=", "%", "%=", "[", "]", "?", "#", ".*", "(", ")", "}",
-    "{", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
+    "!=", "%", "%=", "[", "]", "?", "#", ".*", "(", ")", "{",
+    "}", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
     "&&", "!", "\'", "\"",
 
     "if", "return", "continue", "friend", "true", "goto", "try",
@@ -146,9 +146,8 @@ TToken *TIcode::Get(void)
 	    pToken       = &specialToken;
 	    pToken->code = token;
 	    break;
-
 	default:
-	    if (token < tcIf) {
+	    if (token < tcQuote) {
 		pToken       = &specialToken;
 		pToken->code = token;
 	    }
@@ -172,7 +171,8 @@ TToken *TIcode::Get(void)
 	    pNode = NULL;
 	    pToken->string[0] = '\0';
 	    break;
-
+        case tcEndOfFile:
+            break;
 	default:
 	    pNode = NULL;
 	    strcpy(pToken->string, symbolStrings[code]);
@@ -195,7 +195,7 @@ TSymtabNode *TIcode::GetSymtabNode(void)
     extern TSymtab **vpSymtabs;
     short xSymtab, xNode;         // symbol table and node indexes
 
-    memcpy((void *) &xSymtab, (const void *) cursor,
+    memcpy((void *) &xSymtab, cursor,
 	   sizeof(short));
     memcpy((void *) &xNode,   (const void *) (cursor + sizeof(short)),
 	   sizeof(short));

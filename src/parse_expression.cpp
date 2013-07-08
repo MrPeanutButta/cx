@@ -140,12 +140,12 @@ TType *TParser::ParseFactor(void) {
                 case dcValueParm:
                 case dcVarParm:
                 case dcMember:
-                    
+
                     GetTokenAppend();
-                    
+
                     if ((pNode->pType == pIntegerType) ||
                             (pNode->pType == pFloatType))ParseSuffix(pNode);
-                    
+
                     pResultType = pNode->pType;
                     break;
                 default:
@@ -153,25 +153,6 @@ TType *TParser::ParseFactor(void) {
                     break;
 
             }
-//            if (pNode->defn.how != dcUndefined) {
-//                icode.Put(pNode);
-//                GetTokenAppend();
-//
-//
-//
-//            } else {
-//                pNode->defn.how = dcVariable;
-//                SetType(pNode->pType, pDummyType);
-//            }/*else {
-//                Error(errUndefinedIdentifier);
-//                EnterLocal(pToken->String());
-//                GetTokenAppend();
-//            }*/
-//
-//            if (pNode->defn.how == dcConstant) {
-//                pResultType = pNode->pType;
-//                GetTokenAppend();
-//            } else pResultType = pNode->pType;
         }
             break;
 
@@ -179,6 +160,7 @@ TType *TParser::ParseFactor(void) {
         case tcNumber:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
+
             if (!pNode) {
                 pNode = EnterLocal(pToken->String());
 
@@ -231,9 +213,8 @@ TType *TParser::ParseFactor(void) {
                 pNode->pType->array.pIndexType = pIntegerType;
             }
 
-            icode.Put(pNode);
-
             pResultType = pNode->pType;
+            icode.Put(pNode);
 
             GetTokenAppend();
         }

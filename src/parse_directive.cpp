@@ -9,12 +9,12 @@ void TParser::ParseDirective(TSymtabNode *pRoutineId) {
     switch (token) {
         case tcInclude:
         {
-            GetToken();
+            GetTokenAppend();
             TParser *parser = new TParser(new TSourceBuffer(pToken->String()));
 
             TSymtabNode *pModule = parser->Parse();
             delete parser;
-            GetToken();
+            GetTokenAppend();
         }
         break;
     }

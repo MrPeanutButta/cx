@@ -33,7 +33,7 @@
 
 TSymtabNode *TParser::Parse(void) {
 
-        TSymtabNode *pProgramId = new TSymtabNode("dummy", dcProgram);
+        TSymtabNode *pProgramId = new TSymtabNode("global", dcProgram);
         pProgramId->defn.routine.locals.pParmsIds = nullptr;
         pProgramId->defn.routine.locals.pConstantIds = nullptr;
         pProgramId->defn.routine.locals.pTypeIds = nullptr;
@@ -154,7 +154,7 @@ void TParser::Resync(const TTokenCode* pList1,
                 (!TokenIn(token, pList3)) &&
                 (token != tcReturn) &&
                 (token != tcEndOfFile)) {
-            GetToken();
+            GetTokenAppend();
         }
 
         if ((token == tcEndOfFile) &&

@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
         }
 
         TBackend *pBackend = new TExecutor;
+        //pBackend->Go(pProgramId);
         pBackend->Go(globalSymtab.Search("main"));
 
         delete[] vpSymtabs;

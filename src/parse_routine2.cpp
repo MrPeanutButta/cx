@@ -45,7 +45,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
     TSymtabNode *pNode = nullptr;
     count = totalSize = 0;
-    //GetToken();
+    //GetTokenAppend();
 
     //--Loop to parse a parameter declarations separated by semicolons.
     //while ((token == tcIdentifier)) {// || (token == tcVAR)) {
@@ -71,8 +71,9 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         //--VAR or value parameter?
         if (token == tcBitANDorAddrOf) {
+            //icode.Put(token);
             parmDefn = dcVarParm;
-            GetToken();
+            GetTokenAppend();
         } else parmDefn = dcValueParm;
 
         pParmId = EnterNewLocal(pToken->String(), parmDefn);
@@ -87,14 +88,14 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
         }
 
         //-- ,
-        GetToken();
+        GetTokenAppend();
         Resync(tlIdentifierFollow);
         if (token == tcComma) {
 
             //--Saw comma.
             //--Skip extra commas and look for an identifier.
             do {
-                GetToken();
+                GetTokenAppend();
                 Resync(tlIdentifierStart, tlIdentifierFollow);
                 if (token == tcComma) {
                     Error(errMissingIdentifier);
@@ -126,7 +127,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
     if ((token == tcIdentifier)) {//|| (token == tcVAR)) {
         Error(errMissingSemicolon);
-    } else while (token == tcSemicolon) GetToken();
+    } else while (token == tcSemicolon) GetTokenAppend();
     //-- :
     //Resync(tlSublistFollow, tlDeclarationFollow);
     //CondGetToken(tcColon, errMissingColon);

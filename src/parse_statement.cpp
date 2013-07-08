@@ -12,20 +12,20 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
 
             break;
             /* case tcClass:
-                      GetToken();
+                      GetTokenAppend();
                  ParseComplexType(pRoutineId);
                  break;*/
             // not a type but a cv-qualifier
         case tcConst:
-            GetToken();
+            GetTokenAppend();
             ParseConstantDeclaration(pRoutineId);
             break;
         case tcEnum:
-            GetToken();
+            GetTokenAppend();
             //            ParseEnumHeader(pRoutineId);
             break;
             //case tcInt:
-            //  GetToken();
+            //  GetTokenAppend();
             //ParseIntegerDeclaration(pRoutineId);
             //break;
         case tcDo: ParseDO(pRoutineId);
@@ -48,7 +48,7 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
         case tcReturn: ParseRETURN(pRoutineId);
             break;
         case tcPound:
-            GetToken();
+            GetTokenAppend();
             ParseDirective(pRoutineId);
             break;
     }
@@ -75,13 +75,11 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
     TType *pTargetType = pTargetId->pType;//ParseVariable(pTargetId);
     TType *pExprType = nullptr;
     
-    //GetToken();
+    //GetTokenAppend();
 
     switch (token) {
         case tcEqual:
         {
-            //Resync(tcEqual, tlExpressionStart);
-            //CondGetTokenAppend(tcEqual, errMissingEqual);
             GetTokenAppend();
             pExprType = ParseExpression();
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
@@ -189,13 +187,13 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         case tcComma:
         case tcSemicolon:
             break;
-        case tcIdentifier:{
+        /*case tcIdentifier:{
             
             
             
             pExprType = ParseFactor();
         }
-        break;
+        break;*/
         default:
             Error(errInvalidAssignment);
             break;

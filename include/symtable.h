@@ -174,12 +174,14 @@ public:
     
     void ConnectTables(ScopedSymtab &classSymtab){
         
-        root = classSymtab[tcPublic]->root;
+        /*root = classSymtab[tcPublic]->root;
         root->left = classSymtab[tcProtected]->root;
-        root->right = classSymtab[tcPrivate]->root;
+        root->right = classSymtab[tcPrivate]->root;*/
     }
 
     TSymtabNode *Get(short xNode) const {
+        if(vpNodes == nullptr) return nullptr;
+        
         return vpNodes[xNode];
     }
 

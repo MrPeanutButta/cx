@@ -168,7 +168,7 @@ class TParser {
     }
 
     void CondGetToken(TTokenCode tc, TErrorCode ec) {
-        if (tc == token)GetToken();
+        if (tc == token)GetTokenAppend();
         else Error(ec);
     }
 

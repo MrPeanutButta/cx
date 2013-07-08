@@ -6,7 +6,7 @@ TType *TParser::ParseArrayType(TSymtabNode *pArrayNode) {
     //TType *pElmtType = pArrayNode->pType;
     //bool indexFlag(false);
 
-    //GetToken();
+    //GetTokenAppend();
     CondGetToken(tcLeftSubscript, errMissingLeftSubscript);
 
     pArrayNode->pType->form = fcArray;
@@ -82,6 +82,7 @@ TType *TParser::ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode *pNode) {
     //next_type = next_type->next;
 
     TSymtabNode *pId = EnterNewLocal(pToken->String());
+    icode.Put(pId);
 
     //next_type->next = pId;
 
@@ -113,13 +114,13 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
     GetToken();
 
     if (token == tcSemicolon) {
-        GetToken();
+        GetTokenAppend();
         return;
     }
 
     // if '{' this is a class body
 
-    CondGetToken(tcLBracket, errMissingLeftBracket);
+    CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
 
     // scope
     TTokenCode scope;
@@ -127,15 +128,15 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
 
     // pointer to scoped table
     TSymtab *member_table = nullptr;
-    
+
     TSymtabNode *pNode = nullptr;
 
     TSymtabNode *pLastId = nullptr; // ptrs to symtab nodes
     TSymtabNode *pFirstId = nullptr; // ptr to last node of previous sublist
 
-    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPublic, new TSymtab));
-    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPrivate, new TSymtab));
-    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcProtected, new TSymtab));
+//    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPublic, new TSymtab));
+ //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPrivate, new TSymtab));
+ //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcProtected, new TSymtab));
 
     //default to public
     scope = tcPublic;
@@ -148,7 +149,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 scope = tcPublic;
                 GetToken();
                 CondGetToken(tcColon, errMissingColon);
-                pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+                ///pFirstId = pComplexType->complex.MemberTable[scope]->Root();
 
                 offset = 0;
                 while (pFirstId) {
@@ -161,7 +162,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 scope = tcPrivate;
                 GetToken();
                 CondGetToken(tcColon, errMissingColon);
-                pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+                //pFirstId = pComplexType->complex.MemberTable[scope]->Root();
 
                 offset = 0;
                 while (pFirstId) {
@@ -174,7 +175,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 scope = tcProtected;
                 GetToken();
                 CondGetToken(tcColon, errMissingColon);
-                pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+               // pFirstId = pComplexType->complex.MemberTable[scope]->Root();
 
                 offset = 0;
                 while (pFirstId) {
@@ -185,7 +186,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 break;
         }
 
-        member_table = pComplexType->complex.MemberTable[scope];
+        //member_table = pComplexType->complex.MemberTable[scope];
 
         // find our declared type
         pNode = Find(pToken->String());
@@ -209,7 +210,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 member->defn.data.offset = offset;
                 offset += pNode->pType->size;
 
-                GetToken();
+                GetTokenAppend();
 
                 // check for array type
                 // check for array type
@@ -241,8 +242,8 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
 
     // connect all symtabs for use within the class
     pComplexType->complex.pSymtabClassScope = new TSymtab;
-    pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
-    
-    CondGetToken(tcRBracket, errMissingRightBracket);
-    CondGetToken(tcSemicolon, errMissingSemicolon);
+   // pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
+
+    CondGetTokenAppend(tcRBracket, errMissingRightBracket);
+    CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
 }

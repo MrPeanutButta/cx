@@ -48,16 +48,24 @@ public:
             int elmtCount;
         } array;
 
+        struct {
+            /* used only for internal to class.
+             * connects all scopes to a single table */
+            TSymtab *pSymtabClassScope;
+
+            // seperate public, private and protected tables
+            //ScopedSymtab MemberTable;
+        } complex;
     };
 
-    struct {
-        /* used only for internal to class.
-         * connects all scopes to a single table */
-        TSymtab *pSymtabClassScope;
-        
-        // seperate public, private and protected tables
-        ScopedSymtab MemberTable;
-    } complex;
+    //struct {
+    /* used only for internal to class.
+     * connects all scopes to a single table */
+    //TSymtab *pSymtabClassScope;
+
+    // seperate public, private and protected tables
+    //ScopedSymtab MemberTable;
+    //} complex;
 
     TType(TFormCode fc, int s, TSymtabNode *pId);
     TType(int length);
@@ -77,7 +85,7 @@ public:
         vcVerbose, vcTerse
     };
 
-    void PrintTypeSpec(TVerbosityCode vc) ;
+    void PrintTypeSpec(TVerbosityCode vc);
     void PrintEnumType(TVerbosityCode vc) const;
     void PrintSubrangeType(TVerbosityCode vc) const;
     void PrintArrayType(TVerbosityCode vc) const;
