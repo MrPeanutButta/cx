@@ -32,6 +32,7 @@ protected:
     TWordToken wordToken;
     TNumberToken numberToken;
     TStringToken stringToken;
+    TCharToken charToken;
     TSpecialToken specialToken;
     TEOFToken eofToken;
     TErrorToken errorToken;

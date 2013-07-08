@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="89">
+<configurationDescriptor version="88">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="f1" displayName="Examples" projectFiles="true">
+      <itemPath>examples/const_test.Cx</itemPath>
+      <itemPath>examples/enum_test.Cx</itemPath>
+      <itemPath>examples/exp_test.cx</itemPath>
+      <itemPath>examples/for_test.cx</itemPath>
+      <itemPath>examples/hex.Cx</itemPath>
+      <itemPath>examples/if_test.cx</itemPath>
+      <itemPath>examples/newton.Cx</itemPath>
+      <itemPath>examples/specials.in</itemPath>
+      <itemPath>examples/switch_test.cx</itemPath>
+    </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
@@ -38,6 +49,7 @@
       <itemPath>src/parse_expression.cpp</itemPath>
       <itemPath>src/parse_statement.cpp</itemPath>
       <itemPath>src/parse_type1.cpp</itemPath>
+      <itemPath>src/parse_type2.cpp</itemPath>
       <itemPath>src/parser.cpp</itemPath>
       <itemPath>src/scanner.cpp</itemPath>
       <itemPath>src/symtable.cpp</itemPath>
@@ -45,14 +57,6 @@
       <itemPath>src/tknstrsp.cpp</itemPath>
       <itemPath>src/tknword.cpp</itemPath>
       <itemPath>src/types.cpp</itemPath>
-    </logicalFolder>
-    <logicalFolder name="f1" displayName="Test Scripts" projectFiles="true">
-      <itemPath>tests/exp_test.cx</itemPath>
-      <itemPath>tests/for_test.cx</itemPath>
-      <itemPath>tests/if_test.cx</itemPath>
-      <itemPath>tests/newton.Cx</itemPath>
-      <itemPath>tests/specials.in</itemPath>
-      <itemPath>tests/switch_test.cx</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -77,7 +81,6 @@
       </toolsSet>
       <compileType>
         <ccTool>
-          <developmentMode>2</developmentMode>
           <standard>8</standard>
           <commandlineTool>g++</commandlineTool>
           <incDir>
@@ -86,6 +89,24 @@
           <warningLevel>0</warningLevel>
         </ccTool>
       </compileType>
+      <item path="examples/const_test.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/enum_test.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/exp_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/for_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/hex.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/if_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/specials.in" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/switch_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">
@@ -138,6 +159,8 @@
       </item>
       <item path="src/parse_type1.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/parse_type2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/scanner.cpp" ex="false" tool="1" flavor2="0">
@@ -151,18 +174,6 @@
       <item path="src/tknword.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/types.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/exp_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/for_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/if_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/newton.Cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/specials.in" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/switch_test.cx" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -186,6 +197,24 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="examples/const_test.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/enum_test.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/exp_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/for_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/hex.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/if_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/specials.in" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/switch_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">
@@ -238,6 +267,8 @@
       </item>
       <item path="src/parse_type1.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/parse_type2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/scanner.cpp" ex="false" tool="1" flavor2="0">
@@ -252,23 +283,11 @@
       </item>
       <item path="src/types.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/exp_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/for_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/if_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/newton.Cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/specials.in" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/switch_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
     </conf>
     <conf name="Mac_-_debug" type="1">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>default</compilerSet>
+        <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -279,9 +298,27 @@
           <incDir>
             <pElem>include</pElem>
           </incDir>
-          <warningLevel>2</warningLevel>
+          <warningLevel>0</warningLevel>
         </ccTool>
       </compileType>
+      <item path="examples/const_test.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/enum_test.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/exp_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/for_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/hex.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/if_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/specials.in" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/switch_test.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">
@@ -334,6 +371,8 @@
       </item>
       <item path="src/parse_type1.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/parse_type2.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/parser.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/scanner.cpp" ex="false" tool="1" flavor2="0">
@@ -347,18 +386,6 @@
       <item path="src/tknword.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/types.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="tests/exp_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/for_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/if_test.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/newton.Cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/specials.in" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tests/switch_test.cx" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

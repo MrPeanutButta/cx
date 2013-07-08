@@ -105,13 +105,15 @@ enum TTokenCode {
     tcIf, tcReturn, tcContinue, tcFriend, tcTrue, tcGoto, tcTry, tcDelete,
     tcShort, tcTypeId, tcBool, tcDo, tcInt, tcSigned, tcTypeName,
     tcBreak, tcDouble, tcLong, tcSizeOf, tcUnion, tcCase, tcStatic,
-    tcUnsigned, tcCatch, tcElse, tcNameSpace, tcUsing, tcChar,
+    tcUnsigned, tcCatch, tcElse, tcNameSpace, tcUsing, tcChar, tcCharDef,
     tcEnum, tcNew, tcVirtual, tcChar16_t, tcExplicit, tcNoExcept,
     tcChar32_t, tcExport, tcNullptr, tcSwitch, tcStruct, tcVoid,
     tcClass, tcExtern, tcOperator, tcTemplate, tcConst, tcFalse,
     tcPrivate, tcThis, tcWhile, tcFloat, tcProtected, tcThreadLocal,
     tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude,
-    tcStringDef, tcBlockCommentStart, tcBlockCommentEnd
+    tcStringDef, tcBlockCommentStart, tcBlockCommentEnd, tcArray, tcRecord, tcOf,
+    tcVar
+
 };
 //endfig
 
@@ -128,9 +130,16 @@ enum TDataType {
 //--------------------------------------------------------------
 
 union TDataValue {
-    int integer;
-    float real;
-    char character;
+    int __int;
+    unsigned int __u_int;
+    float __float;
+    double __double;
+    char __char;
+    unsigned char __u_char;
+
+    bool __bool;
+
+    //needed???
     char *pString;
 };
 

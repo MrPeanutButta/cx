@@ -1,0 +1,9 @@
+{
+    x = 0xffffffff;
+
+    a = x << 3;
+
+    output = a;
+
+    return 0;
+}

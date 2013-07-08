@@ -8,11 +8,15 @@
 #ifndef SYMTABLE_H
 #define	SYMTABLE_H
 
+#include <map>
 #include <cstring>
 #include "misc.h"
 
+using namespace std;
+
 extern bool xrefFlag;
 extern int currentLineNumber;
+extern int currentNestingLevel;
 extern int asmLabelIndex;
 
 class TSymtab;
@@ -21,18 +25,17 @@ class TLineNumList;
 class TIcode;
 class TType;
 
+// for public, private and protected scopes
+typedef map<TTokenCode, TSymtab *> ScopedSymtab;
+
 enum TDefnCode {
-    dcUndefined, dcConstant, dcType, dcVariable, dcField,
+    dcUndefined, dcConstant, dcType, dcVariable, dcMember,
     dcValueParm, dcVarParm,
-    dcProgram, dcProcedure, dcFunction
+    dcProgram, dcFunction
 };
 
 enum TRoutineCode {
     rcDeclared, rcForward,
-    rcRead, rcReadln, rcWrite, rcWriteln,
-    rcAbs, rcArctan, rcChr, rcCos, rcEof, rcEoln,
-    rcExp, rcLn, rcOdd, rcOrd, rcPred, rcRound,
-    rcSin, rcSqr, rcSqrt, rcSucc, rcTrunc
 };
 
 struct TLocalIds {
@@ -93,9 +96,6 @@ public:
     int level;
     int labelIndex;
 
-    //legacy
-    float value;
-
     TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();
 
@@ -109,6 +109,16 @@ public:
 
     char *String(void) const {
         return pString;
+    }
+
+    void RenameNode(const char *pStr){
+        if(pString != nullptr){
+            delete pString;
+            pString = nullptr;
+        }
+
+        pString = new char[strlen(pStr)];
+        strcpy(pString, pStr);
     }
 
     short SymtabIndex(void) const {
@@ -162,7 +172,16 @@ public:
         return root;
     }
 
+    void ConnectTables(ScopedSymtab &classSymtab){
+
+        /*root = classSymtab[tcPublic]->root;
+        root->left = classSymtab[tcProtected]->root;
+        root->right = classSymtab[tcPrivate]->root;*/
+    }
+
     TSymtabNode *Get(short xNode) const {
+        if(vpNodes == nullptr) return nullptr;
+
         return vpNodes[xNode];
     }
 
@@ -214,6 +233,60 @@ public:
     void Update(void);
     void Print(int newLineFlag, int indent) const;
 };
+
+//fig 8-5
+//--------------------------------------------------------------
+//  TSymtabStack      Symbol table stack class.
+//--------------------------------------------------------------
+
+class TSymtabStack {
+    enum {maxNestingLevel = 8};
+
+    TSymtab *pSymtabs[maxNestingLevel]; // stack of symbol table ptrs
+
+    void InitializeMain(void);
+
+public:
+    TSymtabStack(void);
+   ~TSymtabStack(void);
+
+    TSymtabNode *SearchLocal(const char *pString)
+    {
+	return pSymtabs[currentNestingLevel]->Search(pString);
+    }
+
+    TSymtabNode *EnterLocal(const char *pString,
+			    TDefnCode dc = dcUndefined)
+    {
+	return pSymtabs[currentNestingLevel]->Enter(pString, dc);
+    }
+
+    TSymtabNode *EnterNewLocal(const char *pString,
+			       TDefnCode dc = dcUndefined)
+    {
+	return pSymtabs[currentNestingLevel]->EnterNew(pString, dc);
+    }
+
+    TSymtab *GetCurrentSymtab(void) const
+    {
+	return pSymtabs[currentNestingLevel];
+    }
+
+    void SetCurrentSymtab(TSymtab *pSymtab)
+    {
+	pSymtabs[currentNestingLevel] = pSymtab;
+    }
+
+    void SetScope(int scopeLevel) {
+        currentNestingLevel = scopeLevel;
+    }
+
+    TSymtabNode *SearchAll (const char *pString) const;
+    TSymtabNode *Find      (const char *pString) const;
+    void         EnterScope(void);
+    TSymtab     *ExitScope (void);
+};
+//endfig
 
 #endif	/* SYMTABLE_H */
 

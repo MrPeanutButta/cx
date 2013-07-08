@@ -26,8 +26,6 @@
 #include "common.h"
 #include "icode.h"
 
-//TIcode *pIcode;
-
 //--------------------------------------------------------------
 //  main
 //--------------------------------------------------------------
@@ -49,9 +47,10 @@ int main(int argc, char *argv[]) {
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser *parser = new TParser(new TSourceBuffer(argv[1]));
-    parser->Parse();
-    delete parser;
 
+    TSymtabNode *pProgramId = parser->Parse();
+    delete parser;
+    
     if (xrefFlag) {
         list.PutLine();
         list.PutLine("--x ref---");
@@ -66,7 +65,8 @@ int main(int argc, char *argv[]) {
         }
 
         TBackend *pBackend = new TExecutor;
-        pBackend->Go();
+        //pBackend->Go(pProgramId);
+        pBackend->Go(globalSymtab.Search("main"));
 
         delete[] vpSymtabs;
         delete pBackend;

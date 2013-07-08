@@ -72,8 +72,8 @@ enum TErrorCode {
     errInvalidConstant,
     errMissingConstant,
     errMissingColon,
-    errMissingEND,
-    errMissingTOorDOWNTO,
+    errMissingLeftSubscript,
+    errMissingRightSubscript,
     errRedefinedIdentifier,
     errMissingEqualEqual,
     errInvalidType,
@@ -102,7 +102,8 @@ enum TErrorCode {
     errMissingVariable,
     errCodeSegmentOverflow,
     errUnimplementedFeature,
-    errMissingLeftParen
+    errMissingLeftParen,
+    errMissingSingleQuote
 };
 
 void Error(TErrorCode ec);

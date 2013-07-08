@@ -25,7 +25,7 @@ int cntSymtabs = 0;
 TSymtab *pSymtabList = nullptr;
 TSymtab **vpSymtabs = nullptr;
 
-TIcode icode;
+//TIcode icode;
 
 extern const TTokenCode tlDeclarationStart[] = {
     tcShort, tcBool, tcInt, tcSigned, tcDouble,
@@ -54,11 +54,11 @@ extern const TTokenCode tlFieldDeclFollow[] = {
 };
 
 extern const TTokenCode tlEnumConstStart[] = {
-    tcEnum, tcDummy
+    tcIdentifier, tcDummy
 };
 
 extern const TTokenCode tlEnumConstFollow[] = {
-    tcRBracket, tcSemicolon, tcDummy
+    tcRBracket, tcComma, tcSemicolon, tcDummy
 };
 
 extern const TTokenCode tlSubrangeLimitFollow[] = {
@@ -67,26 +67,28 @@ extern const TTokenCode tlSubrangeLimitFollow[] = {
 };
 
 extern const TTokenCode tlIndexStart[] = {
-    tcIdentifier, tcNumber, tcString, tcLParen, tcPlus, tcMinus, tcDummy
+    tcIdentifier, tcNumber, tcString, tcLParen, tcPlus, tcMinus,
+    tcLeftSubscript, tcRightSubscript, tcDummy
 };
 
 extern const TTokenCode tlIndexFollow[] = {
-    tcComma, tcLeftSubscript, tcSemicolon, tcDummy
+    tcComma, tcRightSubscript, tcSemicolon, tcDummy
 };
 
 extern const TTokenCode tlIndexListFollow[] = {
-    tcIdentifier, tcLParen, tcPlus, tcMinus, tcNumber, tcString, tcSemicolon,
+    tcIdentifier, tcRightSubscript, tcLParen, tcPlus, tcMinus, tcNumber,
+    tcString, tcOf, tcSemicolon,
     tcDummy
 };
 
 extern const TTokenCode tlSubscriptOrFieldStart[] = {
-    tcColonColon, tcSemicolon,
+    tcColonColon,
     tcPointerMember, tcMemberPointer, tcDot, tcLeftSubscript, tcDummy
 };
 
 extern const TTokenCode tlIdentifierFollow[] = {
     tcComma, tcIdentifier, tcColon, tcColonColon, tcSemicolon,
-    tcPointerMember, tcMemberPointer, tcDot, tcDummy
+    tcPointerMember, tcRParen, tcMemberPointer, tcDot, tcDummy
 };
 
 // tokens that can start a statement
@@ -99,13 +101,13 @@ extern const TTokenCode tlStatementStart[] = {
     tcEnum, tcVirtual, tcChar16_t, tcChar32_t, tcExport,
     tcStruct, tcVoid, tcClass, tcExtern, tcTemplate, tcConst,
     tcPrivate, tcThis, tcFloat, tcProtected, tcThreadLocal,
-    tcPublic, tcThrow, tcTypeDef, tcStringDef, tcPound,
+    tcPublic, tcThrow, tcTypeDef, tcStringDef, tcPound, tcLBracket,
     tcDummy
 };
 
 // tokens that can follow a statement
 extern const TTokenCode tlStatementFollow[] = {
-    tcSemicolon, tcLBracket, tcElse, tcWhile,
+    tcSemicolon, tcLBracket, tcRBracket, tcElse, tcWhile,
     tcDummy
 };
 
