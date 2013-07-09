@@ -59,6 +59,7 @@ public:
 
         struct {
             TRoutineCode which;
+            int returnMarker;
             int parmCount;
             int totalParmSize;
             int totalLocalSize;

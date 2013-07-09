@@ -1,29 +1,22 @@
-int add2or5(int &a){
 
-    if(a > 20){
-        a = a + 2;
-    } else if(a < 20){
-        a = a + 5;
-    }else a = 20;
+int test;
 
-    return a;
-}
+{
 
-int pow(int a, int b){
-        int c = add2or5(a);
-        return a * b;
-}
+    int number;
+    int root;
 
-int main(){
+    number = 4096;
+    root = 4096;
 
-    int a = 0;
-    int c = 5;
+    int i = 0;
 
-    a = pow(c, c);
+    do{
+        if(i == 10) break;
 
-    c = a + a;
-    
-    a = add2or5(c);
+        root = (number/root + root)/2;
+        i++;
+    }while(root * root > number);
 
-    return c;
+    //return root;
 }

@@ -233,7 +233,7 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId)
 //  Go                  Start the executor.
 //--------------------------------------------------------------
 
-void TExecutor::Go(const TSymtabNode *pProgramId)
+void TExecutor::Go( TSymtabNode *pProgramId)
 {
     //--Initialize standard input and output.
     eofFlag = cin.eof();
@@ -242,6 +242,7 @@ void TExecutor::Go(const TSymtabNode *pProgramId)
 
     //--Execute the program.
     currentNestingLevel = 1;
+    breakLoop = false;
     ExecuteRoutine(pProgramId);
 
     //--Print the executor's summary.

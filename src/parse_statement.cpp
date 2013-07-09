@@ -5,8 +5,6 @@
 void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
-    //ParseDeclarations(pRoutineId);
-
     switch (token) {
         case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
 
@@ -62,20 +60,14 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 
     do {
         ParseStatement(pRoutineId);
-
-        //if (TokenIn(token, tlStatementStart)) {
-        //  Error(errMissingSemicolon);
-        //} else
         while (token == tcSemicolon)GetTokenAppend();
     } while ((token != terminator) && (token != tcEndOfFile));
 }
 
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
-    TType *pTargetType = pTargetId->pType; //ParseVariable(pTargetId);
+    TType *pTargetType = pTargetId->pType;
     TType *pExprType = nullptr;
-
-    //GetTokenAppend();
 
     switch (token) {
         case tcEqual:
@@ -201,19 +193,23 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 }
 
 void TParser::ParseDO(TSymtabNode* pRoutineId) {
-    GetTokenAppend();
+
+
+    int breakPoint = PutLocationMarker();
+    GetTokenAppend(); //do
 
     ParseStatementList(pRoutineId, tcWhile);
 
     CondGetTokenAppend(tcWhile, errMissingWHILE);
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    InsertLineMarker();
+    //InsertLineMarker();
+
     CheckBoolean(ParseExpression());
-    ;
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
+    FixupLocationMarker(breakPoint);
 }
 
 void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
@@ -240,18 +236,19 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
     ParseStatement(pRoutineId);
+    while (token == tcSemicolon) GetTokenAppend();
+
     FixupLocationMarker(atFalseLocationMarker);
-
-    if (token == tcSemicolon) GetTokenAppend();
-
     if (token == tcElse) {
         //--Append a placeholder location marker for the token that
         //--follows the IF statement.  Remember the location of this
         //--placeholder so it can be fixed up below.
         int atFollowLocationMarker = PutLocationMarker();
-        
+
         GetTokenAppend();
         ParseStatement(pRoutineId);
+        while (token == tcSemicolon) GetTokenAppend();
+
         FixupLocationMarker(atFollowLocationMarker);
     }
 }

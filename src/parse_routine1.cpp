@@ -25,10 +25,10 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
 
     //--Enter the next nesting level and open a new scope
     //--for the function.
-    if (!strcmp(pFunctionNode->String(), "main")) {
-        GetToken();
-        symtabStack.SetScope(1);
-    } else symtabStack.EnterScope();
+    //if (pFunctionNode->defn.routine.which == ::rcForward)GetToken();
+
+        symtabStack.EnterScope();
+    //}
 
     //-- (
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -40,30 +40,31 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     TSymtabNode *pParmList = ParseFormalParmList(parmCount,
             totalParmSize);
 
-    //-- )
-    CondGetTokenAppend(tcRParen, errMissingRightParen);
-
     //--Not forwarded.
     pFuncId->defn.routine.parmCount = parmCount;
     pFuncId->defn.routine.totalParmSize = totalParmSize;
     pFuncId->defn.routine.locals.pParmsIds = pParmList;
 
-    pFuncId->level = currentNestingLevel;
+    //pFuncId->level = currentNestingLevel;
 
     pFuncId->defn.routine.locals.pConstantIds = NULL;
     pFuncId->defn.routine.locals.pTypeIds = NULL;
     pFuncId->defn.routine.locals.pVariableIds = NULL;
     pFuncId->defn.routine.locals.pRoutineIds = NULL;
+    pFuncId->defn.how = ::dcFunction;
+
+    //-- )
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
 
     if (token == tcSemicolon) {
         pFuncId->defn.routine.which = rcForward;
     } else if (token == tcLBracket) {
         pFuncId->defn.routine.which = rcDeclared;
         ParseBlock(pFuncId);
+        pFuncId->defn.routine.returnMarker = PutLocationMarker();
     }
 
     pFuncId->defn.routine.pSymtab = symtabStack.ExitScope();
-    pFuncId->defn.how = ::dcFunction;
 
     return pFuncId;
 }
@@ -85,6 +86,7 @@ void TParser::ParseBlock(TSymtabNode *pRoutineId) {
     Resync(tlStatementStart);
     if (token != tcLBracket) Error(errMissingLeftBracket);
     icode.Reset();
+
     ParseCompound(pRoutineId);
 
     //--Set the program's or routine's icode.

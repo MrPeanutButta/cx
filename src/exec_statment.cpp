@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
+void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
     if (token != tcLBracket) {
         ++stmtCount;
         TraceStatement();
@@ -32,7 +32,11 @@ void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
         case tcCase:
         case tcDefault://ParseCaseLabel();
             break;
-        case tcBreak: //GetToken();
+        case tcBreak:
+            //token = tcRBracket;
+            GetToken();
+            breakLoop = true;
+            //GoTo(breakPoint);
             break;
         case tcLBracket: ExecuteCompound(pRoutine);
             break;
@@ -41,14 +45,15 @@ void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
     }
 }
 
-void TExecutor::ExecuteStatementList(const TSymtabNode *pRoutine, TTokenCode terminator) {
+void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminator) {
     do {
         ExecuteStatement(pRoutine);
+
         while (token == tcSemicolon) GetToken();
-    } while ((token != terminator) && (token != tcDummy));
+    } while ((token != terminator) && (token != tcDummy) && (!breakLoop));
 }
 
-void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
+void TExecutor::ExecuteAssignment(TSymtabNode *pTargetId) {
     TStackItem *pTarget; // runtime stack address of target
     TType *pTargetType; // ptr to target type object
     TType *pExprType; // ptr to expression type object
@@ -204,46 +209,72 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     }
 }
 
-void TExecutor::ExecuteDO(const TSymtabNode *pRoutine) {
+void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {
 
-    int atLoopStart = CurrentLocation(); // location of loop start in icode
+    int breakPoint; // = GetLocationMarker();
+    int atLoopStart = CurrentLocation(); // location of loop start in icode;
+    int condition = 0;
 
     do {
+
         GetToken(); // do
+        breakPoint = GetLocationMarker();
+        GetToken();
 
         ExecuteStatementList(pRoutine, tcWhile);
 
+        if (breakLoop) {
+            GoTo(breakPoint);
+            GetToken();
+            break;
+        }
+
         GetToken(); //while
         ExecuteExpression(); // (condition)
+        condition = Pop()->__int;
 
-        if (Pop()->__int) this->GoTo(atLoopStart);
+        if (condition != 0) this->GoTo(atLoopStart);
     } while (CurrentLocation() == atLoopStart);
+
+    // reset break flag
+    breakLoop = false;
+
 }
 
-void TExecutor::ExecuteCompound(const TSymtabNode *pRoutine) {
+void TExecutor::ExecuteCompound(TSymtabNode *pRoutine) {
+
     GetToken();
 
     ExecuteStatementList(pRoutine, tcRBracket);
 
-    //GetToken();
+    if (token == tcRBracket)GetToken();
 }
 
-void TExecutor::ExecuteIF(const TSymtabNode* pRoutine) {
+void TExecutor::ExecuteIF(TSymtabNode* pRoutine) {
+    //-- if
     GetToken();
 
     //--Get the location of where to go to if <expr> is false.
     int atFalse = GetLocationMarker();
+    GetToken();
 
     //--(
     GetToken();
+
     ExecuteExpression();
+    int condition = Pop()->__int;
+
     //--)
     GetToken();
-    if (Pop()->__int) {
 
-        //--True: {
-        GetToken();
+    if (condition != 0) {
+
+        //--True: { or single statement
+        //GetToken();
         ExecuteStatement(pRoutine);
+        while (token == tcSemicolon)GetToken();
+
+        //if (token == tcRBracket)GetToken();
 
         //--If there is an ELSE part, jump around it.
         if (token == tcElse) {
@@ -262,9 +293,17 @@ void TExecutor::ExecuteIF(const TSymtabNode* pRoutine) {
             //--ELSE <stmt-2>
             GetToken();
             GetLocationMarker(); // skip over location marker
+            //--{ or single statement
             GetToken();
             ExecuteStatement(pRoutine);
+
+            while (token == tcSemicolon)GetToken();
+            //if (token == tcRBracket)GetToken();
         }
     }
+
+    //-- }
+    //while (token == tcSemicolon)GetToken();
+    //if (token == tcRBracket)GetToken();
 
 }

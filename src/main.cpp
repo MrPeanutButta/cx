@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 
     TSymtabNode *pProgramId = parser->Parse();
     delete parser;
-    
+
     if (xrefFlag) {
         list.PutLine();
         list.PutLine("--x ref---");
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
         TBackend *pBackend = new TExecutor;
         //pBackend->Go(pProgramId);
-        pBackend->Go(globalSymtab.Search("main"));
+        pBackend->Go(pProgramId);
 
         delete[] vpSymtabs;
         delete pBackend;

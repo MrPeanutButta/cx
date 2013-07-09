@@ -56,7 +56,7 @@ protected:
 public:
     virtual ~TBackend(void) {}
 
-    virtual void Go(const TSymtabNode *pRoutineId) = 0;
+    virtual void Go( TSymtabNode *pRoutineId) = 0;
 };
 
 #endif
