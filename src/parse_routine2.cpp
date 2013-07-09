@@ -254,6 +254,16 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         //--                      formal parameter.
     else if (token == tcIdentifier) {
         TSymtabNode *pActualId = Find(pToken->String());
+        
+        // skip type declaration
+        if(pActualId->defn.how == ::dcType){
+            GetToken();
+            
+            if(token == tcBitANDorAddrOf)GetToken();
+            
+            pActualId = Find(pToken->String());
+        }
+        
         icode.Put(pActualId);
 
         if (pFormalId->pType != ParseVariable(pActualId)) {

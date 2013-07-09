@@ -72,7 +72,7 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
-    TType *pTargetType = pTargetId->pType;//ParseVariable(pTargetId);
+    TType *pTargetType = pTargetId->pType; //ParseVariable(pTargetId);
     TType *pExprType = nullptr;
 
     //GetTokenAppend();
@@ -191,7 +191,7 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         {
             pExprType = ParseFactor();
         }
-        break;
+            break;
         default:
             Error(errInvalidAssignment);
             break;
@@ -227,6 +227,11 @@ void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
 
 void TParser::ParseIF(TSymtabNode* pRoutineId) {
 
+    //--Append a placeholder location marker for where to go to if
+    //--<expr> is false.  Remember the location of this placeholder
+    //--so it can be fixed up below.
+    int atFalseLocationMarker = PutLocationMarker();
+
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
@@ -235,12 +240,19 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
     ParseStatement(pRoutineId);
+    FixupLocationMarker(atFalseLocationMarker);
 
     if (token == tcSemicolon) GetTokenAppend();
 
     if (token == tcElse) {
+        //--Append a placeholder location marker for the token that
+        //--follows the IF statement.  Remember the location of this
+        //--placeholder so it can be fixed up below.
+        int atFollowLocationMarker = PutLocationMarker();
+        
         GetTokenAppend();
         ParseStatement(pRoutineId);
+        FixupLocationMarker(atFollowLocationMarker);
     }
 }
 

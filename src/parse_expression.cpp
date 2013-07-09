@@ -123,6 +123,10 @@ TType *TParser::ParseFactor(void) {
         case tcIdentifier:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
+            
+            if(pNode == nullptr)
+                Error(errUndefinedIdentifier);
+            
             icode.Put(pNode);
 
             switch (pNode->defn.how) {

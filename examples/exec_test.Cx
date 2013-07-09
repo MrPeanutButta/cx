@@ -1,4 +1,16 @@
+int add2or5(int &a){
+
+    if(a > 20){
+        a = a + 2;
+    } else if(a < 20){
+        a = a + 5;
+    }else a = 20;
+
+    return a;
+}
+
 int pow(int a, int b){
+        int c = add2or5(a);
         return a * b;
 }
 
@@ -10,6 +22,8 @@ int main(){
     a = pow(c, c);
 
     c = a + a;
+    
+    a = add2or5(c);
 
     return c;
 }

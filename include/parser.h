@@ -135,8 +135,16 @@ class TParser {
         icode.Put(token);
     }
 
-    void InsertLineMarker(void) {
-        icode.InsertLineMarker();
+    void InsertLineMarker (void) { icode.InsertLineMarker(); }
+
+    int PutLocationMarker(void)
+    {
+	return icode.PutLocationMarker();
+    }
+
+    void FixupLocationMarker(int location)
+    {
+	icode.FixupLocationMarker(location);
     }
 
     TSymtabNode *SearchLocal(const char *pString){

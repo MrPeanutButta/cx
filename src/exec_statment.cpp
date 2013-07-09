@@ -23,7 +23,7 @@ void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
             break;
         case tcWhile: //ParseWHILE();
             break;
-        case tcIf: //ParseIF();
+        case tcIf: ExecuteIF(pRoutine);
             break;
         case tcFor: //ParseFOR();
             break;
@@ -226,4 +226,45 @@ void TExecutor::ExecuteCompound(const TSymtabNode *pRoutine) {
     ExecuteStatementList(pRoutine, tcRBracket);
 
     //GetToken();
+}
+
+void TExecutor::ExecuteIF(const TSymtabNode* pRoutine) {
+    GetToken();
+
+    //--Get the location of where to go to if <expr> is false.
+    int atFalse = GetLocationMarker();
+
+    //--(
+    GetToken();
+    ExecuteExpression();
+    //--)
+    GetToken();
+    if (Pop()->__int) {
+
+        //--True: {
+        GetToken();
+        ExecuteStatement(pRoutine);
+
+        //--If there is an ELSE part, jump around it.
+        if (token == tcElse) {
+            GetToken();
+            GoTo(GetLocationMarker());
+            GetToken(); // token following the IF statement
+        }
+    } else {
+
+        //--False: Go to the false location.
+        GoTo(atFalse);
+        GetToken();
+
+        if (token == tcElse) {
+
+            //--ELSE <stmt-2>
+            GetToken();
+            GetLocationMarker(); // skip over location marker
+            GetToken();
+            ExecuteStatement(pRoutine);
+        }
+    }
+
 }
