@@ -86,7 +86,11 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
                         : Pop()->__float; // real := real
             } else if ((pTargetType->Base() == pIntegerType) ||
                     (pTargetType->Base()->form == fcEnum)) {
-                int value = Pop()->__int;
+
+                int value = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+
                 RangeCheck(pTargetType, value);
 
                 //--integer     := integer

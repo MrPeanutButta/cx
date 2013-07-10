@@ -32,14 +32,12 @@ void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId) {
     //--Execute the routine's compound statement.
     // if global we allocate globals and call on main
     if (pRoutineId->defn.how == dcProgram) {
-        currentNestingLevel = 2;
+        //currentNestingLevel = 1;
         TSymtabNode *pMain = pRoutineId->defn.routine.pSymtab->Search("main");
-        //symtabStack.SetCurrentSymtab(pMain->defn.routine.pSymtab);
-        ExecuteDeclaredSubroutineCall(pMain);
+        ExecuteRoutine(pMain);
     } else {
         ExecuteCompound(pRoutineId);
     }
-    //ExecuteRETURN(pRoutineId);
     ExitRoutine(pRoutineId);
 }
 
@@ -204,7 +202,7 @@ void TExecutor::ExecuteActualParameters(const TSymtabNode *pRoutineId) {
 void TExecutor::ExecuteRETURN(const TSymtabNode *pRoutine) {
 
     ExecuteAssignment(pRoutine);
-    GoTo(pRoutine->defn.routine.returnMarker);
+    GoTo(pRoutine->defn.routine.returnMarker - 1);
 
     //ExitRoutine(pRoutine);
 

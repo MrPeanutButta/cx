@@ -326,6 +326,7 @@ TType *TExecutor::ExecuteTerm(void) {
                 //--real    / integer
                 //--integer / real
                 //--integer / integer
+
                 float value2 = pOperandType == pFloatType
                         ? Pop()->__float
                         : Pop()->__int;
@@ -395,8 +396,6 @@ TType *TExecutor::ExecuteFactor(void) {
                     pResultType = ExecuteVariable(pNode, false);
                     break;
             }
-            //ExecuteSuffix(pNode);
-
         }
             break;
         case tcNumber:
@@ -524,17 +523,44 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         }
     } while (!doneFlag);
 
-    //--If addressFlag is false, and the data is not an array
-    //--or a record, replace the address at the top of the stack
-    //--with the data value.
-    if ((!addressFlag) && (pType->IsScalar())) {
-        if (pType == pFloatType) {
-            Push(((TStackItem *) Pop()->__addr)->__float);
-        } else if (pType->Base() == pCharType) {
-            Push(((TStackItem *) Pop()->__addr)->__char);
-        } else {
-            Push(((TStackItem *) Pop()->__addr)->__int);
-        }
+    switch (token) {
+        case tcPlusPlus:
+            GetToken();
+            if ((!addressFlag) && (pType->IsScalar())) {
+                if (pType == pFloatType) {
+                    Push(((TStackItem *) Pop()->__addr)->__float++);
+                } else if (pType->Base() == pCharType) {
+                    Push(((TStackItem *) Pop()->__addr)->__char++);
+                } else {
+                    Push(((TStackItem *) Pop()->__addr)->__int++);
+                }
+            }
+            break;
+        case tcMinusMinus:
+            GetToken();
+            if ((!addressFlag) && (pType->IsScalar())) {
+                if (pType == pFloatType) {
+                    Push(((TStackItem *) Pop()->__addr)->__float--);
+                } else if (pType->Base() == pCharType) {
+                    Push(((TStackItem *) Pop()->__addr)->__char--);
+                } else {
+                    Push(((TStackItem *) Pop()->__addr)->__int--);
+                }
+            }
+            break;
+        default:
+            //--If addressFlag is false, and the data is not an array
+            //--or a record, replace the address at the top of the stack
+            //--with the data value.
+            if ((!addressFlag) && (pType->IsScalar())) {
+                if (pType == pFloatType) {
+                    Push(((TStackItem *) Pop()->__addr)->__float);
+                } else if (pType->Base() == pCharType) {
+                    Push(((TStackItem *) Pop()->__addr)->__char);
+                } else {
+                    Push(((TStackItem *) Pop()->__addr)->__int);
+                }
+            }
     }
 
     if (!addressFlag) {

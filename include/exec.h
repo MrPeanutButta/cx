@@ -92,7 +92,9 @@ public:
     void PopFrame(const TSymtabNode *pRoutineId, TIcode *&pIcode);
 
     TStackItem *Pop(void) {
-        return tos--;
+        TStackItem *t = tos;
+        --tos;
+        return t;
     }
 
     TStackItem *TOS(void) const {

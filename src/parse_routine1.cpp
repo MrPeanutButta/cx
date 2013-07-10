@@ -23,9 +23,12 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
 
     //--Enter the next nesting level and open a new scope
     //--for the function.
-    if (pFunctionNode->defn.how != dcProgram) {
+    //if (__MAIN_ENTRY__) {
+    //symtabStack.SetScope(__MAIN_SCOPE__);
+    //pFunctionNode->defn.routine.pSymtab = symtabStack.GetCurrentSymtab();
+    //} else {
         symtabStack.EnterScope();
-    }
+    //}
 
     //-- (
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -41,14 +44,11 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     pFunctionNode->defn.routine.locals.pParmsIds = pParmList;
 
     //--Not forwarded.
-    // skip if this is 'main'
-    if (pFunctionNode->defn.how != dcProgram) {
-        pFunctionNode->defn.routine.locals.pConstantIds = NULL;
-        pFunctionNode->defn.routine.locals.pTypeIds = NULL;
-        pFunctionNode->defn.routine.locals.pVariableIds = NULL;
-        pFunctionNode->defn.routine.locals.pRoutineIds = NULL;
-        pFunctionNode->defn.how = ::dcFunction;
-    }
+    pFunctionNode->defn.routine.locals.pConstantIds = NULL;
+    pFunctionNode->defn.routine.locals.pTypeIds = NULL;
+    pFunctionNode->defn.routine.locals.pVariableIds = NULL;
+    pFunctionNode->defn.routine.locals.pRoutineIds = NULL;
+    pFunctionNode->defn.how = ::dcFunction;
 
     //-- )
     CondGetTokenAppend(tcRParen, errMissingRightParen);
@@ -57,15 +57,15 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
         pFunctionNode->defn.routine.which = rcForward;
     } else if (token == tcLBracket) {
         pFunctionNode->defn.routine.which = rcDeclared;
-        if (pFunctionNode->defn.how != dcProgram) {
-            ParseBlock(pFunctionNode);
-            pFunctionNode->defn.routine.returnMarker = PutLocationMarker();
-        }
+        ParseBlock(pFunctionNode);
+        pFunctionNode->defn.routine.returnMarker = PutLocationMarker();
     }
 
-    if (pFunctionNode->defn.how != dcProgram) {
+    //if (__MAIN_ENTRY__) {
+    // currentNestingLevel--;
+    // } else {
         pFunctionNode->defn.routine.pSymtab = symtabStack.ExitScope();
-    }
+    // }
 
     return pFunctionNode;
 }

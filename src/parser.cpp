@@ -49,18 +49,24 @@ TSymtabNode *TParser::Parse(void) {
 
     icode.Reset();
 
+    currentNestingLevel = 0;
     //--Enter the nesting level 1 and open a new scope for the program.
-    symtabStack.EnterScope();
+    symtabStack.SetCurrentSymtab(&globalSymtab);
 
     GetTokenAppend();
 
     ParseStatementList(pProgramId, tcEndOfFile);
+    pProgramId->defn.routine.returnMarker = PutLocationMarker();
+
+    GetTokenAppend();
+
     pProgramId->defn.routine.pSymtab = symtabStack.ExitScope();
+
 
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
 
-    pProgramId->defn.routine.returnMarker = PutLocationMarker();
+
     //--Set the program's icode.
     pProgramId->defn.routine.pIcode = new TIcode(icode);
 

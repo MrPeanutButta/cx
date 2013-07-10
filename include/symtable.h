@@ -91,6 +91,8 @@ class TSymtabNode {
 public:
 
     TSymtabNode *next;
+    TSymtabNode *prev;
+    
     TType *pType;
 
     TDefn defn;

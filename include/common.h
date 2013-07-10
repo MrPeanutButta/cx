@@ -75,6 +75,10 @@ extern const TTokenCode tlIdentifierFollow[];
 
 bool TokenIn(TTokenCode tc, const TTokenCode *pList);
 
+// mains scope level on the symtab stack
+#define __MAIN_SCOPE__ 1
+#define __MAIN_ENTRY__ (!strcmp(pFunctionNode->String(), "main"))
+
 #endif
 //endfig
 

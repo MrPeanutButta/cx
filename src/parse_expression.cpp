@@ -106,6 +106,8 @@ TType *TParser::ParseTerm(void) {
                 } else Error(errIncompatibleTypes);
                 break;
             case tcLogicAnd:
+                //GetTokenAppend();
+
                 CheckBoolean(pResultType, pOperandType);
                 pResultType = pBooleanType;
                 break;
@@ -123,10 +125,10 @@ TType *TParser::ParseFactor(void) {
         case tcIdentifier:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
-            
+
             if(pNode == nullptr)
                 Error(errUndefinedIdentifier);
-            
+
             icode.Put(pNode);
 
             switch (pNode->defn.how) {
@@ -145,12 +147,9 @@ TType *TParser::ParseFactor(void) {
                 case dcVarParm:
                 case dcMember:
 
-                    //GetTokenAppend();
-
-                    if ((pNode->pType == pIntegerType) ||
-                            (pNode->pType == pFloatType))ParseSuffix(pNode);
-
                     pResultType = ParseVariable(pNode);
+
+                    ParseSuffix(pNode);
                     break;
                 default:
                     Error(errUndefinedIdentifier);

@@ -45,11 +45,6 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
     TSymtabNode *pNode = nullptr;
     count = totalSize = 0;
-    //GetTokenAppend();
-
-    //--Loop to parse a parameter declarations separated by semicolons.
-    //while ((token == tcIdentifier)) {// || (token == tcVAR)) {
-
 
     //--Loop to parse the comma-separated sublist of parameter ids.
     TType *pParmType; // ptr to parm's type object
@@ -254,16 +249,16 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         //--                      formal parameter.
     else if (token == tcIdentifier) {
         TSymtabNode *pActualId = Find(pToken->String());
-        
+
         // skip type declaration
         if(pActualId->defn.how == ::dcType){
             GetToken();
-            
+
             if(token == tcBitANDorAddrOf)GetToken();
-            
+
             pActualId = Find(pToken->String());
         }
-        
+
         icode.Put(pActualId);
 
         if (pFormalId->pType != ParseVariable(pActualId)) {

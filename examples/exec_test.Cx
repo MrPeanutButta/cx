@@ -1,16 +1,22 @@
+
+int global_int = 500;
+
+int sqr_root(int number){
+    int root = number;
+
+    //global_int = 2;
+
+    do
+        root = (number/root + root)/2;
+    while((root * root) > number);
+
+    return root;
+}
+
 int main(){
 
-    int number = 4096;
-    int root = number;
-    int i = 5;
+    int root = sqr_root(4096);
 
-    do{
-        root = i;
-        if(i == 10) break;
-
-        root = number + 5;
-        i++;
-    }while(root * root > number);
-
-    //return root;
+    root = global_int;
+    return root;
 }

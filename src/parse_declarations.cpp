@@ -29,6 +29,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
              * check if forwarded */
             if (pNewId != nullptr) {
                 if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
+                    GetTokenAppend();
                     ParseFunctionHeader(pNewId);
                 } else Error(errRedefinedIdentifier);
             } else {
@@ -57,22 +58,18 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 // add to routines variable list
                 if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
                     pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount + 1;
+                    pRoutineId->defn.routine.locals.pVariableIds->prev = pNewId;
+                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount;
                     pRoutineId->defn.routine.totalLocalSize = pNewId->pType->size;
                 } else {
-                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
-                    int offset = pRoutineId->defn.routine.parmCount + 2;
-                    int totalSize = 0;
-                    
-                    while(__var->next){
-                        totalSize += __var->pType->size;
-                        offset++;
-                        __var = __var->next;
-                    }
-                    
+                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds->prev;
+                    int offset = __var->defn.data.offset + 1;
+
                     __var->next = pNewId;
+                    __var->prev = pNewId;
+
                     pNewId->defn.data.offset = offset;
-                    pRoutineId->defn.routine.totalLocalSize = totalSize;
+                    pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
 
                 }
             } else if (pNewId->defn.how == dcFunction) {

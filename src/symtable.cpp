@@ -381,17 +381,12 @@ TSymtabStack::~TSymtabStack(void) {
 }
 
 void TSymtabStack::InitializeMain(void) {
-    // initialize mains nesting level
-    //extern TSymtab globalSymtab;
+    // initialize mains symtable
+    //TSymtabNode *pMain = pSymtabs[0]->EnterNew("main", dcFunction);
+    //pMain->defn.routine.which = rcForward;
+    //SetType(pMain->pType, pIntegerType);
 
     //pSymtabs[1] = new TSymtab;
-    //
-    ///TSymtabNode *pMainNode = pSymtabs[0]->EnterNew("main", ::dcFunction);
-    //pMainNode->pType = pIntegerType;
-    //pMainNode->defn.routine.which = ::rcForward;
-    //    pMainNode->level = 1;
-    //    pMainNode->defn.routine.pSymtab = pSymtabs[1];
-
 }
 
 //--------------------------------------------------------------
@@ -446,7 +441,7 @@ TSymtabNode *TSymtabStack::Find(const char *pString) const {
 void TSymtabStack::EnterScope(void) {
 
     // dont overwrite mains scope
-    //if (currentNestingLevel < 1)++currentNestingLevel;
+    //if (currentNestingLevel <= 1)++currentNestingLevel;
 
     if (++currentNestingLevel > maxNestingLevel) {
         Error(errNestingTooDeep);

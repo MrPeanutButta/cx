@@ -235,12 +235,12 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     breakLoop = false;
 
     //--Set up a new stack frame for the callee.
-    TStackItem *pNewFrameBase = runStack.PushFrameHeader
-            (0, 1, pIcode);
-    
-    currentNestingLevel = 1;
-    runStack.ActivateFrame(pNewFrameBase, 0);
-    
+    //TStackItem *pNewFrameBase = runStack.PushFrameHeader
+    //(0, 1, pIcode);
+
+    currentNestingLevel = 0;
+    //runStack.ActivateFrame(pNewFrameBase, 0);
+
     ExecuteRoutine(pProgramId);
 
     //--Print the executor's summary.
