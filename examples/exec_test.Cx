@@ -1,20 +1,14 @@
+int main(){
 
-int test;
-
-{
-
-    int number;
-    int root;
-
-    number = 4096;
-    root = 4096;
-
-    int i = 0;
+    int number = 4096;
+    int root = number;
+    int i = 5;
 
     do{
+        root = i;
         if(i == 10) break;
 
-        root = (number/root + root)/2;
+        root = number + 5;
         i++;
     }while(root * root > number);
 

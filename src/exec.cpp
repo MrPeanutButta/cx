@@ -31,17 +31,16 @@ using namespace std;
 //  Constructor
 //--------------------------------------------------------------
 
-TRuntimeStack::TRuntimeStack(void)
-{
-    tos        = &stack[-1];  // point to just below bottom of stack
-    pFrameBase = &stack[ 0];  // point to bottom of stack
+TRuntimeStack::TRuntimeStack(void) {
+    tos = &stack[-1]; // point to just below bottom of stack
+    pFrameBase = &stack[ 0]; // point to bottom of stack
 
     //--Initialize the program's stack frame at the bottom.
-    Push(0);  // function return value
-    Push(0);  // static  link
-    Push(0);  // dynamic link
-    Push(0);  // return address icode pointer
-    Push(0);  // return address icode location
+    Push(0); // function return value
+    Push(0); // static  link
+    Push(0); // dynamic link
+    Push(0); // return address icode pointer
+    Push(0); // return address icode location
 }
 
 //--------------------------------------------------------------
@@ -58,42 +57,39 @@ TRuntimeStack::TRuntimeStack(void)
 //--------------------------------------------------------------
 
 TStackItem *TRuntimeStack::PushFrameHeader(int oldLevel, int newLevel,
-					   TIcode *pIcode)
-{
+        TIcode *pIcode) {
     TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
-    TStackItem   *pNewFrameBase = tos + 1;  // point to item just above
-					    //   current TOS item
+    TStackItem *pNewFrameBase = tos + 1; // point to item just above
+    //   current TOS item
 
-    Push(0);  // function return value (placeholder)
+    Push(0); // function return value (placeholder)
 
     //--Compute the static link.
     if (newLevel == oldLevel + 1) {
 
-	//--Callee nested within caller:
-	//--Push address of caller's stack frame.
-	Push(pHeader);
-    }
-    else if (newLevel == oldLevel) {
+        //--Callee nested within caller:
+        //--Push address of caller's stack frame.
+        Push(pHeader);
+    } else if (newLevel == oldLevel) {
 
-	//--Callee at same level as caller:
-	//--Push address of common parent's stack frame.
-	Push(pHeader->staticLink.__addr);
-    }
-    else /* newLevel < oldLevel */ {
+        //--Callee at same level as caller:
+        //--Push address of common parent's stack frame.
+        Push(pHeader->staticLink.__addr);
+    } else /* newLevel < oldLevel */ {
 
-	//--Callee nested less deeply than caller:
-	//--Push address of nearest commmon ancestor's stack frame.
-	int delta = oldLevel - newLevel;
+        //--Callee nested less deeply than caller:
+        //--Push address of nearest commmon ancestor's stack frame.
+        int delta = oldLevel - newLevel;
 
-	while (delta-- >= 0) {
-	    pHeader = (TFrameHeader *) pHeader->staticLink.__addr;
-	}
-	Push(pHeader);
+        while (delta-- >= 0) {
+            pHeader = (TFrameHeader *) pHeader->staticLink.__addr;
+        }
+        Push(pHeader);
     }
 
-    Push(pFrameBase);  // dynamic link
-    Push(pIcode);      // return address icode pointer
-    Push(0);           // return address icode location (placeholder)
+    Push(pFrameBase); // dynamic link
+    Push(pIcode); // return address icode pointer
+    Push(0); // return address icode location (placeholder)
 
     return pNewFrameBase;
 }
@@ -108,11 +104,10 @@ TStackItem *TRuntimeStack::PushFrameHeader(int oldLevel, int newLevel,
 //--------------------------------------------------------------
 
 void TRuntimeStack::ActivateFrame(TStackItem *pNewFrameBase,
-				  int location)
-{
+        int location) {
     pFrameBase = pNewFrameBase;
     ((TFrameHeader *) pFrameBase)->returnAddress
-					.location.__int = location;
+            .location.__int = location;
 }
 
 //--------------------------------------------------------------
@@ -125,21 +120,20 @@ void TRuntimeStack::ActivateFrame(TStackItem *pNewFrameBase,
 //--------------------------------------------------------------
 
 void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
-			     TIcode *&pIcode)
-{
+        TIcode *&pIcode) {
     TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
 
     //--Don't do anything if it's the bottommost stack frame.
     if (pFrameBase != &stack[0]) {
 
-	//--Return to the caller's intermediate code.
-	pIcode = (TIcode *) pHeader->returnAddress.icode.__addr;
-	pIcode->GoTo(pHeader->returnAddress.location.__int);
+        //--Return to the caller's intermediate code.
+        pIcode = (TIcode *) pHeader->returnAddress.icode.__addr;
+        pIcode->GoTo(pHeader->returnAddress.location.__int);
 
-	//--Cut the stack back.  Leave a function value on top.
-	tos = (TStackItem *) pFrameBase;
-	if (pRoutineId->defn.how != dcFunction) --tos;
-	pFrameBase = (TStackItem *) pHeader->dynamicLink.__addr;
+        //--Cut the stack back.  Leave a function value on top.
+        tos = (TStackItem *) pFrameBase;
+        if (pRoutineId->defn.how != dcFunction) --tos;
+        pFrameBase = (TStackItem *) pHeader->dynamicLink.__addr;
     }
 }
 
@@ -151,21 +145,20 @@ void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
 //      pId : ptr to symbol table node of variable or parm
 //--------------------------------------------------------------
 
-void TRuntimeStack::AllocateValue(const TSymtabNode *pId)
-{
-    TType *pType = pId->pType->Base();  // ptr to type object of value
+void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
+    TType *pType = pId->pType->Base(); // ptr to type object of value
 
-    if      (pType == pIntegerType) Push(0);
-    else if (pType == pFloatType)    Push(0.0f);
+    if (pType == pIntegerType) Push(0);
+    else if (pType == pFloatType) Push(0.0f);
     else if (pType == pBooleanType) Push(0);
-    else if (pType == pCharType)    Push(0);
+    else if (pType == pCharType) Push(0);
 
     else if (pType->form == fcEnum) Push(0);
     else {
 
-	//--Array or record
-	void *addr = new char[pType->size];
-	Push(addr);
+        //--Array or record
+        void *addr = new char[pType->size];
+        Push(addr);
     }
 }
 
@@ -177,13 +170,12 @@ void TRuntimeStack::AllocateValue(const TSymtabNode *pId)
 //      pId : ptr to symbol table node of variable or parm
 //--------------------------------------------------------------
 
-void TRuntimeStack::DeallocateValue(const TSymtabNode *pId)
-{
-    if ((! pId->pType->IsScalar()) && (pId->defn.how != dcVarParm)) {
-	TStackItem *pValue = ((TStackItem *) pFrameBase)
-						+ frameHeaderSize
-						+ pId->defn.data.offset;
-	delete[] pValue->__addr;
+void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
+    if ((!pId->pType->IsScalar()) && (pId->defn.how != dcVarParm)) {
+        TStackItem *pValue = ((TStackItem *) pFrameBase)
+                + frameHeaderSize
+                + pId->defn.data.offset;
+        delete[] pValue->__addr;
     }
 }
 
@@ -200,10 +192,9 @@ void TRuntimeStack::DeallocateValue(const TSymtabNode *pId)
 //           variable, parameter, or function return value
 //--------------------------------------------------------------
 
-TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId)
-{
-    int functionFlag = pId->defn.how == dcFunction;  // true if function
-						     //   else false
+TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
+    int functionFlag = pId->defn.how == dcFunction; // true if function
+    //   else false
     TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
 
     //--Compute the difference between the current nesting level
@@ -215,12 +206,12 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId)
 
     //--Chase static links delta times.
     while (delta-- > 0) {
-	pHeader = (TFrameHeader *) pHeader->staticLink.__addr;
+        pHeader = (TFrameHeader *) pHeader->staticLink.__addr;
     }
 
     return functionFlag ? &pHeader->functionValue
-			: ((TStackItem *) pHeader)
-			    + frameHeaderSize + pId->defn.data.offset;
+            : ((TStackItem *) pHeader)
+            + frameHeaderSize + pId->defn.data.offset;
 }
 
 //              **************
@@ -233,22 +224,29 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId)
 //  Go                  Start the executor.
 //--------------------------------------------------------------
 
-void TExecutor::Go( TSymtabNode *pProgramId)
-{
+void TExecutor::Go(TSymtabNode *pProgramId) {
     //--Initialize standard input and output.
     eofFlag = cin.eof();
     cout.setf(ios::fixed, ios::floatfield);
     cout << endl;
 
     //--Execute the program.
-    currentNestingLevel = 1;
+    //currentNestingLevel = 0;
     breakLoop = false;
+
+    //--Set up a new stack frame for the callee.
+    TStackItem *pNewFrameBase = runStack.PushFrameHeader
+            (0, 1, pIcode);
+    
+    currentNestingLevel = 1;
+    runStack.ActivateFrame(pNewFrameBase, 0);
+    
     ExecuteRoutine(pProgramId);
 
     //--Print the executor's summary.
     cout << endl;
     cout << "Successful completion.  " << stmtCount
-	 << " statements executed." << endl;
+            << " statements executed." << endl;
 }
 
 //--------------------------------------------------------------
@@ -258,13 +256,12 @@ void TExecutor::Go( TSymtabNode *pProgramId)
 //      value       : integer value to assign
 //--------------------------------------------------------------
 
-void TExecutor::RangeCheck(const TType *pTargetType, int value)
-{
+void TExecutor::RangeCheck(const TType *pTargetType, int value) {
 
-    if (   (pTargetType->form == fcSubrange)
-	&& (   (value < pTargetType->subrange.min)
-	    || (value > pTargetType->subrange.max))) {
-	RuntimeError(rteValueOutOfRange);
+    if ((pTargetType->form == fcSubrange)
+            && ((value < pTargetType->subrange.min)
+            || (value > pTargetType->subrange.max))) {
+        RuntimeError(rteValueOutOfRange);
     }
 }
 //endfig

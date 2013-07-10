@@ -123,26 +123,26 @@ class TExecutor : public TBackend {
     int traceStoreFlag; // true to trace data stores
     int traceFetchFlag; // true to trace data fetches
 
-    //--Routines
-    void ExecuteRoutine(TSymtabNode *pRoutineId);
-    void EnterRoutine(TSymtabNode *pRoutineId);
-    void ExitRoutine(TSymtabNode *pRoutineId);
-    TType *ExecuteSubroutineCall(TSymtabNode *pRoutineId);
-    TType *ExecuteDeclaredSubroutineCall(TSymtabNode *pRoutineId);
-    TType *ExecuteStandardSubroutineCall(TSymtabNode *pRoutineId);
-    void ExecuteActualParameters(TSymtabNode *pRoutineId);
+        //--Routines
+    void   ExecuteRoutine(const TSymtabNode *pRoutineId);
+    void   EnterRoutine  (const TSymtabNode *pRoutineId);
+    void   ExitRoutine   (const TSymtabNode *pRoutineId);
+    TType *ExecuteSubroutineCall        (const TSymtabNode *pRoutineId);
+    TType *ExecuteDeclaredSubroutineCall(const TSymtabNode *pRoutineId);
+    TType *ExecuteStandardSubroutineCall(const TSymtabNode *pRoutineId);
+    void   ExecuteActualParameters      (const TSymtabNode *pRoutineId);
 
     //--Statements
-    void ExecuteStatement(TSymtabNode *pRoutine);
-    void ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminator);
-    void ExecuteAssignment(TSymtabNode *pTargetId);
-    void ExecuteDO(TSymtabNode *pRoutine);
-    void ExecuteWHILE(TSymtabNode *pRoutine);
-    void ExecuteIF(TSymtabNode *pRoutine);
-    void ExecuteFOR(TSymtabNode *pRoutine);
-    void ExecuteSWITCH(TSymtabNode *pRoutine);
-    void ExecuteRETURN(TSymtabNode *pRoutine);
-    void ExecuteCompound(TSymtabNode *pRoutine);
+    void ExecuteStatement(const TSymtabNode *pRoutine);
+    void ExecuteStatementList(const TSymtabNode *pRoutine, TTokenCode terminator);
+    void ExecuteAssignment(const TSymtabNode *pTargetId);
+    void ExecuteDO(const TSymtabNode *pRoutine);
+    void ExecuteWHILE(const TSymtabNode *pRoutine);
+    void ExecuteIF(const TSymtabNode *pRoutine);
+    void ExecuteFOR(const TSymtabNode *pRoutine);
+    void ExecuteSWITCH(const TSymtabNode *pRoutine);
+    void ExecuteRETURN(const TSymtabNode *pRoutine);
+    void ExecuteCompound(const TSymtabNode *pRoutine);
 
     //--Expressions
     TType *ExecuteExpression(void);

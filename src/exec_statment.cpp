@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
+void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
     if (token != tcLBracket) {
         ++stmtCount;
         TraceStatement();
@@ -45,7 +45,7 @@ void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
     }
 }
 
-void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminator) {
+void TExecutor::ExecuteStatementList(const TSymtabNode *pRoutine, TTokenCode terminator) {
     do {
         ExecuteStatement(pRoutine);
 
@@ -53,7 +53,7 @@ void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminato
     } while ((token != terminator) && (token != tcDummy) && (!breakLoop));
 }
 
-void TExecutor::ExecuteAssignment(TSymtabNode *pTargetId) {
+void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     TStackItem *pTarget; // runtime stack address of target
     TType *pTargetType; // ptr to target type object
     TType *pExprType; // ptr to expression type object
@@ -209,7 +209,7 @@ void TExecutor::ExecuteAssignment(TSymtabNode *pTargetId) {
     }
 }
 
-void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {
+void TExecutor::ExecuteDO(const TSymtabNode *pRoutine) {
 
     int breakPoint; // = GetLocationMarker();
     int atLoopStart = CurrentLocation(); // location of loop start in icode;
@@ -241,7 +241,7 @@ void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {
 
 }
 
-void TExecutor::ExecuteCompound(TSymtabNode *pRoutine) {
+void TExecutor::ExecuteCompound(const TSymtabNode *pRoutine) {
 
     GetToken();
 
@@ -250,7 +250,7 @@ void TExecutor::ExecuteCompound(TSymtabNode *pRoutine) {
     if (token == tcRBracket)GetToken();
 }
 
-void TExecutor::ExecuteIF(TSymtabNode* pRoutine) {
+void TExecutor::ExecuteIF(const TSymtabNode* pRoutine) {
     //-- if
     GetToken();
 

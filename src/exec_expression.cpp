@@ -502,8 +502,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     //--or record, then the stack item contains the address
     //--of the data.  Push the data address onto the stack.
     Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
-            ? pEntry->__addr
-            : pEntry);
+            ? pEntry->__addr : pEntry);
 
     GetToken();
 
@@ -516,13 +515,14 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
             case tcLeftSubscript:
                 pType = ExecuteSubscripts(pType);
                 break;
+
             case tcDot:
                 pType = ExecuteField();
                 break;
+
             default: doneFlag = true;
         }
     } while (!doneFlag);
-
 
     //--If addressFlag is false, and the data is not an array
     //--or a record, replace the address at the top of the stack
@@ -536,7 +536,6 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
             Push(((TStackItem *) Pop()->__addr)->__int);
         }
     }
-
 
     if (!addressFlag) {
         void *pDataValue = pType->IsScalar() ? TOS() : TOS()->__addr;

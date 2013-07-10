@@ -57,13 +57,22 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 // add to routines variable list
                 if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
                     pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount + 1;
+                    pRoutineId->defn.routine.totalLocalSize = pNewId->pType->size;
                 } else {
                     TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
-
-                    while (__var->next)
+                    int offset = pRoutineId->defn.routine.parmCount + 2;
+                    int totalSize = 0;
+                    
+                    while(__var->next){
+                        totalSize += __var->pType->size;
+                        offset++;
                         __var = __var->next;
-
+                    }
+                    
                     __var->next = pNewId;
+                    pNewId->defn.data.offset = offset;
+                    pRoutineId->defn.routine.totalLocalSize = totalSize;
 
                 }
             } else if (pNewId->defn.how == dcFunction) {

@@ -145,12 +145,12 @@ TType *TParser::ParseFactor(void) {
                 case dcVarParm:
                 case dcMember:
 
-                    GetTokenAppend();
+                    //GetTokenAppend();
 
                     if ((pNode->pType == pIntegerType) ||
                             (pNode->pType == pFloatType))ParseSuffix(pNode);
 
-                    pResultType = pNode->pType;
+                    pResultType = ParseVariable(pNode);
                     break;
                 default:
                     Error(errUndefinedIdentifier);
@@ -238,7 +238,7 @@ TType *TParser::ParseFactor(void) {
 
             break;
         case tcSemicolon:
-            pResultType = pDummyType;
+            //pResultType = pDummyType;
             break;
         default:
             Error(errInvalidExpression);
