@@ -125,7 +125,8 @@ class TExecutor : public TBackend {
     int traceStoreFlag; // true to trace data stores
     int traceFetchFlag; // true to trace data fetches
 
-        //--Routines
+    //--Routines
+    void InitializeGlobal(const TSymtabNode *pProgramId);
     void   ExecuteRoutine(const TSymtabNode *pRoutineId);
     void   EnterRoutine  (const TSymtabNode *pRoutineId);
     void   ExitRoutine   (const TSymtabNode *pRoutineId);
@@ -200,10 +201,10 @@ public:
     TExecutor(void) : TBackend() {
         stmtCount = 0;
 
-        traceRoutineFlag = true;
-        traceStatementFlag = true;
-        traceStoreFlag = true;
-        traceFetchFlag = true;
+        traceRoutineFlag = false;
+        traceStatementFlag = false;
+        traceStoreFlag = false;
+        traceFetchFlag = false;
 
         breakLoop = false;
     }

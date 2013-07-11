@@ -431,7 +431,7 @@ TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
 //--------------------------------------------------------------
 
 TSymtabNode *TSymtabStack::Find(const char *pString) const {
-    TSymtabNode *pNode = SearchAvailableScopes(pString);
+    TSymtabNode *pNode = SearchAll(pString);
 
     if (!pNode) {
         Error(errUndefinedIdentifier);

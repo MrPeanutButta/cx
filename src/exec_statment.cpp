@@ -21,7 +21,7 @@ void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
             break;
         case tcDo: ExecuteDO(pRoutine);
             break;
-        case tcWhile: //ParseWHILE();
+        case tcWhile: ExecuteWHILE(pRoutine);
             break;
         case tcIf: ExecuteIF(pRoutine);
             break;
@@ -33,10 +33,8 @@ void TExecutor::ExecuteStatement(const TSymtabNode *pRoutine) {
         case tcDefault://ParseCaseLabel();
             break;
         case tcBreak:
-            //token = tcRBracket;
             GetToken();
             breakLoop = true;
-            //GoTo(breakPoint);
             break;
         case tcLBracket: ExecuteCompound(pRoutine);
             break;
@@ -243,6 +241,41 @@ void TExecutor::ExecuteDO(const TSymtabNode *pRoutine) {
     // reset break flag
     breakLoop = false;
 
+}
+
+void TExecutor::ExecuteWHILE(const TSymtabNode *pRoutine) {
+
+    int breakPoint;
+    int atLoopStart = CurrentLocation();
+    int condition = 0;
+
+    do {
+
+        GetToken(); // while
+        breakPoint = GetLocationMarker();
+        GetToken();
+
+        ExecuteExpression();
+        condition = Pop()->__int;
+
+        if (condition != 0) {
+            ExecuteStatement(pRoutine);
+
+            if (breakLoop) {
+                GoTo(breakPoint);
+                GetToken();
+                break;
+            }
+
+            GoTo(atLoopStart);
+        } else GoTo(breakPoint);
+
+
+
+    } while (CurrentLocation() == atLoopStart);
+
+    // reset break
+    breakLoop = false;
 }
 
 void TExecutor::ExecuteCompound(const TSymtabNode *pRoutine) {

@@ -97,7 +97,7 @@ TType *TParser::ParseTerm(void) {
             case tcForwardSlash:
                 if (IntegerOperands(pResultType, pOperandType) ||
                         RealOperands(pResultType, pOperandType)) {
-                    pResultType = pFloatType;
+                    pResultType = pIntegerType;
                 } else Error(errIncompatibleTypes);
                 break;
             case tcMod:
@@ -168,16 +168,15 @@ TType *TParser::ParseFactor(void) {
                 pNode = EnterLocal(pToken->String());
 
                 if (pToken->Type() == tyInteger) {
-                    pResultType = pIntegerType;
+                    pNode->pType = pIntegerType;
                     pNode->defn.constant.value.__int = pToken->Value().__int;
                 } else {
-                    pResultType = pFloatType;
+                    pNode->pType = pFloatType;
                     pNode->defn.constant.value.__float = pToken->Value().__float;
                 }
-
-                SetType(pNode->pType, pResultType);
             }
 
+            pResultType = pNode->pType;
             icode.Put(pNode);
         }
             GetTokenAppend();

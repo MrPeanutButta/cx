@@ -1,17 +1,20 @@
-
 int sqr_root(int number){
     int rt = number;
+    int i = 0;
 
     do
         rt = (number/rt + rt)/2;
-    while((rt * rt) > number);
+    while(((rt * rt) > number) && (i++ < 10));
 
     return rt;
 }
 
 int main(){
-    int i = 20;
+    int i = 1;
     int root = sqr_root(4096);
+
+    while(i < 1000)
+        root = sqr_root(i++);
 
     return i;
 }

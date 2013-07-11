@@ -51,7 +51,8 @@ TSymtabNode *TParser::Parse(void) {
 
     currentNestingLevel = 0;
     //--Enter the nesting level 1 and open a new scope for the program.
-    symtabStack.SetCurrentSymtab(&globalSymtab);
+    //symtabStack.SetCurrentSymtab(&globalSymtab);
+    symtabStack.EnterScope();
 
     GetTokenAppend();
 

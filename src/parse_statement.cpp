@@ -211,12 +211,16 @@ void TParser::ParseDO(TSymtabNode* pRoutineId) {
 }
 
 void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
-    GetTokenAppend();
+
+    int breakPoint = PutLocationMarker();
+
+    GetTokenAppend(); // while
+
     CheckBoolean(ParseExpression());
 
-    CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
-
     ParseStatement(pRoutineId);
+
+    FixupLocationMarker(breakPoint);
 }
 
 void TParser::ParseIF(TSymtabNode* pRoutineId) {

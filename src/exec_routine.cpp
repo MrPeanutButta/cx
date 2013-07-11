@@ -29,15 +29,15 @@ void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId) {
 
     EnterRoutine(pRoutineId);
 
-    //--Execute the routine's compound statement.
-    // if global we allocate globals and call on main
-    if (__MAIN_ENTRY__) {
-        ExecuteRoutine(pMain);
-    } else {
+    //    //--Execute the routine's compound statement.
+    //    // if global we allocate globals and call on main
+    //    if (__MAIN_ENTRY__) {
+    //        ExecuteRoutine(pMain);
+    //    } else {
         ExecuteCompound(pRoutineId);
-    }
-    
-    
+    //}
+
+
     ExitRoutine(pRoutineId);
 }
 
