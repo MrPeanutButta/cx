@@ -1,4 +1,4 @@
-int sqr_root(int number){
+int sqr_root(int &number){
     int rt = number;
     int i = 0;
 
@@ -11,7 +11,7 @@ int sqr_root(int number){
 
 int main(){
     int i = 1;
-    int root = sqr_root(4096);
+    int root = sqr_root(i);
 
     while(i < 1000)
         root = sqr_root(i++);
