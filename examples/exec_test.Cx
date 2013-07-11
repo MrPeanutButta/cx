@@ -1,22 +1,17 @@
 
-int global_int = 500;
-
 int sqr_root(int number){
-    int root = number;
-
-    //global_int = 2;
+    int rt = number;
 
     do
-        root = (number/root + root)/2;
-    while((root * root) > number);
+        rt = (number/rt + rt)/2;
+    while((rt * rt) > number);
 
-    return root;
+    return rt;
 }
 
 int main(){
-
+    int i = 20;
     int root = sqr_root(4096);
 
-    root = global_int;
-    return root;
+    return i;
 }

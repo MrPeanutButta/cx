@@ -20,15 +20,9 @@
 #include "parser.h"
 
 TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
-
     //--Enter the next nesting level and open a new scope
     //--for the function.
-    //if (__MAIN_ENTRY__) {
-    //symtabStack.SetScope(__MAIN_SCOPE__);
-    //pFunctionNode->defn.routine.pSymtab = symtabStack.GetCurrentSymtab();
-    //} else {
-        symtabStack.EnterScope();
-    //}
+    symtabStack.EnterScope();
 
     //-- (
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -61,11 +55,7 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
         pFunctionNode->defn.routine.returnMarker = PutLocationMarker();
     }
 
-    //if (__MAIN_ENTRY__) {
-    // currentNestingLevel--;
-    // } else {
-        pFunctionNode->defn.routine.pSymtab = symtabStack.ExitScope();
-    // }
+    pFunctionNode->defn.routine.pSymtab = symtabStack.ExitScope();
 
     return pFunctionNode;
 }

@@ -7,7 +7,7 @@ bool execFlag(true);
 
 void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
-    TSymtabNode *pNode = Find(pToken->String());
+    TSymtabNode *pNode = SearchAvailableScopes(pToken->String());
 
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
@@ -23,12 +23,13 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
             TSymtabNode *pNewId = nullptr;
 
-            pNewId = SearchAll(pToken->String());
+            pNewId = SearchAvailableScopes(pToken->String());
 
             /* if not nullptr, it's already defined.
              * check if forwarded */
             if (pNewId != nullptr) {
                 if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
+
                     GetTokenAppend();
                     ParseFunctionHeader(pNewId);
                 } else Error(errRedefinedIdentifier);
@@ -47,6 +48,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 ParseArrayType(pNewId);
                 pNewId->defn.how = dcVariable;
             } else if (token == tcLParen) {
+
                 ParseFunctionHeader(pNewId);
             } else if ((token != tcComma) && (token != tcEndOfFile)) {
                 // check for assignment

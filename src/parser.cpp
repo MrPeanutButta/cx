@@ -45,7 +45,7 @@ TSymtabNode *TParser::Parse(void) {
     pProgramId->defn.routine.locals.pRoutineIds = NULL;
     pProgramId->defn.routine.pSymtab = NULL;
     pProgramId->defn.routine.pIcode = NULL;
-    SetType(pProgramId->pType, pDummyType);
+    SetType(pProgramId->pType, pIntegerType);
 
     icode.Reset();
 
@@ -62,14 +62,11 @@ TSymtabNode *TParser::Parse(void) {
 
     pProgramId->defn.routine.pSymtab = symtabStack.ExitScope();
 
-
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
 
-
     //--Set the program's icode.
     pProgramId->defn.routine.pIcode = new TIcode(icode);
-
 
     list.PutLine();
     sprintf(list.text, "%20d source lines.", currentLineNumber);

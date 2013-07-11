@@ -31,13 +31,10 @@ void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId) {
 
     //--Execute the routine's compound statement.
     // if global we allocate globals and call on main
-    if (pRoutineId->defn.how == dcProgram) {
-        //currentNestingLevel = 1;
-        TSymtabNode *pMain = pRoutineId->defn.routine.pSymtab->Search("main");
-        ExecuteRoutine(pMain);
-    } else {
-        ExecuteCompound(pRoutineId);
-    }
+    //    if (__MAIN_ENTRY__) {
+    //        ExecuteRoutine(pMain);
+    //    } else {
+    ExecuteCompound(pRoutineId);
     ExitRoutine(pRoutineId);
 }
 

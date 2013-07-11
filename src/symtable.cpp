@@ -366,8 +366,6 @@ TSymtabStack::TSymtabStack(void) {
     pSymtabs[0] = &globalSymtab;
 
     InitializePredefinedTypes(pSymtabs[0]);
-    InitializeMain();
-
 
     //InitializeStandardRoutines(pSymtabs[0]);
 }
@@ -380,13 +378,26 @@ TSymtabStack::~TSymtabStack(void) {
     RemovePredefinedTypes();
 }
 
-void TSymtabStack::InitializeMain(void) {
-    // initialize mains symtable
-    //TSymtabNode *pMain = pSymtabs[0]->EnterNew("main", dcFunction);
-    //pMain->defn.routine.which = rcForward;
-    //SetType(pMain->pType, pIntegerType);
+//--------------------------------------------------------------
+//  SearchAvailableScopes   Search the symbol table stack for the given
+//                          name string in the current scope then global.
+//
+//      pString : ptr to name string to find
+//
+//  Return: ptr to symbol table node if found, else NULL
+//--------------------------------------------------------------
 
-    //pSymtabs[1] = new TSymtab;
+TSymtabNode *TSymtabStack::SearchAvailableScopes(const char *pString) const {
+
+    // search local scope
+    TSymtabNode *pNode = pSymtabs[currentNestingLevel]->Search(pString);
+    if (pNode) return pNode;
+
+    // search global scope
+    pNode = pSymtabs[0]->Search(pString);
+    if (pNode) return pNode;
+
+    return nullptr;
 }
 
 //--------------------------------------------------------------
@@ -420,7 +431,7 @@ TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
 //--------------------------------------------------------------
 
 TSymtabNode *TSymtabStack::Find(const char *pString) const {
-    TSymtabNode *pNode = SearchAll(pString);
+    TSymtabNode *pNode = SearchAvailableScopes(pString);
 
     if (!pNode) {
         Error(errUndefinedIdentifier);

@@ -203,8 +203,6 @@ void TParser::ParseDO(TSymtabNode* pRoutineId) {
     CondGetTokenAppend(tcWhile, errMissingWHILE);
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    //InsertLineMarker();
-
     CheckBoolean(ParseExpression());
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);

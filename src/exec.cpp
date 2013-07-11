@@ -231,17 +231,10 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     cout << endl;
 
     //--Execute the program.
-    //currentNestingLevel = 0;
+    currentNestingLevel = 1;
     breakLoop = false;
 
-    //--Set up a new stack frame for the callee.
-    //TStackItem *pNewFrameBase = runStack.PushFrameHeader
-    //(0, 1, pIcode);
-
-    currentNestingLevel = 0;
-    //runStack.ActivateFrame(pNewFrameBase, 0);
-
-    ExecuteRoutine(pProgramId);
+    ExecuteRoutine(pMain);
 
     //--Print the executor's summary.
     cout << endl;

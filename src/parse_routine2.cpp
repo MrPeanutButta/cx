@@ -66,7 +66,6 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         //--VAR or value parameter?
         if (token == tcBitANDorAddrOf) {
-            //icode.Put(token);
             parmDefn = dcVarParm;
             GetTokenAppend();
         } else parmDefn = dcValueParm;

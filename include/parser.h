@@ -150,6 +150,10 @@ class TParser {
     TSymtabNode *SearchLocal(const char *pString){
         return symtabStack.SearchLocal(pString);
     }
+    
+    TSymtabNode *SearchAvailableScopes(const char *pString) const{
+        return symtabStack.SearchAvailableScopes(pString);
+    }
 
     TSymtabNode *SearchAll(const char *pString) const {
         return symtabStack.SearchAll(pString);

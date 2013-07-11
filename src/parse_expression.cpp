@@ -126,7 +126,7 @@ TType *TParser::ParseFactor(void) {
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
 
-            if(pNode == nullptr)
+            if (pNode == nullptr)
                 Error(errUndefinedIdentifier);
 
             icode.Put(pNode);
@@ -174,13 +174,11 @@ TType *TParser::ParseFactor(void) {
                     pResultType = pFloatType;
                     pNode->defn.constant.value.__float = pToken->Value().__float;
                 }
+
                 SetType(pNode->pType, pResultType);
             }
 
             icode.Put(pNode);
-
-            pResultType = pNode->pType;
-
         }
             GetTokenAppend();
             break;

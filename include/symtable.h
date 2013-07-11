@@ -284,6 +284,7 @@ public:
         currentNestingLevel = scopeLevel;
     }
 
+    TSymtabNode *SearchAvailableScopes(const char *pString) const;
     TSymtabNode *SearchAll (const char *pString) const;
     TSymtabNode *Find      (const char *pString) const;
     void         EnterScope(void);
