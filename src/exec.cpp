@@ -234,7 +234,7 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     currentNestingLevel = 1;
     breakLoop = false;
 
-    ExecuteRoutine(pMain);
+    ExecuteRoutine(pProgramId);
 
     //--Print the executor's summary.
     cout << endl;
