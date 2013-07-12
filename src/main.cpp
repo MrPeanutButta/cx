@@ -19,7 +19,7 @@
 //  *************************************************************
 
 #include <iostream>
-#include <chrono>
+//#include <chrono>
 #include "error.h"
 #include "buffer.h"
 #include "parser.h"
@@ -45,17 +45,17 @@ int main(int argc, char *argv[]) {
     errorArrowFlag = true;
     xrefFlag = false;
 
-    using namespace std::chrono;
+//    using namespace std::chrono;
 
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser *parser = new TParser(new TSourceBuffer(argv[1]));
 
-    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    //high_resolution_clock::time_point t1 = high_resolution_clock::now();
     TSymtabNode *pProgramId = parser->Parse();
-    high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
-    std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
+//    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//    duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
+//    std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
 
     delete parser;
 
@@ -72,15 +72,15 @@ int main(int argc, char *argv[]) {
             pSt->Convert(vpSymtabs);
         }
 
-        std::cin.get();
+        //std::cin.get();
         
         TBackend *pBackend = new TExecutor;
 
-        t1 = high_resolution_clock::now();
+        //t1 = high_resolution_clock::now();
         pBackend->Go(pProgramId);
-        t2 = high_resolution_clock::now();
-        time_span = duration_cast < duration<double >> (t2 - t1);
-        std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+//        t2 = high_resolution_clock::now();
+//        time_span = duration_cast < duration<double >> (t2 - t1);
+//        std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
         delete[] vpSymtabs;
         delete pBackend;

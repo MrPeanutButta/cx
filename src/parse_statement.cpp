@@ -2,17 +2,14 @@
 #include "parser.h"
 #include "common.h"
 
+
 void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
-
+    
     switch (token) {
         case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
 
             break;
-            /* case tcClass:
-                      GetTokenAppend();
-                 ParseComplexType(pRoutineId);
-                 break;*/
             // not a type but a cv-qualifier
         case tcConst:
             GetTokenAppend();
@@ -22,10 +19,6 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             GetTokenAppend();
             //            ParseEnumHeader(pRoutineId);
             break;
-            //case tcInt:
-            //  GetTokenAppend();
-            //ParseIntegerDeclaration(pRoutineId);
-            //break;
         case tcDo: ParseDO(pRoutineId);
             break;
         case tcWhile: ParseWHILE(pRoutineId);

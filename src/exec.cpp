@@ -231,14 +231,10 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     cout << endl;
 
     //--Execute the program.
-    currentNestingLevel = 1;
     breakLoop = false;
 
-    //InitializeGlobal(pProgramId);
-    EnterRoutine(pProgramId);
-
-    ExecuteRoutine(pMain);
-
+    InitializeGlobal(pProgramId);
+    //ExecuteRoutine(pMain);
     ExitRoutine(pProgramId);
 
     //--Print the executor's summary.
@@ -267,27 +263,16 @@ void TExecutor::RangeCheck(const TType *pTargetType, int value) {
 void TExecutor::InitializeGlobal(const TSymtabNode* pProgramId) {
 
     //--Set up a new stack frame for the callee.
-    ///TStackItem *pNewFrameBase = runStack.PushFrameHeader
-    //(0, 0, pProgramId->defn.routine.pIcode);
+    TStackItem *pNewFrameBase = runStack.PushFrameHeader
+            (0, 0, pProgramId->defn.routine.pIcode);
 
     //--Activate the new stack frame ...
     currentNestingLevel = 0;
-    //runStack.ActivateFrame(pNewFrameBase, 0);
+    runStack.ActivateFrame(pNewFrameBase, pProgramId->defn.routine.returnMarker);
 
     EnterRoutine(pProgramId);
+    
+    GetToken();
+    ExecuteCompound(pProgramId);
 
-    do {
-        GetToken();
-
-        if (currentNestingLevel == 0) {
-            switch (token) {
-                case tcIdentifier:
-                    if (pNode->defn.how != dcFunction) {
-                        ExecuteAssignment(pNode);
-                    }
-                    break;
-            }
-        }
-
-    } while (token != tcEndOfFile);
 }

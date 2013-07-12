@@ -201,10 +201,10 @@ public:
     TExecutor(void) : TBackend() {
         stmtCount = 0;
 
-        traceRoutineFlag = false;
-        traceStatementFlag = false;
-        traceStoreFlag = false;
-        traceFetchFlag = false;
+        traceRoutineFlag = true;
+        traceStatementFlag = true;
+        traceStoreFlag = true;
+        traceFetchFlag = true;
 
         breakLoop = false;
     }

@@ -4,9 +4,14 @@
 #include "parser.h"
 
 bool execFlag(true);
+TSymtabNode *pProgram_ptr = nullptr;
 
 void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
+    if(!pProgram_ptr->foundGlobalEnd){
+        pProgram_ptr->globalFinishLocation = icode.CurrentLocation();
+    }
+    
     TSymtabNode *pNode = SearchAvailableScopes(pToken->String());
 
     // if complex then this is an object
@@ -29,7 +34,10 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
              * check if forwarded */
             if (pNewId != nullptr) {
                 if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
-
+                    
+                    if(!pProgram_ptr->foundGlobalEnd)
+                        pProgram_ptr->foundGlobalEnd = true;
+                    
                     GetTokenAppend();
                     ParseFunctionHeader(pNewId);
                 } else Error(errRedefinedIdentifier);
@@ -48,7 +56,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 ParseArrayType(pNewId);
                 pNewId->defn.how = dcVariable;
             } else if (token == tcLParen) {
-
+                
                 ParseFunctionHeader(pNewId);
             } else if ((token != tcComma) && (token != tcEndOfFile)) {
                 // check for assignment

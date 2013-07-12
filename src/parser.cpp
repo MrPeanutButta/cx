@@ -30,6 +30,7 @@
 //  Parse       Parse the source file.  After listing each
 //              source line, extract and list its tokens.
 //--------------------------------------------------------------
+extern TSymtabNode *pProgram_ptr;
 
 TSymtabNode *TParser::Parse(void) {
 
@@ -47,27 +48,25 @@ TSymtabNode *TParser::Parse(void) {
     pProgramId->defn.routine.pIcode = NULL;
     SetType(pProgramId->pType, pIntegerType);
 
+    pProgram_ptr = pProgramId;
     icode.Reset();
 
     currentNestingLevel = 0;
     //--Enter the nesting level 1 and open a new scope for the program.
-    //symtabStack.SetCurrentSymtab(&globalSymtab);
-    symtabStack.EnterScope();
-
+    symtabStack.SetCurrentSymtab(&globalSymtab);
+    icode.Put(tcLBracket);
     GetTokenAppend();
 
     ParseStatementList(pProgramId, tcEndOfFile);
+    FixupLocationMarker(pProgramId->globalFinishLocation);
     pProgramId->defn.routine.returnMarker = PutLocationMarker();
 
     GetTokenAppend();
 
-    pProgramId->defn.routine.pSymtab = symtabStack.ExitScope();
+    pProgramId->defn.routine.pSymtab = &globalSymtab;//symtabStack.ExitScope();
 
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
-
-    //--Set the program's icode.
-    pProgramId->defn.routine.pIcode = new TIcode(icode);
 
     list.PutLine();
     sprintf(list.text, "%20d source lines.", currentLineNumber);

@@ -98,6 +98,8 @@ public:
     TDefn defn;
     int level;
     int labelIndex;
+    int globalFinishLocation;
+    bool foundGlobalEnd;
 
     TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();

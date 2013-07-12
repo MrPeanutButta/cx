@@ -19,6 +19,8 @@
 #include "common.h"
 #include "parser.h"
 
+extern TSymtabNode *pProgram_ptr;
+
 TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     //--Enter the next nesting level and open a new scope
     //--for the function.
@@ -50,6 +52,19 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     if (token == tcSemicolon) {
         pFunctionNode->defn.routine.which = rcForward;
     } else if (token == tcLBracket) {
+
+        if (!pProgram_ptr->foundGlobalEnd) {
+            pProgram_ptr->foundGlobalEnd = true;
+            icode.GoTo(pProgram_ptr->globalFinishLocation);
+            icode.Put(__MAIN_ENTRY__);
+            icode.Put(tcLParen);
+            //icode.Put(tcRParen);
+            icode.Put(tcSemicolon);
+            icode.Put(tcRBracket);
+            //--Set the program's icode.
+            pProgram_ptr->defn.routine.pIcode = new TIcode(icode);
+        }
+
         pFunctionNode->defn.routine.which = rcDeclared;
         ParseBlock(pFunctionNode);
         pFunctionNode->defn.routine.returnMarker = PutLocationMarker();

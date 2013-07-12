@@ -262,13 +262,16 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    //GetTokenAppend();
-    //if (token == tcEqual) return pResultType;
-    //if (token == tcIdentifier)GetTokenAppend();
-    //;
     if (token != tcSemicolon)GetTokenAppend();
 
-    //GetTokenAppend();
+    switch(token){
+        case tcPlusPlus:
+            GetTokenAppend();
+            break;
+        case tcMinusMinus:
+            GetTokenAppend();
+            break;
+    }
 
     while (TokenIn(token, tlSubscriptOrFieldStart)) {
         pResultType = token == tcLeftSubscript ? ParseSubscripts(pResultType)

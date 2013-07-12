@@ -130,11 +130,13 @@ TType *TExecutor::ExecuteDeclaredSubroutineCall
 
     //--Push actual parameter values onto the stack.
     GetToken();
+    
     if (token == tcLParen) {
-        ExecuteActualParameters(pRoutineId);
-        //-- )
-        GetToken();
+        ExecuteActualParameters(pRoutineId);  
     }
+    
+    //-- )
+        GetToken();
 
     //--Activate the new stack frame ...
     currentNestingLevel = newLevel;

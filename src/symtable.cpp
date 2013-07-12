@@ -81,6 +81,8 @@ TSymtabNode::TSymtabNode(const char *pStr, TDefnCode dc)
     pLineNumList = NULL;
     pType = NULL;
     xNode = 0;
+    globalFinishLocation = 0;
+    foundGlobalEnd = false;
     level = currentNestingLevel;
     labelIndex = ++asmLabelIndex;
 
