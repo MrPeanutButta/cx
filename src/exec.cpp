@@ -260,7 +260,7 @@ void TExecutor::RangeCheck(const TType *pTargetType, int value) {
 }
 //endfig
 
-void TExecutor::InitializeGlobal(const TSymtabNode* pProgramId) {
+void TExecutor::InitializeGlobal(TSymtabNode* pProgramId) {
 
     //--Set up a new stack frame for the callee.
     TStackItem *pNewFrameBase = runStack.PushFrameHeader
@@ -271,7 +271,7 @@ void TExecutor::InitializeGlobal(const TSymtabNode* pProgramId) {
     runStack.ActivateFrame(pNewFrameBase, pProgramId->defn.routine.returnMarker);
 
     EnterRoutine(pProgramId);
-    
+
     GetToken();
     ExecuteCompound(pProgramId);
 

@@ -15,15 +15,16 @@
  */
 
 int global_int = 500;
+
 int sqr_root(int &number){
     int rt = number;
-    int i = 0;
+    int i = 10;
 
     global_int++;
 
     do{
         rt = (number/rt + rt)/2;
-    }while(((rt * rt) > number) && (i++ < 10));
+    }while(((rt * rt) > number) && (i++ < 5));
 
     return rt;
 }
@@ -32,8 +33,12 @@ int main(){
     int i = 1;
     int root = sqr_root(i);
 
-    while(i < 1000)
+    while(i < 5)
         root = sqr_root(i++);
+
+    for(int j = 1; j != 5; j++){
+        sqr_root(j);
+    }
 
     return global_int;
 }

@@ -53,6 +53,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         // find param type
         pNode = Find(pToken->String());
+        //icode.Put(pNode);
 
         if (pNode->defn.how != dcType) {
             Error(errInvalidType);
@@ -71,6 +72,8 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
         } else parmDefn = dcValueParm;
 
         pParmId = EnterNewLocal(pToken->String(), parmDefn);
+        icode.Put(pParmId);
+
         ++count;
         if (!pParmList) pParmList = pParmId;
 
@@ -141,7 +144,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
 TType *TParser::ParseSubroutineCall(const TSymtabNode *pRoutineId,
         int parmCheckFlag) {
-    GetTokenAppend();
+    //GetTokenAppend();
 
     return (pRoutineId->defn.routine.which == rcDeclared) ||
             (pRoutineId->defn.routine.which == rcForward)
@@ -260,6 +263,7 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
 
         icode.Put(pActualId);
 
+        GetTokenAppend();
         if (pFormalId->pType != ParseVariable(pActualId)) {
             Error(errIncompatibleTypes);
         }
@@ -269,5 +273,7 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         ParseExpression();
         Error(errInvalidVarParm);
     }
+
+
 }
 //endfig

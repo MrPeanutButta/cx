@@ -133,6 +133,8 @@ TType *TParser::ParseFactor(void) {
 
             switch (pNode->defn.how) {
                 case dcFunction:
+                    GetTokenAppend();
+                    //CondGetTokenAppend(tcLParen, ::errMissingLeftParen);
                     pResultType = ParseSubroutineCall(pNode, true);
                     break;
                 case dcConstant:
@@ -146,10 +148,10 @@ TType *TParser::ParseFactor(void) {
                 case dcValueParm:
                 case dcVarParm:
                 case dcMember:
-
+                    GetTokenAppend();
                     pResultType = ParseVariable(pNode);
 
-                    ParseSuffix(pNode);
+                    //ParseSuffix(pNode);
                     break;
                 default:
                     Error(errUndefinedIdentifier);
@@ -262,7 +264,7 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    if (token != tcSemicolon)GetTokenAppend();
+    //if (token != tcSemicolon)GetTokenAppend();
 
     switch(token){
         case tcPlusPlus:
@@ -324,55 +326,3 @@ TType *TParser::ParseField(const TType* pType) {
 
     }
 }
-
-/*
-void TParser::ParseSizeOf(void) {
-    switch (token) {
-        case tcIdentifier:
-        {
-            TSymtabNode *pNode = SearchAll(pToken->String());
-            if (pNode) {
-                GetTokenAppend();
-
-                sprintf(::list.text, "\t>> %s == %g", pNode->String(), pNode->value);
-                ::list.PutLine();
-            }
-        }
-            break;
-        case tcInt:
-            GetTokenAppend();
-            break;
-        case tcShort:
-            GetTokenAppend();
-            break;
-        case tcBool:
-            GetTokenAppend();
-            break;
-        case tcDouble:
-            GetTokenAppend();
-            break;
-        case tcLong:
-            GetTokenAppend();
-            break;
-        case tcChar:
-            GetTokenAppend();
-            break;
-        case tcChar16_t:
-            GetTokenAppend();
-            break;
-        case tcChar32_t:
-            GetTokenAppend();
-            break;
-        case tcFloat:
-            GetTokenAppend();
-            break;
-        case tcLParen:
-            GetTokenAppend();
-            ParseSizeOf();
-
-            if (token == tcRParen) GetTokenAppend();
-            else Error(errMissingRightParen);
-
-            break;
-    }
-}*/

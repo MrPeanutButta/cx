@@ -2,10 +2,9 @@
 #include "parser.h"
 #include "common.h"
 
-
 void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
-    
+
     switch (token) {
         case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
 
@@ -59,7 +58,7 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
-    TType *pTargetType = pTargetId->pType;
+    TType *pTargetType = ParseVariable(pTargetId);
     TType *pExprType = nullptr;
 
     switch (token) {
@@ -70,14 +69,6 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
-            break;
-        case tcPlusPlus:
-            //Resync(tcPlusPlus, tlExpressionFollow);
-            GetTokenAppend();
-            break;
-        case tcMinusMinus:
-            //Resync(tcMinusMinus, tlExpressionFollow);
-            GetTokenAppend();
             break;
         case tcPlusEqual:
         {
@@ -172,10 +163,6 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         case tcComma:
         case tcSemicolon:
             break;
-        case tcIdentifier:
-        {
-            pExprType = ParseFactor();
-        }
             break;
         default:
             Error(errInvalidAssignment);
@@ -250,62 +237,40 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
 
 void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
-    TType *pControlType;
+    int breakPoint = PutLocationMarker();
+    int statementMarker = PutLocationMarker();
+    int conditionMarker = PutLocationMarker();
+    int incrementMarker = PutLocationMarker();
 
-    GetTokenAppend();
+    GetTokenAppend(); // for
+
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    if (token == tcIdentifier) {
-        TSymtabNode *pControlId = Find(pToken->String());
-        if (pControlId->defn.how != dcUndefined) {
-            pControlType = pControlId->pType->Base();
-        } else {
-            pControlId->defn.how = dcVariable;
-            pControlType = pControlId->pType = pIntegerType;
-        }
-
-        if ((pControlType != pIntegerType)
-                && (pControlType != pCharType)
-                && (pControlType->form != fcEnum)) {
-            Error(errIncompatibleTypes);
-            pControlType = pIntegerType;
-        }
-
-        icode.Put(pControlId);
-    }
-
     if (token != tcSemicolon) {
-
         // declaration would go here //
-
-        CondGetTokenAppend(tcIdentifier, errMissingIdentifier);
-
-        //Resync(tcEqual, tlExpressionStart);
-        CondGetTokenAppend(tcEqual, errMissingEqual);
-        // expr 1
-        CheckAssignmentTypeCompatible(pControlType, ParseExpression(),
-                errIncompatibleTypes);
-
+        ParseDeclarationsOrAssignment(pRoutineId);
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
 
-
+    FixupLocationMarker(conditionMarker);
     if (token != tcSemicolon) {
 
         // expr 2
         CheckBoolean(ParseExpression());
-
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
 
+    FixupLocationMarker(incrementMarker);
     if (token != tcRParen) {
         // expr 3
         ParseExpression();
     }
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
-
+    FixupLocationMarker(statementMarker);
     ParseStatement(pRoutineId);
+    FixupLocationMarker(breakPoint);
+
 }
 
 void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
