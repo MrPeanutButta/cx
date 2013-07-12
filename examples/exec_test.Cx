@@ -6,8 +6,8 @@
  * compound operator before generating icode, and
  * inserting a call to main() after global scope is left.
  *
- * Kind of sloppy, but works imo. The only limitation is
- * globals must be at the top of the code file.
+ * Kind of sloppy, but works. The only limitation is
+ * globals must be at the top of the script file.
  * Maybe good for forcing global code organization??
  *
  * time to finish other statements and types :)
