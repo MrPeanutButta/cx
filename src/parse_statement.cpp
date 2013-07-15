@@ -5,16 +5,10 @@
 void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     InsertLineMarker();
 
-    //ParseDeclarations(pRoutineId);
-
     switch (token) {
         case tcIdentifier: ParseDeclarationsOrAssignment(pRoutineId);
 
             break;
-            /* case tcClass:
-                      GetTokenAppend();
-                 ParseComplexType(pRoutineId);
-                 break;*/
             // not a type but a cv-qualifier
         case tcConst:
             GetTokenAppend();
@@ -24,10 +18,6 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
             GetTokenAppend();
             //            ParseEnumHeader(pRoutineId);
             break;
-            //case tcInt:
-            //  GetTokenAppend();
-            //ParseIntegerDeclaration(pRoutineId);
-            //break;
         case tcDo: ParseDO(pRoutineId);
             break;
         case tcWhile: ParseWHILE(pRoutineId);
@@ -62,20 +52,14 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 
     do {
         ParseStatement(pRoutineId);
-
-        //if (TokenIn(token, tlStatementStart)) {
-        //  Error(errMissingSemicolon);
-        //} else
         while (token == tcSemicolon)GetTokenAppend();
     } while ((token != terminator) && (token != tcEndOfFile));
 }
 
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
-    TType *pTargetType = pTargetId->pType;//ParseVariable(pTargetId);
+    TType *pTargetType = ParseVariable(pTargetId);
     TType *pExprType = nullptr;
-
-    //GetTokenAppend();
 
     switch (token) {
         case tcEqual:
@@ -85,14 +69,6 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
             CheckAssignmentTypeCompatible(pTargetType, pExprType,
                     errIncompatibleAssignment);
         }
-            break;
-        case tcPlusPlus:
-            //Resync(tcPlusPlus, tlExpressionFollow);
-            GetTokenAppend();
-            break;
-        case tcMinusMinus:
-            //Resync(tcMinusMinus, tlExpressionFollow);
-            GetTokenAppend();
             break;
         case tcPlusEqual:
         {
@@ -187,11 +163,7 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
         case tcComma:
         case tcSemicolon:
             break;
-        case tcIdentifier:
-        {
-            pExprType = ParseFactor();
-        }
-        break;
+            break;
         default:
             Error(errInvalidAssignment);
             break;
@@ -201,31 +173,42 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 }
 
 void TParser::ParseDO(TSymtabNode* pRoutineId) {
-    GetTokenAppend();
+
+
+    int breakPoint = PutLocationMarker();
+    GetTokenAppend(); //do
 
     ParseStatementList(pRoutineId, tcWhile);
 
     CondGetTokenAppend(tcWhile, errMissingWHILE);
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    InsertLineMarker();
     CheckBoolean(ParseExpression());
-    ;
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
+    FixupLocationMarker(breakPoint);
 }
 
 void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
-    GetTokenAppend();
+
+    int breakPoint = PutLocationMarker();
+
+    GetTokenAppend(); // while
+
     CheckBoolean(ParseExpression());
 
-    CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
-
     ParseStatement(pRoutineId);
+
+    FixupLocationMarker(breakPoint);
 }
 
 void TParser::ParseIF(TSymtabNode* pRoutineId) {
+
+    //--Append a placeholder location marker for where to go to if
+    //--<expr> is false.  Remember the location of this placeholder
+    //--so it can be fixed up below.
+    int atFalseLocationMarker = PutLocationMarker();
 
     GetTokenAppend();
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -235,73 +218,59 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
     CondGetTokenAppend(tcRParen, errMissingRightParen);
 
     ParseStatement(pRoutineId);
+    while (token == tcSemicolon) GetTokenAppend();
 
-    if (token == tcSemicolon) GetTokenAppend();
-
+    FixupLocationMarker(atFalseLocationMarker);
     if (token == tcElse) {
+        //--Append a placeholder location marker for the token that
+        //--follows the IF statement.  Remember the location of this
+        //--placeholder so it can be fixed up below.
+        int atFollowLocationMarker = PutLocationMarker();
+
         GetTokenAppend();
         ParseStatement(pRoutineId);
+        while (token == tcSemicolon) GetTokenAppend();
+
+        FixupLocationMarker(atFollowLocationMarker);
     }
 }
 
 void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
-    TType *pControlType;
+    int breakPoint = PutLocationMarker();
+    int statementMarker = PutLocationMarker();
+    int conditionMarker = PutLocationMarker();
+    int incrementMarker = PutLocationMarker();
 
-    GetTokenAppend();
+    GetTokenAppend(); // for
+
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
-    if (token == tcIdentifier) {
-        TSymtabNode *pControlId = Find(pToken->String());
-        if (pControlId->defn.how != dcUndefined) {
-            pControlType = pControlId->pType->Base();
-        } else {
-            pControlId->defn.how = dcVariable;
-            pControlType = pControlId->pType = pIntegerType;
-        }
-
-        if ((pControlType != pIntegerType)
-                && (pControlType != pCharType)
-                && (pControlType->form != fcEnum)) {
-            Error(errIncompatibleTypes);
-            pControlType = pIntegerType;
-        }
-
-        icode.Put(pControlId);
-    }
-
     if (token != tcSemicolon) {
-
         // declaration would go here //
-
-        CondGetTokenAppend(tcIdentifier, errMissingIdentifier);
-
-        //Resync(tcEqual, tlExpressionStart);
-        CondGetTokenAppend(tcEqual, errMissingEqual);
-        // expr 1
-        CheckAssignmentTypeCompatible(pControlType, ParseExpression(),
-                errIncompatibleTypes);
-
+        ParseDeclarationsOrAssignment(pRoutineId);
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
 
-
+    FixupLocationMarker(conditionMarker);
     if (token != tcSemicolon) {
 
         // expr 2
         CheckBoolean(ParseExpression());
-
         CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
     } else GetTokenAppend();
 
+    FixupLocationMarker(incrementMarker);
     if (token != tcRParen) {
         // expr 3
         ParseExpression();
     }
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
-
+    FixupLocationMarker(statementMarker);
     ParseStatement(pRoutineId);
+    FixupLocationMarker(breakPoint);
+
 }
 
 void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {

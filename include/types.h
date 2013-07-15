@@ -16,6 +16,8 @@ using namespace std;
 extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
         *pDummyType, *pComplexType;
 
+extern TSymtabNode *pMain;
+
 enum TFormCode {
     fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex
 };

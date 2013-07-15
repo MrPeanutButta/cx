@@ -111,9 +111,7 @@ enum TTokenCode {
     tcClass, tcExtern, tcOperator, tcTemplate, tcConst, tcFalse,
     tcPrivate, tcThis, tcWhile, tcFloat, tcProtected, tcThreadLocal,
     tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude,
-    tcStringDef, tcBlockCommentStart, tcBlockCommentEnd, tcArray, tcRecord, tcOf,
-    tcVar
-
+    tcStringDef
 };
 //endfig
 

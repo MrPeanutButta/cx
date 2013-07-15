@@ -45,11 +45,6 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
     TSymtabNode *pNode = nullptr;
     count = totalSize = 0;
-    //GetTokenAppend();
-
-    //--Loop to parse a parameter declarations separated by semicolons.
-    //while ((token == tcIdentifier)) {// || (token == tcVAR)) {
-
 
     //--Loop to parse the comma-separated sublist of parameter ids.
     TType *pParmType; // ptr to parm's type object
@@ -58,6 +53,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         // find param type
         pNode = Find(pToken->String());
+        //icode.Put(pNode);
 
         if (pNode->defn.how != dcType) {
             Error(errInvalidType);
@@ -71,12 +67,13 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         //--VAR or value parameter?
         if (token == tcBitANDorAddrOf) {
-            //icode.Put(token);
             parmDefn = dcVarParm;
             GetTokenAppend();
         } else parmDefn = dcValueParm;
 
         pParmId = EnterNewLocal(pToken->String(), parmDefn);
+        icode.Put(pParmId);
+
         ++count;
         if (!pParmList) pParmList = pParmId;
 
@@ -147,7 +144,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
 TType *TParser::ParseSubroutineCall(const TSymtabNode *pRoutineId,
         int parmCheckFlag) {
-    GetTokenAppend();
+    //GetTokenAppend();
 
     return (pRoutineId->defn.routine.which == rcDeclared) ||
             (pRoutineId->defn.routine.which == rcForward)
@@ -254,8 +251,19 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         //--                      formal parameter.
     else if (token == tcIdentifier) {
         TSymtabNode *pActualId = Find(pToken->String());
+
+        // skip type declaration
+        if(pActualId->defn.how == ::dcType){
+            GetToken();
+
+            if(token == tcBitANDorAddrOf)GetToken();
+
+            pActualId = Find(pToken->String());
+        }
+
         icode.Put(pActualId);
 
+        GetTokenAppend();
         if (pFormalId->pType != ParseVariable(pActualId)) {
             Error(errIncompatibleTypes);
         }
@@ -265,5 +273,7 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         ParseExpression();
         Error(errInvalidVarParm);
     }
+
+
 }
 //endfig

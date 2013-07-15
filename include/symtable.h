@@ -59,6 +59,7 @@ public:
 
         struct {
             TRoutineCode which;
+            int returnMarker;
             int parmCount;
             int totalParmSize;
             int totalLocalSize;
@@ -90,11 +91,15 @@ class TSymtabNode {
 public:
 
     TSymtabNode *next;
+    TSymtabNode *prev;
+    
     TType *pType;
 
     TDefn defn;
     int level;
     int labelIndex;
+    int globalFinishLocation;
+    bool foundGlobalEnd;
 
     TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();
@@ -281,6 +286,7 @@ public:
         currentNestingLevel = scopeLevel;
     }
 
+    TSymtabNode *SearchAvailableScopes(const char *pString) const;
     TSymtabNode *SearchAll (const char *pString) const;
     TSymtabNode *Find      (const char *pString) const;
     void         EnterScope(void);

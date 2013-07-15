@@ -151,9 +151,9 @@ void TExecutor::TraceDataValue(const void  *pDataValue,
 	TSymtabNode *pId = pDataType->Base()->enumeration.pConstIds;
 	while (--count >= 0) pId = pId->next;
 	strcpy(text, pId->String());
-    }
-    else {
-	sprintf(text, "%d", ((TStackItem *) pDataValue)->__int);
+    } else {
+        TStackItem *tmp = (TStackItem *) pDataValue;
+        sprintf(text, "%d", tmp->__int);
     }
 
     cout << text << endl;

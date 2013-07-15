@@ -30,105 +30,50 @@
 //  Parse       Parse the source file.  After listing each
 //              source line, extract and list its tokens.
 //--------------------------------------------------------------
+extern TSymtabNode *pProgram_ptr;
 
 TSymtabNode *TParser::Parse(void) {
 
-        TSymtabNode *pProgramId = new TSymtabNode("global", dcProgram);
-        pProgramId->defn.routine.locals.pParmsIds = nullptr;
-        pProgramId->defn.routine.locals.pConstantIds = nullptr;
-        pProgramId->defn.routine.locals.pTypeIds = nullptr;
-        pProgramId->defn.routine.locals.pVariableIds = nullptr;
-        pProgramId->defn.routine.pSymtab = nullptr;
-        pProgramId->defn.routine.pIcode = nullptr;
+    TSymtabNode *pProgramId = new TSymtabNode("__global__", dcProgram);
+    pProgramId->defn.routine.which = rcDeclared;
+    pProgramId->defn.routine.parmCount = 0;
+    pProgramId->defn.routine.totalParmSize = 0;
+    pProgramId->defn.routine.totalLocalSize = 0;
+    pProgramId->defn.routine.locals.pParmsIds = NULL;
+    pProgramId->defn.routine.locals.pConstantIds = NULL;
+    pProgramId->defn.routine.locals.pTypeIds = NULL;
+    pProgramId->defn.routine.locals.pVariableIds = NULL;
+    pProgramId->defn.routine.locals.pRoutineIds = NULL;
+    pProgramId->defn.routine.pSymtab = NULL;
+    pProgramId->defn.routine.pIcode = NULL;
+    SetType(pProgramId->pType, pIntegerType);
 
-    //bool currIsDelimiter(false); // true if current token is delimeter
-    //bool prevIsDelimiter(true); // likewise for previous token
+    pProgram_ptr = pProgramId;
+    icode.Reset();
 
-    //pIcode->Put(0);
-
+    currentNestingLevel = 0;
+    //--Enter the nesting level 1 and open a new scope for the program.
+    symtabStack.SetCurrentSymtab(&globalSymtab);
+    icode.Put(tcLBracket);
     GetTokenAppend();
 
     ParseStatementList(pProgramId, tcEndOfFile);
+    FixupLocationMarker(pProgramId->globalFinishLocation);
+    pProgramId->defn.routine.returnMarker = PutLocationMarker();
 
-    //    ParseDeclarations(pProgramId);
-    //    ParseStatement(pProgramId);
+    GetTokenAppend();
+
+    pProgramId->defn.routine.pSymtab = &globalSymtab;//symtabStack.ExitScope();
 
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
-
-    //--Loop to extract and print tokens
-    //--until the end of the source file.
-    //    do {
-    //
-    //        if (token == tcEndOfFile) {
-    //            Error(errUnexpectedEndOfFile);
-    //            break;
-    //        }
-    //
-    //        ParseStatement();
-    //
-    //        if (token != tcSemicolon) {
-    //            if (token == tcIdentifier) Error(errMissingSemicolon);
-    //            else {
-    //                Error(errUnexpectedToken);
-    //
-    //                while ((token != tcSemicolon) &&
-    //                        (token != tcEndOfFile)) {
-    //                    GetTokenAppend();
-    //                }
-    //            }
-    //        }
-    //
-    //        while (token == tcSemicolon)GetTokenAppend();
-    //
-    //        //        if (token != tcError) {
-    //        //            currIsDelimiter = pToken->IsDelimiter();
-    //        //
-    //        //            if (!prevIsDelimiter && !currIsDelimiter) {
-    //        //                pCompact->Put(pToken->String());
-    //        //
-    //        //                prevIsDelimiter = currIsDelimiter;
-    //        //            }
-    //        //
-    //        //            pToken->Print();
-    //        //        }
-    //        //
-    //        //        switch (token) {
-    //        //            case tcIdentifier:
-    //        //            case tcNumber:
-    //        //            case tcString:
-    //        //            {
-    //        //                TSymtabNode *pNode = globalSymtab.Search(pToken->String());
-    //        //                if (pNode == nullptr) pNode = globalSymtab.Enter(pToken->String());
-    //        //                break;
-    //        //            }
-    //        //            default:
-    //        //            {
-    //        //                pIcode->Put(token);
-    //        //                break;
-    //        //            }
-    //        //        }
-    //
-    //    } while (token != tcEndOfFile);
-
-    //int programSize = pIcode->Size();
-
-    //    pIcode->Put(globalSymtab.NodeCount());
-    //    pIcode->Put(globalSymtab.Root());
-    //
-    //    pIcode->GoTo(0);
-    //    pIcode->Put(programSize);
-
-    //    pCompact->PutLine();
-
-    //--Print the parser's summary.
 
     list.PutLine();
     sprintf(list.text, "%20d source lines.", currentLineNumber);
     list.PutLine();
     sprintf(list.text, "%20d syntax errors.", errorCount);
     list.PutLine();
-    
+
     return pProgramId;
 
 }

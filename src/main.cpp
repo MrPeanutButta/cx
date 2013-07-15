@@ -19,12 +19,15 @@
 //  *************************************************************
 
 #include <iostream>
+//#include <chrono>
 #include "error.h"
 #include "buffer.h"
 #include "parser.h"
 #include "symtable.h"
 #include "common.h"
 #include "icode.h"
+
+bool debugFlag = true;
 
 //--------------------------------------------------------------
 //  main
@@ -40,17 +43,25 @@ int main(int argc, char *argv[]) {
         AbortTranslation(abortInvalidCommandLineArgs);
     }
 
-    listFlag = true;
-    errorArrowFlag = true;
+
+    listFlag = debugFlag;
+    errorArrowFlag = debugFlag;
     xrefFlag = false;
+
+    //using namespace std::chrono;
 
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser *parser = new TParser(new TSourceBuffer(argv[1]));
 
+    //high_resolution_clock::time_point t1 = high_resolution_clock::now();
     TSymtabNode *pProgramId = parser->Parse();
+    //high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    //duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
+    //std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
+
     delete parser;
-    
+
     if (xrefFlag) {
         list.PutLine();
         list.PutLine("--x ref---");
@@ -64,9 +75,15 @@ int main(int argc, char *argv[]) {
             pSt->Convert(vpSymtabs);
         }
 
+        std::cin.get();
+
         TBackend *pBackend = new TExecutor;
-        //pBackend->Go(pProgramId);
-        pBackend->Go(globalSymtab.Search("main"));
+
+        //t1 = high_resolution_clock::now();
+        pBackend->Go(pProgramId);
+        //t2 = high_resolution_clock::now();
+        //time_span = duration_cast < duration<double >> (t2 - t1);
+        //std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
         delete[] vpSymtabs;
         delete pBackend;

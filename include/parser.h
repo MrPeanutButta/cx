@@ -67,6 +67,7 @@ class TParser {
             int parmCheckFlag);
 
     // declarations
+    TSymtabNode *AllocNewNode(TSymtabNode *pRoutineId);
     void ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId);
     void ParseConstantDeclaration(TSymtabNode *pRoutineId);
     void ParseConstant(TSymtabNode *pConstId);
@@ -122,7 +123,7 @@ class TParser {
     void ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType);
     void ParseCompound(TSymtabNode* pRoutineId);
     void ParseRETURN(TSymtabNode* pRoutineId);
-    
+
     void ParseDirective(TSymtabNode *pRoutineId);
 
     void GetToken(void) {
@@ -135,12 +136,24 @@ class TParser {
         icode.Put(token);
     }
 
-    void InsertLineMarker(void) {
-        icode.InsertLineMarker();
+    void InsertLineMarker (void) { icode.InsertLineMarker(); }
+
+    int PutLocationMarker(void)
+    {
+	return icode.PutLocationMarker();
+    }
+
+    void FixupLocationMarker(int location)
+    {
+	icode.FixupLocationMarker(location);
     }
 
     TSymtabNode *SearchLocal(const char *pString){
         return symtabStack.SearchLocal(pString);
+    }
+
+    TSymtabNode *SearchAvailableScopes(const char *pString) const{
+        return symtabStack.SearchAvailableScopes(pString);
     }
 
     TSymtabNode *SearchAll(const char *pString) const {

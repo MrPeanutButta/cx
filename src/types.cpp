@@ -8,6 +8,7 @@ const char *formStrings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "complex"
 };
 
+TSymtabNode *pMain = nullptr;
 TType *pIntegerType = nullptr;
 TType *pFloatType = nullptr;
 TType *pDoubleType = nullptr;
@@ -200,6 +201,10 @@ void TType::PrintRecordType(TVerbosityCode vc) {
 }
 
 void InitializePredefinedTypes(TSymtab *pSymtab) {
+    
+    pMain = pSymtab->Enter("main", dcFunction);
+    pMain->defn.routine.which = rcForward;
+    
     TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
     TSymtabNode *pDoubleId = pSymtab->Enter("double", dcType);
@@ -230,6 +235,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
         SetType(pComplexType, new TType(fcComplex, sizeof (TType), pComplexId));
     }
 
+    SetType(pMain->pType, pIntegerType);
+    
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
 
