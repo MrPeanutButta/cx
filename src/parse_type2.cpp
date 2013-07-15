@@ -4,7 +4,7 @@
 TType *TParser::ParseArrayType(TSymtabNode *pArrayNode) {
     TType *pArrayType = pArrayNode->pType;
 
-    CondGetToken(tcLeftSubscript, errMissingLeftSubscript);
+    CondGetTokenAppend(tcLeftSubscript, errMissingLeftSubscript);
 
     pArrayType->form = fcArray;
 
@@ -21,14 +21,14 @@ TType *TParser::ParseArrayType(TSymtabNode *pArrayNode) {
         pArrayType->array.minIndex = min_index;
         pArrayType->array.maxIndex = max_index - 1;
 
-        GetToken();
+        GetTokenAppend();
     }
 
     if (pArrayType->form != fcNone) {
         pArrayType->size = ArraySize(pArrayType);
     }
 
-    CondGetToken(tcRightSubscript, errMissingRightSubscript);
+    CondGetTokenAppend(tcRightSubscript, errMissingRightSubscript);
 
     return pArrayType;
 }
