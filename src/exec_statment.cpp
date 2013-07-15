@@ -108,7 +108,7 @@ void TExecutor::ExecuteAssignment(TSymtabNode *pRoutine, TSymtabNode *pTargetId)
     TStackItem *pTarget; // runtime stack address of target
     TType *pTargetType; // ptr to target type object
     TType *pExprType; // ptr to expression type object
-    TSymtabNode *pNewAlloc = nullptr;
+    //TSymtabNode *pNewAlloc = nullptr;
 
 
     if (pTargetId->defn.how == dcFunction) {
@@ -119,17 +119,16 @@ void TExecutor::ExecuteAssignment(TSymtabNode *pRoutine, TSymtabNode *pTargetId)
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
     else if (pTargetId->defn.how != dcType) {
-        GetToken();
-        GetToken();
+        //GetToken();
         pTargetType = ExecuteVariable(pTargetId, true);
         pTarget = (TStackItem *) Pop()->__addr;
-    } else {
+    } /*else {
         pNewAlloc = AllocNewNode(pRoutine);
         pTargetId = pNewAlloc;
         pTargetType = ExecuteVariable(pTargetId, true);
         pTarget = (TStackItem *) Pop()->__addr;
 
-    }
+    }*/
     //--Execute the expression and leave its value
     //--on top of the runtime stack.
     //GetToken();
@@ -423,7 +422,7 @@ void TExecutor::ExecuteFOR(TSymtabNode* pRoutineId) {
     //--(
     GetToken();
 
-    TSymtabNode *pControl = pNode;
+    //TSymtabNode *pControl = pNode;
 
     if (token != tcSemicolon) {
         // declaration would go here //
@@ -448,6 +447,7 @@ void TExecutor::ExecuteFOR(TSymtabNode* pRoutineId) {
             if (breakLoop) GoTo(breakPoint);
         } else {
             GoTo(breakPoint);
+            GetToken();
             break;
         }
 
@@ -459,6 +459,6 @@ void TExecutor::ExecuteFOR(TSymtabNode* pRoutineId) {
         GoTo(conditionMarker);
     } while (CurrentLocation() == conditionMarker);
 
-    runStack.DeallocateValue(pControl);
+    //runStack.DeallocateValue(pControl);
     breakLoop = false;
 }

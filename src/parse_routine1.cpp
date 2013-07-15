@@ -57,7 +57,9 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
             pProgram_ptr->foundGlobalEnd = true;
             icode.GoTo(pProgram_ptr->globalFinishLocation);
             icode.Put(__MAIN_ENTRY__);
+            icode.Put(tcSemicolon);
             icode.Put(tcRBracket);
+            
             //--Set the program's icode.
             pProgram_ptr->defn.routine.pIcode = new TIcode(icode);
         }

@@ -205,12 +205,5 @@ void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
     ExecuteAssignment(pRoutine, pRoutine);
     GoTo(pRoutine->defn.routine.returnMarker - 1);
-
-    //ExitRoutine(pRoutine);
-
-    //--Return to the caller.  Restore the current token.
-    //currentNestingLevel = return_level;
-    //GetToken();
-
 }
 

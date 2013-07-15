@@ -12,10 +12,10 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
         pProgram_ptr->globalFinishLocation = icode.CurrentLocation();
     }
 
-    TSymtabNode *pNode = SearchAvailableScopes(pToken->String());
-    if (pNode) {
+    TSymtabNode *pNode = Find(pToken->String());
+    /*if (pNode) {
         icode.Put(pNode);
-    } else Error(::errUndefinedIdentifier);
+    } else Error(::errUndefinedIdentifier);*/
 
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
@@ -24,15 +24,14 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
     } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
             (pNode->defn.how != dcFunction)) {
 
-        //icode.Put(tcColon);
-        GetTokenAppend();
+        GetToken();
 
         do {
             while (token == tcComma)GetTokenAppend();
 
             TSymtabNode *pNewId = nullptr;
 
-            pNewId = SearchAvailableScopes(pToken->String());
+            pNewId = SearchLocal(pToken->String());
 
             /* if not nullptr, it's already defined.
              * check if forwarded */
@@ -68,25 +67,25 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 pNewId->defn.how = dcVariable;
             }
 
-            //            if (pNewId->defn.how == dcVariable) {
-            //                // add to routines variable list
-            //                if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-            //                    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-            //                    pRoutineId->defn.routine.locals.pVariableIds->prev = pNewId;
-            //                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount;
-            //                    pRoutineId->defn.routine.totalLocalSize = pNewId->pType->size;
-            //                } else {
-            //                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds->prev;
-            //                    int offset = __var->defn.data.offset + 1;
-            //
-            //                    __var->next = pNewId;
-            //                    __var->prev = pNewId;
-            //
-            //                    pNewId->defn.data.offset = offset;
-            //                    pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
-            //
-            //                }
-            //            } else
+            if (pNewId->defn.how == dcVariable) {
+                // add to routines variable list
+                if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
+                    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+                    pRoutineId->defn.routine.locals.pVariableIds->prev = pNewId;
+                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount;
+                    pRoutineId->defn.routine.totalLocalSize = pNewId->pType->size;
+                } else {
+                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds->prev;
+                    int offset = __var->defn.data.offset + 1;
+
+                    __var->next = pNewId;
+                    __var->prev = pNewId;
+
+                    pNewId->defn.data.offset = offset;
+                    pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+
+                }
+            } else
             if (pNewId->defn.how == dcFunction) {
                 if (pRoutineId && (!pRoutineId->defn.routine.locals.pRoutineIds)) {
                     pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
@@ -114,7 +113,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
         }
 
     } else {
-        //icode.Put(pNode);
+        icode.Put(pNode);
         GetTokenAppend();
         ParseAssignment(pNode);
     }

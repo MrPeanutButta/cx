@@ -17,6 +17,7 @@
 #ifndef exec_h
 #define exec_h
 
+#include <stack>
 #include "error.h"
 #include "symtable.h"
 #include "types.h"
@@ -35,6 +36,8 @@ union TStackItem {
     void *__addr;
 };
 
+using namespace std;
+
 //--------------------------------------------------------------
 //  TRuntimeStack       Runtime stack class.
 //--------------------------------------------------------------
@@ -42,7 +45,7 @@ union TStackItem {
 class TRuntimeStack {
 
     enum {
-        stackSize = 128,
+        stackSize = 31250,
         frameHeaderSize = 5,
     };
 
@@ -59,6 +62,7 @@ class TRuntimeStack {
         } returnAddress;
     };
 
+    //stack<TStackItem *> rstack;
     TStackItem stack[stackSize]; // stack items
     TStackItem *tos; // ptr to the top of the stack
     TStackItem *pFrameBase; // ptr to current stack frame base

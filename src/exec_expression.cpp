@@ -391,8 +391,12 @@ TType *TExecutor::ExecuteFactor(void) {
                 case dcConstant:
                     pResultType = ExecuteConstant(pNode);
                     break;
-
+                    //case dcVarParm:
+                    //pResultType = ExecuteVariable(pNode, true);
+                    //break;
                 default:
+
+
                     pResultType = ExecuteVariable(pNode, false);
                     break;
             }
@@ -497,15 +501,49 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     //--Get the variable's runtime stack address.
     TStackItem *pEntry = runStack.GetValueAddress(pId);
 
+    GetToken();
+
+    TStackItem *t = nullptr;
+    if (pId->defn.how != ::dcVarParm) {
+        t = pEntry;
+    } else {
+        t = ((TStackItem *) pEntry->__addr);
+    }
+    
+    switch (token) {
+        case tcPlusPlus:
+            GetToken();
+            if (pType->IsScalar()) {
+                if (pType == pFloatType) {
+                    ++t->__float;
+                } else if (pType->Base() == pCharType) {
+                    ++t->__char;
+                } else {
+                    ++t->__int;
+                }
+            }
+            break;
+        case tcMinusMinus:
+            GetToken();
+            if (pType->IsScalar()) {
+                if (pType == pFloatType) {
+                    --t->__float;
+                } else if (pType->Base() == pCharType) {
+                    --t->__char;
+                } else {
+                    --t->__int;
+                }
+            }
+            break;
+    }
+
     //--If it's a VAR formal parameter, or the type is an array
     //--or record, then the stack item contains the address
     //--of the data.  Push the data address onto the stack.
     Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
 
-    GetToken();
 
-    TStackItem *t = nullptr;
 
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.
@@ -521,37 +559,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
                 pType = ExecuteField();
                 break;
 
-            case tcPlusPlus:
 
-                t = (TStackItem *) Pop()->__addr;
-
-                GetToken();
-                if (pType->IsScalar()) {
-                    if (pType == pFloatType) {
-                        ++t->__float;
-                    } else if (pType->Base() == pCharType) {
-                        ++t->__char;
-                    } else {
-                        ++t->__int;
-                    }
-                }
-
-                Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
-                        ? t->__addr : t);
-                break;
-            case tcMinusMinus:
-                t = (TStackItem *) Pop()->__addr;
-                GetToken();
-                if (pType->IsScalar()) {
-                    if (pType == pFloatType) {
-                        Push(t->__float--);
-                    } else if (pType->Base() == pCharType) {
-                        Push(t->__char--);
-                    } else {
-                        Push(t->__int--);
-                    }
-                }
-                break;
             default: doneFlag = true;
         }
     } while (!doneFlag);

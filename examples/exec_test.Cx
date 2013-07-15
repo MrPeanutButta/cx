@@ -14,31 +14,32 @@
  *
  */
 
-int global_int = 500;
+int my_int = 500;
 
 int sqr_root(int &number){
     int rt = number;
-    int i = 10;
-
-    global_int++;
+    int i = 0;
 
     do{
         rt = (number/rt + rt)/2;
-    }while(((rt * rt) > number) && (i++ < 5));
+    }while(((rt * rt) > number) && (i++ < 10));
 
     return rt;
 }
 
 int main(){
-    int i = 1;
-    int root = sqr_root(i);
+    int i = 9;
+    int root = 0;
 
-    while(i < 5)
+    // loop while i is less than 20000
+    while(i < 20){
         root = sqr_root(i++);
-
-    for(int j = 1; j != 5; j++){
-        sqr_root(j);
     }
-
-    return global_int;
+    
+    return my_int;
 }
+
+//int root = sqr_root(i);
+/*for(int j = 1; j < 19990; j++){
+        root = sqr_root(j);
+    }*/
