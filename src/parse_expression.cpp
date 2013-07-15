@@ -264,6 +264,23 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
+    //-- [ or . : Loop to parse any subscripts and fields.
+    int doneFlag = false;
+    do {
+        switch (token) {
+
+            case tcLeftSubscript:
+                pResultType = ParseSubscripts(pResultType);
+                break;
+
+            case tcDot:
+                pResultType = ParseField(pResultType);
+                break;
+
+            default: doneFlag = true;
+        }
+    } while (!doneFlag);
+
     if (TokenIn(token, tlAssignOps)) {
         TType *pExprType = nullptr;
 

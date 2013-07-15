@@ -3,62 +3,34 @@
 
 TType *TParser::ParseArrayType(TSymtabNode *pArrayNode) {
     TType *pArrayType = pArrayNode->pType;
-    //TType *pElmtType = pArrayNode->pType;
-    //bool indexFlag(false);
 
-    //GetTokenAppend();
     CondGetToken(tcLeftSubscript, errMissingLeftSubscript);
 
-    pArrayNode->pType->form = fcArray;
-    pArrayNode->pType->array.pElmtType = pArrayNode->pType;
+    pArrayType->form = fcArray;
 
-    SetType(pArrayType->array.pElmtType, pArrayType->pTypeId->pType);
+    SetType(pArrayType->array.pElmtType, pArrayType);
     SetType(pArrayType->array.pIndexType, pIntegerType);
 
     if (token == tcRightSubscript) {
-        //CondGetToken(tcRightSubscript, errMissingRightSubscript);
         ParseAssignment(pArrayNode);
     } else {
+        int min_index = 0;
         int max_index = pToken->Value().__int;
-        CondGetToken(tcNumber, errInvalidNumber);
+
+        pArrayType->array.elmtCount = max_index;
+        pArrayType->array.minIndex = min_index;
+        pArrayType->array.maxIndex = max_index - 1;
+
+        GetToken();
     }
 
     if (pArrayType->form != fcNone) {
         pArrayType->size = ArraySize(pArrayType);
     }
 
+    CondGetToken(tcRightSubscript, errMissingRightSubscript);
+
     return pArrayType;
-}
-
-void TParser::ParseIndexType(TSymtabNode *pArrayNode) {
-    if (TokenIn(token, tlIndexStart)) {
-        TType *pArrayType = pArrayNode->pType;
-        TType *pIndexType = pIntegerType; //ParseTypeSpec(pArrayNode);
-
-        SetType(pArrayType->array.pIndexType, pIndexType);
-
-        switch (pIndexType->form) {
-            case fcSubrange:
-                pArrayType->array.elmtCount = pIndexType->subrange.max -
-                        pIndexType->subrange.min + 1;
-                pArrayType->array.minIndex = pIndexType->subrange.min;
-                pArrayType->array.maxIndex = pIndexType->subrange.max;
-                return;
-
-            case fcEnum:
-                pArrayType->array.elmtCount = pIndexType->enumeration.max + 1;
-                pArrayType->array.minIndex = 0;
-                pArrayType->array.maxIndex = pIndexType->enumeration.max;
-
-                return;
-
-            default:
-                SetType(pArrayType->array.pIndexType, pIndexType);
-                pArrayType->array.elmtCount = 0;
-                pArrayType->array.minIndex = pArrayType->array.maxIndex = 0;
-                //Error(errInvalidIndexType);
-        }
-    }
 }
 
 int TParser::ArraySize(TType* pArrayType) {
@@ -134,9 +106,9 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
     TSymtabNode *pLastId = nullptr; // ptrs to symtab nodes
     TSymtabNode *pFirstId = nullptr; // ptr to last node of previous sublist
 
-//    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPublic, new TSymtab));
- //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPrivate, new TSymtab));
- //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcProtected, new TSymtab));
+    //    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPublic, new TSymtab));
+    //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPrivate, new TSymtab));
+    //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcProtected, new TSymtab));
 
     //default to public
     scope = tcPublic;
@@ -175,7 +147,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
                 scope = tcProtected;
                 GetToken();
                 CondGetToken(tcColon, errMissingColon);
-               // pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+                // pFirstId = pComplexType->complex.MemberTable[scope]->Root();
 
                 offset = 0;
                 while (pFirstId) {
@@ -242,7 +214,7 @@ void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int
 
     // connect all symtabs for use within the class
     pComplexType->complex.pSymtabClassScope = new TSymtab;
-   // pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
+    // pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
 
     CondGetTokenAppend(tcRBracket, errMissingRightBracket);
     CondGetTokenAppend(tcSemicolon, errMissingSemicolon);

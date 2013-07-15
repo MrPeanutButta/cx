@@ -13,7 +13,7 @@
 
 using namespace std;
 
-extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
+extern TType *pIntegerType, *pFloatType, *pBooleanType, *pCharType,
         *pDummyType, *pComplexType;
 
 extern TSymtabNode *pMain;

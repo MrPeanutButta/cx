@@ -43,6 +43,10 @@ int int_sqrt(int &num) {
 
 
 int main(){
+    int array[10];
+
+    array[1] = 5;
+
     int i = 4096;
     int root = 0;
 

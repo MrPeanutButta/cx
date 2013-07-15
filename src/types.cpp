@@ -145,7 +145,7 @@ void TType::PrintRecordType(TVerbosityCode vc) {
 //        list.PutLine("empty type");
 //        return;
 //    }
-    
+
 //    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
 //            pFieldId; pFieldId = pFieldId->next) {
 //        sprintf(list.text, "\t%d : %s",
@@ -201,13 +201,12 @@ void TType::PrintRecordType(TVerbosityCode vc) {
 }
 
 void InitializePredefinedTypes(TSymtab *pSymtab) {
-    
+
     pMain = pSymtab->Enter("main", dcFunction);
     pMain->defn.routine.which = rcForward;
-    
+
     TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
-    TSymtabNode *pDoubleId = pSymtab->Enter("double", dcType);
 
     TSymtabNode *pComplexId = pSymtab->Enter("class", dcType);
 
@@ -222,9 +221,7 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     if (!pFloatType) {
         SetType(pFloatType, new TType(fcScalar, sizeof (float), pFloatId));
     }
-    if (!pDoubleType) {
-        SetType(pDoubleType, new TType(fcScalar, sizeof (float), pDoubleId));
-    }
+
     if (!pBooleanType) {
         SetType(pBooleanType, new TType(fcEnum, sizeof (int), pBooleanId));
     }
@@ -236,12 +233,11 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     }
 
     SetType(pMain->pType, pIntegerType);
-    
+
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
 
     SetType(pFloatId->pType, pFloatType);
-    SetType(pDoubleId->pType, pDoubleType);
 
     SetType(pBooleanId->pType, pBooleanType);
     SetType(pCharId->pType, pCharType);
@@ -266,7 +262,6 @@ void RemovePredefinedTypes(void) {
     RemoveType(pComplexType);
     RemoveType(pIntegerType);
     RemoveType(pFloatType);
-    RemoveType(pDoubleType);
     RemoveType(pBooleanType);
     RemoveType(pCharType);
     RemoveType(pDummyType);

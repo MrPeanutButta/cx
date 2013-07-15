@@ -13,9 +13,6 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
     }
 
     TSymtabNode *pNode = Find(pToken->String());
-    /*if (pNode) {
-        icode.Put(pNode);
-    } else Error(::errUndefinedIdentifier);*/
 
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
@@ -37,10 +34,6 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
              * check if forwarded */
             if (pNewId != nullptr) {
                 if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
-
-                    //if (!pProgram_ptr->foundGlobalEnd)
-                    //pProgram_ptr->foundGlobalEnd = true;
-
                     GetTokenAppend();
                     ParseFunctionHeader(pNewId);
                 } else Error(errRedefinedIdentifier);
@@ -134,7 +127,6 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
 
-    // while (token == tcIdentifier) {
     pConstId = EnterNewLocal(pToken->String());
 
     if (!pRoutineId->defn.routine.locals.pConstantIds) {
@@ -149,7 +141,6 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
         pLastId->next = pConstId;
 
     }
-    //}
 
     GetTokenAppend();
     CondGetToken(tcEqual, errMissingEqual);
@@ -159,11 +150,6 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
     pConstId->defn.how = dcConstant;
 
 
-    Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-
-    ///CondGetToken(tcSemicolon, errMissingSemicolon);
-
-    //while (token == tcSemicolon) GetTokenAppend();
     Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
 
 }
@@ -182,8 +168,7 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
                 pConstId->defn.constant.value.__int = sign == tcMinus ?
                         -pToken->Value().__int : pToken->Value().__int;
             } else if ((pToken->Type() == tyReal) &&
-                    (((pConstId->pType == pFloatType) ||
-                    pConstId->pType == pDoubleType))) {
+                    (((pConstId->pType == pFloatType)))) {
 
                 if (pConstId->pType == pFloatType) {
                     pConstId->defn.constant.value.__float = sign == tcMinus ?
@@ -192,8 +177,6 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
                     pConstId->defn.constant.value.__double = sign == tcMinus ?
                             -pToken->Value().__float : pToken->Value().__float;
                 }
-
-                //SetType(pConstId->pType, pFloatType);
             }
 
             GetTokenAppend();

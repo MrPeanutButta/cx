@@ -160,7 +160,7 @@ class TExecutor : public TBackend {
     TType *ExecuteFactor(void);
     TType *ExecuteConstant(const TSymtabNode *pId);
     TType *ExecuteVariable(const TSymtabNode *pId, int addressFlag);
-    TType *ExecuteSubscripts(const TType *pType);
+    TType *ExecuteSubscripts(TStackItem *pTarget, const TType *pType);
     TType *ExecuteField(void);
 
     //--Tracing
