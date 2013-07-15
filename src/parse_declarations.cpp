@@ -38,8 +38,8 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
             if (pNewId != nullptr) {
                 if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
 
-                    if (!pProgram_ptr->foundGlobalEnd)
-                        pProgram_ptr->foundGlobalEnd = true;
+                    //if (!pProgram_ptr->foundGlobalEnd)
+                    //pProgram_ptr->foundGlobalEnd = true;
 
                     GetTokenAppend();
                     ParseFunctionHeader(pNewId);

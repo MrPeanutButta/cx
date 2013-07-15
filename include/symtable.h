@@ -92,7 +92,7 @@ public:
 
     TSymtabNode *next;
     TSymtabNode *prev;
-    
+
     TType *pType;
 
     TDefn defn;
@@ -116,8 +116,8 @@ public:
         return pString;
     }
 
-    void RenameNode(const char *pStr){
-        if(pString != nullptr){
+    void RenameNode(const char *pStr) {
+        if (pString != nullptr) {
             delete pString;
             pString = nullptr;
         }
@@ -165,8 +165,8 @@ public:
     }
 
     ~TSymtab() {
-        delete root;
-        delete [] vpNodes;
+        if (root != nullptr) delete root;
+        if (vpNodes != nullptr) delete [] vpNodes;
     }
 
     TSymtabNode *Search(const char *pString) const;
@@ -177,7 +177,7 @@ public:
         return root;
     }
 
-    void ConnectTables(ScopedSymtab &classSymtab){
+    void ConnectTables(ScopedSymtab &classSymtab) {
 
         /*root = classSymtab[tcPublic]->root;
         root->left = classSymtab[tcProtected]->root;
@@ -185,7 +185,7 @@ public:
     }
 
     TSymtabNode *Get(short xNode) const {
-        if(vpNodes == nullptr) return nullptr;
+        if (vpNodes == nullptr) return nullptr;
 
         return vpNodes[xNode];
     }
@@ -245,7 +245,10 @@ public:
 //--------------------------------------------------------------
 
 class TSymtabStack {
-    enum {maxNestingLevel = 8};
+
+    enum {
+        maxNestingLevel = 8
+    };
 
     TSymtab *pSymtabs[maxNestingLevel]; // stack of symbol table ptrs
 
@@ -253,33 +256,28 @@ class TSymtabStack {
 
 public:
     TSymtabStack(void);
-   ~TSymtabStack(void);
+    ~TSymtabStack(void);
 
-    TSymtabNode *SearchLocal(const char *pString)
-    {
-	return pSymtabs[currentNestingLevel]->Search(pString);
+    TSymtabNode *SearchLocal(const char *pString) {
+        return pSymtabs[currentNestingLevel]->Search(pString);
     }
 
     TSymtabNode *EnterLocal(const char *pString,
-			    TDefnCode dc = dcUndefined)
-    {
-	return pSymtabs[currentNestingLevel]->Enter(pString, dc);
+            TDefnCode dc = dcUndefined) {
+        return pSymtabs[currentNestingLevel]->Enter(pString, dc);
     }
 
     TSymtabNode *EnterNewLocal(const char *pString,
-			       TDefnCode dc = dcUndefined)
-    {
-	return pSymtabs[currentNestingLevel]->EnterNew(pString, dc);
+            TDefnCode dc = dcUndefined) {
+        return pSymtabs[currentNestingLevel]->EnterNew(pString, dc);
     }
 
-    TSymtab *GetCurrentSymtab(void) const
-    {
-	return pSymtabs[currentNestingLevel];
+    TSymtab *GetCurrentSymtab(void) const {
+        return pSymtabs[currentNestingLevel];
     }
 
-    void SetCurrentSymtab(TSymtab *pSymtab)
-    {
-	pSymtabs[currentNestingLevel] = pSymtab;
+    void SetCurrentSymtab(TSymtab *pSymtab) {
+        pSymtabs[currentNestingLevel] = pSymtab;
     }
 
     void SetScope(int scopeLevel) {
@@ -287,10 +285,10 @@ public:
     }
 
     TSymtabNode *SearchAvailableScopes(const char *pString) const;
-    TSymtabNode *SearchAll (const char *pString) const;
-    TSymtabNode *Find      (const char *pString) const;
-    void         EnterScope(void);
-    TSymtab     *ExitScope (void);
+    TSymtabNode *SearchAll(const char *pString) const;
+    TSymtabNode *Find(const char *pString) const;
+    void EnterScope(void);
+    TSymtab *ExitScope(void);
 };
 //endfig
 

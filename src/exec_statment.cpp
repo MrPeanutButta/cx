@@ -15,7 +15,7 @@ void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
             if (pNode->defn.how == dcFunction) {
                 ExecuteSubroutineCall(pNode);
             } else {
-                ExecuteAssignment(pRoutine, pNode);
+                ExecuteAssignment(pNode);
             }
         }
             break;
@@ -104,174 +104,8 @@ TSymtabNode *TExecutor::AllocNewNode(TSymtabNode *pRoutineId) {
     }
 }
 
-void TExecutor::ExecuteAssignment(TSymtabNode *pRoutine, TSymtabNode *pTargetId) {
-    TStackItem *pTarget; // runtime stack address of target
-    TType *pTargetType; // ptr to target type object
-    TType *pExprType; // ptr to expression type object
-    //TSymtabNode *pNewAlloc = nullptr;
-
-
-    if (pTargetId->defn.how == dcFunction) {
-        pTargetType = pTargetId->pType;
-        pTarget = runStack.GetValueAddress(pTargetId);
-        //GetToken();
-    }//--Assignment to variable or formal parameter.
-        //--ExecuteVariable leaves the target address on
-        //--top of the runtime stack.
-    else if (pTargetId->defn.how != dcType) {
-        //GetToken();
-        pTargetType = ExecuteVariable(pTargetId, true);
-        pTarget = (TStackItem *) Pop()->__addr;
-    } /*else {
-        pNewAlloc = AllocNewNode(pRoutine);
-        pTargetId = pNewAlloc;
-        pTargetType = ExecuteVariable(pTargetId, true);
-        pTarget = (TStackItem *) Pop()->__addr;
-
-    }*/
-    //--Execute the expression and leave its value
-    //--on top of the runtime stack.
-    //GetToken();
-
-    switch (token) {
-        case tcReturn:
-        case tcEqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float = pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
-
-                int value = pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-
-                RangeCheck(pTargetType, value);
-
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int = value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
-
-                //--character := character
-                pTarget->__char = value;
-            } else {
-                void *pSource = Pop()->__addr;
-
-                //--array  := array
-                //--record := record
-                memcpy(pTarget, pSource, pTargetType->size);
-            }
-
-            TraceDataStore(pTargetId, pTarget, pTargetType);
-        }
-            break;
-        case tcPlusPlus:
-            ++pTarget->__int;
-            GetToken();
-            break;
-        case tcMinusMinus:
-            --pTarget->__int;
-            GetToken();
-            break;
-        case tcPlusEqual:
-            GetToken();
-            pExprType = ExecuteExpression();
-            //            pTargetNode->value += runStack.Pop();
-            break;
-        case tcMinusEqual:
-            GetToken();
-            pExprType = ExecuteExpression();
-            //            pTargetNode->value -= runStack.Pop();
-            break;
-        case tcStarEqual:
-            GetToken();
-            pExprType = ExecuteExpression();
-            //            pTargetNode->value *= runStack.Pop();
-            break;
-        case tcForwardSlashEqual:
-            GetToken();
-            pExprType = ExecuteExpression();
-            //            pTargetNode->value /= runStack.Pop();
-            break;
-        case tcModEqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //            int __1 = (int) pTargetNode->value;
-            //  int __2 = (int) runStack.Pop();
-
-            //            pTargetNode->value = (__1 %= __2);
-        }
-            break;
-        case tcBitLeftShiftEqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //           int __1 = (int) pTargetNode->value;
-            //  int __2 = (int) runStack.Pop();
-
-            //         pTargetNode->value = (__1 <<= __2);
-        }
-            break;
-        case tcBitRightShiftEqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //       int __1 = (int) pTargetNode->value;
-            // int __2 = (int) runStack.Pop();
-
-            //     pTargetNode->value = (__1 >>= __2);
-        }
-            break;
-        case tcBitANDEqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //          int __1 = (int) pTargetNode->value;
-            // int __2 = (int) runStack.Pop();
-
-            //        pTargetNode->value = (__1 &= __2);
-        }
-            break;
-        case tcBitXOREqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //      int __1 = (int) pTargetNode->value;
-            //   int __2 = (int) runStack.Pop();
-
-            //    pTargetNode->value = (__1 ^= __2);
-        }
-            break;
-        case tcBitOREqual:
-        {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //            int __1 = (int) pTargetNode->value;
-            //            int __2 = (int) runStack.Pop();
-
-            //          pTargetNode->value = (__1 |= __2);
-        }
-            break;
-        case tcSemicolon:
-            TraceDataStore(pTargetId, pTarget, pTargetType);
-            break;
-        case tcIdentifier:
-        {
-            pExprType = ExecuteExpression();
-        }
-        default:
-            Error(errInvalidAssignment);
-            break;
-    }
+void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
+    ExecuteVariable(pTargetId, true);
 }
 
 void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {
@@ -422,12 +256,10 @@ void TExecutor::ExecuteFOR(TSymtabNode* pRoutineId) {
     //--(
     GetToken();
 
-    //TSymtabNode *pControl = pNode;
-
     if (token != tcSemicolon) {
         // declaration would go here //
         //pControl = pNode;
-        ExecuteAssignment(pRoutineId, pNode);
+        ExecuteAssignment(pNode);
     }
 
     do {

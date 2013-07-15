@@ -14,39 +14,14 @@
  *
  */
 
-
-/* Cx standard math functions.
- *
- */
-
-int int_sqrt(int &num) {
-    int res = 0;
-    int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
-
-    // "bit" starts at the highest power of four <= the argument.
-    while (bit > num)
-        bit >>= 2;
-
-    while (bit != 0) {
-        if (num >= res + bit) {
-            num -= res + bit;
-            res = (res >> 1) + bit;
-        }else{
-            res >>= 1;
-        }
-
-        bit >>= 2;
-    }
-
-    return res;
-}
-
+#include math
 
 int main(){
     int i = 4096;
     int root = 0;
 
-    root = int_sqrt(i);
+    root = isqrt(i);
+    root = sqrt_approx(i);
 
     return root;
 }

@@ -203,7 +203,7 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
 
 void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
-    ExecuteAssignment(pRoutine, pRoutine);
+    ExecuteAssignment(pRoutine);
     GoTo(pRoutine->defn.routine.returnMarker - 1);
 }
 

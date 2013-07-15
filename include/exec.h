@@ -144,7 +144,7 @@ class TExecutor : public TBackend {
     TSymtabNode *AllocNewNode(TSymtabNode *pRoutineId);
     void ExecuteStatement( TSymtabNode *pRoutine);
     void ExecuteStatementList( TSymtabNode *pRoutine, TTokenCode terminator);
-    void ExecuteAssignment(TSymtabNode *pRoutine, TSymtabNode *pTargetId);
+    void ExecuteAssignment(const TSymtabNode *pTargetId);
     void ExecuteDO( TSymtabNode *pRoutine);
     void ExecuteWHILE( TSymtabNode *pRoutine);
     void ExecuteIF( TSymtabNode *pRoutine);

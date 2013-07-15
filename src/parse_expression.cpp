@@ -264,15 +264,117 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    //if (token != tcSemicolon)GetTokenAppend();
+    if (TokenIn(token, tlAssignOps)) {
+        TType *pExprType = nullptr;
 
-    switch(token){
-        case tcPlusPlus:
-            GetTokenAppend();
-            break;
-        case tcMinusMinus:
-            GetTokenAppend();
-            break;
+        switch (token) {
+            case tcEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcMinusMinus:
+                GetTokenAppend();
+                break;
+            case tcPlusPlus:
+                GetTokenAppend();
+                break;
+            case tcPlusEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcMinusEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcStarEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcForwardSlashEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcModEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitLeftShiftEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitRightShiftEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitANDEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitXOREqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitOREqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcComma:
+            case tcSemicolon:
+                break;
+                break;
+            case tcIdentifier:
+                GetTokenAppend();
+                pExprType = pResultType;
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            default:
+                Error(errInvalidAssignment);
+                break;
+        }
     }
 
     while (TokenIn(token, tlSubscriptOrFieldStart)) {

@@ -39,6 +39,8 @@ extern const TTokenCode tlExpressionStart[];
 
 extern const TTokenCode tlExpressionFollow[];
 
+extern const TTokenCode tlAssignOps[];
+
 extern const TTokenCode tlRelOps[];
 
 extern const TTokenCode tlUnaryOps[];

@@ -128,6 +128,26 @@ extern const TTokenCode tlExpressionFollow[] = {
     tcDummy
 };
 
+extern const TTokenCode tlAssignOps[] = {
+    tcBitNotEqual, // ~=
+    tcBitXOREqual, // ^=
+    tcBitANDEqual, // &=
+    tcBitOREqual, // |=
+    tcBitLeftShiftEqual, // <<=
+    tcBitRightShiftEqual, // >>=
+
+    tcMinusEqual, // -=
+    tcPlusEqual, // +=
+    tcMinusMinus, // --
+    tcPlusPlus, // ++
+    tcForwardSlashEqual, // /=
+    tcStarEqual, // *=
+    tcModEqual, // %=
+    tcEqual, // =
+    tcReturn, // return (expr)
+    tcDummy
+};
+
 extern const TTokenCode tlRelOps[] = {
     tcEqualEqual, tcNe, tcLt, tcGt, tcLe, tcGe, tcDummy
 };
