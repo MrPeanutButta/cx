@@ -1,15 +1,45 @@
-int pow(int a, int b){
-        return a * b;
+
+/* Global scope is limited to the first few lines
+ * of the script.
+ *
+ * A global scope is force by inserting the
+ * compound operator before generating icode, and
+ * inserting a call to main() after global scope is left.
+ *
+ * Kind of sloppy, but works. The only limitation is
+ * globals must be at the top of the script file.
+ * Maybe good for forcing global code organization??
+ *
+ * time to finish other statements and types :)
+ *
+ */
+
+int my_int = 500;
+
+int sqr_root(int &number){
+    int rt = number;
+    int i = 0;
+
+    do{
+        rt = (number/rt + rt)/2;
+    }while(((rt * rt) > number) && (i++ < 10));
+
+    return rt;
 }
 
 int main(){
+    int i = 9;
+    int root = 0;
 
-    int a = 0;
-    int c = 5;
-
-    a = pow(c, c);
-
-    c = a + a;
-
-    return c;
+    // loop while i is less than 20000
+    while(i < 20){
+        root = sqr_root(i++);
+    }
+    
+    return my_int;
 }
+
+//int root = sqr_root(i);
+/*for(int j = 1; j < 19990; j++){
+        root = sqr_root(j);
+    }*/

@@ -81,6 +81,8 @@ TSymtabNode::TSymtabNode(const char *pStr, TDefnCode dc)
     pLineNumList = NULL;
     pType = NULL;
     xNode = 0;
+    globalFinishLocation = 0;
+    foundGlobalEnd = false;
     level = currentNestingLevel;
     labelIndex = ++asmLabelIndex;
 
@@ -366,8 +368,6 @@ TSymtabStack::TSymtabStack(void) {
     pSymtabs[0] = &globalSymtab;
 
     InitializePredefinedTypes(pSymtabs[0]);
-    InitializeMain();
-
 
     //InitializeStandardRoutines(pSymtabs[0]);
 }
@@ -380,18 +380,26 @@ TSymtabStack::~TSymtabStack(void) {
     RemovePredefinedTypes();
 }
 
-void TSymtabStack::InitializeMain(void) {
-    // initialize mains nesting level
-    extern TSymtab globalSymtab;
+//--------------------------------------------------------------
+//  SearchAvailableScopes   Search the symbol table stack for the given
+//                          name string in the current scope then global.
+//
+//      pString : ptr to name string to find
+//
+//  Return: ptr to symbol table node if found, else NULL
+//--------------------------------------------------------------
 
-    pSymtabs[1] = new TSymtab;
+TSymtabNode *TSymtabStack::SearchAvailableScopes(const char *pString) const {
 
-    TSymtabNode *pMainNode = globalSymtab.EnterNew("main", ::dcFunction);
-    pMainNode->pType = pIntegerType;
-    pMainNode->defn.routine.which = ::rcForward;
-    pMainNode->level = 1;
-    pMainNode->defn.routine.pSymtab = pSymtabs[1];
+    // search local scope
+    TSymtabNode *pNode = pSymtabs[currentNestingLevel]->Search(pString);
+    if (pNode) return pNode;
 
+    // search global scope
+    pNode = pSymtabs[0]->Search(pString);
+    if (pNode) return pNode;
+
+    return nullptr;
 }
 
 //--------------------------------------------------------------
@@ -446,7 +454,7 @@ TSymtabNode *TSymtabStack::Find(const char *pString) const {
 void TSymtabStack::EnterScope(void) {
 
     // dont overwrite mains scope
-    if (currentNestingLevel < 1)++currentNestingLevel;
+    //if (currentNestingLevel <= 1)++currentNestingLevel;
 
     if (++currentNestingLevel > maxNestingLevel) {
         Error(errNestingTooDeep);

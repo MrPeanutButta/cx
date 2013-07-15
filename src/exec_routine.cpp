@@ -17,6 +17,7 @@
 //  *************************************************************
 
 #include <memory.h>
+#include "common.h"
 #include "exec.h"
 
 //--------------------------------------------------------------
@@ -24,13 +25,19 @@
 //			function.
 //--------------------------------------------------------------
 
-void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId) {
+void TExecutor::ExecuteRoutine(TSymtabNode *pRoutineId) {
+
     EnterRoutine(pRoutineId);
 
-    //--Execute the routine's compound statement.
+    //    //--Execute the routine's compound statement.
+    //    // if global we allocate globals and call on main
+    //    if (__MAIN_ENTRY__) {
+    //        ExecuteRoutine(pMain);
+    //    } else {
     ExecuteCompound(pRoutineId);
+    //}
 
-    //ExecuteRETURN(pRoutineId);
+
     ExitRoutine(pRoutineId);
 }
 
@@ -42,7 +49,7 @@ void TExecutor::ExecuteRoutine(const TSymtabNode *pRoutineId) {
 //	pRoutineId : ptr to routine name's symbol table node
 //--------------------------------------------------------------
 
-void TExecutor::EnterRoutine(const TSymtabNode *pRoutineId) {
+void TExecutor::EnterRoutine(TSymtabNode * pRoutineId) {
     TSymtabNode *pId; // ptr to local variable's symtab node
 
     TraceRoutineEntry(pRoutineId);
@@ -55,6 +62,7 @@ void TExecutor::EnterRoutine(const TSymtabNode *pRoutineId) {
     //--Switch to the callee's intermediate code.
     pIcode = pRoutineId->defn.routine.pIcode;
     pIcode->Reset();
+
 }
 
 //--------------------------------------------------------------
@@ -66,7 +74,7 @@ void TExecutor::EnterRoutine(const TSymtabNode *pRoutineId) {
 //	pRoutineId : ptr to routine name's symbol table node
 //--------------------------------------------------------------
 
-void TExecutor::ExitRoutine(const TSymtabNode *pRoutineId) {
+void TExecutor::ExitRoutine(TSymtabNode *pRoutineId) {
     TSymtabNode *pId; // ptr to symtab node of local variable or parm
 
     TraceRoutineExit(pRoutineId);
@@ -93,7 +101,7 @@ void TExecutor::ExitRoutine(const TSymtabNode *pRoutineId) {
 //  Return: ptr to the call's type object
 //--------------------------------------------------------------
 
-TType *TExecutor::ExecuteSubroutineCall(const TSymtabNode *pRoutineId) {
+TType *TExecutor::ExecuteSubroutineCall(TSymtabNode *pRoutineId) {
     /*return pRoutineId->defn.routine.which == rcDeclared
                 ? ExecuteDeclaredSubroutineCall(pRoutineId)
                 : ExecuteStandardSubroutineCall(pRoutineId);*/
@@ -109,23 +117,26 @@ TType *TExecutor::ExecuteSubroutineCall(const TSymtabNode *pRoutineId) {
 //  Return: ptr to the call's type object
 //--------------------------------------------------------------
 
-int return_level;
+//int return_level;
 
 TType *TExecutor::ExecuteDeclaredSubroutineCall
-(const TSymtabNode *pRoutineId) {
-    int oldLevel = return_level = currentNestingLevel; // level of caller
-    int newLevel = pRoutineId->level; // + 1;  // level of callee's locals
+(TSymtabNode *pRoutineId) {
+    int oldLevel = currentNestingLevel; // level of caller
+    int newLevel = pRoutineId->level + 1; // level of callee's locals
 
     //--Set up a new stack frame for the callee.
     TStackItem *pNewFrameBase = runStack.PushFrameHeader
             (oldLevel, newLevel, pIcode);
 
-    //--Push actual paramet                                            er values onto the stack.
+    //--Push actual parameter values onto the stack.
     GetToken();
+
     if (token == tcLParen) {
         ExecuteActualParameters(pRoutineId);
-        GetToken();
     }
+
+    //-- )
+    GetToken();
 
     //--Activate the new stack frame ...
     currentNestingLevel = newLevel;
@@ -148,7 +159,7 @@ TType *TExecutor::ExecuteDeclaredSubroutineCall
 //	pRoutineId : ptr to the subroutine name's symtab node
 //--------------------------------------------------------------
 
-void TExecutor::ExecuteActualParameters(const TSymtabNode *pRoutineId) {
+void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
     TSymtabNode *pFormalId; // ptr to formal parm's symtab node
 
     //--Loop to execute each actual parameter.
@@ -190,14 +201,9 @@ void TExecutor::ExecuteActualParameters(const TSymtabNode *pRoutineId) {
     }
 }
 
-void TExecutor::ExecuteRETURN(const TSymtabNode *pRoutine) {
+void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
-    ExecuteAssignment(pRoutine);
-    //ExitRoutine(pRoutine);
-
-    //--Return to the caller.  Restore the current token.
-    //currentNestingLevel = return_level;
-    //GetToken();
-
+    ExecuteAssignment(pRoutine, pRoutine);
+    GoTo(pRoutine->defn.routine.returnMarker - 1);
 }
 

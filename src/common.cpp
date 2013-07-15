@@ -77,7 +77,7 @@ extern const TTokenCode tlIndexFollow[] = {
 
 extern const TTokenCode tlIndexListFollow[] = {
     tcIdentifier, tcRightSubscript, tcLParen, tcPlus, tcMinus, tcNumber,
-    tcString, tcOf, tcSemicolon,
+    tcString, tcSemicolon,
     tcDummy
 };
 

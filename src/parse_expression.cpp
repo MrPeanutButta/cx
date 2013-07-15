@@ -97,7 +97,7 @@ TType *TParser::ParseTerm(void) {
             case tcForwardSlash:
                 if (IntegerOperands(pResultType, pOperandType) ||
                         RealOperands(pResultType, pOperandType)) {
-                    pResultType = pFloatType;
+                    pResultType = pIntegerType;
                 } else Error(errIncompatibleTypes);
                 break;
             case tcMod:
@@ -106,6 +106,8 @@ TType *TParser::ParseTerm(void) {
                 } else Error(errIncompatibleTypes);
                 break;
             case tcLogicAnd:
+                //GetTokenAppend();
+
                 CheckBoolean(pResultType, pOperandType);
                 pResultType = pBooleanType;
                 break;
@@ -123,10 +125,16 @@ TType *TParser::ParseFactor(void) {
         case tcIdentifier:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
+
+            if (pNode == nullptr)
+                Error(errUndefinedIdentifier);
+
             icode.Put(pNode);
 
             switch (pNode->defn.how) {
                 case dcFunction:
+                    GetTokenAppend();
+                    //CondGetTokenAppend(tcLParen, ::errMissingLeftParen);
                     pResultType = ParseSubroutineCall(pNode, true);
                     break;
                 case dcConstant:
@@ -140,13 +148,10 @@ TType *TParser::ParseFactor(void) {
                 case dcValueParm:
                 case dcVarParm:
                 case dcMember:
-
                     GetTokenAppend();
+                    pResultType = ParseVariable(pNode);
 
-                    if ((pNode->pType == pIntegerType) ||
-                            (pNode->pType == pFloatType))ParseSuffix(pNode);
-
-                    pResultType = pNode->pType;
+                    //ParseSuffix(pNode);
                     break;
                 default:
                     Error(errUndefinedIdentifier);
@@ -165,19 +170,16 @@ TType *TParser::ParseFactor(void) {
                 pNode = EnterLocal(pToken->String());
 
                 if (pToken->Type() == tyInteger) {
-                    pResultType = pIntegerType;
+                    pNode->pType = pIntegerType;
                     pNode->defn.constant.value.__int = pToken->Value().__int;
                 } else {
-                    pResultType = pFloatType;
+                    pNode->pType = pFloatType;
                     pNode->defn.constant.value.__float = pToken->Value().__float;
                 }
-                SetType(pNode->pType, pResultType);
             }
 
-            icode.Put(pNode);
-
             pResultType = pNode->pType;
-
+            icode.Put(pNode);
         }
             GetTokenAppend();
             break;
@@ -234,7 +236,7 @@ TType *TParser::ParseFactor(void) {
 
             break;
         case tcSemicolon:
-            pResultType = pDummyType;
+            //pResultType = pDummyType;
             break;
         default:
             Error(errInvalidExpression);
@@ -262,13 +264,16 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    //GetTokenAppend();
-    //if (token == tcEqual) return pResultType;
-    //if (token == tcIdentifier)GetTokenAppend();
-    //;
-    if (token != tcSemicolon)GetTokenAppend();
+    //if (token != tcSemicolon)GetTokenAppend();
 
-    //GetTokenAppend();
+    switch(token){
+        case tcPlusPlus:
+            GetTokenAppend();
+            break;
+        case tcMinusMinus:
+            GetTokenAppend();
+            break;
+    }
 
     while (TokenIn(token, tlSubscriptOrFieldStart)) {
         pResultType = token == tcLeftSubscript ? ParseSubscripts(pResultType)
@@ -321,55 +326,3 @@ TType *TParser::ParseField(const TType* pType) {
 
     }
 }
-
-/*
-void TParser::ParseSizeOf(void) {
-    switch (token) {
-        case tcIdentifier:
-        {
-            TSymtabNode *pNode = SearchAll(pToken->String());
-            if (pNode) {
-                GetTokenAppend();
-
-                sprintf(::list.text, "\t>> %s == %g", pNode->String(), pNode->value);
-                ::list.PutLine();
-            }
-        }
-            break;
-        case tcInt:
-            GetTokenAppend();
-            break;
-        case tcShort:
-            GetTokenAppend();
-            break;
-        case tcBool:
-            GetTokenAppend();
-            break;
-        case tcDouble:
-            GetTokenAppend();
-            break;
-        case tcLong:
-            GetTokenAppend();
-            break;
-        case tcChar:
-            GetTokenAppend();
-            break;
-        case tcChar16_t:
-            GetTokenAppend();
-            break;
-        case tcChar32_t:
-            GetTokenAppend();
-            break;
-        case tcFloat:
-            GetTokenAppend();
-            break;
-        case tcLParen:
-            GetTokenAppend();
-            ParseSizeOf();
-
-            if (token == tcRParen) GetTokenAppend();
-            else Error(errMissingRightParen);
-
-            break;
-    }
-}*/
