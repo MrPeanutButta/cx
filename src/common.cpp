@@ -129,7 +129,6 @@ extern const TTokenCode tlExpressionFollow[] = {
 };
 
 extern const TTokenCode tlAssignOps[] = {
-    tcBitNotEqual, // ~=
     tcBitXOREqual, // ^=
     tcBitANDEqual, // &=
     tcBitOREqual, // |=

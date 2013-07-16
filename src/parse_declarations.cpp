@@ -49,7 +49,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
             // check for array type
             if (token == tcLeftSubscript) {
-                ParseArrayType(pNewId);
+                ParseArrayType(pRoutineId, pNewId);
                 pNewId->defn.how = dcVariable;
             } else if (token == tcLParen) {
 

@@ -8,7 +8,7 @@ const char *symbolStrings[] = {
     NULL, NULL, NULL, NULL, NULL, NULL,
     //operators and punctuation
     //bitwise
-    "^", "&", "|", "~", "~=", "^=", "&=", "|=", "<<",
+    "^", "&", "|", "~", "^=", "&=", "|=", "<<",
     "<<=", ">>", ">>=", "-", "-=", "+", "+=", "=", "--",
     "++", "/", "/=", "*", "*=", "<", ">", "==", "<=", ">=",
     "!=", "%", "%=", "[", "]", "?", "#", ".*", "(", ")", "{",
@@ -16,15 +16,14 @@ const char *symbolStrings[] = {
     "&&", "!", "\'", "\"",
 
     "if", "return", "continue", "friend", "true", "goto", "try",
-    "delete", "short", "typeid", "bool", "do", "int", "singed",
+    "delete", "short", "typeid", "do", "singed",
     "typename", "break", "double", "long", "sizeof", "union",
     "case", "static", "unsigned", "catch", "else", "namespace",
-    "using", "char", "enum", "new", "virtual", "char16_t", "explicit",
+    "using", "enum", "new", "virtual", "char16_t", "explicit",
     "noexcept", "char32_t", "export", "nullptr", "switch", "struct",
-    "void", "class", "extern", "operator", "template", "const", "false",
-    "private", "this", "while", "float", "protected", "threadlocal",
-    "for", "public", "throw", "default", "typedef", "mutable", "include",
-    "string"
+    "void", "class", "extern", "operator", "template", "const",
+    "private", "this", "while", "protected", "threadlocal",
+    "for", "public", "throw", "default", "typedef", "mutable", "include"
 };
 
 //--------------------------------------------------------------
@@ -147,7 +146,7 @@ TToken *TIcode::Get(void)
 	    pToken->code = token;
 	    break;
 	default:
-	    if (token < tcQuote) {
+	    if (token < tcIf) {
 		pToken       = &specialToken;
 		pToken->code = token;
 	    }

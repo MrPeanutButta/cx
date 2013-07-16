@@ -86,7 +86,7 @@ class TParser {
     TType *ParseSubrangeType(TSymtabNode *pMinId);
     TType *ParseSubrangeLimit(TSymtabNode *pLimitId, int &limit);
 
-    TType *ParseArrayType(TSymtabNode *pArrayNode);
+    TType *ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode);
     void ParseIndexType(TSymtabNode *pArrayNode);
     int ArraySize(TType *pArrayType);
     TType *ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode *pNode);
