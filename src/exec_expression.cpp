@@ -507,7 +507,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
 
     TStackItem *pTarget = nullptr;
 
-    if (pId->defn.how != ::dcVarParm) {
+    if (pId->defn.how != ::dcVarParm && pId->pType->IsScalar()) {
         pTarget = pEntry;
     } else {
         pTarget = ((TStackItem *) pEntry->__addr);
@@ -521,7 +521,9 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         switch (token) {
 
             case tcLeftSubscript:
+                Push(pTarget);
                 pType = ExecuteSubscripts(pTarget, pType);
+                //pTarget = Pop();
                 break;
 
             case tcDot:
@@ -584,7 +586,8 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
                     pTarget->__float = pExprType->Base() == pIntegerType
                             ? Pop()->__int // real := integer
                             : Pop()->__float; // real := real
-                } else if ((pTargetType->Base() == pIntegerType) ||
+                } else if (((pTargetType->Base() == pIntegerType) && 
+                        (pTargetType->Base()->form != fcArray)) ||
                         (pTargetType->Base()->form == fcEnum)) {
 
                     int value = pExprType->Base() == pIntegerType
@@ -988,9 +991,9 @@ TType *TExecutor::ExecuteSubscripts(TStackItem *pTarget, const TType *pType) {
             RangeCheck(pType, value);
 
             //--Modify the data address at the top of the stack.
-            pTarget->__addr = ((char *) pTarget->__addr) +
-                    pType->array.pElmtType->size
-                    * (value - pType->array.minIndex);
+	    Push(((char *) Pop()->__addr) +
+				 pType->array.pElmtType->size
+				*(value - pType->array.minIndex));
 
             //--Prepare for another subscript in this list.
             if (token == tcComma) pType = pType->array.pElmtType;

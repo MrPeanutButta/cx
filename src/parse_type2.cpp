@@ -9,6 +9,7 @@ TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode)
     pArrayType->form = fcArray;
 
     SetType(pArrayType->array.pElmtType, pArrayType);
+    pArrayType->array.pElmtType->size = pArrayType->size;
     SetType(pArrayType->array.pIndexType, pIntegerType);
 
     if (token == tcRightSubscript) {
@@ -22,7 +23,7 @@ TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode)
         pArrayType->array.minIndex = min_index;
         pArrayType->array.maxIndex = max_index - 1;
 
-        GetTokenAppend();
+        ParseExpression();
     }
 
     if (pArrayType->form != fcNone) {
