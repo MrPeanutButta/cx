@@ -140,7 +140,7 @@ TType *TExecutor::ExecuteDeclaredSubroutineCall
 
     //--Activate the new stack frame ...
     currentNestingLevel = newLevel;
-    runStack.ActivateFrame(pNewFrameBase, CurrentLocation());
+    runStack.ActivateFrame(pNewFrameBase, CurrentLocation() - 1);
 
     //--... and execute the callee.
     ExecuteRoutine(pRoutineId);
@@ -174,6 +174,7 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
         //--		   parameter's addresss on top of the stack.
         if (pFormalId->defn.how == dcVarParm) {
             ExecuteVariable(pNode, true);
+
         }//--Value parameter
         else {
             TType *pActualType = ExecuteExpression();
@@ -204,7 +205,7 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
 void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
     ExecuteAssignment(pRoutine);
-    GoTo(pRoutine->defn.routine.returnMarker);
+    GoTo(pRoutine->defn.routine.returnMarker - 1);
     GetToken();
 }
 

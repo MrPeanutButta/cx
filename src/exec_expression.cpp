@@ -378,7 +378,6 @@ TType *TExecutor::ExecuteTerm(void) {
 
 TType *TExecutor::ExecuteFactor(void) {
     TType *pResultType; // ptr to result type
-    TSymtabNode *pVar;
 
     switch (token) {
         case tcIdentifier:
@@ -397,15 +396,7 @@ TType *TExecutor::ExecuteFactor(void) {
                     //break;
                 default:
 
-                    pVar = pNode;
-
-                    GetToken();
-
-                    if (TokenIn(token, tlAssignOps)) {
-                        ExecuteAssignment(pVar);
-                    }
-
-                    pResultType = ExecuteVariable(pVar, false);
+                    pResultType = ExecuteVariable(pNode, false);
 
                     break;
             }
@@ -513,7 +504,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
 
-    //GetToken();
+    GetToken();
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.
     int doneFlag = false;

@@ -118,7 +118,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
     else if (pTargetId->defn.how != dcType) {
-        GetToken();
+        //GetToken();
         pTargetType = ExecuteVariable(pTargetId, true);
         pTarget = (TStackItem *) Pop()->__addr;
     }

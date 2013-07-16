@@ -48,7 +48,7 @@ int main(){
     int root = 0;
 
     while(i < 10) {
-        array[i] = 4096 / ((i+1) * 2);
+        array[i] = 4096 / 2;
         i++;
     }
 
