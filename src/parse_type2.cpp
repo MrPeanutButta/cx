@@ -2,15 +2,14 @@
 #include "parser.h"
 
 TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode) {
-    TType *pArrayType = pArrayNode->pType;
+    TType *pArrayType = new TType(fcArray, 0, nullptr);
+    TType *pElmtType = pArrayType;
+
+    //--Final element type.
+    SetType(pElmtType->array.pElmtType, pArrayNode->pType);
 
     CondGetTokenAppend(tcLeftSubscript, errMissingLeftSubscript);
 
-    pArrayType->form = fcArray;
-
-    SetType(pArrayType->array.pElmtType, pArrayType);
-    pArrayType->array.pElmtType->size = pArrayType->size;
-    SetType(pArrayType->array.pIndexType, pIntegerType);
 
     if (token == tcRightSubscript) {
         // xxx fixme, need a way to get out of assignment
@@ -18,7 +17,7 @@ TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode)
     } else {
         int min_index = 0;
         int max_index = pToken->Value().__int;
-
+        SetType(pElmtType->array.pIndexType, pIntegerType);
         pArrayType->array.elmtCount = max_index;
         pArrayType->array.minIndex = min_index;
         pArrayType->array.maxIndex = max_index - 1;
@@ -33,206 +32,213 @@ TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode)
     CondGetTokenAppend(tcRightSubscript, errMissingRightSubscript);
 
     //pArrayType->array.pElmtType->size = ArraySize(pArrayType);
-    
-    // add to routines variable list
+    SetType(pArrayNode->pType, pArrayType);
+    pArrayNode->defn.how = dcVariable;
+
+    //add to routines variable list
     if (pRoutineId && (!pRoutineId->defn.routine.locals.pTypeIds)) {
         pRoutineId->defn.routine.locals.pTypeIds = pArrayNode;
         pRoutineId->defn.routine.locals.pTypeIds->prev = pArrayNode;
-        pArrayNode->defn.data.offset = pRoutineId->defn.routine.parmCount;
-        pRoutineId->defn.routine.totalLocalSize = pArrayNode->pType->size;
     } else {
         TSymtabNode *__array = pRoutineId->defn.routine.locals.pTypeIds->prev;
-        
+
         __array->next = pArrayNode;
         __array->prev = pArrayNode;
 
-        return pArrayType;
     }
+
+    //--If the type object doesn't have a name yet,
+    //--point it to the type id.
+    if (!pArrayNode->pType->pTypeId) {
+        pArrayNode->pType->pTypeId = pArrayNode;
+    }
+
+    return pArrayType;
 }
 
-    int TParser::ArraySize(TType * pArrayType) {
-        if (pArrayType->array.pElmtType->size == 0) {
-            pArrayType->array.pElmtType->size = ArraySize(pArrayType->array.pElmtType);
-        }
-
-        return (pArrayType->array.elmtCount * pArrayType->array.pElmtType->size);
+int TParser::ArraySize(TType * pArrayType) {
+    if (pArrayType->array.pElmtType->size == 0) {
+        pArrayType->array.pElmtType->size = ArraySize(pArrayType->array.pElmtType);
     }
 
-    TType * TParser::ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode * pNode) {
+    return (pArrayType->array.elmtCount * pArrayType->array.pElmtType->size);
+}
 
-        GetToken();
+TType * TParser::ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode * pNode) {
 
-        //--<id>
-        TType *pType = new TType(fcComplex, 0, nullptr);
+    GetToken();
 
-        //TSymtabNode *next_type = pNode;
+    //--<id>
+    TType *pType = new TType(fcComplex, 0, nullptr);
 
-        //while (next_type->next)
-        //next_type = next_type->next;
+    //TSymtabNode *next_type = pNode;
 
-        TSymtabNode *pId = EnterNewLocal(pToken->String());
-        icode.Put(pId);
+    //while (next_type->next)
+    //next_type = next_type->next;
 
-        //next_type->next = pId;
+    TSymtabNode *pId = EnterNewLocal(pToken->String());
+    icode.Put(pId);
 
-        //--Link the routine's local type id nodes together.
-        if (!pRoutineId->defn.routine.locals.pTypeIds) {
-            pRoutineId->defn.routine.locals.pTypeIds = pId;
-        } else {
-            TSymtabNode *__var = pRoutineId->defn.routine.locals.pTypeIds;
+    //next_type->next = pId;
 
-            while (__var->next)
-                __var = __var->next;
+    //--Link the routine's local type id nodes together.
+    if (!pRoutineId->defn.routine.locals.pTypeIds) {
+        pRoutineId->defn.routine.locals.pTypeIds = pId;
+    } else {
+        TSymtabNode *__var = pRoutineId->defn.routine.locals.pTypeIds;
 
-            __var->next = pId;
-        }
+        while (__var->next)
+            __var = __var->next;
 
-        SetType(pId->pType, pType);
-        pId->defn.how = dcType;
-
-        ParseMemberDecls(pRoutineId, pId->pType, 0);
-
-        return pId->pType;
+        __var->next = pId;
     }
 
-    void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int offset) {
-        // copy of base class would go here
+    SetType(pId->pType, pType);
+    pId->defn.how = dcType;
 
-        // if no '{' this must be a forward
+    ParseMemberDecls(pRoutineId, pId->pType, 0);
 
-        GetToken();
+    return pId->pType;
+}
 
-        if (token == tcSemicolon) {
-            GetTokenAppend();
-            return;
+void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int offset) {
+    // copy of base class would go here
+
+    // if no '{' this must be a forward
+
+    GetToken();
+
+    if (token == tcSemicolon) {
+        GetTokenAppend();
+        return;
+    }
+
+    // if '{' this is a class body
+
+    CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
+
+    // scope
+    TTokenCode scope;
+    TSymtabNode *member = nullptr;
+
+    // pointer to scoped table
+    TSymtab *member_table = nullptr;
+
+    TSymtabNode *pNode = nullptr;
+
+    TSymtabNode *pLastId = nullptr; // ptrs to symtab nodes
+    TSymtabNode *pFirstId = nullptr; // ptr to last node of previous sublist
+
+    //    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPublic, new TSymtab));
+    //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPrivate, new TSymtab));
+    //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcProtected, new TSymtab));
+
+    //default to public
+    scope = tcPublic;
+
+    do {
+
+        // check scope and fast forward list to the end
+        switch (token) {
+            case tcPublic:
+                scope = tcPublic;
+                GetToken();
+                CondGetToken(tcColon, errMissingColon);
+                ///pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+
+                offset = 0;
+                while (pFirstId) {
+                    offset += pFirstId->pType->size;
+                    pFirstId = pFirstId->next;
+                }
+
+                break;
+            case tcPrivate:
+                scope = tcPrivate;
+                GetToken();
+                CondGetToken(tcColon, errMissingColon);
+                //pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+
+                offset = 0;
+                while (pFirstId) {
+                    offset += pFirstId->pType->size;
+                    pFirstId = pFirstId->next;
+                }
+
+                break;
+            case tcProtected:
+                scope = tcProtected;
+                GetToken();
+                CondGetToken(tcColon, errMissingColon);
+                // pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+
+                offset = 0;
+                while (pFirstId) {
+                    offset += pFirstId->pType->size;
+                    pFirstId = pFirstId->next;
+                }
+
+                break;
         }
 
-        // if '{' this is a class body
+        //member_table = pComplexType->complex.MemberTable[scope];
 
-        CondGetTokenAppend(tcLBracket, errMissingLeftBracket);
+        // find our declared type
+        pNode = Find(pToken->String());
 
-        // scope
-        TTokenCode scope;
-        TSymtabNode *member = nullptr;
+        // if complex then this is an object
+        if (pNode->pType->form == fcComplex) {
+            ParseComplexType(pRoutineId, pNode);
+            // predefined type name found
+        } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex)) {
+            do {
+                GetToken();
 
-        // pointer to scoped table
-        TSymtab *member_table = nullptr;
+                // enter new local
+                member = member_table->EnterNew(pToken->String());
+                member->defn.how = dcMember;
 
-        TSymtabNode *pNode = nullptr;
+                // set type
+                SetType(member->pType, pNode->pType);
 
-        TSymtabNode *pLastId = nullptr; // ptrs to symtab nodes
-        TSymtabNode *pFirstId = nullptr; // ptr to last node of previous sublist
+                //--Record fields
+                member->defn.data.offset = offset;
+                offset += pNode->pType->size;
 
-        //    pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPublic, new TSymtab));
-        //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcPrivate, new TSymtab));
-        //   pComplexType->complex.MemberTable.insert(pair<TTokenCode, TSymtab *>(tcProtected, new TSymtab));
+                GetTokenAppend();
 
-        //default to public
-        scope = tcPublic;
+                // check for array type
+                // check for array type
+                if (token == tcLeftSubscript) {
+                    //ParseArrayType(member);
+                    member->defn.how = dcVariable;
+                } else if (token == tcLParen) {
+                    ParseFunctionHeader(member);
+                } else if (token != tcComma) {
+                    // check for assignment
+                    //ParseAssignment(pNewId);
+                    member->defn.how = dcVariable;
+                }
 
-        do {
+                if (!pFirstId) pFirstId = pLastId = member;
+                else {
+                    pLastId->next = member;
+                    pLastId = member;
+                }
 
-            // check scope and fast forward list to the end
-            switch (token) {
-                case tcPublic:
-                    scope = tcPublic;
-                    GetToken();
-                    CondGetToken(tcColon, errMissingColon);
-                    ///pFirstId = pComplexType->complex.MemberTable[scope]->Root();
+            } while (token == tcComma);
 
-                    offset = 0;
-                    while (pFirstId) {
-                        offset += pFirstId->pType->size;
-                        pFirstId = pFirstId->next;
-                    }
-
-                    break;
-                case tcPrivate:
-                    scope = tcPrivate;
-                    GetToken();
-                    CondGetToken(tcColon, errMissingColon);
-                    //pFirstId = pComplexType->complex.MemberTable[scope]->Root();
-
-                    offset = 0;
-                    while (pFirstId) {
-                        offset += pFirstId->pType->size;
-                        pFirstId = pFirstId->next;
-                    }
-
-                    break;
-                case tcProtected:
-                    scope = tcProtected;
-                    GetToken();
-                    CondGetToken(tcColon, errMissingColon);
-                    // pFirstId = pComplexType->complex.MemberTable[scope]->Root();
-
-                    offset = 0;
-                    while (pFirstId) {
-                        offset += pFirstId->pType->size;
-                        pFirstId = pFirstId->next;
-                    }
-
-                    break;
-            }
-
-            //member_table = pComplexType->complex.MemberTable[scope];
-
-            // find our declared type
-            pNode = Find(pToken->String());
-
-            // if complex then this is an object
-            if (pNode->pType->form == fcComplex) {
-                ParseComplexType(pRoutineId, pNode);
-                // predefined type name found
-            } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex)) {
-                do {
-                    GetToken();
-
-                    // enter new local
-                    member = member_table->EnterNew(pToken->String());
-                    member->defn.how = dcMember;
-
-                    // set type
-                    SetType(member->pType, pNode->pType);
-
-                    //--Record fields
-                    member->defn.data.offset = offset;
-                    offset += pNode->pType->size;
-
-                    GetTokenAppend();
-
-                    // check for array type
-                    // check for array type
-                    if (token == tcLeftSubscript) {
-                        //ParseArrayType(member);
-                        member->defn.how = dcVariable;
-                    } else if (token == tcLParen) {
-                        ParseFunctionHeader(member);
-                    } else if (token != tcComma) {
-                        // check for assignment
-                        //ParseAssignment(pNewId);
-                        member->defn.how = dcVariable;
-                    }
-
-                    if (!pFirstId) pFirstId = pLastId = member;
-                    else {
-                        pLastId->next = member;
-                        pLastId = member;
-                    }
-
-                } while (token == tcComma);
-
-                CondGetToken(tcSemicolon, errMissingSemicolon);
-            }
+            CondGetToken(tcSemicolon, errMissingSemicolon);
+        }
 
 
 
-        } while (token != tcRBracket);
+    } while (token != tcRBracket);
 
-        // connect all symtabs for use within the class
-        pComplexType->complex.pSymtabClassScope = new TSymtab;
-        // pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
+    // connect all symtabs for use within the class
+    pComplexType->complex.pSymtabClassScope = new TSymtab;
+    // pComplexType->complex.pSymtabClassScope->ConnectTables(pComplexType->complex.MemberTable);
 
-        CondGetTokenAppend(tcRBracket, errMissingRightBracket);
-        CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
-    }
+    CondGetTokenAppend(tcRBracket, errMissingRightBracket);
+    CondGetTokenAppend(tcSemicolon, errMissingSemicolon);
+}

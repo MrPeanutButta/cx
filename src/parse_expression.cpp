@@ -256,6 +256,7 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
         case dcVarParm:
         case dcFunction:
         case dcUndefined:
+            //case dcType:
             break;
 
         default:

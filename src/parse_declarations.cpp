@@ -19,7 +19,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
         ParseComplexType(pRoutineId, pNode);
         // predefined type name found
     } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
-            (pNode->defn.how != dcFunction)) {
+            (pNode->defn.how != dcFunction) && (pNode->pType->form != fcArray)) {
 
         GetToken();
 
@@ -50,7 +50,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
             // check for array type
             if (token == tcLeftSubscript) {
                 ParseArrayType(pRoutineId, pNewId);
-                pNewId->defn.how = dcVariable;
+
             } else if (token == tcLParen) {
 
                 ParseFunctionHeader(pNewId);
@@ -78,8 +78,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                     pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
 
                 }
-            } else
-            if (pNewId->defn.how == dcFunction) {
+            } else if (pNewId->defn.how == dcFunction) {
                 if (pRoutineId && (!pRoutineId->defn.routine.locals.pRoutineIds)) {
                     pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
                 } else {

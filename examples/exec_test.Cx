@@ -44,13 +44,19 @@ int int_sqrt(int &num) {
 
 int main(){
     int array[10];
-
-    array[1] = 5;
-
-    int i = 4096;
+    int i = 0;
     int root = 0;
 
-    root = int_sqrt(i);
+    while(i < 10) {
+        array[i] = 4096 / ((i+1) * 2);
+        i++;
+    }
+
+    i = 0;
+    while(i < 10) {
+        root = int_sqrt(array[i]);
+        i++;
+    }
 
     return root;
 }

@@ -105,7 +105,382 @@ TSymtabNode *TExecutor::AllocNewNode(TSymtabNode *pRoutineId) {
 }
 
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
-    ExecuteVariable(pTargetId, true);
+
+
+    TStackItem *pTarget; // runtime stack address of target
+    TType *pTargetType; // ptr to target type object
+    TType *pExprType; // ptr to expression type object
+
+    if (pTargetId->defn.how == dcFunction) {
+        pTargetType = pTargetId->pType;
+        pTarget = runStack.GetValueAddress(pTargetId);
+    }//--Assignment to variable or formal parameter.
+        //--ExecuteVariable leaves the target address on
+        //--top of the runtime stack.
+    else if (pTargetId->defn.how != dcType) {
+        GetToken();
+        pTargetType = ExecuteVariable(pTargetId, true);
+        pTarget = (TStackItem *) Pop()->__addr;
+    }
+
+    switch (token) {
+        case tcReturn:
+        case tcEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+            } else if (((pTargetType->Base() == pIntegerType) &&
+                    (pTargetType->Base()->form != fcArray)) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int = value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char = value;
+            } else {
+                void *pSource = Pop()->__addr;
+
+                //--array  := array
+                //--record := record
+                memcpy(pTarget, pSource, pTargetType->size);
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcPlusPlus:
+        {
+            GetToken();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float++;
+            } else if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+                pTarget->__int++;
+            } else if (pTargetType->Base() == pCharType) {
+                pTarget->__char++;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcMinusMinus:
+        {
+            GetToken();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float--;
+            } else if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+                pTarget->__int--;
+            } else if (pTargetType->Base() == pCharType) {
+                pTarget->__char--;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcPlusEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float += pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+            } else if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int += value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char += value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcMinusEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float -= pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+            } else if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int -= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char -= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcStarEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float *= pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+            } else if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int *= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char -= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcForwardSlashEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if (pTargetType == pFloatType) {
+                pTarget->__float /= pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+            } else if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = pExprType->Base() == pIntegerType
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int /= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char /= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcModEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = Pop()->__int; // real := integer
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int %= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char %= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcBitLeftShiftEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = Pop()->__int; // real := integer
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int <<= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char <<= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcBitRightShiftEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = Pop()->__int; // real := integer
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int >>= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char >>= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcBitANDEqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = Pop()->__int; // real := integer
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int &= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char <<= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcBitXOREqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = Pop()->__int; // real := integer
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int <<= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char ^= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+        case tcBitOREqual:
+        {
+            GetToken();
+            pExprType = ExecuteExpression();
+            //--Do the assignment.
+            if ((pTargetType->Base() == pIntegerType) ||
+                    (pTargetType->Base()->form == fcEnum)) {
+
+                int value = Pop()->__int; // real := integer
+
+                RangeCheck(pTargetType, value);
+
+                //--integer     := integer
+                //--enumeration := enumeration
+                pTarget->__int <<= value;
+            } else if (pTargetType->Base() == pCharType) {
+                char value = Pop()->__char;
+                RangeCheck(pTargetType, value);
+
+                //--character := character
+                pTarget->__char |= value;
+            }
+
+            TraceDataStore(pTargetId, pTarget, pTargetType);
+        }
+            break;
+    }
 }
 
 void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {

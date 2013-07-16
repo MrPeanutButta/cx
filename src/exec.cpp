@@ -148,17 +148,18 @@ void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
 void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
     TType *pType = pId->pType->Base(); // ptr to type object of value
 
-    if (pType == pIntegerType) Push(0);
-    else if (pType == pFloatType) Push(0.0f);
-    else if (pType == pBooleanType) Push(0);
-    else if (pType == pCharType) Push(0);
-
-    else if (pType->form == fcEnum) Push(0);
-    else {
+    if ((pType->form != fcArray) && (pType->form != fcComplex)) {
+        if (pType == pIntegerType) Push(0);
+        else if (pType == pFloatType) Push(0.0f);
+        else if (pType == pBooleanType) Push(0);
+        else if (pType == pCharType) Push(0);
+        else if (pType->form == fcEnum) Push(0);
+    } else {
 
         //--Array or record
         void *addr = new char[pType->size];
         Push(addr);
+        pId->pType->array.start_address = addr;
     }
 }
 
