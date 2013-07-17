@@ -44,11 +44,13 @@ int int_sqrt(int num) {
 int main(){
     int array[10];
     int i = 0;
-    int root = 0;
+    int root = 4096;
 
     while(i < 10) {
         // store sqrt in array to be sorted
-        array[i] = int_sqrt(4096 / i++);
+        
+        array[i] = int_sqrt(root);
+        root /= i++;
     }
 
     return root;
