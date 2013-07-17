@@ -118,7 +118,7 @@ TToken *TIcode::Get(void)
 	//--First read the token code.
 	memcpy((void *) &code, (const void *) cursor, sizeof(char));
 	cursor += sizeof(char);
-	token = (TTokenCode) code;
+	token =  (code > 0) ? (TTokenCode) code : tcDummy;
 
 	//--If it's a line marker, extract the line number.
 	if (token == mcLineMarker) {
@@ -174,6 +174,7 @@ TToken *TIcode::Get(void)
         case tcDummy:
             break;
 	default:
+
 	    pNode = NULL;
 	    strcpy(pToken->string, symbolStrings[code]);
 	    break;

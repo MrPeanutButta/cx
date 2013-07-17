@@ -5,7 +5,7 @@
 #include "types.h"
 
 const char *formStrings[] = {
-    "*error*", "scalar", "enum", "subrange", "array", "complex"
+    "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
 TSymtabNode *pMain = nullptr;

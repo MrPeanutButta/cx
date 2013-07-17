@@ -52,7 +52,7 @@ void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminato
 }
 
 TSymtabNode *TExecutor::EnterNew(TSymtabNode *pFunction, const char *pString) {
-    TSymtabNode *pId = nullptr;
+    TSymtabNode *pId;
 
     //--local parameters and variables.
     for (pId = pFunction->defn.routine.locals.pVariableIds;
@@ -106,7 +106,7 @@ TSymtabNode *TExecutor::AllocNewNode(TSymtabNode *pRoutineId) {
 
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     TStackItem *pTarget; // runtime stack address of target
-    TType *pTargetType; // ptr to target type object
+    TType *pTargetType = nullptr; // ptr to target type object
     TType *pExprType; // ptr to expression type object
 
     if (pTargetId->defn.how == dcFunction) {
@@ -116,7 +116,6 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
     else if (pTargetId->defn.how != dcType) {
-        //GetToken();
         pTargetType = ExecuteVariable(pTargetId, true);
         pTarget = (TStackItem *) Pop()->__addr;
     }

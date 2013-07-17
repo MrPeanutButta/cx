@@ -172,7 +172,7 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
 
         //--VAR parameter: ExecuteVariable will leave the actual
         //--		   parameter's addresss on top of the stack.
-        if (pFormalId->defn.how == dcVarParm) {
+        if (pFormalId->defn.how == dcReference) {
             ExecuteVariable(pNode, true);
 
         }//--Value parameter
@@ -206,6 +206,7 @@ void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
     ExecuteAssignment(pRoutine);
     GoTo(pRoutine->defn.routine.returnMarker - 1);
+
     GetToken();
 }
 

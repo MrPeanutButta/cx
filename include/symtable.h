@@ -30,7 +30,7 @@ typedef map<TTokenCode, TSymtab *> ScopedSymtab;
 
 enum TDefnCode {
     dcUndefined, dcConstant, dcType, dcVariable, dcMember,
-    dcValueParm, dcVarParm,
+    dcValueParm, dcReference,
     dcProgram, dcFunction
 };
 

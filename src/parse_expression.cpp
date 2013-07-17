@@ -106,8 +106,6 @@ TType *TParser::ParseTerm(void) {
                 } else Error(errIncompatibleTypes);
                 break;
             case tcLogicAnd:
-                //GetTokenAppend();
-
                 CheckBoolean(pResultType, pOperandType);
                 pResultType = pBooleanType;
                 break;
@@ -146,12 +144,10 @@ TType *TParser::ParseFactor(void) {
                 case dcVariable:
                 case dcType:
                 case dcValueParm:
-                case dcVarParm:
+                case dcReference:
                 case dcMember:
                     GetTokenAppend();
                     pResultType = ParseVariable(pNode);
-
-                    //ParseSuffix(pNode);
                     break;
                 default:
                     Error(errUndefinedIdentifier);
@@ -160,8 +156,38 @@ TType *TParser::ParseFactor(void) {
             }
         }
             break;
+		case tcBitANDorAddrOf:{
+			GetTokenAppend(); // just append the token and parse factor
+			TSymtabNode *pNode = SearchAll(pToken->String());
 
+            if (pNode == nullptr)
+                Error(errInvalidReference);
 
+            icode.Put(pNode);
+
+            switch (pNode->defn.how) {
+                case dcFunction:
+                    GetTokenAppend();
+                    pResultType = ParseSubroutineCall(pNode, true);
+                    break;
+                case dcConstant:
+                    GetTokenAppend();
+                    pResultType = pNode->pType;
+                    break;
+                case dcVariable:
+                case dcType:
+                case dcValueParm:  
+                case dcMember:
+                    GetTokenAppend();
+                    pResultType = ParseVariable(pNode);
+                    break;
+                default:
+                    Error(errInvalidReference);
+                    break;
+
+            }
+							  }
+			break;
         case tcNumber:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
@@ -253,10 +279,9 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
     switch (pId->defn.how) {
         case dcVariable:
         case dcValueParm:
-        case dcVarParm:
+        case dcReference:
         case dcFunction:
         case dcUndefined:
-            //case dcType:
             break;
 
         default:

@@ -172,7 +172,7 @@ void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
 //--------------------------------------------------------------
 
 void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
-    if ((!pId->pType->IsScalar()) && (pId->defn.how != dcVarParm)) {
+    if ((!pId->pType->IsScalar()) && (pId->defn.how != dcReference)) {
         TStackItem *pValue = ((TStackItem *) pFrameBase)
                 + frameHeaderSize
                 + pId->defn.data.offset;

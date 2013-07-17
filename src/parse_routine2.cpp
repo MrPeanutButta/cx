@@ -35,7 +35,7 @@
 //--------------------------------------------------------------
 
 TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
-    extern int execFlag;
+    //extern int execFlag;
 
     TSymtabNode *pParmId; // ptrs to parm symtab nodes
     TSymtabNode *pFirstId, *pLastId;
@@ -67,7 +67,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         //--VAR or value parameter?
         if (token == tcBitANDorAddrOf) {
-            parmDefn = dcVarParm;
+            parmDefn = dcReference;
             GetTokenAppend();
         } else parmDefn = dcValueParm;
 
@@ -104,14 +104,14 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
         } else if (token == tcIdentifier) Error(errMissingComma);
 
 
-        if (execFlag) {
+        //if (execFlag) {
             //--Loop to assign the offset and type to each
             //--parm id in the sublist.
             for (pParmId = pFirstId; pParmId; pParmId = pParmId->next) {
                 pParmId->defn.data.offset = totalSize++;
                 SetType(pParmId->pType, pParmType);
             }
-        }
+        //}
 
         //--Link this sublist to the previous sublist.
         if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
@@ -271,7 +271,7 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
     }//--Error: Parse the actual parameter anyway for error recovery.
     else {
         ParseExpression();
-        Error(errInvalidVarParm);
+        Error(errInvalidReference);
     }
 
 

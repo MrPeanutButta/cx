@@ -377,9 +377,9 @@ TType *TExecutor::ExecuteTerm(void) {
 //--------------------------------------------------------------
 
 TType *TExecutor::ExecuteFactor(void) {
-    TType *pResultType; // ptr to result type
+    TType *pResultType = nullptr; // ptr to result type
     TSymtabNode *pId = nullptr;
-    
+
     switch (token) {
         case tcIdentifier:
         {
@@ -406,6 +406,28 @@ TType *TExecutor::ExecuteFactor(void) {
             }
         }
             break;
+			case tcBitANDorAddrOf:
+			GetToken(); 
+			switch (pNode->defn.how) {
+
+                case dcFunction:                  
+                case dcConstant:
+				case dcVariable:
+				default:
+                    pId = pNode;
+
+					// leave address TOS
+                    pResultType = ExecuteVariable(pNode, true);
+
+                    if (TokenIn(token, tlAssignOps)) {
+                        Pop();
+                        ExecuteAssignment(pId);
+                        pResultType = ExecuteVariable(pId, true);
+                    }
+
+                    break;
+            }
+			break;
         case tcNumber:
         {
             //--Push the number's integer or real value onto the stack.
@@ -505,11 +527,11 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
 
     //--Get the variable's runtime stack address.
     TStackItem *pEntry = runStack.GetValueAddress(pId);
-    Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
+    Push((pId->defn.how == dcReference) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
-    
+
     if(!TokenIn(token, tlAssignOps))GetToken();
-    
+
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.
     int doneFlag = false;
@@ -529,8 +551,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
             default: doneFlag = true;
         }
     } while (!doneFlag);
-    
-    
+
 
     //--If addressFlag is false, and the data is not an array
     //--or a record, replace the address at the top of the stack
