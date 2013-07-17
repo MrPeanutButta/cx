@@ -378,7 +378,8 @@ TType *TExecutor::ExecuteTerm(void) {
 
 TType *TExecutor::ExecuteFactor(void) {
     TType *pResultType; // ptr to result type
-
+    TSymtabNode *pId = nullptr;
+    
     switch (token) {
         case tcIdentifier:
         {
@@ -391,12 +392,15 @@ TType *TExecutor::ExecuteFactor(void) {
                 case dcConstant:
                     pResultType = ExecuteConstant(pNode);
                     break;
-                    //case dcVarParm:
-                    //pResultType = ExecuteVariable(pNode, true);
-                    //break;
                 default:
-
+                    pId = pNode;
                     pResultType = ExecuteVariable(pNode, false);
+
+                    if (TokenIn(token, tlAssignOps)) {
+                        Pop();
+                        ExecuteAssignment(pId);
+                        pResultType = ExecuteVariable(pId, false);
+                    }
 
                     break;
             }
@@ -503,8 +507,9 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     TStackItem *pEntry = runStack.GetValueAddress(pId);
     Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
-
-    GetToken();
+    
+    if(!TokenIn(token, tlAssignOps))GetToken();
+    
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.
     int doneFlag = false;
@@ -524,6 +529,8 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
             default: doneFlag = true;
         }
     } while (!doneFlag);
+    
+    
 
     //--If addressFlag is false, and the data is not an array
     //--or a record, replace the address at the top of the stack
@@ -564,7 +571,7 @@ TType *TExecutor::ExecuteSubscripts(const TType *pType) {
         //--Loop to execute comma-separated subscript expressions
         //--within a subscript list.
         do {
-            GetToken();
+            GetToken(); // index
             ExecuteExpression();
 
             //--Evaluate and range check the subscript.
@@ -582,8 +589,8 @@ TType *TExecutor::ExecuteSubscripts(const TType *pType) {
         } while (token == tcComma);
 
         //--Prepare for another subscript list.
-        GetToken();
-        if (token == tcLBracket) pType = pType->array.pElmtType;
+        GetToken(); // ]
+        if (token == tcLeftSubscript) pType = pType->array.pElmtType;
     }
 
     return pType->array.pElmtType;

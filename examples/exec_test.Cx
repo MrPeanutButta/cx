@@ -19,7 +19,7 @@
  *
  */
 
-int int_sqrt(int &num) {
+int int_sqrt(int num) {
     int res = 0;
     int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
 
@@ -41,21 +41,14 @@ int int_sqrt(int &num) {
     return res;
 }
 
-
 int main(){
     int array[10];
     int i = 0;
     int root = 0;
 
     while(i < 10) {
-        array[i] = 4096 / 2;
-        i++;
-    }
-
-    i = 0;
-    while(i < 10) {
-        root = int_sqrt(array[i]);
-        i++;
+        // store sqrt in array to be sorted
+        array[i] = int_sqrt(4096 / i++);
     }
 
     return root;

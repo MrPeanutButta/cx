@@ -105,8 +105,6 @@ TSymtabNode *TExecutor::AllocNewNode(TSymtabNode *pRoutineId) {
 }
 
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
-
-
     TStackItem *pTarget; // runtime stack address of target
     TType *pTargetType; // ptr to target type object
     TType *pExprType; // ptr to expression type object
