@@ -156,9 +156,10 @@ TType *TParser::ParseFactor(void) {
             }
         }
             break;
-		case tcBitANDorAddrOf:{
-			GetTokenAppend(); // just append the token and parse factor
-			TSymtabNode *pNode = SearchAll(pToken->String());
+        case tcBitANDorAddrOf:
+        {
+            GetTokenAppend(); // just append the token and parse factor
+            TSymtabNode *pNode = SearchAll(pToken->String());
 
             if (pNode == nullptr)
                 Error(errInvalidReference);
@@ -176,7 +177,7 @@ TType *TParser::ParseFactor(void) {
                     break;
                 case dcVariable:
                 case dcType:
-                case dcValueParm:  
+                case dcValueParm:
                 case dcMember:
                     GetTokenAppend();
                     pResultType = ParseVariable(pNode);
@@ -186,8 +187,8 @@ TType *TParser::ParseFactor(void) {
                     break;
 
             }
-							  }
-			break;
+        }
+            break;
         case tcNumber:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());

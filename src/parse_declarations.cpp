@@ -23,9 +23,12 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
         GetToken();
 
-		// if tcStar then this is a scalar pointer
-		bool declPointer = (token == tcStar);
-		if(declPointer) GetToken(); // just eat the token
+        // if tcStar then this is a scalar pointer
+        bool declPointer = false;
+        if (token == tcStar){
+            GetToken(); // just eat the token
+            declPointer = true;
+        } 
 
         do {
             while (token == tcComma)GetTokenAppend();
@@ -59,16 +62,18 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
                 ParseFunctionHeader(pNewId);
             } else if ((token != tcComma) && (token != tcEndOfFile)) {
-				if(declPointer){
-					pNewId->defn.how = dcReference;
-				}else{
-					pNewId->defn.how = dcVariable;
-				}
+
                 // check for assignment
                 ParseAssignment(pNewId);
+
+                if (declPointer) {
+                    pNewId->defn.how = dcReference;
+                } else {
+                    pNewId->defn.how = dcVariable;
+                }
             }
 
-            if ((pNewId->defn.how == dcVariable) || (pNewId->defn.how = dcReference)) {
+            if ((pNewId->defn.how == dcVariable) || (pNewId->defn.how == dcReference)) {
                 // add to routines variable list
                 if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
                     pRoutineId->defn.routine.locals.pVariableIds = pNewId;

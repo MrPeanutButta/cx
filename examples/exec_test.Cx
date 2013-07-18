@@ -49,7 +49,6 @@ int main(){
 	int *int_pointer = &root;
 
     while(i < 10) {
-
         // store sqrt in array to be sorted
         array[i] = int_sqrt(root);
         root /= i++;

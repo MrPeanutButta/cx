@@ -406,17 +406,17 @@ TType *TExecutor::ExecuteFactor(void) {
             }
         }
             break;
-			case tcBitANDorAddrOf:
-			GetToken(); 
-			switch (pNode->defn.how) {
+        case tcBitANDorAddrOf:
+            GetToken();
+            switch (pNode->defn.how) {
 
-                case dcFunction:                  
+                case dcFunction:
                 case dcConstant:
-				case dcVariable:
-				default:
+                case dcVariable:
+                default:
                     pId = pNode;
 
-					// leave address TOS
+                    // leave address TOS
                     pResultType = ExecuteVariable(pNode, true);
 
                     if (TokenIn(token, tlAssignOps)) {
@@ -427,7 +427,7 @@ TType *TExecutor::ExecuteFactor(void) {
 
                     break;
             }
-			break;
+            break;
         case tcNumber:
         {
             //--Push the number's integer or real value onto the stack.
@@ -530,7 +530,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     Push((pId->defn.how == dcReference) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
 
-    if(!TokenIn(token, tlAssignOps))GetToken();
+    if (!TokenIn(token, tlAssignOps))GetToken();
 
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.

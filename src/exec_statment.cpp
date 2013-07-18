@@ -115,10 +115,13 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     }//--Assignment to variable or formal parameter.
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
-    else if (pTargetId->defn.how != dcType) {
+    else if ((pTargetId->defn.how != dcType)){// && (pTargetId->defn.how != dcReference)) {
         pTargetType = ExecuteVariable(pTargetId, true);
-        pTarget = (TStackItem *) Pop()->__addr;
-    }
+        pTarget = (TStackItem *) Pop();
+    } /*else if(pTargetId->defn.how == dcReference){
+        pTargetType = ExecuteVariable(pTargetId, true);
+        pTarget->__addr = Pop()->__addr;
+    }*/
 
     switch (token) {
         case tcReturn:
@@ -127,10 +130,15 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //--Do the assignment.
-            if (pTargetType == pFloatType) {
+            if (pTargetId->defn.how == dcReference) {
+                void *addr = (void *) &Pop()->__addr;
+                pTarget->__addr = addr;
+            } else if (pTargetType == pFloatType) {
+
                 pTarget->__float = pExprType->Base() == pIntegerType
                         ? Pop()->__int // real := integer
                         : Pop()->__float; // real := real
+
             } else if (((pTargetType->Base() == pIntegerType) &&
                     (pTargetType->Base()->form != fcArray)) ||
                     (pTargetType->Base()->form == fcEnum)) {
@@ -144,6 +152,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
                 //--integer     := integer
                 //--enumeration := enumeration
                 pTarget->__int = value;
+
             } else if (pTargetType->Base() == pCharType) {
                 char value = Pop()->__char;
                 RangeCheck(pTargetType, value);
@@ -480,7 +489,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     }
 }
 
-void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {
+void TExecutor::ExecuteDO(TSymtabNode * pRoutine) {
 
     int breakPoint; // = GetLocationMarker();
     int atLoopStart = CurrentLocation(); // location of loop start in icode;
@@ -514,7 +523,7 @@ void TExecutor::ExecuteDO(TSymtabNode *pRoutine) {
 
 }
 
-void TExecutor::ExecuteWHILE(TSymtabNode *pRoutine) {
+void TExecutor::ExecuteWHILE(TSymtabNode * pRoutine) {
 
     int breakPoint;
     int atLoopStart = CurrentLocation();
@@ -549,7 +558,7 @@ void TExecutor::ExecuteWHILE(TSymtabNode *pRoutine) {
     breakLoop = false;
 }
 
-void TExecutor::ExecuteCompound(TSymtabNode *pRoutine) {
+void TExecutor::ExecuteCompound(TSymtabNode * pRoutine) {
 
     GetToken();
 
@@ -558,7 +567,7 @@ void TExecutor::ExecuteCompound(TSymtabNode *pRoutine) {
     if (token == tcRBracket)GetToken();
 }
 
-void TExecutor::ExecuteIF(TSymtabNode* pRoutine) {
+void TExecutor::ExecuteIF(TSymtabNode * pRoutine) {
     //-- if
     GetToken();
 
@@ -607,7 +616,7 @@ void TExecutor::ExecuteIF(TSymtabNode* pRoutine) {
     }
 }
 
-void TExecutor::ExecuteFOR(TSymtabNode* pRoutineId) {
+void TExecutor::ExecuteFOR(TSymtabNode * pRoutineId) {
 
     int condition = 0;
     //TSymtabNode pControl;
