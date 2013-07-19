@@ -117,7 +117,7 @@ const char *errorMessages[] = {
     "Missing PROGRAM",
     "Already specified in FORWARD",
     "Wrong number of actual parameters",
-    "Invalid VAR parameter",
+    "Invalid reference variable",
     "Not a record variable",
     "Missing variable",
     "Code segment overflow",

@@ -122,7 +122,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
     }
 
-    if ((token == tcIdentifier)) {//|| (token == tcVAR)) {
+    if (token == tcIdentifier) {//|| (token == tcVAR)) {
         Error(errMissingSemicolon);
     } else while (token == tcSemicolon) GetTokenAppend();
     //-- :

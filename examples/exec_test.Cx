@@ -45,14 +45,30 @@ int main(){
     int array[10];
     int i = 0;
     int root = 4096 * 2;
+	int array_addr = 0;
 
-	int *int_pointer = &root;
+	// pointer to first element
+	//int int_pointer = &array[0];
 
     while(i < 10) {
         // store sqrt in array to be sorted
         array[i] = int_sqrt(root);
-        root /= i++;
+        if(i !=0)root /= i++;
     }
+
+	i = 0;
+	while(i < 10){
+		root = array[i];
+		i++;
+	}
+    
+	i = 0;
+	// pointer increment
+	/*while(i < 10){
+		// dereference int *
+		//root = int_pointer;
+		//int_pointer++;
+	}*/
 
     return root;
 }

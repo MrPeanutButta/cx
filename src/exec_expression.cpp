@@ -397,7 +397,6 @@ TType *TExecutor::ExecuteFactor(void) {
                     pResultType = ExecuteVariable(pNode, false);
 
                     if (TokenIn(token, tlAssignOps)) {
-                        Pop();
                         ExecuteAssignment(pId);
                         pResultType = ExecuteVariable(pId, false);
                     }
@@ -413,18 +412,27 @@ TType *TExecutor::ExecuteFactor(void) {
                 case dcFunction:
                 case dcConstant:
                 case dcVariable:
-                default:
                     pId = pNode;
 
-                    // leave address TOS
-                    pResultType = ExecuteVariable(pNode, true);
+					GetToken();
+					// leave address TOS
+					pResultType = ExecuteVariable(pId, true);
 
                     if (TokenIn(token, tlAssignOps)) {
-                        Pop();
                         ExecuteAssignment(pId);
                         pResultType = ExecuteVariable(pId, true);
                     }
+                    break;
+            }
+            break;
+			        
+		case tcStar:
+            GetToken();
+            switch (pNode->defn.how) {
 
+			case dcPointer:
+                    // leave address value TOS
+                    pResultType = ExecuteFactor();
                     break;
             }
             break;
@@ -530,8 +538,6 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     Push((pId->defn.how == dcReference) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
 
-    if (!TokenIn(token, tlAssignOps))GetToken();
-
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.
     int doneFlag = false;
@@ -552,6 +558,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         }
     } while (!doneFlag);
 
+	if (!TokenIn(token, tlAssignOps))GetToken();
 
     //--If addressFlag is false, and the data is not an array
     //--or a record, replace the address at the top of the stack

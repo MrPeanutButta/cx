@@ -32,6 +32,9 @@ using namespace std;
 //--------------------------------------------------------------
 
 TRuntimeStack::TRuntimeStack(void) {
+
+	memset(&stack, 0, sizeof(stack));
+
     tos = &stack[-1]; // point to just below bottom of stack
     pFrameBase = &stack[ 0]; // point to bottom of stack
 
@@ -235,7 +238,7 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     breakLoop = false;
 
     InitializeGlobal(pProgramId);
-    //ExecuteRoutine(pMain);
+    //ExecuteRoutine(pProgramId);
     ExitRoutine(pProgramId);
 
     //--Print the executor's summary.
@@ -271,9 +274,7 @@ void TExecutor::InitializeGlobal(TSymtabNode* pProgramId) {
     currentNestingLevel = 0;
     runStack.ActivateFrame(pNewFrameBase, pProgramId->defn.routine.returnMarker);
 
-    EnterRoutine(pProgramId);
-
-    GetToken();
-    ExecuteCompound(pProgramId);
-
+	EnterRoutine(pProgramId);
+	GetToken();
+	ExecuteStatement(pProgramId);
 }

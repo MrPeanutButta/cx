@@ -115,13 +115,11 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     }//--Assignment to variable or formal parameter.
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
-    else if ((pTargetId->defn.how != dcType)){// && (pTargetId->defn.how != dcReference)) {
-        pTargetType = ExecuteVariable(pTargetId, true);
-        pTarget = (TStackItem *) Pop();
-    } /*else if(pTargetId->defn.how == dcReference){
-        pTargetType = ExecuteVariable(pTargetId, true);
-        pTarget->__addr = Pop()->__addr;
-    }*/
+    else if ((pTargetId->defn.how != dcType)){
+        GetToken();
+		pTargetType = ExecuteVariable(pTargetId, true);
+        pTarget = (TStackItem *) Pop()->__addr;
+    }
 
     switch (token) {
         case tcReturn:
@@ -130,9 +128,8 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //--Do the assignment.
-            if (pTargetId->defn.how == dcReference) {
-                void *addr = (void *) &Pop()->__addr;
-                pTarget->__addr = addr;
+            if (pTargetId->defn.how == dcPointer) {
+				pTarget = (TStackItem *) Pop()->__addr;
             } else if (pTargetType == pFloatType) {
 
                 pTarget->__float = pExprType->Base() == pIntegerType
@@ -175,7 +172,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             //--Do the assignment.
             if (pTargetType == pFloatType) {
-                pTarget->__float++;
+				pTarget->__float++;
             } else if ((pTargetType->Base() == pIntegerType) ||
                     (pTargetType->Base()->form == fcEnum)) {
                 pTarget->__int++;
