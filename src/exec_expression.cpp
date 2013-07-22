@@ -394,50 +394,20 @@ TType *TExecutor::ExecuteFactor(void) {
                     break;
                 default:
                     pId = pNode;
-                    GetToken();
-                    pResultType = ExecuteVariable(pId, false);
+                    GetToken();                 
                     
                     if (TokenIn(token, tlAssignOps)) {
-                        
-                        ExecuteAssignment(pId);
-                        pResultType = ExecuteVariable(pId, false);
-                    }
+                        ExecuteAssignment(pId);                 
+						pResultType = ExecuteVariable(pId, false);
+                    }else{
+						pResultType = ExecuteVariable(pId, false);
+					}
 
                     break;
             }
         }
             break;
-        case tcBitANDorAddrOf:
-            GetToken();
-            switch (pNode->defn.how) {
-
-                case dcFunction:
-                case dcConstant:
-                case dcVariable:
-                    pId = pNode;
-
-					GetToken();
-					// leave address TOS
-					pResultType = ExecuteVariable(pId, true);
-
-                    if (TokenIn(token, tlAssignOps)) {
-                        ExecuteAssignment(pId);
-                        pResultType = ExecuteVariable(pId, true);
-                    }
-                    break;
-            }
-            break;
-			        
-		case tcStar:
-            GetToken();
-            switch (pNode->defn.how) {
-
-			case dcPointer:
-                    // leave address value TOS
-                    pResultType = ExecuteFactor();
-                    break;
-            }
-            break;
+        
         case tcNumber:
         {
             //--Push the number's integer or real value onto the stack.

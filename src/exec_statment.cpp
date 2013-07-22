@@ -52,59 +52,6 @@ void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminato
     } while ((token != terminator) && (token != tcDummy) && (!breakLoop));
 }
 
-TSymtabNode *TExecutor::EnterNew(TSymtabNode *pFunction, const char *pString) {
-    TSymtabNode *pId;
-
-    //--local parameters and variables.
-    for (pId = pFunction->defn.routine.locals.pVariableIds;
-            pId;
-            pId = pId->next) {
-
-        if (pId == pNode) return pNode;
-    }
-
-    pId = pNode;
-
-    if (pFunction && (!pFunction->defn.routine.locals.pVariableIds)) {
-        pFunction->defn.routine.locals.pVariableIds = pId;
-        pFunction->defn.routine.locals.pVariableIds->prev = pId;
-        pId->defn.data.offset = pFunction->defn.routine.parmCount + 1;
-        pFunction->defn.routine.totalLocalSize = pId->pType->size;
-    } else {
-        TSymtabNode *__var = pFunction->defn.routine.locals.pVariableIds->prev;
-        int offset = __var->defn.data.offset + 1;
-        pId->defn.data.offset = offset;
-
-        __var->next = pId;
-        __var->prev = pId;
-
-        pFunction->defn.routine.totalLocalSize += pId->pType->size;
-
-    }
-
-    runStack.AllocateValue(pId);
-
-    return pId;
-}
-
-TSymtabNode *TExecutor::AllocNewNode(TSymtabNode *pRoutineId) {
-    //TSymtabNode *pNode = SearchAvailableScopes(pToken->String());
-    TSymtabNode *pNewId = nullptr;
-
-    if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
-            (pNode->defn.how != dcFunction)) {
-
-        GetToken(); // type
-
-        TSymtabNode *pNewId = nullptr;
-
-        pNewId = EnterNew(pRoutineId, pNode->String());
-
-        //GetToken(); // id
-        return pNewId;
-    }
-}
-
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     TStackItem *pTarget; // runtime stack address of target
     TType *pTargetType = nullptr; // ptr to target type object
@@ -129,9 +76,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
             //--Do the assignment.
-            if (pTargetId->defn.how == dcPointer) {
-                pTarget = (TStackItem *) Pop()->__addr;
-            } else if (pTargetType == pFloatType) {
+            if (pTargetType == pFloatType) {
 
                 pTarget->__float = pExprType->Base() == pIntegerType
                         ? Pop()->__int // real := integer

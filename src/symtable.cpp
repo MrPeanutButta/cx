@@ -416,7 +416,7 @@ TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
         if (pNode) return pNode;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //--------------------------------------------------------------

@@ -23,13 +23,6 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
         GetToken();
 
-        // if tcStar then this is a scalar pointer
-        //bool declPointer = false;
-        //if (token == tcStar){
-            //GetToken(); // just eat the token
-            //declPointer = true;
-        //} 
-
         do {
             while (token == tcComma)GetTokenAppend();
 
@@ -65,43 +58,34 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
                 // check for assignment
                 ParseAssignment(pNewId);
-
-                //if (declPointer) {
-                    //pNewId->defn.how = dcPointer;
-                //} else {
-                    pNewId->defn.how = dcVariable;
-                //}
+                pNewId->defn.how = dcVariable;
             }
 
             if (pNewId->defn.how == dcVariable) {
-                // add to routines variable list
-                if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-                    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-                    pRoutineId->defn.routine.locals.pVariableIds->prev = pNewId;
-                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount;
-                    pRoutineId->defn.routine.totalLocalSize = pNewId->pType->size;
-                } else {
-                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds->prev;
-                    int offset = __var->defn.data.offset + 1;
+                // add variable to variable list
+                if (pRoutineId){
+                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
+                   if(!__var){
+					    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+						pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+				   }else{
+					   while (__var->next)__var = __var->next;
 
-                    __var->next = pNewId;
-                    __var->prev = pNewId;
-
-                    pNewId->defn.data.offset = offset;
-                    pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
-
+						__var->next = pNewId;
+						pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+				   }
                 }
+				// add function to routine list
             } else if (pNewId->defn.how == dcFunction) {
-                if (pRoutineId && (!pRoutineId->defn.routine.locals.pRoutineIds)) {
-                    pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
-                } else {
+                if (pRoutineId){
                     TSymtabNode *__fun = pRoutineId->defn.routine.locals.pRoutineIds;
+					if(!__fun){
+					    pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
+				   }else{
+						while (__fun->next)__fun = __fun->next;
 
-                    while (__fun->next)
-                        __fun = __fun->next;
-
-                    __fun->next = pNewId;
-
+						__fun->next = pNewId;
+				   }
                 }
             }
 

@@ -148,7 +148,7 @@ void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
 //      pId : ptr to symbol table node of variable or parm
 //--------------------------------------------------------------
 
-void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
+void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
     TType *pType = pId->pType->Base(); // ptr to type object of value
 
     if ((pType->form != fcArray) && (pType->form != fcComplex)) {
@@ -164,6 +164,11 @@ void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
         Push(addr);
         pId->pType->array.start_address = addr;
     }
+
+    /* save runstack address.
+	 * this negates the need to calculate the
+	 * variables offset. */
+    pId->runstackItem = TOS();
 }
 
 //--------------------------------------------------------------
@@ -176,10 +181,9 @@ void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
 
 void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
     if ((!pId->pType->IsScalar()) && (pId->defn.how != dcReference)) {
-        TStackItem *pValue = ((TStackItem *) pFrameBase)
-                + frameHeaderSize
-                + pId->defn.data.offset;
-        delete[] pValue->__addr;
+		TStackItem *pValue = pId->runstackItem;
+
+		if(pValue->__addr != nullptr) delete[] pValue->__addr;
     }
 }
 
@@ -214,8 +218,8 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
     }
 
     return functionFlag ? &pHeader->functionValue
-            : ((TStackItem *) pHeader)
-            + frameHeaderSize + pId->defn.data.offset;
+            : pId->runstackItem; /*((TStackItem *) pHeader)
+            + frameHeaderSize + pId->defn.data.offset;*/
 }
 
 //              **************

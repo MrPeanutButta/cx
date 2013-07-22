@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     //--Check the command line arguments.
     if (argc < 2) {
-        cerr << "Usage: Cx <source file>" << endl;
+        cerr << "Usage: " << argv[0] << " <source file>" << endl;
         AbortTranslation(abortInvalidCommandLineArgs);
     }
 

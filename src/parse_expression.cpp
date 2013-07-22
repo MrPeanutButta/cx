@@ -156,61 +156,6 @@ TType *TParser::ParseFactor(void) {
             }
         }
             break;
-        case tcBitANDorAddrOf:
-        {
-            GetTokenAppend(); // just append the token and parse factor
-            TSymtabNode *pNode = SearchAll(pToken->String());
-
-            if (pNode == nullptr)
-                Error(errInvalidReference);
-
-            icode.Put(pNode);
-
-            switch (pNode->defn.how) {
-                case dcFunction:
-                    GetTokenAppend();
-                    pResultType = ParseSubroutineCall(pNode, true);
-                    break;
-                case dcConstant:
-                    GetTokenAppend();
-                    pResultType = pNode->pType;
-                    break;
-                case dcVariable:
-                case dcType:
-                case dcValueParm:
-                case dcMember:
-                    GetTokenAppend();
-                    pResultType = ParseVariable(pNode);
-                    break;
-                default:
-                    Error(errInvalidReference);
-                    break;
-
-            }
-        }
-            break;
-			case tcStar:
-        {
-            GetTokenAppend(); // just append the token and parse factor
-            TSymtabNode *pNode = SearchAll(pToken->String());
-
-            if (pNode == nullptr)
-                Error(errInvalidReference);
-
-            icode.Put(pNode);
-
-            switch (pNode->defn.how) {
-                case dcPointer:
-                    GetTokenAppend();
-                    pResultType = ParseVariable(pNode);
-                    break;
-                default:
-                    Error(errInvalidReference);
-                    break;
-
-            }
-        }
-            break;
         case tcNumber:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());

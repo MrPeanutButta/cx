@@ -95,15 +95,15 @@ public:
     void ActivateFrame(TStackItem *pNewFrameBase, int location);
     void PopFrame(const TSymtabNode *pRoutineId, TIcode *&pIcode);
 
-	TStackItem *Pop(void)       { 
-            return tos--; 
+	TStackItem *Pop(void)       {
+            return tos--;
         }
 
     TStackItem *TOS(void) const {
         return tos;
     }
 
-    void AllocateValue(const TSymtabNode *pId);
+    void AllocateValue(TSymtabNode *pId);
     void DeallocateValue(const TSymtabNode *pId);
 
     TStackItem *GetValueAddress(const TSymtabNode *pId);

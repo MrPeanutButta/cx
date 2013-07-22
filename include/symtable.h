@@ -25,6 +25,8 @@ class TLineNumList;
 class TIcode;
 class TType;
 
+extern union TStackItem;
+
 // for public, private and protected scopes
 typedef map<TTokenCode, TSymtab *> ScopedSymtab;
 
@@ -100,6 +102,9 @@ public:
     int labelIndex;
     int globalFinishLocation;
     bool foundGlobalEnd;
+
+    // pointer to runstack item
+    TStackItem *runstackItem;
 
     TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
     ~TSymtabNode();

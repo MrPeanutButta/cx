@@ -104,14 +104,13 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
         } else if (token == tcIdentifier) Error(errMissingComma);
 
 
-        //if (execFlag) {
+
             //--Loop to assign the offset and type to each
             //--parm id in the sublist.
             for (pParmId = pFirstId; pParmId; pParmId = pParmId->next) {
                 pParmId->defn.data.offset = totalSize++;
                 SetType(pParmId->pType, pParmType);
             }
-        //}
 
         //--Link this sublist to the previous sublist.
         if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;

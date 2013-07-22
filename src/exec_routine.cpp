@@ -29,14 +29,7 @@ void TExecutor::ExecuteRoutine(TSymtabNode *pRoutineId) {
 
     EnterRoutine(pRoutineId);
 
-    //    //--Execute the routine's compound statement.
-    //    // if global we allocate globals and call on main
-    //    if (__MAIN_ENTRY__) {
-    //        ExecuteRoutine(pMain);
-    //    } else {
     ExecuteCompound(pRoutineId);
-    //}
-
 
     ExitRoutine(pRoutineId);
 }
@@ -174,7 +167,8 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
         //--		   parameter's addresss on top of the stack.
         if (pFormalId->defn.how == dcReference) {
             ExecuteVariable(pNode, true);
-
+			pFormalId->runstackItem = TOS();
+			GetToken();
         }//--Value parameter
         else {
             TType *pActualType = ExecuteExpression();
@@ -185,6 +179,7 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
                 //--real formal := integer actual:
                 //--Convert integer value to real.
                 Push(float(Pop()->__int));
+				pFormalId->runstackItem = TOS();
             } else if (!pFormalType->IsScalar()) {
 
                 //--Formal parameter is an array or a record:
@@ -192,11 +187,13 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
                 void *addr = new char[pFormalType->size];
                 memcpy(addr, Pop()->__addr, pFormalType->size);
                 Push(addr);
+				pFormalId->runstackItem = TOS();
             } else {
 
                 //--Range check an integer or enumeration
                 //--formal parameter.
                 RangeCheck(pFormalType, TOS()->__int);
+				pFormalId->runstackItem = TOS();
             }
         }
     }
@@ -205,7 +202,7 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
 void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
     ExecuteAssignment(pRoutine);
-    GoTo(pRoutine->defn.routine.returnMarker - 1);
+    GoTo(pRoutine->defn.routine.returnMarker);
 
     GetToken();
 }
