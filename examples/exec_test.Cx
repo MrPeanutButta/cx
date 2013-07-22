@@ -42,33 +42,15 @@ int int_sqrt(int num) {
 }
 
 int main(){
-    int array[10];
     int i = 0;
-    int root = 4096 * 2;
-	int array_addr = 0;
+    int root = 4096 * 4;
+    int array_addr = 0;
+    int array[10];
 
-	// pointer to first element
-	//int int_pointer = &array[0];
-
-    while(i < 10) {
-        // store sqrt in array to be sorted
-        array[i] = int_sqrt(root);
-        if(i !=0)root /= i++;
+    //i = 1;
+    while(i < 10){
+        array[i] = int_sqrt(root / i++);
     }
-
-	i = 0;
-	while(i < 10){
-		root = array[i];
-		i++;
-	}
-    
-	i = 0;
-	// pointer increment
-	/*while(i < 10){
-		// dereference int *
-		//root = int_pointer;
-		//int_pointer++;
-	}*/
 
     return root;
 }

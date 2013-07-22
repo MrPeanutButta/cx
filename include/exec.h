@@ -95,7 +95,11 @@ public:
     void ActivateFrame(TStackItem *pNewFrameBase, int location);
     void PopFrame(const TSymtabNode *pRoutineId, TIcode *&pIcode);
 
-	TStackItem *Pop(void)       { return tos--; }
+	TStackItem *Pop(void)       { 
+            TStackItem *t = tos;
+            --tos;
+            return t; 
+        }
 
     TStackItem *TOS(void) const {
         return tos;

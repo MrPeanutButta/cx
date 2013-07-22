@@ -1,5 +1,6 @@
 #include <iostream>
 #include "exec.h"
+#include "common.h"
 
 using namespace std;
 
@@ -115,9 +116,9 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     }//--Assignment to variable or formal parameter.
         //--ExecuteVariable leaves the target address on
         //--top of the runtime stack.
-    else if ((pTargetId->defn.how != dcType)){
-        GetToken();
-		pTargetType = ExecuteVariable(pTargetId, true);
+    else if ((pTargetId->defn.how != dcType)) {
+        if (!TokenIn(token, tlAssignOps))GetToken();
+        pTargetType = ExecuteVariable(pTargetId, true);
         pTarget = (TStackItem *) Pop()->__addr;
     }
 
@@ -129,7 +130,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             pExprType = ExecuteExpression();
             //--Do the assignment.
             if (pTargetId->defn.how == dcPointer) {
-				pTarget = (TStackItem *) Pop()->__addr;
+                pTarget = (TStackItem *) Pop()->__addr;
             } else if (pTargetType == pFloatType) {
 
                 pTarget->__float = pExprType->Base() == pIntegerType
@@ -172,7 +173,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             //--Do the assignment.
             if (pTargetType == pFloatType) {
-				pTarget->__float++;
+                pTarget->__float++;
             } else if ((pTargetType->Base() == pIntegerType) ||
                     (pTargetType->Base()->form == fcEnum)) {
                 pTarget->__int++;
@@ -532,9 +533,10 @@ void TExecutor::ExecuteWHILE(TSymtabNode * pRoutine) {
         breakPoint = GetLocationMarker();
         GetToken();
 
+        GetToken(); //-- (
         ExecuteExpression();
         condition = Pop()->__int;
-
+        GetToken(); //-- )
         if (condition != 0) {
             ExecuteStatement(pRoutine);
 
