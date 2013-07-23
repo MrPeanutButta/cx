@@ -161,6 +161,7 @@ TToken *TIcode::Get(void)
     switch (token) {
 	case tcIdentifier:
 	case tcNumber:
+        case tcChar:
 	case tcString:
 	    pNode = GetSymtabNode();
 	    strcpy(pToken->string, pNode->String());
