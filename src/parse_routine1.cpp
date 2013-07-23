@@ -24,7 +24,12 @@ extern TSymtabNode *pProgram_ptr;
 TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     //--Enter the next nesting level and open a new scope
     //--for the function.
-    symtabStack.EnterScope();
+	if(pFunctionNode->defn.routine.which == rcForward){
+		currentNestingLevel++;
+		symtabStack.SetCurrentSymtab(pFunctionNode->defn.routine.pSymtab);
+	}else{
+		symtabStack.EnterScope();
+	}
 
     //-- (
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -32,19 +37,24 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     int parmCount; // count of formal parms
     int totalParmSize; // total byte size of all parms
 
-    TSymtabNode *pParmList = ParseFormalParmList(parmCount,
-            totalParmSize);
+	if(pFunctionNode->defn.routine.which != rcForward){
+		TSymtabNode *pParmList = ParseFormalParmList(parmCount,
+				totalParmSize);
 
-    pFunctionNode->defn.routine.parmCount = parmCount;
-    pFunctionNode->defn.routine.totalParmSize = totalParmSize;
-    pFunctionNode->defn.routine.locals.pParmsIds = pParmList;
+		pFunctionNode->defn.routine.parmCount = parmCount;
+		pFunctionNode->defn.routine.totalParmSize = totalParmSize;
+		pFunctionNode->defn.routine.locals.pParmsIds = pParmList;
+		pFunctionNode->defn.how = ::dcFunction;
+	}else{
+		// skip params because we already know them
+		while(token != tcRParen)GetToken();
+	}
 
     //--Not forwarded.
-    pFunctionNode->defn.routine.locals.pConstantIds = NULL;
-    pFunctionNode->defn.routine.locals.pTypeIds = NULL;
-    pFunctionNode->defn.routine.locals.pVariableIds = NULL;
-    pFunctionNode->defn.routine.locals.pRoutineIds = NULL;
-    pFunctionNode->defn.how = ::dcFunction;
+    pFunctionNode->defn.routine.locals.pConstantIds = nullptr;
+    pFunctionNode->defn.routine.locals.pTypeIds = nullptr;
+    pFunctionNode->defn.routine.locals.pVariableIds = nullptr;
+    pFunctionNode->defn.routine.locals.pRoutineIds = nullptr;
 
     //-- )
     CondGetTokenAppend(tcRParen, errMissingRightParen);

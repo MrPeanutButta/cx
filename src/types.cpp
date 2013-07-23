@@ -204,6 +204,7 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 
     pMain = pSymtab->Enter("main", dcFunction);
     pMain->defn.routine.which = rcForward;
+	pMain->defn.routine.pSymtab = new TSymtab;
 
     TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);

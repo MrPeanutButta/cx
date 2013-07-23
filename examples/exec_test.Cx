@@ -14,53 +14,64 @@
  *
  */
 
+int gcd(int x,  int y);
+int int_sqrt(int num);
+int inc_var(int &num);
 
 /* Cx standard math functions.
  *
  */
-
-//int int_sqrt(int num) {
-//    int res = 0;
-//    int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
-//
-//    // "bit" starts at the highest power of four <= the argument.
-//    while (bit > num)
-//        bit >>= 2;
-//
-//    while (bit != 0) {
-//        if (num >= res + bit) {
-//            num -= res + bit;
-//            res = (res >> 1) + bit;
-//        }else{
-//            res >>= 1;
-//        }
-//
-//        bit >>= 2;
-//    }
-//
-//    return res;
-//}
-//
-//int inc_var(int &num){
-//	return num++;
-//}
-
 int main(){
- //   int i = 0;
- //   int root = 4096 * 4;
+    int i = 0;
+    int root = 4096;
+	int c_gcd = 0;
+    int array[10];
+	int test = root * 2;
 
- //   int array[10];
-	//int test = root * 2;
-	char a = 'a';
+	c_gcd = gcd(root, test);
 
     do{
-		/*array[i] = int_sqrt(root);
-		root = int_sqrt(inc_var(test));
+		array[i] = int_sqrt(root);
+		root = int_sqrt(test);
+	}while (i++ < 10);
 
-		if(i == 10) i = 0;
-		else i++;*/
+    return root;
+}
 
-	}while (a++ < 'z');
+// Euclidean Greatest Common Divisor (GCD) algorithm
+int gcd(int x,  int y){
+	if(x == y){
+		return x;
+	}else if(x < y){
+		return gcd(x, y - x);
+	}else{
+		return gcd(x - y, y);
+	}
+}
 
-    //return root;
+// Binary numeral system (base 2) square root (integer)
+int int_sqrt(int num) {
+    int res = 0;
+    int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
+
+    // "bit" starts at the highest power of four <= the argument.
+    while (bit > num)
+        bit >>= 2;
+
+    while (bit != 0) {
+        if (num >= res + bit) {
+            num -= res + bit;
+            res = (res >> 1) + bit;
+        }else{
+            res >>= 1;
+        }
+
+        bit >>= 2;
+    }
+
+    return res;
+}
+
+int inc_var(int &num){
+	return num++;
 }

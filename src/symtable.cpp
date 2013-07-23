@@ -228,13 +228,13 @@ void TSymtabNode::PrintType(void) const {
 
 void TSymtabNode::Convert(TSymtabNode *vpNodes[]) {
     //--First, convert the left subtree.
-    if (left) left->Convert(vpNodes);
+    if (left != nullptr) left->Convert(vpNodes);
 
     //--Convert the node.
     vpNodes[xNode] = this;
 
     //--Finally, convert the right subtree.
-    if (right) right->Convert(vpNodes);
+    if (right != nullptr) right->Convert(vpNodes);
 }
 
 //              ******************
