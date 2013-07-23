@@ -105,12 +105,12 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
 
 
-            //--Loop to assign the offset and type to each
-            //--parm id in the sublist.
-            for (pParmId = pFirstId; pParmId; pParmId = pParmId->next) {
-                pParmId->defn.data.offset = totalSize++;
-                SetType(pParmId->pType, pParmType);
-            }
+        //--Loop to assign the offset and type to each
+        //--parm id in the sublist.
+        for (pParmId = pFirstId; pParmId; pParmId = pParmId->next) {
+            pParmId->defn.data.offset = totalSize++;
+            SetType(pParmId->pType, pParmType);
+        }
 
         //--Link this sublist to the previous sublist.
         if (pPrevSublistLastId) pPrevSublistLastId->next = pFirstId;
@@ -252,10 +252,10 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         TSymtabNode *pActualId = Find(pToken->String());
 
         // skip type declaration
-        if(pActualId->defn.how == ::dcType){
+        if (pActualId->defn.how == ::dcType) {
             GetToken();
 
-            if(token == tcBitANDorAddrOf)GetToken();
+            if (token == tcBitANDorAddrOf)GetToken();
 
             pActualId = Find(pToken->String());
         }

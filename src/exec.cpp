@@ -33,7 +33,7 @@ using namespace std;
 
 TRuntimeStack::TRuntimeStack(void) {
 
-	memset(&stack, 0, sizeof(stack));
+    memset(&stack, 0, sizeof (stack));
 
     tos = &stack[-1]; // point to just below bottom of stack
     pFrameBase = &stack[ 0]; // point to bottom of stack
@@ -166,8 +166,8 @@ void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
     }
 
     /* save runstack address.
-	 * this negates the need to calculate the
-	 * variables offset. */
+     * this negates the need to calculate the
+     * variables offset. */
     pId->runstackItem = TOS();
 }
 
@@ -181,9 +181,9 @@ void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
 
 void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
     if ((!pId->pType->IsScalar()) && (pId->defn.how != dcReference)) {
-		TStackItem *pValue = pId->runstackItem;
+        TStackItem *pValue = pId->runstackItem;
 
-		if(pValue->__addr != nullptr) delete[] pValue->__addr;
+        if (pValue->__addr != nullptr) delete[] pValue->__addr;
     }
 }
 
@@ -278,7 +278,7 @@ void TExecutor::InitializeGlobal(TSymtabNode* pProgramId) {
     currentNestingLevel = 0;
     runStack.ActivateFrame(pNewFrameBase, pProgramId->defn.routine.returnMarker);
 
-	EnterRoutine(pProgramId);
-	GetToken();
-	ExecuteStatement(pProgramId);
+    EnterRoutine(pProgramId);
+    GetToken();
+    ExecuteStatement(pProgramId);
 }

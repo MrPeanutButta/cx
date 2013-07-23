@@ -136,23 +136,23 @@ class TParser {
         icode.Put(token);
     }
 
-    void InsertLineMarker (void) { icode.InsertLineMarker(); }
-
-    int PutLocationMarker(void)
-    {
-	return icode.PutLocationMarker();
+    void InsertLineMarker(void) {
+        icode.InsertLineMarker();
     }
 
-    void FixupLocationMarker(int location)
-    {
-	icode.FixupLocationMarker(location);
+    int PutLocationMarker(void) {
+        return icode.PutLocationMarker();
     }
 
-    TSymtabNode *SearchLocal(const char *pString){
+    void FixupLocationMarker(int location) {
+        icode.FixupLocationMarker(location);
+    }
+
+    TSymtabNode *SearchLocal(const char *pString) {
         return symtabStack.SearchLocal(pString);
     }
 
-    TSymtabNode *SearchAvailableScopes(const char *pString) const{
+    TSymtabNode *SearchAvailableScopes(const char *pString) const {
         return symtabStack.SearchAvailableScopes(pString);
     }
 
@@ -171,12 +171,12 @@ class TParser {
     }
 
     TSymtabNode *EnterLocal(const char *pString,
-            TDefnCode dc = dcUndefined)  {
+            TDefnCode dc = dcUndefined) {
         return symtabStack.EnterLocal(pString, dc);
     }
 
     TSymtabNode *EnterNewLocal(const char *pString,
-            TDefnCode dc = dcUndefined)  {
+            TDefnCode dc = dcUndefined) {
         return symtabStack.EnterNewLocal(pString, dc);
     }
 

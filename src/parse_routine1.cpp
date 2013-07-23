@@ -59,7 +59,7 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
             icode.Put(__MAIN_ENTRY__);
             icode.Put(tcSemicolon);
             icode.Put(tcRBracket);
-            
+
             //--Set the program's icode.
             pProgram_ptr->defn.routine.pIcode = new TIcode(icode);
         }

@@ -16,7 +16,7 @@ void TParser::ParseDirective(TSymtabNode *pRoutineId) {
             delete parser;
             GetTokenAppend();
         }
-        break;
+            break;
     }
 
 }

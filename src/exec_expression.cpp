@@ -394,20 +394,20 @@ TType *TExecutor::ExecuteFactor(void) {
                     break;
                 default:
                     pId = pNode;
-                    GetToken();                 
-                    
+                    GetToken();
+
                     if (TokenIn(token, tlAssignOps)) {
-                        ExecuteAssignment(pId);                 
-						pResultType = ExecuteVariable(pId, false);
-                    }else{
-						pResultType = ExecuteVariable(pId, false);
-					}
+                        ExecuteAssignment(pId);
+                        pResultType = ExecuteVariable(pId, false);
+                    } else {
+                        pResultType = ExecuteVariable(pId, false);
+                    }
 
                     break;
             }
         }
             break;
-        
+
         case tcNumber:
         {
             //--Push the number's integer or real value onto the stack.
@@ -531,7 +531,7 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         }
     } while (!doneFlag);
 
-	//if (!TokenIn(token, tlAssignOps))GetToken();
+    //if (!TokenIn(token, tlAssignOps))GetToken();
 
     //--If addressFlag is false, and the data is not an array
     //--or a record, replace the address at the top of the stack

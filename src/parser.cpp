@@ -63,7 +63,7 @@ TSymtabNode *TParser::Parse(void) {
 
     GetTokenAppend();
 
-    pProgramId->defn.routine.pSymtab = &globalSymtab;//symtabStack.ExitScope();
+    pProgramId->defn.routine.pSymtab = &globalSymtab; //symtabStack.ExitScope();
 
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);

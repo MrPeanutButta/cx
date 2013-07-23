@@ -36,15 +36,15 @@ TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode)
     pArrayNode->defn.how = dcVariable;
 
     //add to routines variable list
-    if (pRoutineId){
+    if (pRoutineId) {
         TSymtabNode *__array = pRoutineId->defn.routine.locals.pTypeIds;
-		if(!__array){
-			pRoutineId->defn.routine.locals.pTypeIds = pArrayNode;
-		}else{
-			while (__array->next)__array = __array->next;
+        if (!__array) {
+            pRoutineId->defn.routine.locals.pTypeIds = pArrayNode;
+        } else {
+            while (__array->next)__array = __array->next;
 
-				__array->next = pArrayNode;
-		}
+            __array->next = pArrayNode;
+        }
     }
 
     //--If the type object doesn't have a name yet,

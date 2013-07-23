@@ -87,11 +87,11 @@ void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
 
     GetTokenAppend(); // while
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
-    
+
     CheckBoolean(ParseExpression());
 
     CondGetTokenAppend(tcRParen, errMissingRightParen);
-    
+
     ParseStatement(pRoutineId);
 
     FixupLocationMarker(breakPoint);
