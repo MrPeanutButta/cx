@@ -155,7 +155,7 @@ void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
         if (pType == pIntegerType) Push(0);
         else if (pType == pFloatType) Push(0.0f);
         else if (pType == pBooleanType) Push(0);
-        else if (pType == pCharType) Push(0);
+        else if (pType == pCharType) Push('\0');
         else if (pType->form == fcEnum) Push(0);
     } else {
 

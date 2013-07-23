@@ -423,10 +423,11 @@ TType *TExecutor::ExecuteFactor(void) {
         case tcChar:
         case tcString:
         {
+            //GetToken();
             //--Push either a character or a string address onto the
             //--runtime stack, depending on the string length.
-            int length = strlen(pNode->String()) - 2; // skip quotes
-            if (length == 1) {
+            //int length = strlen(pNode->String()) - 2; // skip quotes
+            if (pNode->strLength == 1) {
 
                 //--Character
                 Push(pNode->defn.constant.value.__char);

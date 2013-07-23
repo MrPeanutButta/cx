@@ -63,29 +63,29 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
             if (pNewId->defn.how == dcVariable) {
                 // add variable to variable list
-                if (pRoutineId){
+                if (pRoutineId) {
                     TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
-                   if(!__var){
-					    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-						pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
-				   }else{
-					   while (__var->next)__var = __var->next;
+                    if (!__var) {
+                        pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+                        pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+                    } else {
+                        while (__var->next)__var = __var->next;
 
-						__var->next = pNewId;
-						pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
-				   }
+                        __var->next = pNewId;
+                        pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+                    }
                 }
-				// add function to routine list
+                // add function to routine list
             } else if (pNewId->defn.how == dcFunction) {
-                if (pRoutineId){
+                if (pRoutineId) {
                     TSymtabNode *__fun = pRoutineId->defn.routine.locals.pRoutineIds;
-					if(!__fun){
-					    pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
-				   }else{
-						while (__fun->next)__fun = __fun->next;
+                    if (!__fun) {
+                        pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
+                    } else {
+                        while (__fun->next)__fun = __fun->next;
 
-						__fun->next = pNewId;
-				   }
+                        __fun->next = pNewId;
+                    }
                 }
             }
 

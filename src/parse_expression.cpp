@@ -183,33 +183,34 @@ TType *TParser::ParseFactor(void) {
         {
 
             char *pString = pToken->String();
-            TSymtabNode *pNode = SearchAll(pString);
+            TSymtabNode *pNode = SearchAll(pToken->String());
 
             if (!pNode) {
-                pNode = EnterLocal(pString);
+                pNode = EnterLocal(pToken->String());
+
+
+                //pString = pNode->String();
+                //int length = strlen(pString) - 2;
+                int length = pNode->strLength = strlen(pString) - 2;
+                //pResultType = length == 1 ?
+                // pCharType : new TType(length);
+
+                SetType(pNode->pType, pCharType);
+
+                if (length == 1) {
+                    pNode->defn.constant.value.__char = pString[1];
+                } else {
+                    pNode->defn.constant.value.pString = &pString[1];
+                    pNode->pType->form = fcArray;
+                    pNode->pType->array.elmtCount = length;
+                    pNode->pType->array.maxIndex = (pNode->pType->array.elmtCount - 1);
+                    pNode->pType->array.minIndex = 0;
+                    pNode->pType->array.pElmtType = pCharType;
+                    pNode->pType->array.pIndexType = pIntegerType;
+                }
+
+                pResultType = pNode->pType;
             }
-
-            pString = pNode->String();
-            int length = strlen(pString) - 2;
-
-            //pResultType = length == 1 ?
-            // pCharType : new TType(length);
-
-            SetType(pNode->pType, pCharType);
-
-            if (length == 1) {
-                pNode->defn.constant.value.__char = pString[1];
-            } else {
-                pNode->defn.constant.value.pString = &pString[1];
-                pNode->pType->form = fcArray;
-                pNode->pType->array.elmtCount = length;
-                pNode->pType->array.maxIndex = (pNode->pType->array.elmtCount - 1);
-                pNode->pType->array.minIndex = 0;
-                pNode->pType->array.pElmtType = pCharType;
-                pNode->pType->array.pIndexType = pIntegerType;
-            }
-
-            pResultType = pNode->pType;
             icode.Put(pNode);
 
             GetTokenAppend();
@@ -248,7 +249,7 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
         case dcVariable:
         case dcValueParm:
         case dcReference:
-		case dcPointer:
+        case dcPointer:
         case dcFunction:
         case dcUndefined:
             break;

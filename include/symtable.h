@@ -101,6 +101,7 @@ public:
     int level;
     int labelIndex;
     int globalFinishLocation;
+    int strLength;
     bool foundGlobalEnd;
 
     // pointer to runstack item
