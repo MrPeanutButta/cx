@@ -140,9 +140,11 @@ TType *TParser::ParseFactor(void) {
                     pResultType = pNode->pType;
                     break;
 
-
-                case dcVariable:
                 case dcType:
+                    GetTokenAppend();
+                    pResultType = pNode->pType;
+                    break;
+                case dcVariable:
                 case dcValueParm:
                 case dcReference:
                 case dcMember:
@@ -221,8 +223,7 @@ TType *TParser::ParseFactor(void) {
             GetTokenAppend();
             pResultType = ParseExpression();
 
-            if (token == tcRParen) GetTokenAppend();
-            else Error(errMissingRightParen);
+            CondGetTokenAppend(tcRParen, errMissingRightParen);
             break;
         case tcLogicNOT:
             GetTokenAppend();
@@ -279,12 +280,24 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
 
     if (TokenIn(token, tlAssignOps)) {
         TType *pExprType = nullptr;
+        TType *pExprTypeCastFollow = nullptr;
 
         switch (token) {
             case tcEqual:
             {
                 GetTokenAppend();
                 pExprType = ParseExpression();
+
+                // if not semicolon, this may be an expression following a cast.
+                // Keep pExprType same type, but we need to parse the expr.
+                if (token != tcSemicolon) {
+                    pExprTypeCastFollow = ParseExpression();
+
+                    // check if compatible
+                    CheckAssignmentTypeCompatible(pExprType, pExprTypeCastFollow,
+                            errIncompatibleAssignment);
+                }
+
                 CheckAssignmentTypeCompatible(pResultType, pExprType,
                         errIncompatibleAssignment);
             }

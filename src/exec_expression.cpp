@@ -479,12 +479,12 @@ TType *TExecutor::ExecuteFactor(void) {
 
 TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
     TType *pType = pId->pType;
-    TDataValue value = pId->defn.constant.value;
+    const TDataValue *value = &pId->defn.constant.value;
 
-    if (pType == pFloatType) Push(value.__float);
-    else if (pType == pCharType) Push(value.__char);
-    else if (pType->form == fcArray) Push(value.pString);
-    else Push(value.__int);
+    if (pType == pFloatType) Push(value->__float);
+    else if (pType == pCharType) Push(value->__char);
+    else if (pType->form == fcArray) Push(value->pString);
+    else Push(value->__int);
 
     GetToken();
     TraceDataFetch(pId, TOS(), pType);

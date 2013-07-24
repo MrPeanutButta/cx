@@ -86,7 +86,8 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
                     (pTargetType->Base()->form != fcArray)) ||
                     (pTargetType->Base()->form == fcEnum)) {
 
-                int value = pExprType->Base() == pIntegerType
+                int value = ((pExprType->Base() == pIntegerType) ||
+                             (pExprType->Base() == pBooleanType))
                         ? Pop()->__int // real := integer
                         : Pop()->__float; // real := real
 

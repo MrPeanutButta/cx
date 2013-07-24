@@ -72,9 +72,9 @@ int main(int argc, char *argv[]) {
     if (errorCount == 0) {
         vpSymtabs = new TSymtab *[cntSymtabs];
         for (TSymtab *pSt = pSymtabList; pSt; pSt = pSt->Next()) {
-            if(pSt != nullptr){
-				if(pSt->Root() != nullptr)pSt->Convert(vpSymtabs);
-			}
+            if (pSt != nullptr) {
+                if (pSt->Root() != nullptr)pSt->Convert(vpSymtabs);
+            }
         }
 
         std::cin.get();

@@ -24,12 +24,7 @@ extern TSymtabNode *pProgram_ptr;
 TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     //--Enter the next nesting level and open a new scope
     //--for the function.
-	if(pFunctionNode->defn.routine.which == rcForward){
-		currentNestingLevel++;
-		symtabStack.SetCurrentSymtab(pFunctionNode->defn.routine.pSymtab);
-	}else{
-		symtabStack.EnterScope();
-	}
+    symtabStack.EnterScope();
 
     //-- (
     CondGetTokenAppend(tcLParen, errMissingLeftParen);
@@ -37,18 +32,13 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     int parmCount; // count of formal parms
     int totalParmSize; // total byte size of all parms
 
-	if(pFunctionNode->defn.routine.which != rcForward){
-		TSymtabNode *pParmList = ParseFormalParmList(parmCount,
-				totalParmSize);
+    TSymtabNode *pParmList = ParseFormalParmList(parmCount,
+            totalParmSize);
 
-		pFunctionNode->defn.routine.parmCount = parmCount;
-		pFunctionNode->defn.routine.totalParmSize = totalParmSize;
-		pFunctionNode->defn.routine.locals.pParmsIds = pParmList;
-		pFunctionNode->defn.how = ::dcFunction;
-	}else{
-		// skip params because we already know them
-		while(token != tcRParen)GetToken();
-	}
+    pFunctionNode->defn.routine.parmCount = parmCount;
+    pFunctionNode->defn.routine.totalParmSize = totalParmSize;
+    pFunctionNode->defn.routine.locals.pParmsIds = pParmList;
+    pFunctionNode->defn.how = ::dcFunction;
 
     //--Not forwarded.
     pFunctionNode->defn.routine.locals.pConstantIds = nullptr;

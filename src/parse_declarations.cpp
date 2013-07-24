@@ -19,7 +19,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
         ParseComplexType(pRoutineId, pNode);
         // predefined type name found
     } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
-		(pNode->defn.how != dcFunction) && (pNode->pType->form != fcArray)) {
+            (pNode->defn.how != dcFunction) && (pNode->pType->form != fcArray)) {
 
         GetToken();
 
@@ -42,7 +42,6 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 icode.Put(pNewId);
             }
 
-			if(pNewId->defn.how != dcFunction){
             // set type
             SetType(pNewId->pType, pNode->pType);
 
@@ -61,7 +60,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                 ParseAssignment(pNewId);
                 pNewId->defn.how = dcVariable;
             }
-			}
+
             if (pNewId->defn.how == dcVariable) {
                 // add variable to variable list
                 if (pRoutineId) {
@@ -83,11 +82,7 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
                     if (!__fun) {
                         pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
                     } else {
-                        while (__fun->next){
-							// return if function already defined
-							if(pNewId == __fun) return;
-							__fun = __fun->next;
-						}
+                        while (__fun->next)__fun = __fun->next;
 
                         __fun->next = pNewId;
                     }

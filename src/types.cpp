@@ -204,7 +204,6 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
 
     pMain = pSymtab->Enter("main", dcFunction);
     pMain->defn.routine.which = rcForward;
-	pMain->defn.routine.pSymtab = new TSymtab;
 
     TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
@@ -248,8 +247,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     pBooleanType->enumeration.max = 1;
     pBooleanType->enumeration.pConstIds = pFalseId;
 
-    pFalseId->defn.constant.value.__bool = false;
-    pTrueId->defn.constant.value.__bool = true;
+    pFalseId->defn.constant.value.__int = 0;
+    pTrueId->defn.constant.value.__int = 1;
 
     SetType(pTrueId->pType, pBooleanType);
     SetType(pFalseId->pType, pBooleanType);

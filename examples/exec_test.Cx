@@ -14,29 +14,13 @@
  *
  */
 
-int gcd(int x,  int y);
-int int_sqrt(int num);
-int inc_var(int &num);
+//int gcd(int x,  int y);
+//int int_sqrt(int num);
+//int inc_var(int &num);
 
 /* Cx standard math functions.
  *
  */
-int main(){
-    int i = 0;
-    int root = 4096;
-	int c_gcd = 0;
-    int array[10];
-	int test = root * 2;
-
-	c_gcd = gcd(root, test);
-
-    do{
-		array[i] = int_sqrt(root);
-		root = int_sqrt(test);
-	}while (i++ < 10);
-
-    return root;
-}
 
 // Euclidean Greatest Common Divisor (GCD) algorithm
 int gcd(int x,  int y){
@@ -73,5 +57,28 @@ int int_sqrt(int num) {
 }
 
 int inc_var(int &num){
-	return num++;
+    return num++;
+}
+
+int main(){
+    int i = 0;
+    int root = 4096;
+    int c_gcd = 0;
+    int array[10];
+    int test = root * 2;
+
+    bool test_bool = true;
+
+    float test_float = 5.5;
+
+    i = (int) test_float;
+
+    c_gcd = gcd(root, test);
+
+    do{
+            array[i] = int_sqrt(root);
+            root = int_sqrt(test);
+	}while (i++ < 10);
+
+    return root;
 }
