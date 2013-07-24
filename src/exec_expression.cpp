@@ -392,6 +392,10 @@ TType *TExecutor::ExecuteFactor(void) {
                 case dcConstant:
                     pResultType = ExecuteConstant(pNode);
                     break;
+				case dcType:
+					pResultType = pNode->pType;
+					GetToken();
+					break;
                 default:
                     pId = pNode;
                     GetToken();

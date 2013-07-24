@@ -80,5 +80,7 @@ int main(){
             root = int_sqrt(test);
 	}while (i++ < 10);
 
+	test_float = (float) root;
+
     return root;
 }

@@ -53,9 +53,10 @@ void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminato
 }
 
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
-    TStackItem *pTarget; // runtime stack address of target
+    TStackItem *pTarget = nullptr; // runtime stack address of target
     TType *pTargetType = nullptr; // ptr to target type object
-    TType *pExprType; // ptr to expression type object
+    TType *pExprType = nullptr; // ptr to expression type object
+	TType *pExprType2 = nullptr; // reserved for casting
 
     if (pTargetId->defn.how == dcFunction) {
         pTargetType = pTargetId->pType;
@@ -75,27 +76,45 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
         {
             GetToken();
             pExprType = ExecuteExpression();
+
+			if(token != tcSemicolon) pExprType2 = ExecuteExpression();
+
             //--Do the assignment.
             if (pTargetType == pFloatType) {
 
-                pTarget->__float = pExprType->Base() == pIntegerType
+				if(!pExprType2){
+                pTarget->__float =
+					(pExprType->Base() == pIntegerType)
                         ? Pop()->__int // real := integer
                         : Pop()->__float; // real := real
-
+				} else {
+					pTarget->__float = 
+						(pExprType2->Base() == pIntegerType)
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+				}
             } else if (((pTargetType->Base() == pIntegerType) &&
                     (pTargetType->Base()->form != fcArray)) ||
                     (pTargetType->Base()->form == fcEnum)) {
+						int value(0);
 
-                int value = ((pExprType->Base() == pIntegerType) ||
+						if(!pExprType2){
+                value = ((pExprType->Base() == pIntegerType) ||
                              (pExprType->Base() == pBooleanType))
                         ? Pop()->__int // real := integer
                         : Pop()->__float; // real := real
+						} else {
+							value = ((pExprType2->Base() == pIntegerType) ||
+                             (pExprType2->Base() == pBooleanType))
+                        ? Pop()->__int // real := integer
+                        : Pop()->__float; // real := real
+						}
 
                 RangeCheck(pTargetType, value);
 
                 //--integer     := integer
                 //--enumeration := enumeration
-                pTarget->__int = value;
+				pTarget->__int = value;
 
             } else if (pTargetType->Base() == pCharType) {
                 char value = Pop()->__char;
@@ -214,6 +233,10 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
         {
             GetToken();
             pExprType = ExecuteExpression();
+
+			// if not semicolon, this may be an expression following a cast.
+			if(token != tcSemicolon)ExecuteExpression();
+
             //--Do the assignment.
             if (pTargetType == pFloatType) {
                 pTarget->__float *= pExprType->Base() == pIntegerType
@@ -454,9 +477,7 @@ void TExecutor::ExecuteDO(TSymtabNode * pRoutine) {
         }
 
         GetToken(); //while
-        //GetToken();
         ExecuteExpression(); // (condition)
-        //GetToken();
         condition = Pop()->__int;
 
         if (condition != 0) this->GoTo(atLoopStart);
