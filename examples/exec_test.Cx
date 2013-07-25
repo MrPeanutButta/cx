@@ -23,7 +23,7 @@
  */
 
 // Euclidean Greatest Common Divisor (GCD) algorithm
-int gcd(int x,  int y){
+int igcd(int x,  int y){
 	if(x == y){
 		return x;
 	}else if(x < y){
@@ -34,7 +34,7 @@ int gcd(int x,  int y){
 }
 
 // Binary numeral system (base 2) square root (integer)
-int int_sqrt(int num) {
+int isqrt(int num) {
     int res = 0;
     int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
 
@@ -71,16 +71,12 @@ int main(){
 
     float test_float = 5.5;
 
-    i = (int) test_float;
-
-    c_gcd = gcd(root, test);
+    c_gcd = igcd(root, test);
 
     do{
-            array[i] = int_sqrt(root);
-            root = int_sqrt(test);
+            array[i] = isqrt(root);
+            root = isqrt(test);
 	}while (i++ < 10);
-
-	test_float = (float) root;
 
     return root;
 }
