@@ -42,7 +42,6 @@ enum TTokenCode {
     tcBitANDorAddrOf, // &
     tcBitOR, // |
     tcBitNOT, // ~
-    tcBitNotEqual, // ~=
     tcBitXOREqual, // ^=
     tcBitANDEqual, // &=
     tcBitOREqual, // |=

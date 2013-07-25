@@ -13,16 +13,13 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
     }
 
     TSymtabNode *pNode = Find(pToken->String());
-    /*if (pNode) {
-        icode.Put(pNode);
-    } else Error(::errUndefinedIdentifier);*/
 
     // if complex then this is an object
     if (pNode->pType->form == fcComplex) {
         ParseComplexType(pRoutineId, pNode);
         // predefined type name found
     } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
-            (pNode->defn.how != dcFunction)) {
+            (pNode->defn.how != dcFunction) && (pNode->pType->form != fcArray)) {
 
         GetToken();
 
@@ -37,10 +34,6 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
              * check if forwarded */
             if (pNewId != nullptr) {
                 if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
-
-                    if (!pProgram_ptr->foundGlobalEnd)
-                        pProgram_ptr->foundGlobalEnd = true;
-
                     GetTokenAppend();
                     ParseFunctionHeader(pNewId);
                 } else Error(errRedefinedIdentifier);
@@ -56,47 +49,43 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
             // check for array type
             if (token == tcLeftSubscript) {
-                ParseArrayType(pNewId);
-                pNewId->defn.how = dcVariable;
+                ParseArrayType(pRoutineId, pNewId);
+
             } else if (token == tcLParen) {
 
                 ParseFunctionHeader(pNewId);
             } else if ((token != tcComma) && (token != tcEndOfFile)) {
+
                 // check for assignment
                 ParseAssignment(pNewId);
                 pNewId->defn.how = dcVariable;
             }
 
             if (pNewId->defn.how == dcVariable) {
-                // add to routines variable list
-                if (pRoutineId && (!pRoutineId->defn.routine.locals.pVariableIds)) {
-                    pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-                    pRoutineId->defn.routine.locals.pVariableIds->prev = pNewId;
-                    pNewId->defn.data.offset = pRoutineId->defn.routine.parmCount;
-                    pRoutineId->defn.routine.totalLocalSize = pNewId->pType->size;
-                } else {
-                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds->prev;
-                    int offset = __var->defn.data.offset + 1;
+                // add variable to variable list
+                if (pRoutineId) {
+                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
+                    if (!__var) {
+                        pRoutineId->defn.routine.locals.pVariableIds = pNewId;
+                        pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+                    } else {
+                        while (__var->next)__var = __var->next;
 
-                    __var->next = pNewId;
-                    __var->prev = pNewId;
-
-                    pNewId->defn.data.offset = offset;
-                    pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
-
+                        __var->next = pNewId;
+                        pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+                    }
                 }
-            } else
-            if (pNewId->defn.how == dcFunction) {
-                if (pRoutineId && (!pRoutineId->defn.routine.locals.pRoutineIds)) {
-                    pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
-                } else {
+                // add function to routine list
+            } else if (pNewId->defn.how == dcFunction) {
+                if (pRoutineId) {
                     TSymtabNode *__fun = pRoutineId->defn.routine.locals.pRoutineIds;
+                    if (!__fun) {
+                        pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
+                    } else {
+                        while (__fun->next)__fun = __fun->next;
 
-                    while (__fun->next)
-                        __fun = __fun->next;
-
-                    __fun->next = pNewId;
-
+                        __fun->next = pNewId;
+                    }
                 }
             }
 
@@ -134,7 +123,6 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
 
-    // while (token == tcIdentifier) {
     pConstId = EnterNewLocal(pToken->String());
 
     if (!pRoutineId->defn.routine.locals.pConstantIds) {
@@ -149,7 +137,6 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
         pLastId->next = pConstId;
 
     }
-    //}
 
     GetTokenAppend();
     CondGetToken(tcEqual, errMissingEqual);
@@ -159,11 +146,6 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
     pConstId->defn.how = dcConstant;
 
 
-    Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
-
-    ///CondGetToken(tcSemicolon, errMissingSemicolon);
-
-    //while (token == tcSemicolon) GetTokenAppend();
     Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
 
 }
@@ -182,8 +164,7 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
                 pConstId->defn.constant.value.__int = sign == tcMinus ?
                         -pToken->Value().__int : pToken->Value().__int;
             } else if ((pToken->Type() == tyReal) &&
-                    (((pConstId->pType == pFloatType) ||
-                    pConstId->pType == pDoubleType))) {
+                    (((pConstId->pType == pFloatType)))) {
 
                 if (pConstId->pType == pFloatType) {
                     pConstId->defn.constant.value.__float = sign == tcMinus ?
@@ -192,8 +173,6 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
                     pConstId->defn.constant.value.__double = sign == tcMinus ?
                             -pToken->Value().__float : pToken->Value().__float;
                 }
-
-                //SetType(pConstId->pType, pFloatType);
             }
 
             GetTokenAppend();

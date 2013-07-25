@@ -47,12 +47,11 @@ TDefn::~TDefn(void) {
     switch (how) {
 
         case dcProgram:
-            //case dcProcedure:
         case dcFunction:
 
             if (routine.which == rcDeclared) {
-                delete routine.pSymtab;
-                delete routine.pIcode;
+                if (routine.pSymtab != nullptr) delete routine.pSymtab;
+                if (routine.pIcode != nullptr) delete routine.pIcode;
             }
             break;
 
@@ -102,13 +101,13 @@ TSymtabNode::~TSymtabNode(void) {
     void RemoveType(TType *&pType);
 
     //--First the subtrees (if any).
-    delete left;
-    delete right;
+    if (left != nullptr)delete left;
+    if (right != nullptr) delete right;
 
     //--Then delete this node's components.
-    delete[] pString;
-    delete pLineNumList;
-    RemoveType(pType);
+    if (pString != nullptr) delete[] pString;
+    if (pLineNumList != nullptr) delete pLineNumList;
+    if (pType != nullptr) RemoveType(pType);
 }
 
 //--------------------------------------------------------------
@@ -229,13 +228,13 @@ void TSymtabNode::PrintType(void) const {
 
 void TSymtabNode::Convert(TSymtabNode *vpNodes[]) {
     //--First, convert the left subtree.
-    if (left) left->Convert(vpNodes);
+    if (left != nullptr) left->Convert(vpNodes);
 
     //--Convert the node.
     vpNodes[xNode] = this;
 
     //--Finally, convert the right subtree.
-    if (right) right->Convert(vpNodes);
+    if (right != nullptr) right->Convert(vpNodes);
 }
 
 //              ******************
@@ -417,7 +416,7 @@ TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
         if (pNode) return pNode;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //--------------------------------------------------------------

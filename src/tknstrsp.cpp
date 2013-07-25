@@ -146,11 +146,12 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
             } else code = tcBitOR;
             break;
         case '~': ch = buffer.GetChar();
-            if (ch == '=') {
-                *ps++ = '=';
-                code = tcBitNotEqual;
-                buffer.GetChar();
-            } else code = tcBitNOT;
+            //            if (ch == '=') {
+            //                *ps++ = '=';
+            //                code = tcBitNotEqual;
+            //                buffer.GetChar();
+            //} else 
+            code = tcBitNOT;
             break;
         case '*': ch = buffer.GetChar();
             if (ch == '=') {

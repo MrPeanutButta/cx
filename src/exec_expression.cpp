@@ -377,7 +377,8 @@ TType *TExecutor::ExecuteTerm(void) {
 //--------------------------------------------------------------
 
 TType *TExecutor::ExecuteFactor(void) {
-    TType *pResultType; // ptr to result type
+    TType *pResultType = nullptr; // ptr to result type
+    TSymtabNode *pId = nullptr;
 
     switch (token) {
         case tcIdentifier:
@@ -391,17 +392,26 @@ TType *TExecutor::ExecuteFactor(void) {
                 case dcConstant:
                     pResultType = ExecuteConstant(pNode);
                     break;
-                    //case dcVarParm:
-                    //pResultType = ExecuteVariable(pNode, true);
-                    //break;
+				case dcType:
+					pResultType = pNode->pType;
+					GetToken();
+					break;
                 default:
+                    pId = pNode;
+                    GetToken();
 
+                    if (TokenIn(token, tlAssignOps)) {
+                        ExecuteAssignment(pId);
+                        pResultType = ExecuteVariable(pId, false);
+                    } else {
+                        pResultType = ExecuteVariable(pId, false);
+                    }
 
-                    pResultType = ExecuteVariable(pNode, false);
                     break;
             }
         }
             break;
+
         case tcNumber:
         {
             //--Push the number's integer or real value onto the stack.
@@ -417,10 +427,11 @@ TType *TExecutor::ExecuteFactor(void) {
         case tcChar:
         case tcString:
         {
+            //GetToken();
             //--Push either a character or a string address onto the
             //--runtime stack, depending on the string length.
-            int length = strlen(pNode->String()) - 2; // skip quotes
-            if (length == 1) {
+            //int length = strlen(pNode->String()) - 2; // skip quotes
+            if (pNode->strLength == 1) {
 
                 //--Character
                 Push(pNode->defn.constant.value.__char);
@@ -472,12 +483,12 @@ TType *TExecutor::ExecuteFactor(void) {
 
 TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
     TType *pType = pId->pType;
-    TDataValue value = pId->defn.constant.value;
+    const TDataValue *value = &pId->defn.constant.value;
 
-    if (pType == pFloatType) Push(value.__float);
-    else if (pType == pCharType) Push(value.__char);
-    else if (pType->form == fcArray) Push(value.pString);
-    else Push(value.__int);
+    if (pType == pFloatType) Push(value->__float);
+    else if (pType == pCharType) Push(value->__char);
+    else if (pType->form == fcArray) Push(value->pString);
+    else Push(value->__int);
 
     GetToken();
     TraceDataFetch(pId, TOS(), pType);
@@ -496,54 +507,13 @@ TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
 
 TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         int addressFlag) {
+
     TType *pType = pId->pType;
 
     //--Get the variable's runtime stack address.
     TStackItem *pEntry = runStack.GetValueAddress(pId);
-
-    GetToken();
-
-    TStackItem *t = nullptr;
-    if (pId->defn.how != ::dcVarParm) {
-        t = pEntry;
-    } else {
-        t = ((TStackItem *) pEntry->__addr);
-    }
-    
-    switch (token) {
-        case tcPlusPlus:
-            GetToken();
-            if (pType->IsScalar()) {
-                if (pType == pFloatType) {
-                    ++t->__float;
-                } else if (pType->Base() == pCharType) {
-                    ++t->__char;
-                } else {
-                    ++t->__int;
-                }
-            }
-            break;
-        case tcMinusMinus:
-            GetToken();
-            if (pType->IsScalar()) {
-                if (pType == pFloatType) {
-                    --t->__float;
-                } else if (pType->Base() == pCharType) {
-                    --t->__char;
-                } else {
-                    --t->__int;
-                }
-            }
-            break;
-    }
-
-    //--If it's a VAR formal parameter, or the type is an array
-    //--or record, then the stack item contains the address
-    //--of the data.  Push the data address onto the stack.
-    Push((pId->defn.how == dcVarParm) || (!pType->IsScalar())
+    Push((pId->defn.how == dcReference) || (!pType->IsScalar())
             ? pEntry->__addr : pEntry);
-
-
 
     //--Loop to execute any subscripts and field designators,
     //--which will modify the data address at the top of the stack.
@@ -552,18 +522,20 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         switch (token) {
 
             case tcLeftSubscript:
+
                 pType = ExecuteSubscripts(pType);
+
                 break;
 
             case tcDot:
                 pType = ExecuteField();
                 break;
 
-
             default: doneFlag = true;
         }
     } while (!doneFlag);
 
+    //if (!TokenIn(token, tlAssignOps))GetToken();
 
     //--If addressFlag is false, and the data is not an array
     //--or a record, replace the address at the top of the stack
@@ -604,17 +576,17 @@ TType *TExecutor::ExecuteSubscripts(const TType *pType) {
         //--Loop to execute comma-separated subscript expressions
         //--within a subscript list.
         do {
-            GetToken();
+            GetToken(); // index
             ExecuteExpression();
 
             //--Evaluate and range check the subscript.
             int value = Pop()->__int;
             RangeCheck(pType, value);
 
+
             //--Modify the data address at the top of the stack.
             Push(((char *) Pop()->__addr) +
-                    pType->array.pElmtType->size
-                    * (value - pType->array.minIndex));
+                    pType->array.pElmtType->size * (value - pType->array.minIndex));
 
             //--Prepare for another subscript in this list.
             if (token == tcComma) pType = pType->array.pElmtType;
@@ -622,8 +594,8 @@ TType *TExecutor::ExecuteSubscripts(const TType *pType) {
         } while (token == tcComma);
 
         //--Prepare for another subscript list.
-        GetToken();
-        if (token == tcLBracket) pType = pType->array.pElmtType;
+        GetToken(); // ]
+        if (token == tcLeftSubscript) pType = pType->array.pElmtType;
     }
 
     return pType->array.pElmtType;

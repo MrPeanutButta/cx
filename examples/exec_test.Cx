@@ -14,32 +14,73 @@
  *
  */
 
-int my_int = 500;
+//int gcd(int x,  int y);
+//int int_sqrt(int num);
+//int inc_var(int &num);
 
-int sqr_root(int &number){
-    int rt = number;
-    int i = 0;
+/* Cx standard math functions.
+ *
+ */
 
-    do{
-        rt = (number/rt + rt)/2;
-    }while(((rt * rt) > number) && (i++ < 10));
+// Euclidean Greatest Common Divisor (GCD) algorithm
+int gcd(int x,  int y){
+	if(x == y){
+		return x;
+	}else if(x < y){
+		return gcd(x, y - x);
+	}else{
+		return gcd(x - y, y);
+	}
+}
 
-    return rt;
+// Binary numeral system (base 2) square root (integer)
+int int_sqrt(int num) {
+    int res = 0;
+    int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
+
+    // "bit" starts at the highest power of four <= the argument.
+    while (bit > num)
+        bit >>= 2;
+
+    while (bit != 0) {
+        if (num >= res + bit) {
+            num -= res + bit;
+            res = (res >> 1) + bit;
+        }else{
+            res >>= 1;
+        }
+
+        bit >>= 2;
+    }
+
+    return res;
+}
+
+int inc_var(int &num){
+    return num++;
 }
 
 int main(){
-    int i = 9;
-    int root = 0;
+    int i = 0;
+    int root = 4096;
+    int c_gcd = 0;
+    int array[10];
+    int test = root * 2;
 
-    // loop while i is less than 20000
-    while(i < 20){
-        root = sqr_root(i++);
-    }
-    
-    return my_int;
+    bool test_bool = true;
+
+    float test_float = 5.5;
+
+    i = (int) test_float;
+
+    c_gcd = gcd(root, test);
+
+    do{
+            array[i] = int_sqrt(root);
+            root = int_sqrt(test);
+	}while (i++ < 10);
+
+	test_float = (float) root;
+
+    return root;
 }
-
-//int root = sqr_root(i);
-/*for(int j = 1; j < 19990; j++){
-        root = sqr_root(j);
-    }*/

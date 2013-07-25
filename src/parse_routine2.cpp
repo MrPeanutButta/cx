@@ -35,7 +35,7 @@
 //--------------------------------------------------------------
 
 TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
-    extern int execFlag;
+    //extern int execFlag;
 
     TSymtabNode *pParmId; // ptrs to parm symtab nodes
     TSymtabNode *pFirstId, *pLastId;
@@ -67,7 +67,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         //--VAR or value parameter?
         if (token == tcBitANDorAddrOf) {
-            parmDefn = dcVarParm;
+            parmDefn = dcReference;
             GetTokenAppend();
         } else parmDefn = dcValueParm;
 
@@ -104,13 +104,12 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
         } else if (token == tcIdentifier) Error(errMissingComma);
 
 
-        if (execFlag) {
-            //--Loop to assign the offset and type to each
-            //--parm id in the sublist.
-            for (pParmId = pFirstId; pParmId; pParmId = pParmId->next) {
-                pParmId->defn.data.offset = totalSize++;
-                SetType(pParmId->pType, pParmType);
-            }
+
+        //--Loop to assign the offset and type to each
+        //--parm id in the sublist.
+        for (pParmId = pFirstId; pParmId; pParmId = pParmId->next) {
+            pParmId->defn.data.offset = totalSize++;
+            SetType(pParmId->pType, pParmType);
         }
 
         //--Link this sublist to the previous sublist.
@@ -122,7 +121,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
     }
 
-    if ((token == tcIdentifier)) {//|| (token == tcVAR)) {
+    if (token == tcIdentifier) {//|| (token == tcVAR)) {
         Error(errMissingSemicolon);
     } else while (token == tcSemicolon) GetTokenAppend();
     //-- :
@@ -253,10 +252,10 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         TSymtabNode *pActualId = Find(pToken->String());
 
         // skip type declaration
-        if(pActualId->defn.how == ::dcType){
+        if (pActualId->defn.how == ::dcType) {
             GetToken();
 
-            if(token == tcBitANDorAddrOf)GetToken();
+            if (token == tcBitANDorAddrOf)GetToken();
 
             pActualId = Find(pToken->String());
         }
@@ -271,7 +270,7 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
     }//--Error: Parse the actual parameter anyway for error recovery.
     else {
         ParseExpression();
-        Error(errInvalidVarParm);
+        Error(errInvalidReference);
     }
 
 

@@ -31,10 +31,9 @@ using namespace std;
 //      pId : ptr to the routine name's symbol table node
 //--------------------------------------------------------------
 
-void TExecutor::TraceRoutineEntry(const TSymtabNode *pRoutineId)
-{
+void TExecutor::TraceRoutineEntry(const TSymtabNode *pRoutineId) {
     if (traceRoutineFlag) {
-	cout << ">> Entering routine " << pRoutineId->String() << endl;
+        cout << ">> Entering routine " << pRoutineId->String() << endl;
     }
 }
 
@@ -44,10 +43,9 @@ void TExecutor::TraceRoutineEntry(const TSymtabNode *pRoutineId)
 //      pId : ptr to the routine name's symbol table node
 //--------------------------------------------------------------
 
-void TExecutor::TraceRoutineExit(const TSymtabNode *pRoutineId)
-{
+void TExecutor::TraceRoutineExit(const TSymtabNode *pRoutineId) {
     if (traceRoutineFlag) {
-	cout << ">> Exiting routine " << pRoutineId->String() << endl;
+        cout << ">> Exiting routine " << pRoutineId->String() << endl;
     }
 }
 
@@ -55,10 +53,9 @@ void TExecutor::TraceRoutineExit(const TSymtabNode *pRoutineId)
 //  TraceStatement      Trace the execution of a statement.
 //--------------------------------------------------------------
 
-void TExecutor::TraceStatement(void)
-{
+void TExecutor::TraceStatement(void) {
     if (traceStatementFlag) cout << ">>  At " << currentLineNumber
-				 << endl;
+            << endl;
 }
 
 //--------------------------------------------------------------
@@ -71,18 +68,17 @@ void TExecutor::TraceStatement(void)
 //--------------------------------------------------------------
 
 void TExecutor::TraceDataStore(const TSymtabNode *pTargetId,
-			       const void        *pDataValue,
-			       const TType       *pDataType)
-{
+        const void *pDataValue,
+        const TType *pDataType) {
     if (traceStoreFlag) {
-	TFormCode form = pTargetId->pType->form;
+        TFormCode form = pTargetId->pType->form;
 
-	cout << ">>   " << pTargetId->String();
-	if      (form == fcArray)  cout << "[*]";
-	else if (form == fcComplex) cout << ".*";
-	cout << " <== ";
+        cout << ">>   " << pTargetId->String();
+        if (form == fcArray) cout << "[*]";
+        else if (form == fcComplex) cout << ".*";
+        cout << " <== ";
 
-	TraceDataValue(pDataValue, pDataType);
+        TraceDataValue(pDataValue, pDataType);
     }
 }
 
@@ -96,18 +92,17 @@ void TExecutor::TraceDataStore(const TSymtabNode *pTargetId,
 //--------------------------------------------------------------
 
 void TExecutor::TraceDataFetch(const TSymtabNode *pId,
-			       const void        *pDataValue,
-			       const TType       *pDataType)
-{
+        const void *pDataValue,
+        const TType *pDataType) {
     if (traceFetchFlag) {
-	TFormCode form = pId->pType->form;
+        TFormCode form = pId->pType->form;
 
-	cout << ">>   " << pId->String();
-	if      (form == fcArray)  cout << "[*]";
-	else if (form == fcComplex) cout << ".*";
-	cout << ": ";
+        cout << ">>   " << pId->String();
+        if (form == fcArray) cout << "[*]";
+        else if (form == fcComplex) cout << ".*";
+        cout << ": ";
 
-	TraceDataValue(pDataValue, pDataType);
+        TraceDataValue(pDataValue, pDataType);
     }
 }
 
@@ -118,39 +113,32 @@ void TExecutor::TraceDataFetch(const TSymtabNode *pId,
 //      pDataType  : ptr to the data's type object
 //--------------------------------------------------------------
 
-void TExecutor::TraceDataValue(const void  *pDataValue,
-			       const TType *pDataType)
-{
-    char text[maxInputBufferSize];  // text for value
+void TExecutor::TraceDataValue(const void *pDataValue,
+        const TType *pDataType) {
+    char text[maxInputBufferSize]; // text for value
 
     if (pDataType == pFloatType) {
-	sprintf(text, "%0.6g", ((TStackItem *) pDataValue)->__float);
-    }
-    else if (pDataType == pCharType) {
-	sprintf(text, "'%c'", ((TStackItem *) pDataValue)->__char);
-    }
-    else if (pDataType == pBooleanType) {
-	strcpy(text, ((TStackItem *) pDataValue)->__int == 0
-						? "false" : "true");
-    }
-    else if (pDataType->form == fcArray) {
-	if (pDataType->array.pElmtType == pCharType) {
-	    int length = pDataType->array.elmtCount;
-	    memcpy(text + 1, pDataValue, length);
-	    text[0]          = '\'';
-	    text[length + 1] = '\'';
-	    text[length + 2] = '\0';
-	}
-	else strcpy(text, "<array>");
-    }
-    else if (pDataType->form == fcComplex) {
-	strcpy(text, "<complex>");
-    }
-    else if (pDataType->Base()->form == fcEnum) {
-	int count = ((TStackItem *) pDataValue)->__int;
-	TSymtabNode *pId = pDataType->Base()->enumeration.pConstIds;
-	while (--count >= 0) pId = pId->next;
-	strcpy(text, pId->String());
+        sprintf(text, "%0.6g", ((TStackItem *) pDataValue)->__float);
+    } else if (pDataType == pCharType) {
+        sprintf(text, "'%c'", ((TStackItem *) pDataValue)->__char);
+    } else if (pDataType == pBooleanType) {
+        strcpy(text, ((TStackItem *) pDataValue)->__int == 0
+                ? "false" : "true");
+    } else if (pDataType->form == fcArray) {
+        if (pDataType->array.pElmtType == pCharType) {
+            int length = pDataType->array.elmtCount;
+            memcpy(text + 1, pDataValue, length);
+            text[0] = '\'';
+            text[length + 1] = '\'';
+            text[length + 2] = '\0';
+        } else strcpy(text, "<array>");
+    } else if (pDataType->form == fcComplex) {
+        strcpy(text, "<complex>");
+    } else if (pDataType->Base()->form == fcEnum) {
+        int count = ((TStackItem *) pDataValue)->__int;
+        TSymtabNode *pId = pDataType->Base()->enumeration.pConstIds;
+        while (--count >= 0) pId = pId->next;
+        strcpy(text, pId->String());
     } else {
         TStackItem *tmp = (TStackItem *) pDataValue;
         sprintf(text, "%d", tmp->__int);

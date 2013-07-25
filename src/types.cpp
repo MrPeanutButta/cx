@@ -5,7 +5,7 @@
 #include "types.h"
 
 const char *formStrings[] = {
-    "*error*", "scalar", "enum", "subrange", "array", "complex"
+    "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
 TSymtabNode *pMain = nullptr;
@@ -141,73 +141,72 @@ void TType::PrintRecordType(TVerbosityCode vc) {
     list.PutLine("member identifiers (offset : name)---");
     list.PutLine();
 
-//    if (complex.MemberTable.empty()) {
-//        list.PutLine("empty type");
-//        return;
-//    }
-    
-//    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
-//            pFieldId; pFieldId = pFieldId->next) {
-//        sprintf(list.text, "\t%d : %s",
-//                pFieldId->defn.data.offset,
-//                pFieldId->String());
-//        list.PutLine();
-//        pFieldId->PrintVarOrField();
-//    }
-//
-//    list.PutLine("public:\n");
-//
-//    for (TSymtabNode *pFieldId = complex.MemberTable[tcPublic]->Root();
-//            pFieldId; pFieldId = pFieldId->next) {
-//        sprintf(list.text, "\t%d : %s",
-//                pFieldId->defn.data.offset,
-//                pFieldId->String());
-//        list.PutLine();
-//        pFieldId->PrintVarOrField();
-//    }
-//
-//    list.PutLine();
-//    list.PutLine("private:\n");
-//
-//    if (!complex.MemberTable[tcPrivate]) {
-//        list.PutLine("empty scope");
-//    } else {
-//
-//        for (TSymtabNode *pFieldId = complex.MemberTable[tcPrivate]->Root();
-//                pFieldId; pFieldId = pFieldId->next) {
-//            sprintf(list.text, "\t%d : %s",
-//                    pFieldId->defn.data.offset,
-//                    pFieldId->String());
-//            list.PutLine();
-//            pFieldId->PrintVarOrField();
-//        }
-//    }
-//
-//    list.PutLine();
-//    list.PutLine("protected:\n");
-//
-//    if (!complex.MemberTable[tcProtected]) {
-//        list.PutLine("empty scope");
-//    } else {
-//        for (TSymtabNode *pFieldId = complex.MemberTable[tcProtected]->Root();
-//                pFieldId; pFieldId = pFieldId->next) {
-//            sprintf(list.text, "\t%d : %s",
-//                    pFieldId->defn.data.offset,
-//                    pFieldId->String());
-//            list.PutLine();
-//            pFieldId->PrintVarOrField();
-//        }
-//    }
+    //    if (complex.MemberTable.empty()) {
+    //        list.PutLine("empty type");
+    //        return;
+    //    }
+
+    //    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
+    //            pFieldId; pFieldId = pFieldId->next) {
+    //        sprintf(list.text, "\t%d : %s",
+    //                pFieldId->defn.data.offset,
+    //                pFieldId->String());
+    //        list.PutLine();
+    //        pFieldId->PrintVarOrField();
+    //    }
+    //
+    //    list.PutLine("public:\n");
+    //
+    //    for (TSymtabNode *pFieldId = complex.MemberTable[tcPublic]->Root();
+    //            pFieldId; pFieldId = pFieldId->next) {
+    //        sprintf(list.text, "\t%d : %s",
+    //                pFieldId->defn.data.offset,
+    //                pFieldId->String());
+    //        list.PutLine();
+    //        pFieldId->PrintVarOrField();
+    //    }
+    //
+    //    list.PutLine();
+    //    list.PutLine("private:\n");
+    //
+    //    if (!complex.MemberTable[tcPrivate]) {
+    //        list.PutLine("empty scope");
+    //    } else {
+    //
+    //        for (TSymtabNode *pFieldId = complex.MemberTable[tcPrivate]->Root();
+    //                pFieldId; pFieldId = pFieldId->next) {
+    //            sprintf(list.text, "\t%d : %s",
+    //                    pFieldId->defn.data.offset,
+    //                    pFieldId->String());
+    //            list.PutLine();
+    //            pFieldId->PrintVarOrField();
+    //        }
+    //    }
+    //
+    //    list.PutLine();
+    //    list.PutLine("protected:\n");
+    //
+    //    if (!complex.MemberTable[tcProtected]) {
+    //        list.PutLine("empty scope");
+    //    } else {
+    //        for (TSymtabNode *pFieldId = complex.MemberTable[tcProtected]->Root();
+    //                pFieldId; pFieldId = pFieldId->next) {
+    //            sprintf(list.text, "\t%d : %s",
+    //                    pFieldId->defn.data.offset,
+    //                    pFieldId->String());
+    //            list.PutLine();
+    //            pFieldId->PrintVarOrField();
+    //        }
+    //    }
 }
 
 void InitializePredefinedTypes(TSymtab *pSymtab) {
-    
+
     pMain = pSymtab->Enter("main", dcFunction);
     pMain->defn.routine.which = rcForward;
-    
+
     TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
     TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
-    TSymtabNode *pDoubleId = pSymtab->Enter("double", dcType);
 
     TSymtabNode *pComplexId = pSymtab->Enter("class", dcType);
 
@@ -222,9 +221,7 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     if (!pFloatType) {
         SetType(pFloatType, new TType(fcScalar, sizeof (float), pFloatId));
     }
-    if (!pDoubleType) {
-        SetType(pDoubleType, new TType(fcScalar, sizeof (float), pDoubleId));
-    }
+
     if (!pBooleanType) {
         SetType(pBooleanType, new TType(fcEnum, sizeof (int), pBooleanId));
     }
@@ -236,12 +233,11 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     }
 
     SetType(pMain->pType, pIntegerType);
-    
+
     // link each predefined type id's node to it's type object
     SetType(pIntegerId->pType, pIntegerType);
 
     SetType(pFloatId->pType, pFloatType);
-    SetType(pDoubleId->pType, pDoubleType);
 
     SetType(pBooleanId->pType, pBooleanType);
     SetType(pCharId->pType, pCharType);
@@ -251,8 +247,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     pBooleanType->enumeration.max = 1;
     pBooleanType->enumeration.pConstIds = pFalseId;
 
-    pFalseId->defn.constant.value.__bool = false;
-    pTrueId->defn.constant.value.__bool = true;
+    pFalseId->defn.constant.value.__int = 0;
+    pTrueId->defn.constant.value.__int = 1;
 
     SetType(pTrueId->pType, pBooleanType);
     SetType(pFalseId->pType, pBooleanType);
@@ -266,7 +262,6 @@ void RemovePredefinedTypes(void) {
     RemoveType(pComplexType);
     RemoveType(pIntegerType);
     RemoveType(pFloatType);
-    RemoveType(pDoubleType);
     RemoveType(pBooleanType);
     RemoveType(pCharType);
     RemoveType(pDummyType);

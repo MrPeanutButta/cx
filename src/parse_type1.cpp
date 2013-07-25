@@ -56,7 +56,7 @@ TType *TParser::ParseTypeSpec(TSymtabNode *pNode) {
             /* found empty subscript.
              * array must have initializer */
         case tcRightSubscript: return ParseAssignment(pNode);
-//        case tcRecord: return ParseComplexType();
+            //        case tcRecord: return ParseComplexType();
         case tcPlus:
         case tcMinus:
         case tcNumber:
