@@ -38,13 +38,13 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     pFunctionNode->defn.routine.parmCount = parmCount;
     pFunctionNode->defn.routine.totalParmSize = totalParmSize;
     pFunctionNode->defn.routine.locals.pParmsIds = pParmList;
+    pFunctionNode->defn.how = ::dcFunction;
 
     //--Not forwarded.
-    pFunctionNode->defn.routine.locals.pConstantIds = NULL;
-    pFunctionNode->defn.routine.locals.pTypeIds = NULL;
-    pFunctionNode->defn.routine.locals.pVariableIds = NULL;
-    pFunctionNode->defn.routine.locals.pRoutineIds = NULL;
-    pFunctionNode->defn.how = ::dcFunction;
+    pFunctionNode->defn.routine.locals.pConstantIds = nullptr;
+    pFunctionNode->defn.routine.locals.pTypeIds = nullptr;
+    pFunctionNode->defn.routine.locals.pVariableIds = nullptr;
+    pFunctionNode->defn.routine.locals.pRoutineIds = nullptr;
 
     //-- )
     CondGetTokenAppend(tcRParen, errMissingRightParen);
@@ -59,7 +59,7 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
             icode.Put(__MAIN_ENTRY__);
             icode.Put(tcSemicolon);
             icode.Put(tcRBracket);
-            
+
             //--Set the program's icode.
             pProgram_ptr->defn.routine.pIcode = new TIcode(icode);
         }

@@ -32,6 +32,9 @@ using namespace std;
 //--------------------------------------------------------------
 
 TRuntimeStack::TRuntimeStack(void) {
+
+    memset(&stack, 0, sizeof (stack));
+
     tos = &stack[-1]; // point to just below bottom of stack
     pFrameBase = &stack[ 0]; // point to bottom of stack
 
@@ -145,21 +148,27 @@ void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
 //      pId : ptr to symbol table node of variable or parm
 //--------------------------------------------------------------
 
-void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
+void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
     TType *pType = pId->pType->Base(); // ptr to type object of value
 
-    if (pType == pIntegerType) Push(0);
-    else if (pType == pFloatType) Push(0.0f);
-    else if (pType == pBooleanType) Push(0);
-    else if (pType == pCharType) Push(0);
-
-    else if (pType->form == fcEnum) Push(0);
-    else {
+    if ((pType->form != fcArray) && (pType->form != fcComplex)) {
+        if (pType == pIntegerType) Push(0);
+        else if (pType == pFloatType) Push(0.0f);
+        else if (pType == pBooleanType) Push(0);
+        else if (pType == pCharType) Push('\0');
+        else if (pType->form == fcEnum) Push(0);
+    } else {
 
         //--Array or record
         void *addr = new char[pType->size];
         Push(addr);
+        pId->pType->array.start_address = addr;
     }
+
+    /* save runstack address.
+     * this negates the need to calculate the
+     * variables offset. */
+    pId->runstackItem = TOS();
 }
 
 //--------------------------------------------------------------
@@ -171,11 +180,10 @@ void TRuntimeStack::AllocateValue(const TSymtabNode *pId) {
 //--------------------------------------------------------------
 
 void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
-    if ((!pId->pType->IsScalar()) && (pId->defn.how != dcVarParm)) {
-        TStackItem *pValue = ((TStackItem *) pFrameBase)
-                + frameHeaderSize
-                + pId->defn.data.offset;
-        delete[] pValue->__addr;
+    if ((!pId->pType->IsScalar()) && (pId->defn.how != dcReference)) {
+        TStackItem *pValue = pId->runstackItem;
+
+        if (pValue->__addr != nullptr) delete[] pValue->__addr;
     }
 }
 
@@ -210,8 +218,8 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
     }
 
     return functionFlag ? &pHeader->functionValue
-            : ((TStackItem *) pHeader)
-            + frameHeaderSize + pId->defn.data.offset;
+            : pId->runstackItem; /*((TStackItem *) pHeader)
+            + frameHeaderSize + pId->defn.data.offset;*/
 }
 
 //              **************
@@ -234,7 +242,7 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     breakLoop = false;
 
     InitializeGlobal(pProgramId);
-    //ExecuteRoutine(pMain);
+    //ExecuteRoutine(pProgramId);
     ExitRoutine(pProgramId);
 
     //--Print the executor's summary.
@@ -271,8 +279,6 @@ void TExecutor::InitializeGlobal(TSymtabNode* pProgramId) {
     runStack.ActivateFrame(pNewFrameBase, pProgramId->defn.routine.returnMarker);
 
     EnterRoutine(pProgramId);
-
     GetToken();
-    ExecuteCompound(pProgramId);
-
+    ExecuteStatement(pProgramId);
 }

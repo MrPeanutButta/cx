@@ -106,8 +106,6 @@ TType *TParser::ParseTerm(void) {
                 } else Error(errIncompatibleTypes);
                 break;
             case tcLogicAnd:
-                //GetTokenAppend();
-
                 CheckBoolean(pResultType, pOperandType);
                 pResultType = pBooleanType;
                 break;
@@ -142,16 +140,16 @@ TType *TParser::ParseFactor(void) {
                     pResultType = pNode->pType;
                     break;
 
-
-                case dcVariable:
                 case dcType:
+                    GetTokenAppend();
+                    pResultType = pNode->pType;
+                    break;
+                case dcVariable:
                 case dcValueParm:
-                case dcVarParm:
+                case dcReference:
                 case dcMember:
                     GetTokenAppend();
                     pResultType = ParseVariable(pNode);
-
-                    //ParseSuffix(pNode);
                     break;
                 default:
                     Error(errUndefinedIdentifier);
@@ -160,8 +158,6 @@ TType *TParser::ParseFactor(void) {
             }
         }
             break;
-
-
         case tcNumber:
         {
             TSymtabNode *pNode = SearchAll(pToken->String());
@@ -189,33 +185,34 @@ TType *TParser::ParseFactor(void) {
         {
 
             char *pString = pToken->String();
-            TSymtabNode *pNode = SearchAll(pString);
+            TSymtabNode *pNode = SearchAll(pToken->String());
 
             if (!pNode) {
-                pNode = EnterLocal(pString);
+                pNode = EnterLocal(pToken->String());
+
+
+                //pString = pNode->String();
+                //int length = strlen(pString) - 2;
+                int length = pNode->strLength = strlen(pString) - 2;
+                //pResultType = length == 1 ?
+                // pCharType : new TType(length);
+
+                SetType(pNode->pType, pCharType);
+
+                if (length == 1) {
+                    pNode->defn.constant.value.__char = pString[1];
+                } else {
+                    pNode->defn.constant.value.pString = &pString[1];
+                    pNode->pType->form = fcArray;
+                    pNode->pType->array.elmtCount = length;
+                    pNode->pType->array.maxIndex = (pNode->pType->array.elmtCount - 1);
+                    pNode->pType->array.minIndex = 0;
+                    pNode->pType->array.pElmtType = pCharType;
+                    pNode->pType->array.pIndexType = pIntegerType;
+                }
+
+                pResultType = pNode->pType;
             }
-
-            pString = pNode->String();
-            int length = strlen(pString) - 2;
-
-            //pResultType = length == 1 ?
-            // pCharType : new TType(length);
-
-            SetType(pNode->pType, pCharType);
-
-            if (length == 1) {
-                pNode->defn.constant.value.__char = pString[1];
-            } else {
-                pNode->defn.constant.value.pString = &pString[1];
-                pNode->pType->form = fcArray;
-                pNode->pType->array.elmtCount = length;
-                pNode->pType->array.maxIndex = (pNode->pType->array.elmtCount - 1);
-                pNode->pType->array.minIndex = 0;
-                pNode->pType->array.pElmtType = pCharType;
-                pNode->pType->array.pIndexType = pIntegerType;
-            }
-
-            pResultType = pNode->pType;
             icode.Put(pNode);
 
             GetTokenAppend();
@@ -226,8 +223,7 @@ TType *TParser::ParseFactor(void) {
             GetTokenAppend();
             pResultType = ParseExpression();
 
-            if (token == tcRParen) GetTokenAppend();
-            else Error(errMissingRightParen);
+            CondGetTokenAppend(tcRParen, errMissingRightParen);
             break;
         case tcLogicNOT:
             GetTokenAppend();
@@ -253,7 +249,8 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
     switch (pId->defn.how) {
         case dcVariable:
         case dcValueParm:
-        case dcVarParm:
+        case dcReference:
+        case dcPointer:
         case dcFunction:
         case dcUndefined:
             break;
@@ -264,15 +261,146 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
             break;
     }
 
-    //if (token != tcSemicolon)GetTokenAppend();
+    //-- [ or . : Loop to parse any subscripts and fields.
+    int doneFlag = false;
+    do {
+        switch (token) {
 
-    switch(token){
-        case tcPlusPlus:
-            GetTokenAppend();
-            break;
-        case tcMinusMinus:
-            GetTokenAppend();
-            break;
+            case tcLeftSubscript:
+                pResultType = ParseSubscripts(pResultType);
+                break;
+
+            case tcDot:
+                pResultType = ParseField(pResultType);
+                break;
+
+            default: doneFlag = true;
+        }
+    } while (!doneFlag);
+
+    if (TokenIn(token, tlAssignOps)) {
+        TType *pExprType = nullptr;
+        TType *pExprTypeCastFollow = nullptr;
+
+        switch (token) {
+            case tcEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+
+                // if not semicolon, this may be an expression following a cast.
+                // Keep pExprType same type, but we need to parse the expr.
+                if (token != tcSemicolon) {
+                    pExprTypeCastFollow = ParseExpression();
+
+                    // check if compatible
+                    CheckAssignmentTypeCompatible(pExprType, pExprTypeCastFollow,
+                            errIncompatibleAssignment);
+                }
+
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcMinusMinus:
+                GetTokenAppend();
+                break;
+            case tcPlusPlus:
+                GetTokenAppend();
+                break;
+            case tcPlusEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcMinusEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcStarEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcForwardSlashEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcModEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitLeftShiftEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitRightShiftEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitANDEqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitXOREqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcBitOREqual:
+            {
+                GetTokenAppend();
+                pExprType = ParseExpression();
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            }
+                break;
+            case tcComma:
+            case tcSemicolon:
+                break;
+                break;
+            case tcIdentifier:
+                GetTokenAppend();
+                pExprType = pResultType;
+                CheckAssignmentTypeCompatible(pResultType, pExprType,
+                        errIncompatibleAssignment);
+            default:
+                Error(errInvalidAssignment);
+                break;
+        }
     }
 
     while (TokenIn(token, tlSubscriptOrFieldStart)) {

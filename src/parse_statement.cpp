@@ -59,117 +59,8 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
     TType *pTargetType = ParseVariable(pTargetId);
-    TType *pExprType = nullptr;
 
-    switch (token) {
-        case tcEqual:
-        {
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcPlusEqual:
-        {
-            //Resync(tcPlusEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcMinusEqual:
-        {
-            //Resync(tcMinusEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcStarEqual:
-        {
-            //Resync(tcStarEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcForwardSlashEqual:
-        {
-            //Resync(tcForwardSlashEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcModEqual:
-        {
-            //Resync(tcModEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcBitLeftShiftEqual:
-        {
-            //Resync(tcBitLeftShiftEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcBitRightShiftEqual:
-        {
-            //Resync(tcBitRightShiftEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcBitANDEqual:
-        {
-            //Resync(tcBitANDEqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcBitXOREqual:
-        {
-            //Resync(tcBitXOREqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcBitOREqual:
-        {
-            //Resync(tcBitOREqual, tlExpressionStart);
-            GetTokenAppend();
-            pExprType = ParseExpression();
-            CheckAssignmentTypeCompatible(pTargetType, pExprType,
-                    errIncompatibleAssignment);
-        }
-            break;
-        case tcComma:
-        case tcSemicolon:
-            break;
-            break;
-        default:
-            Error(errInvalidAssignment);
-            break;
-    }
-
-    return pExprType;
+    return pTargetType;
 }
 
 void TParser::ParseDO(TSymtabNode* pRoutineId) {
@@ -195,8 +86,11 @@ void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
     int breakPoint = PutLocationMarker();
 
     GetTokenAppend(); // while
+    CondGetTokenAppend(tcLParen, errMissingLeftParen);
 
     CheckBoolean(ParseExpression());
+
+    CondGetTokenAppend(tcRParen, errMissingRightParen);
 
     ParseStatement(pRoutineId);
 

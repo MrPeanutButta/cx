@@ -26,37 +26,40 @@
 //--------------------------------------------------------------
 
 class TBackend {
-
 protected:
-    TToken      *pToken;  // ptr to the current token
-    TTokenCode   token;   // code of current token
-    TIcode      *pIcode;  // ptr to current icode
-    TSymtabNode *pNode;   // ptr to symtab node
+    TToken *pToken; // ptr to the current token
+    TTokenCode token; // code of current token
+    TIcode *pIcode; // ptr to current icode
+    TSymtabNode *pNode; // ptr to symtab node
 
-    void GetToken(void)
-    {
-	pToken = pIcode->Get();
-	token  = pToken->Code();
-	pNode  = pIcode->SymtabNode();
+    void GetToken(void) {
+        pToken = pIcode->Get();
+        token = pToken->Code();
+        pNode = pIcode->SymtabNode();
     }
 
-    void GoTo(int location) { pIcode->GoTo(location); }
+    void GoTo(int location) {
+        pIcode->GoTo(location);
+    }
 
     int CurrentLocation(void) const {
-	return pIcode->CurrentLocation();
+        return pIcode->CurrentLocation();
     }
 
-    int GetLocationMarker(void) { return pIcode->GetLocationMarker(); }
+    int GetLocationMarker(void) {
+        return pIcode->GetLocationMarker();
+    }
 
-    void GetCaseItem(int &value, int &location)
-    {
-	pIcode->GetCaseItem(value, location);
+    void GetCaseItem(int &value, int &location) {
+        pIcode->GetCaseItem(value, location);
     }
 
 public:
-    virtual ~TBackend(void) {}
 
-    virtual void Go( TSymtabNode *pRoutineId) = 0;
+    virtual ~TBackend(void) {
+    }
+
+    virtual void Go(TSymtabNode *pRoutineId) = 0;
 };
 
 #endif

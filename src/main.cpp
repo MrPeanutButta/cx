@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     //--Check the command line arguments.
     if (argc < 2) {
-        cerr << "Usage: Cx <source file>" << endl;
+        cerr << "Usage: " << argv[0] << " <source file>" << endl;
         AbortTranslation(abortInvalidCommandLineArgs);
     }
 
@@ -72,7 +72,9 @@ int main(int argc, char *argv[]) {
     if (errorCount == 0) {
         vpSymtabs = new TSymtab *[cntSymtabs];
         for (TSymtab *pSt = pSymtabList; pSt; pSt = pSt->Next()) {
-            pSt->Convert(vpSymtabs);
+            if (pSt != nullptr) {
+                if (pSt->Root() != nullptr)pSt->Convert(vpSymtabs);
+            }
         }
 
         std::cin.get();

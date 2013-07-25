@@ -13,7 +13,7 @@
 
 using namespace std;
 
-extern TType *pIntegerType, *pFloatType, *pDoubleType, *pBooleanType, *pCharType,
+extern TType *pIntegerType, *pFloatType, *pBooleanType, *pCharType,
         *pDummyType, *pComplexType;
 
 extern TSymtabNode *pMain;
@@ -46,6 +46,9 @@ public:
         struct {
             TType *pIndexType;
             TType *pElmtType;
+            // first address at intdex 0
+            void * start_address;
+            void * end_address;
             int minIndex, maxIndex;
             int elmtCount;
         } array;

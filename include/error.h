@@ -97,7 +97,7 @@ enum TErrorCode {
     errMissingPROGRAM,
     errAlreadyForwarded,
     errWrongNumberOfParms,
-    errInvalidVarParm,
+    errInvalidReference,
     errNotARecordVariable,
     errMissingVariable,
     errCodeSegmentOverflow,

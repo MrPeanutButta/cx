@@ -50,7 +50,7 @@ public:
     }
 
     ~TIcode(void) {
-        delete[] pCode;
+        if (pCode != nullptr) delete[] pCode;
     }
 
     void Put(TTokenCode tc);
