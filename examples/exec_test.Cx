@@ -27,9 +27,9 @@ int igcd(int x,  int y){
 	if(x == y){
 		return x;
 	}else if(x < y){
-		return gcd(x, y - x);
+		return igcd(x, y - x);
 	}else{
-		return gcd(x - y, y);
+		return igcd(x - y, y);
 	}
 }
 
