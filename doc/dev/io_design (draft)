@@ -2,7 +2,8 @@ Cx standard basic I/O design document
 
 07-27-2013 Ideas for basic I/O design
 Initial design for I/O in Cx includes the use of 2 symbol table nodes
-pointed to by pInputNode, and pOutputNode. These nodes serve the purpose of I/O.
+pointed to by pInputNode, and pOutputNode. These nodes serve the purpose of 
+basic I/O.
 
 Largely focusing on output until final draft, at which point input will be drafted.
 
@@ -107,6 +108,54 @@ Cons:
     Implementation requirements unknown.
 
 --end proposal #2
+
+--proposal #3
+
+Perhaps an easier alternative to #2 would be to associate I/O nodes
+with a standard FILE *filestream. This would require the use of 3 nodes.
+One node for each respective operation. The I/O class will have a FILE *
+which may point to stdin, stdout or stderr.
+
+This design will require single expression I/O, eliminating the need
+to buffer.
+
+I find this design may have the best flexibility with reuse. Nodes of this
+design might be reusable for file I/O streams.
+
+/*
+ * example class
+ */
+class cx_basic_io : TSymtabNode {
+private:
+	FILE *cx_io_stream;
+public:
+
+	// TType * points to the expression type.
+	// TStackItem * points to the expression result. 
+	void write_from_item(TType *pType, TStackItem *pItem){
+	
+		if(pType == pIntergerType){
+			// write int to cx_io_stream
+		}else if(pType == pFloatType){
+			// write float to cx_io_stream
+		} // etc...
+	
+	}
+	
+	// TType * points to the expression type.
+	// TStackItem * points to the expression result pulled off of the stack.
+	void write_from_stack(TType *pType){
+		TStackItem *t = Pop();
+		
+		if(pType == pIntergerType){
+			// write int(t) to cx_io_stream
+		}else if(pType == pFloatType){
+			// write float(t) to cx_io_stream
+		} // etc...
+	}
+ };
+
+--end proposal #3
 
 07-29-2013 Ideas for file I/O
 
