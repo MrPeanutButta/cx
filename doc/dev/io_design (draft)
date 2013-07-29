@@ -1,10 +1,12 @@
 Cx standard basic I/O design document
 
-07-27-2013 Ideas for I/O design
+07-27-2013 Ideas for basic I/O design
 Initial design for I/O in Cx includes the use of 2 symbol table nodes
 pointed to by pInputNode, and pOutputNode. These nodes serve the purpose of I/O.
 
-example:
+Largely focusing on output until final draft, at which point input will be drafted.
+
+--proposal #1:
 
 // C++ design of cx_output
 class cx_output : TSymtabNode {
@@ -18,6 +20,7 @@ public:
     AppendBuffer(all types){
         ss << type value;
     }
+
 private:
     // used to buffer values until Flush() is called.
     // buffering to stringstream will help buffer all types
@@ -69,5 +72,41 @@ by appending both values to the stringstream.
 
 'print' is just an example. This could easily be 'cout' with the operator '<<';
 
+Pros:
+    Easy to implement.
+Cons: 
+    This design may have draw backs with reuse of these nodes for file i/o.
 
+--end proposal #1
+
+--proposal #2
+
+note: keeping the class cx_ouput design of item #1
+
+Instead of using I/O nodes as fully dedicated I/O executors, a more ideal design
+would be to treat these nodes as regular variables that will perform some task 
+and not just store values.
+
+This means the nodes may act as software pseudo registers like with x86 
+instructions. Anything assigned to the address space of the TStackItem of 
+pOutputNode will be printed, and pInputNode will simply take input for the value
+being assigned to it.
+
+Just as one would assign a COM port value to register DX and call:
+    out [dx], eax   ; where eax stores the value to be written to
+                    ; the COM port # stored in DX
+
+The output nodes would be similar to the COM I/O port in this case. With 
+anything being written to it getting printed.
+
+Pros:
+    more flexible 'stream' like output.
+    Cx may implement it's own I/O library.
+Cons:
+    Requires more research.
+    Implementation requirements unknown.
+
+--end proposal #2
+
+07-29-2013 Ideas for file I/O
 
