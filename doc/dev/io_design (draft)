@@ -1,6 +1,6 @@
-Cx standard basic I/O design document
+Cx standard I/O design document
 
-07-27-2013 Ideas for basic I/O design
+[07-27-2013] Ideas for basic I/O design
 Initial design for I/O in Cx includes the use of 2 symbol table nodes
 pointed to by pInputNode, and pOutputNode. These nodes serve the purpose of 
 basic I/O.
@@ -157,5 +157,46 @@ public:
 
 --end proposal #3
 
-07-29-2013 Ideas for file I/O
+--proposal #4
+
+Yet a better design might be to edit the TSymtabNode class itself, where there
+would exist a pointer to some file stream. Creating a 'file' as a type, and it's
+form code to fcStream.
+
+configuration:
+type name = 'file'
+TDefnCode = dcType;
+TFormCode = fcStream;
+
+read and write operations would be baked into the interpretor and stdin, stderr,
+and stdout would be predefined types of 'file'
+
+Open files would be tracked by adding an additional linked list of I/O objects to
+TSymtabNode::TLocalIds::TSymtabNode *pInOutId;
+
+Cx implementation example:
+
+/* partial pseudo code */
+
+int main(){
+    file file_object;
+                                       //ios::out/in/bin like flags
+    file_object = fopen("example.txt", some_open_flag)
+
+    fwrite(file_object, "write something to the file", length);
+
+    char buffer[size];
+    fread(file_object, buffer, length);
+}
+
+Pros:
+    This design handles file and stdout/in.
+    Mid-level of difficulty.
+    Will enable the ability to use C like functions to write Cx fstream(s).
+    Most likely the best solution.
+Cons:
+    Interpretor will need built in read/write functions.
+    
+
+--end proposal #4
 
