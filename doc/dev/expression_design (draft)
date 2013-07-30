@@ -1,0 +1,9 @@
+Cx expressions design document
+
+[07-30-2013] Ideas for expressions design
+The initial design of Cx expressions works well with basic types (int, bool, char).
+However, the current design does not take in to account I/O streams. In this 
+document I/O stream support for expressions will be pondered.
+
+Making expressions stream aware will provide simpler string and I/O operations 
+to the user.
