@@ -1,10 +1,18 @@
-
+/** Executor (expressions)
+ * exec_expression.cpp
+ *
+ */
 #include <iostream>
 #include "exec.h"
 #include "common.h"
 
 using namespace std;
 
+/** ExecuteExpression   Execute an expression (binary relational
+ *                      operators = < > <> <= and >= ).
+ *
+ * @return: ptr to expression's type object
+ */
 TType *TExecutor::ExecuteExpression(void) {
     TType *pOperand1Type; // ptr to first  operand's type
     TType *pOperand2Type; // ptr to second operand's type
@@ -136,6 +144,13 @@ TType *TExecutor::ExecuteExpression(void) {
     return pResultType;
 }
 
+/** ExecuteSimpleExpression    Execute a simple expression
+ *                             (unary operators + or -
+ *                             and binary operators + -
+ *                             and OR).
+ *
+ * @return: ptr to expression's type object
+ */
 TType *TExecutor::ExecuteSimpleExpression(void) {
 
     TType *pOperandType; // ptr to operand's type
@@ -233,7 +248,7 @@ TType *TExecutor::ExecuteSimpleExpression(void) {
                 break;
             case tcBitXOR:
             {
-                //--bit left shift
+                //--bit XOR
                 int value2 = Pop()->__int;
                 int value1 = Pop()->__int;
 
@@ -243,7 +258,7 @@ TType *TExecutor::ExecuteSimpleExpression(void) {
                 break;
             case tcBitOR:
             {
-                //--bit left shift
+                //--bit OR
                 int value2 = Pop()->__int;
                 int value1 = Pop()->__int;
 
@@ -267,13 +282,11 @@ TType *TExecutor::ExecuteSimpleExpression(void) {
     return pResultType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteTerm         Execute a term (binary operators * / DIV
-//                      MOD and AND).
-//
-//  Return: ptr to term's type object
-//--------------------------------------------------------------
-
+/** ExecuteTerm         Execute a term (binary operators * /
+ *                      % and &&).
+ *
+ * @return: ptr to term's type object
+ */
 TType *TExecutor::ExecuteTerm(void) {
     TType *pOperandType; // ptr to operand's type
     TType *pResultType; // ptr to result type
@@ -342,12 +355,13 @@ TType *TExecutor::ExecuteTerm(void) {
                 break;
             case tcMod:
             {
-                //--integer DIV|MOD integer
+                //--integer MOD integer
                 int value2 = Pop()->__int;
                 int value1 = Pop()->__int;
 
                 if (value2 == 0) RuntimeError(rteDivisionByZero);
 
+                Push(value1 % value2);
                 pResultType = pIntegerType;
             }
                 break;
@@ -367,15 +381,13 @@ TType *TExecutor::ExecuteTerm(void) {
     return pResultType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteFactor       Execute a factor (identifier, number,
-//                      string, NOT <factor>, or parenthesized
-//                      subexpression).  An identifier can be
-//                      a function, constant, or variable.
-//
-//  Return: ptr to factor's type object
-//--------------------------------------------------------------
-
+/** ExecuteFactor       Execute a factor (identifier, number,
+ *                      string, NOT <factor>, or parenthesized
+ *                      subexpression).  An identifier can be
+ *                      a function, constant, or variable.
+ *
+ * @return: ptr to factor's type object
+ */
 TType *TExecutor::ExecuteFactor(void) {
     TType *pResultType = nullptr; // ptr to result type
     TSymtabNode *pId = nullptr;
@@ -392,10 +404,10 @@ TType *TExecutor::ExecuteFactor(void) {
                 case dcConstant:
                     pResultType = ExecuteConstant(pNode);
                     break;
-				case dcType:
-					pResultType = pNode->pType;
-					GetToken();
-					break;
+                case dcType:
+                    pResultType = pNode->pType;
+                    GetToken();
+                    break;
                 default:
                     pId = pNode;
                     GetToken();
@@ -473,14 +485,12 @@ TType *TExecutor::ExecuteFactor(void) {
     return pResultType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteConstant     Push a constant onto the runtime stack.
-//
-//      pId : ptr to constant identifier's symbol table node
-//
-//  Return: ptr to constant's type object
-//--------------------------------------------------------------
-
+/** ExecuteConstant     Push a constant onto the runtime stack.
+ *
+ * @param pId : ptr to constant identifier's symbol table node
+ *
+ * @return: ptr to constant's type object
+ */
 TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
     TType *pType = pId->pType;
     const TDataValue *value = &pId->defn.constant.value;
@@ -495,16 +505,14 @@ TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
     return pType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteVariable     Push a variable's value or address onto
-//                      the runtime stack.
-//
-//      pId         : ptr to variable's symbol table node
-//      addressFlag : true to push address, false to push value
-//
-//  Return: ptr to variable's type object
-//--------------------------------------------------------------
-
+/**  ExecuteVariable     Push a variable's value or address onto
+ *                        the runtime stack.
+ *
+ * @param pId         : ptr to variable's symbol table node
+ * @param addressFlag : true to push address, false to push value
+ *
+ * @return: ptr to variable's type object
+ */
 TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         int addressFlag) {
 
@@ -559,16 +567,14 @@ TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
     return pType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteSubscripts   Execute each subscript expression to
-//                      modify the data address at the top of
-//                      the runtime stack.
-//
-//      pType : ptr to array type object
-//
-//  Return: ptr to subscripted variable's type object
-//--------------------------------------------------------------
-
+/**  ExecuteSubscripts   Execute each subscript expression to
+ *                      modify the data address at the top of
+ *                      the runtime stack.
+ *
+ * @param pType : ptr to array type object
+ *
+ * @return: ptr to subscripted variable's type object
+ */
 TType *TExecutor::ExecuteSubscripts(const TType *pType) {
     //--Loop to executed subscript lists enclosed in brackets.
     while (token == tcLeftSubscript) {
@@ -601,14 +607,12 @@ TType *TExecutor::ExecuteSubscripts(const TType *pType) {
     return pType->array.pElmtType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteField        Execute a field designator to modify the
-//                      data address at the top of the runtime
-//                      stack
-//
-//  Return: ptr to record field's type object
-//--------------------------------------------------------------
-
+/** ExecuteField         Execute a field designator to modify the
+ *                       data address at the top of the runtime
+ *                       stack
+ *
+ * @return: ptr to record field's type object
+ */
 TType *TExecutor::ExecuteField(void) {
     GetToken();
     TSymtabNode *pFieldId = pNode;
@@ -618,5 +622,3 @@ TType *TExecutor::ExecuteField(void) {
     GetToken();
     return pFieldId->pType;
 }
-//endfig
-

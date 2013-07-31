@@ -1,35 +1,21 @@
-//fig 9-7
-//  *************************************************************
-//  *                                                           *
-//  *   E X E C U T O R                                         *
-//  *                                                           *
-//  *   Execute the intermediate code.                          *
-//  *                                                           *
-//  *   CLASSES: TRuntimeStack, TExecutor                       *
-//  *                                                           *
-//  *   FILE:    prog9-1/exec.cpp                               *
-//  *                                                           *
-//  *   MODULE:  Executor                                       *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
+/** Executor
+ * exec.cpp
+ *
+ * Execute the intermediate code.
+ */
 
 #include <iostream>
 #include "exec.h"
 
 using namespace std;
 
-//              *******************
-//              *                 *
-//              *  Runtime Stack  *
-//              *                 *
-//              *******************
+/*******************
+ *                 *
+ *  Runtime Stack  *
+ *                 *
+ *******************/
 
-//--------------------------------------------------------------
-//  Constructor
-//--------------------------------------------------------------
+///  Constructor
 
 TRuntimeStack::TRuntimeStack(void) {
 
@@ -46,42 +32,40 @@ TRuntimeStack::TRuntimeStack(void) {
     Push(0); // return address icode location
 }
 
-//--------------------------------------------------------------
-//  PushFrameHeader     Push the callee subroutine's stack frame
-//                      header onto the runtime stack.  (Leave
-//                      it inactive.)
-//
-//      oldLevel : nesting level of the caller routine
-//      newLevel : nesting level of the callee subroutine's
-//                 formal parameters and local variables
-//      pIcode   : ptr to caller's intermediate code
-//
-//  Return: ptr to the base of the callee's stack frame
-//--------------------------------------------------------------
-
+/** PushFrameHeader     Push the callee subroutine's stack frame
+ *                     header onto the runtime stack.  (Leave
+ *                     it inactive.)
+ *
+ * @param oldLevel : nesting level of the caller routine
+ * @param newLevel : nesting level of the callee subroutine's
+ *                     formal parameters and local variables
+ * @param pIcode   : ptr to caller's intermediate code
+ *
+ * @return: ptr to the base of the callee's stack frame
+ */
 TStackItem *TRuntimeStack::PushFrameHeader(int oldLevel, int newLevel,
         TIcode *pIcode) {
     TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
-    TStackItem *pNewFrameBase = tos + 1; // point to item just above
-    //   current TOS item
+    TStackItem *pNewFrameBase = tos + 1; /* point to item just above
+                                          *  current TOS item */
 
     Push(0); // function return value (placeholder)
 
     //--Compute the static link.
     if (newLevel == oldLevel + 1) {
 
-        //--Callee nested within caller:
-        //--Push address of caller's stack frame.
+        /*--Callee nested within caller:
+         *--Push address of caller's stack frame.*/
         Push(pHeader);
     } else if (newLevel == oldLevel) {
 
-        //--Callee at same level as caller:
-        //--Push address of common parent's stack frame.
+        /*--Callee at same level as caller:
+          --Push address of common parent's stack frame.*/
         Push(pHeader->staticLink.__addr);
     } else /* newLevel < oldLevel */ {
 
-        //--Callee nested less deeply than caller:
-        //--Push address of nearest commmon ancestor's stack frame.
+        /*--Callee nested less deeply than caller:
+          --Push address of nearest common ancestor's stack frame.*/
         int delta = oldLevel - newLevel;
 
         while (delta-- >= 0) {
@@ -97,14 +81,13 @@ TStackItem *TRuntimeStack::PushFrameHeader(int oldLevel, int newLevel,
     return pNewFrameBase;
 }
 
-//--------------------------------------------------------------
-//  ActivateFrame       Activate the newly-allocated stack frame
-//                      by pointing the frame base pointer to it
-//                      and setting the return address location.
-//
-//      pNewFrameBase : ptr to the new stack frame base
-//      location      : return address location
-//--------------------------------------------------------------
+/** ActivateFrame       Activate the newly-allocated stack frame
+ *                       by pointing the frame base pointer to it
+ *                       and setting the return address location.
+ *
+ * @param pNewFrameBase : ptr to the new stack frame base
+ * @param location      : return address location
+ */
 
 void TRuntimeStack::ActivateFrame(TStackItem *pNewFrameBase,
         int location) {
@@ -113,15 +96,13 @@ void TRuntimeStack::ActivateFrame(TStackItem *pNewFrameBase,
             .location.__int = location;
 }
 
-//--------------------------------------------------------------
-//  PopFrame    Pop the current frame from the runtime stack.
-//              If it's for a function, leave the return value
-//              on the top of the stack.
-//
-//      pRoutineId : ptr to subroutine name's symbol table node
-//      pIcode     : ref to ptr to caller's intermediate code
-//--------------------------------------------------------------
-
+/** PopFrame    Pop the current frame from the runtime stack.
+ *              If it's for a function, leave the return value
+ *              on the top of the stack.
+ *
+ * @param pRoutineId : ptr to subroutine name's symbol table node
+ * @param pIcode     : ref to ptr to caller's intermediate code
+ */
 void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
         TIcode *&pIcode) {
     TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
@@ -140,14 +121,12 @@ void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
     }
 }
 
-//--------------------------------------------------------------
-//  AllocateValue       Allocate a runtime stack item for the
-//                      value of a formal parameter or a local
-//                      variable.
-//
-//      pId : ptr to symbol table node of variable or parm
-//--------------------------------------------------------------
-
+/** AllocateValue       Allocate a runtime stack item for the
+ *                       value of a formal parameter or a local
+ *                       variable.
+ *
+ * @param pId : ptr to symbol table node of variable or parm
+ */
 void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
     TType *pType = pId->pType->Base(); // ptr to type object of value
 
@@ -171,14 +150,12 @@ void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
     pId->runstackItem = TOS();
 }
 
-//--------------------------------------------------------------
-//  DeallocateValue     Deallocate the data area of an array or
-//                      record value of a formal value parameter
-//                      or a local variable.
-//
-//      pId : ptr to symbol table node of variable or parm
-//--------------------------------------------------------------
-
+/** DeallocateValue    Deallocate the data area of an array or
+ *                      record value of a formal value parameter
+ *                      or a local variable.
+ *
+ * @param pId : ptr to symbol table node of variable or parm
+ */
 void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
     if ((!pId->pType->IsScalar()) && (pId->defn.how != dcReference)) {
         TStackItem *pValue = pId->runstackItem;
@@ -187,28 +164,26 @@ void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
     }
 }
 
-//--------------------------------------------------------------
-//  GetValueAddress     Get the address of the runtime stack
-//                      item that contains the value of a formal
-//                      parameter or a local variable.  If
-//                      nonlocal, follow the static links to the
-//                      appropriate stack frame.
-//
-//      pId : ptr to symbol table node of variable or parm
-//
-//  Return:  ptr to the runtime stack item containing the
-//           variable, parameter, or function return value
-//--------------------------------------------------------------
-
+/** GetValueAddress     Get the address of the runtime stack
+ *                      item that contains the value of a formal
+ *                      parameter or a local variable.  If
+ *                      nonlocal, follow the static links to the
+ *                      appropriate stack frame.
+ *
+ * @param pId : ptr to symbol table node of variable or parm
+ *
+ * @return    : ptr to the runtime stack item containing the
+ *                 variable, parameter, or function return value
+ */
 TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
-    int functionFlag = pId->defn.how == dcFunction; // true if function
+    bool functionFlag = pId->defn.how == dcFunction; // true if function
     //   else false
     TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
 
-    //--Compute the difference between the current nesting level
-    //--and the level of the variable or parameter.  Treat a function
-    //--value as if it were a local variable of the function.  (Local
-    //--variables are one level higher than the function name.)
+    /*--Compute the difference between the current nesting level
+     *--and the level of the variable or parameter.  Treat a function
+     *--value as if it were a local variable of the function.  (Local
+     *--variables are one level higher than the function name.)*/
     int delta = currentNestingLevel - pId->level;
     if (functionFlag) --delta;
 
@@ -218,19 +193,17 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
     }
 
     return functionFlag ? &pHeader->functionValue
-            : pId->runstackItem; /*((TStackItem *) pHeader)
-            + frameHeaderSize + pId->defn.data.offset;*/
+            : pId->runstackItem;
 }
 
-//              **************
-//              *            *
-//              *  Executor  *
-//              *            *
-//              **************
+/**************
+ *            *
+ *  Executor  *
+ *            *
+ **************/
 
-//--------------------------------------------------------------
-//  Go                  Start the executor.
-//--------------------------------------------------------------
+
+///  Go                  Start the executor.
 
 void TExecutor::Go(TSymtabNode *pProgramId) {
     //--Initialize standard input and output.
@@ -251,12 +224,11 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
             << " statements executed." << endl;
 }
 
-//--------------------------------------------------------------
-//  RangeCheck      Range check an assignment to a subrange.
-//
-//      pTargetType : ptr to target type object
-//      value       : integer value to assign
-//--------------------------------------------------------------
+/** RangeCheck      Range check an assignment to a subrange.
+ *
+ * @param pTargetType : ptr to target type object
+ * @param value       : integer value to assign
+ */
 
 void TExecutor::RangeCheck(const TType *pTargetType, int value) {
 
@@ -266,8 +238,12 @@ void TExecutor::RangeCheck(const TType *pTargetType, int value) {
         RuntimeError(rteValueOutOfRange);
     }
 }
-//endfig
 
+/** InitializeGlobal    Init global scope and execute it's icode
+ *                      to make sure global variable get initialized
+ *
+ * @param pProgramId
+ */
 void TExecutor::InitializeGlobal(TSymtabNode* pProgramId) {
 
     //--Set up a new stack frame for the callee.
