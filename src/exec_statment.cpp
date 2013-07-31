@@ -88,7 +88,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
                         ? Pop()->__int // real := integer
                         : Pop()->__float; // real := real
 				} else {
-					pTarget->__float = 
+					pTarget->__float =
 						(pExprType2->Base() == pIntegerType)
                         ? Pop()->__int // real := integer
                         : Pop()->__float; // real := real
@@ -585,7 +585,6 @@ void TExecutor::ExecuteIF(TSymtabNode * pRoutine) {
 void TExecutor::ExecuteFOR(TSymtabNode * pRoutineId) {
 
     int condition = 0;
-    //TSymtabNode pControl;
 
     GetToken(); //--for
     //--Get the location of where to go to if <expr> is false.
@@ -605,7 +604,6 @@ void TExecutor::ExecuteFOR(TSymtabNode * pRoutineId) {
 
     if (token != tcSemicolon) {
         // declaration would go here //
-        //pControl = pNode;
         ExecuteAssignment(pNode);
     }
 
@@ -638,6 +636,5 @@ void TExecutor::ExecuteFOR(TSymtabNode * pRoutineId) {
         GoTo(conditionMarker);
     } while (CurrentLocation() == conditionMarker);
 
-    //runStack.DeallocateValue(pControl);
     breakLoop = false;
 }
