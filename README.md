@@ -14,7 +14,7 @@ Cx language features are restricted to the C++11 standard library and will compi
 features deemed platform specific will be implemented in dynamic libraries which can be loaded at runtime.
 
 ### Cx stdlib
-Cx math routines and I/O will be implemented in within the interpretor. Other aspects of the language are to be 
+Cx math routines and I/O will be implemented within the interpretor. Other aspects of the language are to be 
 implemented in Cx libraries that are translated to intermediate code.
 
 ### Status
