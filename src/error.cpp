@@ -32,11 +32,11 @@ const char *abortMsg[] = {
     "Unimplemented feature",
 };
 
-/**AbortTranslation    A fatal error occurred during the
+/** AbortTranslation    A fatal error occurred during the
  *                     translation.  Print the abort code
  *                     to the error file and then exit.
  *
- *     ac : abort code
+ * @param ac : abort code
  */
 void AbortTranslation(TAbortCode ac) {
     cerr << "*** fatal translator error: " << abortMsg[-ac] << endl;
@@ -45,8 +45,8 @@ void AbortTranslation(TAbortCode ac) {
 
 
 
-/*  Syntax error messages       Keyed to enumeration type
- *                              TErrorCode.
+/* Syntax error messages       Keyed to enumeration type
+ *                             TErrorCode.
  */
 const char *errorMessages[] = {
     "No error",
@@ -112,10 +112,10 @@ const char *errorMessages[] = {
     "Missing '"
 };
 
-/**Error       Print an arrow under the error and then
- *             print the error message.
+/** Error       Print an arrow under the error and then
+ *              print the error message.
  *
- *     ec : error code
+ * @param ec : error code
  */
 void Error(TErrorCode ec) {
     const int maxSyntaxErrors = 0;

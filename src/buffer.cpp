@@ -28,12 +28,11 @@ int inputPosition;
 // true if list source lines, else false
 int listFlag = true;
 
-/**
- * Constructor     Construct a input text buffer by opening the
- *                input file.
+/** Constructor     Construct a input text buffer by opening the
+ *                  input file.
  *
- *      pInputFileName : ptr to the name of the input file
- *     ac             : abort code to use if open failed
+ * @param pInputFileName : ptr to the name of the input file
+ * @param ac             : abort code to use if open failed
  */
 TTextInBuffer::TTextInBuffer(const char *pInputFileName, TAbortCode ac)
 : pFileName(new char[strlen(pInputFileName) + 1]) {
@@ -45,14 +44,13 @@ TTextInBuffer::TTextInBuffer(const char *pInputFileName, TAbortCode ac)
     if (!file.good()) AbortTranslation(ac);
 }
 
-/**
- *GetChar        Fetch and return the next character from the
- *               text buffer.  If at the end of the buffer,
- *               read the next source line.  If at the end of
- *               the file, return the end-of-file character.
+/** GetChar        Fetch and return the next character from the
+ *                 text buffer.  If at the end of the buffer,
+ *                 read the next source line.  If at the end of
+ *                 the file, return the end-of-file character.
  *
- * Return: next character from the source file
- *         or the end-of-file character
+ * @return next character from the source file
+ *          or the end-of-file character.
  */
 char TTextInBuffer::GetChar(void) {
     const int tabSize = 8; // size of tabs
@@ -73,15 +71,13 @@ char TTextInBuffer::GetChar(void) {
     return ch;
 }
 
-/**
- *PutBackChar     Put the current character back into the
- *                input buffer so that the next call to
- *                GetChar will fetch this character. (Only
- *                called to put back a '.')
+/** PutBackChar     Put the current character back into the
+ *                  input buffer so that the next call to
+ *                  GetChar will fetch this character. (Only
+ *                  called to put back a '.')
  *
- * Return: the previous character
+ * @return the previous character
  */
-
 char TTextInBuffer::PutBackChar(void) {
     --pChar;
     --inputPosition;
@@ -95,14 +91,12 @@ char TTextInBuffer::PutBackChar(void) {
  *                 *
  *******************/
 
-/**
- *Constructor     Construct a source buffer by opening the
- *                source file.  Initialize the list file, and
- *                read the first line from the source file.
+/** Constructor     Construct a source buffer by opening the
+ *                  source file.  Initialize the list file, and
+ *                  read the first line from the source file.
  *
- *     pSourceFileName : ptr to name of source file
+ * @param pSourceFileName : ptr to name of source file
  */
-
 TSourceBuffer::TSourceBuffer(const char *pSourceFileName)
 : TTextInBuffer(pSourceFileName, abortSourceFileOpenFailed) {
     //--Initialize the list file and read the first source line.
@@ -110,15 +104,13 @@ TSourceBuffer::TSourceBuffer(const char *pSourceFileName)
     GetLine();
 }
 
-/**
- *GetLine         Read the next line from the source file, and
- *                print it to the list file preceded by the
- *                line number and the current nesting level.
+/** GetLine         Read the next line from the source file, and
+ *                  print it to the list file preceded by the
+ *                  line number and the current nesting level.
  *
- * Return: first character of the source line, or the
- *         end-of-file character if at the end of the file
+ * @return first character of the source line, or the
+ *          end-of-file character if at the end of the file
  */
-
 char TSourceBuffer::GetLine(void) {
     extern int currentNestingLevel;
 
@@ -160,11 +152,9 @@ const int maxLinesPerPage = 50;
 
 TListBuffer list; // the list file buffer
 
-/**
- *PrintPageHeader     Start a new page of the list file and
- *                    print the page header.
+/** PrintPageHeader     Start a new page of the list file and
+ *                      print the page header.
  */
-
 void TListBuffer::PrintPageHeader(void) {
     const char formFeedChar = '\f';
 
@@ -175,14 +165,12 @@ void TListBuffer::PrintPageHeader(void) {
     lineCount = 0;
 }
 
-/**
- * Initialize      Initialize the list buffer.  Set the date
- *                 for the page header, and print the first
- *                 header.
+/** Initialize      Initialize the list buffer.  Set the date
+ *                  for the page header, and print the first
+ *                  header.
  *
- *     pFileName : ptr to source file name (for page header)
+ * @param pFileName : ptr to source file name (for page header)
  */
-
 void TListBuffer::Initialize(const char *pFileName) {
     memset(text, '\0', sizeof (text));
     pageNumber = 0;
@@ -202,7 +190,6 @@ void TListBuffer::Initialize(const char *pFileName) {
 
 
 ///  PutLine         Print a line of text to the list file.
-
 void TListBuffer::PutLine(void) {
     //--Start a new page if the current one is full.
     if (listFlag && (lineCount == maxLinesPerPage)) PrintPageHeader();
