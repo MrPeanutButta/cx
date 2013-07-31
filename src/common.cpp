@@ -1,32 +1,37 @@
-//fig 2-8
-//  *************************************************************
-//  *                                                           *
-//  *   C O M M O N                                             *
-//  *                                                           *
-//  *   FILE:    prog2-1/common.cpp                             *
-//  *                                                           *
-//  *   MODULE:  Common                                         *
-//  *                                                           *
-//  *   Data and routines common to the front and back ends.    *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
+/**
+ * common.cpp
+ *
+ * Data and routines common to the front and back ends.
+ *
+ * NOTE:
+ *      token lists below are subject to change drastically
+ *      once the parser and scanner are complete. -aaron
+ */
+
 
 #include "common.h"
 
+// current scope level
 int currentNestingLevel = 0;
 int currentLineNumber = 0;
-//endfig
 
+/** Global symbols
+ *
+ * NOTE:
+ *      when writing the Cx stdlib, this global symtab should be visible
+ *      to the dynamic library to allow a library to add it's own symbols. - aaron
+ */
 TSymtab globalSymtab;
+
+// number of symtabs
 int cntSymtabs = 0;
+
 TSymtab *pSymtabList = nullptr;
 TSymtab **vpSymtabs = nullptr;
 
-//TIcode icode;
+/// Tokens for resyncing the parser
 
+// tokens that start a declaration
 extern const TTokenCode tlDeclarationStart[] = {
     tcShort, tcBool, tcInt, tcSigned, tcDouble,
     tcLong, tcUnion, tcStatic, tcUnsigned,
@@ -37,55 +42,71 @@ extern const TTokenCode tlDeclarationStart[] = {
     tcStringDef, tcPound, tcDummy
 };
 
+// tokens that follow a declaration
 extern const TTokenCode tlDeclarationFollow[] = {
     tcSemicolon, tcIdentifier, tcDummy
 };
 
+// identifier start
 extern const TTokenCode tlIdentifierStart[] = {
     tcIdentifier, tcDummy
 };
 
+// tokens that follow a sublist
 extern const TTokenCode tlSublistFollow[] = {
     tcColon, tcDummy
 };
 
+// tokens that follow a member/field declaration
 extern const TTokenCode tlFieldDeclFollow[] = {
     tcSemicolon, tcIdentifier, tcRBracket, tcDummy
 };
 
+// tokens that start an enum
+// XXX broken
 extern const TTokenCode tlEnumConstStart[] = {
     tcIdentifier, tcDummy
 };
 
+// tokens that follow an enum
+// XXX not implemented
 extern const TTokenCode tlEnumConstFollow[] = {
     tcRBracket, tcComma, tcSemicolon, tcDummy
 };
 
+// tokens that follow subrange
+// XXX deprecated from the old Pascal Interp
 extern const TTokenCode tlSubrangeLimitFollow[] = {
     tcDotDot, tcIdentifier, tcPlus, tcMinus, tcString,
     tcRightSubscript, tcComma, tcSemicolon, tcDummy
 };
 
+// tokens that start an index
+// XXX broken
 extern const TTokenCode tlIndexStart[] = {
     tcIdentifier, tcNumber, tcString, tcLParen, tcPlus, tcMinus,
     tcLeftSubscript, tcRightSubscript, tcDummy
 };
 
+// tokens that follow an index
 extern const TTokenCode tlIndexFollow[] = {
     tcComma, tcRightSubscript, tcSemicolon, tcDummy
 };
 
+// XXX idk if this is used
 extern const TTokenCode tlIndexListFollow[] = {
     tcIdentifier, tcRightSubscript, tcLParen, tcPlus, tcMinus, tcNumber,
     tcString, tcSemicolon,
     tcDummy
 };
 
+// XXX deprecated
 extern const TTokenCode tlSubscriptOrFieldStart[] = {
     tcColonColon,
     tcPointerMember, tcMemberPointer, tcDot, tcLeftSubscript, tcDummy
 };
 
+// tokens that follow an identifier
 extern const TTokenCode tlIdentifierFollow[] = {
     tcComma, tcIdentifier, tcColon, tcColonColon, tcSemicolon,
     tcPointerMember, tcRParen, tcMemberPointer, tcDot, tcDummy

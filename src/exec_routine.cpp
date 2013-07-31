@@ -1,30 +1,19 @@
-//  *************************************************************
-//  *                                                           *
-//  *   E X E C U T O R   (Routines)                     	*
-//  *                                                           *
-//  *   Execute programs, procedures, and functions, and calls	*
-//  *	to declared and standard subroutines.			*
-//  *                                                           *
-//  *	CLASSES: TExecutor					*
-//  *                                                           *
-//  *   FILE:    prog10-1/execrtn.cpp                           *
-//  *                                                           *
-//  *   MODULE:  Executor                                       *
-//  *                                                           *
-//  *   Copyright (c) 1995 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
+/** Executor (Routines)
+ * exec_routine.cpp
+ *
+ * Execute programs, functions, and calls
+ * to declared and standard subroutines.
+ */
 
 #include <memory.h>
 #include "common.h"
 #include "exec.h"
 
-//--------------------------------------------------------------
-//  ExecuteRoutine    	Execute a program, procedure, or
-//			function.
-//--------------------------------------------------------------
-
+/** ExecuteRoutine    	Execute a program, procedure, or
+ *			function.
+ *
+ * @param pRoutineId : ptr to the routine symtab node
+ */
 void TExecutor::ExecuteRoutine(TSymtabNode *pRoutineId) {
 
     EnterRoutine(pRoutineId);
@@ -34,14 +23,12 @@ void TExecutor::ExecuteRoutine(TSymtabNode *pRoutineId) {
     ExitRoutine(pRoutineId);
 }
 
-//--------------------------------------------------------------
-//  EnterRoutine    	Enter a routine:  Switch to its
-//			intermediate code and allocate its
-//			local variables on the runtime stack.
-//
-//	pRoutineId : ptr to routine name's symbol table node
-//--------------------------------------------------------------
-
+/** EnterRoutine    	Enter a routine:  Switch to its
+ *			intermediate code and allocate its
+ *			local variables on the runtime stack.
+ *
+ * @param pRoutineId : ptr to routine name's symbol table node
+ */
 void TExecutor::EnterRoutine(TSymtabNode * pRoutineId) {
     TSymtabNode *pId; // ptr to local variable's symtab node
 
@@ -58,15 +45,13 @@ void TExecutor::EnterRoutine(TSymtabNode * pRoutineId) {
 
 }
 
-//--------------------------------------------------------------
-//  ExitRoutine    	Exit a routine:  Deallocate its local
-//			parameters and variables, pop its frame
-//			off the runtime stack, and return to the
-//			caller's intermediate code.
-//
-//	pRoutineId : ptr to routine name's symbol table node
-//--------------------------------------------------------------
-
+/** ExitRoutine    	Exit a routine:  Deallocate its local
+ *			parameters and variables, pop its frame
+ *			off the runtime stack, and return to the
+ *			caller's intermediate code.
+ *
+ * @param pRoutineId : ptr to routine name's symbol table node
+ */
 void TExecutor::ExitRoutine(TSymtabNode *pRoutineId) {
     TSymtabNode *pId; // ptr to symtab node of local variable or parm
 
@@ -85,15 +70,13 @@ void TExecutor::ExitRoutine(TSymtabNode *pRoutineId) {
     runStack.PopFrame(pRoutineId, pIcode);
 }
 
-//--------------------------------------------------------------
-//  ExecuteSubroutineCall	Execute a call to a procedure or
-//				or a function.
-//
-//	pRoutineId : ptr to the subroutine name's symtab node
-//
-//  Return: ptr to the call's type object
-//--------------------------------------------------------------
-
+/** ExecuteSubroutineCall	Execute a call to a procedure or
+ *				or a function.
+ *
+ * @param pRoutineId : ptr to the subroutine name's symtab node
+ *
+ * @return: ptr to the call's type object
+ */
 TType *TExecutor::ExecuteSubroutineCall(TSymtabNode *pRoutineId) {
     /*return pRoutineId->defn.routine.which == rcDeclared
                 ? ExecuteDeclaredSubroutineCall(pRoutineId)
@@ -101,17 +84,13 @@ TType *TExecutor::ExecuteSubroutineCall(TSymtabNode *pRoutineId) {
     return ExecuteDeclaredSubroutineCall(pRoutineId);
 }
 
-//--------------------------------------------------------------
-//  ExecuteDeclaredSubroutineCall   Execute a call to a declared
-//				    procedure or function.
-//
-//	pRoutineId : ptr to the subroutine name's symtab node
-//
-//  Return: ptr to the call's type object
-//--------------------------------------------------------------
-
-//int return_level;
-
+/** ExecuteDeclaredSubroutineCall   Execute a call to a declared
+ *				    procedure or function.
+ *
+ * @param pRoutineId : ptr to the subroutine name's symtab node
+ *
+ * @return: ptr to the call's type object
+ */
 TType *TExecutor::ExecuteDeclaredSubroutineCall
 (TSymtabNode *pRoutineId) {
     int oldLevel = currentNestingLevel; // level of caller
@@ -145,13 +124,11 @@ TType *TExecutor::ExecuteDeclaredSubroutineCall
     return pRoutineId->pType;
 }
 
-//--------------------------------------------------------------
-//  ExecuteActualParameters	Execute the actual parameters of
-//				a declared subroutine call.
-//
-//	pRoutineId : ptr to the subroutine name's symtab node
-//--------------------------------------------------------------
-
+/** ExecuteActualParameters	Execute the actual parameters of
+ *				a declared subroutine call.
+ *
+ * @param pRoutineId : ptr to the subroutine name's symtab node
+ */
 void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
     TSymtabNode *pFormalId; // ptr to formal parm's symtab node
 
@@ -199,6 +176,10 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
     }
 }
 
+/** ExecuteRETURN	Assign a return value to the functions StackItem
+ *
+ * @param pRoutineId : ptr to the subroutine name's symtab node
+ */
 void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
 
     ExecuteAssignment(pRoutine);

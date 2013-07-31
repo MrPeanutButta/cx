@@ -1,18 +1,8 @@
-//fig 3-21
-//  *************************************************************
-//  *                                                           *
-//  *   E R R O R S                                             *
-//  *                                                           *
-//  *   Routines to handle translation-time and runtime errors. *
-//  *                                                           *
-//  *   FILE:    prog3-2/error.cpp                              *
-//  *                                                           *
-//  *   MODULE:  Error                                          *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
+/** Errors
+ * error.cpp
+ *
+ * Routines to handle translation-time and runtime errors.
+ */
 
 #include <cstdlib>
 #include <cstring>
@@ -22,14 +12,12 @@
 #include "error.h"
 
 int errorCount = 0; // count of syntax errors
-int errorArrowFlag = true; // true if print arrows under syntax
+bool errorArrowFlag = true; // true if print arrows under syntax
+
 //   errors, false if not
 int errorArrowOffset = 8; // offset for printing the error arrow
 
-//--------------------------------------------------------------
-//  Abort messages      Keyed to enumeration type TAbortCode.
-//--------------------------------------------------------------
-
+///  Abort messages      Keyed to enumeration type TAbortCode.
 const char *abortMsg[] = {
     NULL,
     "Invalid command line arguments",
@@ -44,24 +32,22 @@ const char *abortMsg[] = {
     "Unimplemented feature",
 };
 
-//--------------------------------------------------------------
-//  AbortTranslation    A fatal error occurred during the
-//                      translation.  Print the abort code
-//                      to the error file and then exit.
-//
-//      ac : abort code
-//--------------------------------------------------------------
-
+/** AbortTranslation    A fatal error occurred during the
+ *                     translation.  Print the abort code
+ *                     to the error file and then exit.
+ *
+ * @param ac : abort code
+ */
 void AbortTranslation(TAbortCode ac) {
     cerr << "*** fatal translator error: " << abortMsg[-ac] << endl;
     exit(ac);
 }
 
-//--------------------------------------------------------------
-//  Syntax error messages       Keyed to enumeration type
-//                              TErrorCode.
-//--------------------------------------------------------------
 
+
+/* Syntax error messages       Keyed to enumeration type
+ *                             TErrorCode.
+ */
 const char *errorMessages[] = {
     "No error",
     "Unrecognizable input",
@@ -126,13 +112,11 @@ const char *errorMessages[] = {
     "Missing '"
 };
 
-//--------------------------------------------------------------
-//  Error       Print an arrow under the error and then
-//              print the error message.
-//
-//      ec : error code
-//--------------------------------------------------------------
-
+/** Error       Print an arrow under the error and then
+ *              print the error message.
+ *
+ * @param ec : error code
+ */
 void Error(TErrorCode ec) {
     const int maxSyntaxErrors = 0;
 
@@ -153,7 +137,6 @@ void Error(TErrorCode ec) {
         AbortTranslation(abortTooManySyntaxErrors);
     }
 }
-//endfig
 
 const char *runtimeErrorMessages[] = {
     "No runtime error",

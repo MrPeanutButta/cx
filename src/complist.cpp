@@ -1,3 +1,11 @@
+/** Compact Source Listing
+ * complist.cpp
+ *
+ * NOTE:
+ *      this module may be deprecated. -aaron
+ *
+ */
+
 #include <cstring>
 #include <iostream>
 #include "complist.h"
