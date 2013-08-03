@@ -27,7 +27,7 @@ Sections currently in progress include:
 * documentation and project organization
 
 ### Getting involved
-Fork the repo, email aaron.hebert@gmail.com and request to be added to the repo members roster.<br>
+Fork the repo, email aaron.hebert@gmail.com and request to be added to the repo members roster. All of your changes are to be made on your copy of the repo. Changes to the master repo are done via pull requests followd by code review.<br>
 We would be happy to welcome anyone willing to learn and help build this project. Ad-hoc SCRUM meetings are to be held to
 discuss various designs and implementations. These discussions are intended to help the group learn and stay on track with
 whats going on in the project. Availability for voice chat is a minimum requirement.<br>
