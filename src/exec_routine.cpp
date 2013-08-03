@@ -140,8 +140,8 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
         TType *pFormalType = pFormalId->pType;
         GetToken();
 
-        //--VAR parameter: ExecuteVariable will leave the actual
-        //--		   parameter's addresss on top of the stack.
+        /* Reference parameter: ExecuteVariable will leave the actual
+         * parameter's address on top of the stack. */
         if (pFormalId->defn.how == dcReference) {
             ExecuteVariable(pNode, true);
             pFormalId->runstackItem = TOS();
@@ -176,7 +176,8 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
     }
 }
 
-/** ExecuteRETURN	Assign a return value to the functions StackItem
+/** ExecuteRETURN	Assign a return value to the functions StackItem and
+ *                      set current location to the return line of the caller.
  *
  * @param pRoutineId : ptr to the subroutine name's symtab node
  */

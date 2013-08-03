@@ -1,10 +1,20 @@
+/** Executor (Statements)
+ * exec_routine.cpp
+ *
+ * Execute standard Cx statements
+ */
+
 #include <iostream>
 #include "exec.h"
 #include "common.h"
 
 using namespace std;
 
-void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
+/** ExecuteStatement   	Execute a Cx statement
+ *
+ * @param pRoutineId : ptr to the routine symtab node
+ */
+void TExecutor::ExecuteStatement(TSymtabNode *pRoutineId) {
     if (token != tcLBracket) {
         ++stmtCount;
         TraceStatement();
@@ -20,13 +30,13 @@ void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
             }
         }
             break;
-        case tcDo: ExecuteDO(pRoutine);
+        case tcDo: ExecuteDO(pRoutineId);
             break;
-        case tcWhile: ExecuteWHILE(pRoutine);
+        case tcWhile: ExecuteWHILE(pRoutineId);
             break;
-        case tcIf: ExecuteIF(pRoutine);
+        case tcIf: ExecuteIF(pRoutineId);
             break;
-        case tcFor: ExecuteFOR(pRoutine);
+        case tcFor: ExecuteFOR(pRoutineId);
             break;
         case tcSwitch: //ParseSWITCH();
             break;
@@ -37,26 +47,41 @@ void TExecutor::ExecuteStatement(TSymtabNode *pRoutine) {
             GetToken();
             breakLoop = true;
             break;
-        case tcLBracket: ExecuteCompound(pRoutine);
+        case tcLBracket: ExecuteCompound(pRoutineId);
             break;
-        case tcReturn: ExecuteRETURN(pRoutine);
+        case tcReturn: ExecuteRETURN(pRoutineId);
             break;
     }
 }
 
-void TExecutor::ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminator) {
+/** ExecuteStatementList        Execute a list or compounded
+ *                              statements until a terminator token
+ *                              is reached.
+ *
+ * @param pRoutineId : ptr to the routine symtab node
+ * @param terminator : token to terminate compound execution.
+ */
+void TExecutor::ExecuteStatementList(TSymtabNode *pRoutineId, TTokenCode terminator) {
     do {
-        ExecuteStatement(pRoutine);
+        ExecuteStatement(pRoutineId);
 
         while (token == tcSemicolon) GetToken();
     } while ((token != terminator) && (token != tcDummy) && (!breakLoop));
 }
 
+/** ExecuteAssignment 	Execute assignment.
+ *
+ *      pTargetId =, +=, -=, ++, --, /=, *=, %=, ^=
+ *                >>=, <<=, &=, |= <expression>;
+ * 
+ * @param pTargetId : ptr to the symtab node being assigned some value
+ *                    on the stack.
+ */
 void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     TStackItem *pTarget = nullptr; // runtime stack address of target
     TType *pTargetType = nullptr; // ptr to target type object
     TType *pExprType = nullptr; // ptr to expression type object
-	TType *pExprType2 = nullptr; // reserved for casting
+    TType *pExprType2 = nullptr; // reserved for casting
 
     if (pTargetId->defn.how == dcFunction) {
         pTargetType = pTargetId->pType;
@@ -77,44 +102,44 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
 
-			if(token != tcSemicolon) pExprType2 = ExecuteExpression();
+            if (token != tcSemicolon) pExprType2 = ExecuteExpression();
 
             //--Do the assignment.
             if (pTargetType == pFloatType) {
 
-				if(!pExprType2){
-                pTarget->__float =
-					(pExprType->Base() == pIntegerType)
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-				} else {
-					pTarget->__float =
-						(pExprType2->Base() == pIntegerType)
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-				}
+                if (!pExprType2) {
+                    pTarget->__float =
+                            (pExprType->Base() == pIntegerType)
+                            ? Pop()->__int // real := integer
+                            : Pop()->__float; // real := real
+                } else {
+                    pTarget->__float =
+                            (pExprType2->Base() == pIntegerType)
+                            ? Pop()->__int // real := integer
+                            : Pop()->__float; // real := real
+                }
             } else if (((pTargetType->Base() == pIntegerType) &&
                     (pTargetType->Base()->form != fcArray)) ||
                     (pTargetType->Base()->form == fcEnum)) {
-						int value(0);
+                int value(0);
 
-						if(!pExprType2){
-                value = ((pExprType->Base() == pIntegerType) ||
-                             (pExprType->Base() == pBooleanType))
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-						} else {
-							value = ((pExprType2->Base() == pIntegerType) ||
-                             (pExprType2->Base() == pBooleanType))
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-						}
+                if (!pExprType2) {
+                    value = ((pExprType->Base() == pIntegerType) ||
+                            (pExprType->Base() == pBooleanType))
+                            ? Pop()->__int // real := integer
+                            : Pop()->__float; // real := real
+                } else {
+                    value = ((pExprType2->Base() == pIntegerType) ||
+                            (pExprType2->Base() == pBooleanType))
+                            ? Pop()->__int // real := integer
+                            : Pop()->__float; // real := real
+                }
 
                 RangeCheck(pTargetType, value);
 
                 //--integer     := integer
                 //--enumeration := enumeration
-				pTarget->__int = value;
+                pTarget->__int = value;
 
             } else if (pTargetType->Base() == pCharType) {
                 char value = Pop()->__char;
@@ -234,8 +259,8 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             GetToken();
             pExprType = ExecuteExpression();
 
-			// if not semicolon, this may be an expression following a cast.
-			if(token != tcSemicolon)ExecuteExpression();
+            // if not semicolon, this may be an expression following a cast.
+            if (token != tcSemicolon)ExecuteExpression();
 
             //--Do the assignment.
             if (pTargetType == pFloatType) {
@@ -456,7 +481,15 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     }
 }
 
-void TExecutor::ExecuteDO(TSymtabNode * pRoutine) {
+/** ExecuteDO   Executes do/while statement while <expression> is true.
+ * 
+ *      do
+ *      <staement>
+ *      while(<expression>);
+ * 
+ * @param pRoutineId : routine ID this statement is apart of. 
+ */
+void TExecutor::ExecuteDO(TSymtabNode * pRoutineId) {
 
     int breakPoint; // = GetLocationMarker();
     int atLoopStart = CurrentLocation(); // location of loop start in icode;
@@ -468,7 +501,7 @@ void TExecutor::ExecuteDO(TSymtabNode * pRoutine) {
         breakPoint = GetLocationMarker();
         GetToken();
 
-        ExecuteStatementList(pRoutine, tcWhile);
+        ExecuteStatementList(pRoutineId, tcWhile);
 
         if (breakLoop) {
             GoTo(breakPoint);
@@ -488,7 +521,14 @@ void TExecutor::ExecuteDO(TSymtabNode * pRoutine) {
 
 }
 
-void TExecutor::ExecuteWHILE(TSymtabNode * pRoutine) {
+/** ExecuteWHILE        Executes while statement while <expression> is true.
+ * 
+ *      while(<expression>)
+ *            <statement>
+ * 
+ * @param pRoutineId : routine ID this statement is apart of. 
+ */
+void TExecutor::ExecuteWHILE(TSymtabNode * pRoutineId) {
 
     int breakPoint;
     int atLoopStart = CurrentLocation();
@@ -505,7 +545,7 @@ void TExecutor::ExecuteWHILE(TSymtabNode * pRoutine) {
         condition = Pop()->__int;
         GetToken(); //-- )
         if (condition != 0) {
-            ExecuteStatement(pRoutine);
+            ExecuteStatement(pRoutineId);
 
             if (breakLoop) {
                 GoTo(breakPoint);
@@ -524,16 +564,35 @@ void TExecutor::ExecuteWHILE(TSymtabNode * pRoutine) {
     breakLoop = false;
 }
 
-void TExecutor::ExecuteCompound(TSymtabNode * pRoutine) {
+/** ExecuteCompound     Execute statement block.
+ * 
+ *      {       // begin
+ *              <statements>
+ *      }       // end
+ * 
+ * @param pRoutineId : routine ID this statement is apart of. 
+ */
+void TExecutor::ExecuteCompound(TSymtabNode * pRoutineId) {
 
     GetToken();
 
-    ExecuteStatementList(pRoutine, tcRBracket);
+    ExecuteStatementList(pRoutineId, tcRBracket);
 
     if (token == tcRBracket)GetToken();
 }
 
-void TExecutor::ExecuteIF(TSymtabNode * pRoutine) {
+/** ExecuteIF   Executes if statements.
+ * 
+ *      if(<boolean expression>)
+ *              <statement>
+ *      else if (<boolean expression>)
+ *              <statement>
+ *      else 
+ *              <statement>
+ * 
+ * @param pRoutineId : routine ID this statement is apart of. 
+ */
+void TExecutor::ExecuteIF(TSymtabNode * pRoutineId) {
     //-- if
     GetToken();
 
@@ -553,7 +612,7 @@ void TExecutor::ExecuteIF(TSymtabNode * pRoutine) {
     if (condition != 0) {
 
         //--True: { or single statement
-        ExecuteStatement(pRoutine);
+        ExecuteStatement(pRoutineId);
         while (token == tcSemicolon)GetToken();
 
         //--If there is an ELSE part, jump around it.
@@ -575,13 +634,20 @@ void TExecutor::ExecuteIF(TSymtabNode * pRoutine) {
             GetLocationMarker(); // skip over location marker
             //--{ or single statement
             GetToken();
-            ExecuteStatement(pRoutine);
+            ExecuteStatement(pRoutineId);
 
             while (token == tcSemicolon)GetToken();
         }
     }
 }
 
+/** ExecuteFOR  Executes for statement.
+ *          initialize   condition     increment
+ *      for(<statement>; <expression>; <expression>)
+ *              <statement>
+ * 
+ * @param pRoutineId
+ */
 void TExecutor::ExecuteFOR(TSymtabNode * pRoutineId) {
 
     int condition = 0;
