@@ -140,16 +140,16 @@ class TExecutor : public TBackend {
     //--Statements
     TSymtabNode *EnterNew(TSymtabNode *pFunction, const char *pString);
     TSymtabNode *AllocNewNode(TSymtabNode *pRoutineId);
-    void ExecuteStatement(TSymtabNode *pRoutine);
-    void ExecuteStatementList(TSymtabNode *pRoutine, TTokenCode terminator);
+    void ExecuteStatement(TSymtabNode *pRoutineId);
+    void ExecuteStatementList(TSymtabNode *pRoutineId, TTokenCode terminator);
     void ExecuteAssignment(const TSymtabNode *pTargetId);
-    void ExecuteDO(TSymtabNode *pRoutine);
-    void ExecuteWHILE(TSymtabNode *pRoutine);
-    void ExecuteIF(TSymtabNode *pRoutine);
-    void ExecuteFOR(TSymtabNode *pRoutine);
-    void ExecuteSWITCH(TSymtabNode *pRoutine);
-    void ExecuteRETURN(TSymtabNode *pRoutine);
-    void ExecuteCompound(TSymtabNode *pRoutine);
+    void ExecuteDO(TSymtabNode *pRoutineId);
+    void ExecuteWHILE(TSymtabNode *pRoutineId);
+    void ExecuteIF(TSymtabNode *pRoutineId);
+    void ExecuteFOR(TSymtabNode *pRoutineId);
+    void ExecuteSWITCH(TSymtabNode *pRoutineId);
+    void ExecuteRETURN(TSymtabNode *pRoutineId);
+    void ExecuteCompound(TSymtabNode *pRoutineId);
 
     //--Expressions
     TType *ExecuteExpression(void);
