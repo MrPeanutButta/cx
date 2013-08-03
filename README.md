@@ -30,7 +30,7 @@ Sections currently in progress include:
 Fork the repo, email aaron.hebert@gmail.com and request to be added to the repo members roster.<br>
 We would be happy to welcome anyone willing to learn and help build this project. Ad-hoc SCRUM meetings are to be held to
 discuss various designs and implementations. These discussions are intended to help the group learn and stay on track with
-whats going on in the project.<br>
+whats going on in the project. Availability for voice chat is a minimum requirement.<br>
 
 The design RFC (Request for Comment) directory in Cx/doc/dev explains the thought processes around the various stages of
 development. Also, there is a super secret (and super lonely) IRC channel on freenode.<br>
