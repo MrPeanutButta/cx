@@ -484,7 +484,7 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
 /** ExecuteDO   Executes do/while statement while <expression> is true.
  * 
  *      do
- *      <staement>
+ *      <staement>;
  *      while(<expression>);
  * 
  * @param pRoutineId : routine ID this statement is apart of. 
@@ -524,7 +524,7 @@ void TExecutor::ExecuteDO(TSymtabNode * pRoutineId) {
 /** ExecuteWHILE        Executes while statement while <expression> is true.
  * 
  *      while(<expression>)
- *            <statement>
+ *            <statement>;
  * 
  * @param pRoutineId : routine ID this statement is apart of. 
  */
@@ -567,7 +567,7 @@ void TExecutor::ExecuteWHILE(TSymtabNode * pRoutineId) {
 /** ExecuteCompound     Execute statement block.
  * 
  *      {       // begin
- *              <statements>
+ *              <statements>;
  *      }       // end
  * 
  * @param pRoutineId : routine ID this statement is apart of. 
@@ -584,11 +584,11 @@ void TExecutor::ExecuteCompound(TSymtabNode * pRoutineId) {
 /** ExecuteIF   Executes if statements.
  * 
  *      if(<boolean expression>)
- *              <statement>
+ *              <statement>;
  *      else if (<boolean expression>)
- *              <statement>
+ *              <statement>;
  *      else 
- *              <statement>
+ *              <statement>;
  * 
  * @param pRoutineId : routine ID this statement is apart of. 
  */
@@ -644,7 +644,7 @@ void TExecutor::ExecuteIF(TSymtabNode * pRoutineId) {
 /** ExecuteFOR  Executes for statement.
  *          initialize   condition     increment
  *      for(<statement>; <expression>; <expression>)
- *              <statement>
+ *              <statement>;
  * 
  * @param pRoutineId
  */

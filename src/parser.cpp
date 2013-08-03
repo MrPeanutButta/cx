@@ -34,7 +34,9 @@ extern TSymtabNode *pProgram_ptr;
 
 TSymtabNode *TParser::Parse(void) {
 
-    TSymtabNode *pProgramId = new TSymtabNode("__global__", dcProgram);
+    extern bool debugFlag;
+    
+    TSymtabNode *pProgramId = new TSymtabNode("__cx_global__", dcProgram);
     pProgramId->defn.routine.which = rcDeclared;
     pProgramId->defn.routine.parmCount = 0;
     pProgramId->defn.routine.totalParmSize = 0;
@@ -68,16 +70,17 @@ TSymtabNode *TParser::Parse(void) {
     Resync(tlProgramEnd);
     CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
 
-    list.PutLine();
-    sprintf(list.text, "%20d source lines.", currentLineNumber);
-    list.PutLine();
-    sprintf(list.text, "%20d syntax errors.", errorCount);
-    list.PutLine();
+    if (debugFlag) {
+        list.PutLine();
+        sprintf(list.text, "%20d source lines.", currentLineNumber);
+        list.PutLine();
+        sprintf(list.text, "%20d syntax errors.", errorCount);
+        list.PutLine();
+    }
 
     return pProgramId;
 
 }
-//endfig
 
 void TParser::Resync(const TTokenCode* pList1,
         const TTokenCode* pList2,

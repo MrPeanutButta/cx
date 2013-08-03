@@ -1,25 +1,14 @@
-//fig 3-23
-//  *************************************************************
-//  *                                                           *
-//  *   Program 3-2:  Pascal Tokenizer                          *
-//  *                                                           *
-//  *   List the source file.  After each line, list the Pascal *
-//  *   tokens that were extracted from that line.              *
-//  *                                                           *
-//  *   FILE: prog3-2/tokeniz2.cpp                              *
-//  *                                                           *
-//  *   USAGE:  tokeniz2 <source file>                          *
-//  *                                                           *
-//  *               <source file>  name of source file to       *
-//  *                              tokenize                     *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
+/** main
+ * main.cpp
+ * 
+ * main entry point for the Cx interpretor.
+ */
 #include <iostream>
-//#include <chrono>
+
+#ifdef __CX_PROFILE_EXECUTION__
+#include <chrono>
+#endif
+
 #include "error.h"
 #include "buffer.h"
 #include "parser.h"
@@ -27,47 +16,49 @@
 #include "common.h"
 #include "icode.h"
 
+// turn on to view Cx debugging
+#ifdef __CX_DEBUG__
 bool debugFlag = true;
+#else
+bool debugFlag = false;
+#endif 
 
-//--------------------------------------------------------------
-//  main
-//--------------------------------------------------------------
-
+/** main        main entry point
+ * 
+ * @param argc
+ * @param argv
+ * @return exit status.
+ */
 int main(int argc, char *argv[]) {
-
-    extern bool xrefFlag;
 
     //--Check the command line arguments.
     if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <source file>" << endl;
+        cerr << "usage: " << argv[0] << " <source file>" << endl;
         AbortTranslation(abortInvalidCommandLineArgs);
     }
 
-
     listFlag = debugFlag;
     errorArrowFlag = debugFlag;
-    xrefFlag = false;
-
-    //using namespace std::chrono;
 
     //--Create the parser for the source file,
     //--and then parse the file.
     TParser *parser = new TParser(new TSourceBuffer(argv[1]));
 
-    //high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    
+#ifdef __CX_PROFILE_EXECUTION__
+    using namespace std::chrono;
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+#endif
+    
     TSymtabNode *pProgramId = parser->Parse();
-    //high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    //duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
-    //std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
-
+    
+#ifdef __CX_PROFILE_EXECUTION__
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
+    std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
+#endif
+    
     delete parser;
-
-    if (xrefFlag) {
-        list.PutLine();
-        list.PutLine("--x ref---");
-        list.PutLine();
-        globalSymtab.Print();
-    }
 
     if (errorCount == 0) {
         vpSymtabs = new TSymtab *[cntSymtabs];
@@ -77,16 +68,21 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        std::cin.get();
-
         TBackend *pBackend = new TExecutor;
 
-        //t1 = high_resolution_clock::now();
+#ifdef __CX_PROFILE_EXECUTION__
+        std::cin.get();
+        t1 = high_resolution_clock::now();
+#endif
+        
         pBackend->Go(pProgramId);
-        //t2 = high_resolution_clock::now();
-        //time_span = duration_cast < duration<double >> (t2 - t1);
-        //std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
-
+        
+#ifdef __CX_PROFILE_EXECUTION__
+        t2 = high_resolution_clock::now();
+        time_span = duration_cast < duration<double >> (t2 - t1);
+        std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+#endif
+        
         delete[] vpSymtabs;
         delete pBackend;
     }
