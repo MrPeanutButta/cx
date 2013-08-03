@@ -16,7 +16,7 @@
 #define error_h
 
 extern int errorCount;
-extern int errorArrowFlag;
+extern bool errorArrowFlag;
 extern int errorArrowOffset;
 
 //--------------------------------------------------------------

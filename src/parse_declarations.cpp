@@ -1,11 +1,27 @@
+/** Parse Declarations
+ * parse_declarations.cpp
+ */
+
 #include <cstdio>
 #include <cstring>
 #include "common.h"
 #include "parser.h"
 
+// might not always be true in some cases.
 bool execFlag(true);
+
 TSymtabNode *pProgram_ptr = nullptr;
 
+/** ParseDeclarationsOrAssignment       Parses new declarations or 
+ *                                      assignment statements.
+ * 
+ * NOTE:
+ *      This should be broken up a bit. Function, complex, and type declaraions
+ *      should be seperated.
+ * 
+ * @param pRoutineId : ptr to the routine which owns the type being declared or
+ *                     assigned a value.
+ */
 void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
 
     if (!pProgram_ptr->foundGlobalEnd) {
@@ -108,13 +124,13 @@ void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
     }
 }
 
-/**
- * Setup a basic un-named const.
- * The following type keyword will search the AST for a
- * __un_const__ to rename and set it's type.
- * 'const' will only set it's qualifier as dcConstant.
+/** ParseConstantDeclaration    'const' will only set it's qualifier as 
+ *                              dcConstant all else is treated as a standard
+ *                              declaration.
+ *      const <type> <name>;
  *
- * @param pRoutineId - AST node of this constant.
+ * @param pRoutineId    ptr to the routine which owns the type being declared or
+ *                      assigned a constant value.
  */
 void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
     TSymtabNode *pLastId = nullptr;
@@ -150,6 +166,11 @@ void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
 
 }
 
+/** ParseConstant       Parse a constant.
+ * 
+ * @param pConstId : ptr to symbol table node of the identifier
+ *                   being defined
+ */
 void TParser::ParseConstant(TSymtabNode *pConstId) {
     TTokenCode sign = tcDummy;
 
@@ -207,6 +228,19 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
     }
 }
 
+/** ParseIdentifierConstant     In a constant definition of the
+ *                              form
+ *
+ *                                      <id-1> = <id-2>
+ *
+ *                              parse <id-2>. The type can be
+ *                              integer, real, character,
+ *                              enumeration, or string
+ *                              (character array).
+ * 
+ * @param pId1 : ptr to symbol table node of <id-1>.
+ * @param sign : unary + or - sign, or none.
+ */
 void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign) {
     TSymtabNode *pId2 = Find(pToken->String());
 

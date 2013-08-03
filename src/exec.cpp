@@ -218,10 +218,14 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
     //ExecuteRoutine(pProgramId);
     ExitRoutine(pProgramId);
 
-    //--Print the executor's summary.
-    cout << endl;
-    cout << "Successful completion.  " << stmtCount
-            << " statements executed." << endl;
+    extern bool debugFlag;
+
+    if (debugFlag) {
+        //--Print the executor's summary.
+        cout << endl;
+        cout << "Successful completion.  " << stmtCount
+                << " statements executed." << endl;
+    }
 }
 
 /** RangeCheck      Range check an assignment to a subrange.

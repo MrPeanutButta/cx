@@ -1,0 +1,5 @@
+__CX_PROFILE_EXECUTION__    Compiles to allow parsing and execution to be timed.
+                            Useful for profiling parsing and execution times.
+
+__CX_DEBUG__                Turns on Cx debugging. Drastically decreases the
+                            execution speed.
