@@ -178,7 +178,10 @@ void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
 
 /** ExecuteRETURN	Assign a return value to the functions StackItem and
  *                      set current location to the return line of the caller.
- *
+ *      
+ *      return;
+ *      return <expression>;
+ * 
  * @param pRoutineId : ptr to the subroutine name's symtab node
  */
 void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
