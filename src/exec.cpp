@@ -16,7 +16,6 @@ using namespace std;
  *******************/
 
 ///  Constructor
-
 TRuntimeStack::TRuntimeStack(void) {
 
     memset(&stack, 0, sizeof (stack));
@@ -204,7 +203,6 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
 
 
 ///  Go                  Start the executor.
-
 void TExecutor::Go(TSymtabNode *pProgramId) {
     //--Initialize standard input and output.
     eofFlag = cin.eof();
@@ -233,7 +231,6 @@ void TExecutor::Go(TSymtabNode *pProgramId) {
  * @param pTargetType : ptr to target type object
  * @param value       : integer value to assign
  */
-
 void TExecutor::RangeCheck(const TType *pTargetType, int value) {
 
     if ((pTargetType->form == fcSubrange)

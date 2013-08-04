@@ -2,7 +2,12 @@
 #include "parser.h"
 #include "common.h"
 
-void TParser::ParseStatement(TSymtabNode* pRoutineId) {
+
+/** ParseStatement          Parse a statement.
+ * 
+ * @param pRoutineId : function in which this statement is executed.
+ */
+void TParser::ParseStatement(TSymtabNode *pRoutineId) {
     InsertLineMarker();
 
     switch (token) {
@@ -48,6 +53,12 @@ void TParser::ParseStatement(TSymtabNode* pRoutineId) {
     }
 }
 
+/** ParseStatementList      Parse a statement list until the
+ *                          terminator token.
+ * 
+ * @param pRoutineId : function in which these statements are executed.
+ * @param terminator : the token that terminates the list.
+ */
 void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator) {
 
     do {
@@ -56,6 +67,15 @@ void TParser::ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator)
     } while ((token != terminator) && (token != tcEndOfFile));
 }
 
+/** ParseAssignment         Parse an assignment statement.
+ * 
+ * NOTE:
+ *      Just calls ParseVariable; This is because expressions are fully 
+ *      recursive.
+ * 
+ * @param pTargetId : ptr to target id's symbol table node
+ * @return ptr to the pTargetId type object.
+ */
 TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
 
     TType *pTargetType = ParseVariable(pTargetId);
@@ -63,6 +83,14 @@ TType *TParser::ParseAssignment(const TSymtabNode *pTargetId) {
     return pTargetType;
 }
 
+/** ParseDO     Parse do/while statement.
+ * 
+ *      do
+ *        <statement>;
+ *      while(<expression>);
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseDO(TSymtabNode* pRoutineId) {
 
 
@@ -81,6 +109,13 @@ void TParser::ParseDO(TSymtabNode* pRoutineId) {
     FixupLocationMarker(breakPoint);
 }
 
+/** ParseWHILE          Parse while statement.
+ * 
+ *      while(<expression>)
+ *            <statement>;
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
 
     int breakPoint = PutLocationMarker();
@@ -97,6 +132,17 @@ void TParser::ParseWHILE(TSymtabNode* pRoutineId) {
     FixupLocationMarker(breakPoint);
 }
 
+/** ParseIF             Parse if/else statements.
+ * 
+ *      if(<expression>)
+ *         <statement>;
+ *      else if (<expression>)
+ *         <statement>;
+ *      else 
+ *         <statement>;
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseIF(TSymtabNode* pRoutineId) {
 
     //--Append a placeholder location marker for where to go to if
@@ -129,6 +175,13 @@ void TParser::ParseIF(TSymtabNode* pRoutineId) {
     }
 }
 
+/** ParseFOR            Parse for statements.
+ * 
+ *      for(<statement>; <expression>; <expression>)
+ *              <statement>;
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
     int breakPoint = PutLocationMarker();
@@ -167,6 +220,18 @@ void TParser::ParseFOR(TSymtabNode* pRoutineId) {
 
 }
 
+/** ParseSWITCH         Parse switch statements.
+ * 
+ *      switch(<expression>){
+ *              case <const-expression>:
+ *              default:
+ *      }
+ * 
+ * NOTE:
+ *      Broken/not implemented yet.
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
 
     GetTokenAppend();
@@ -186,10 +251,12 @@ void TParser::ParseSWITCH(TSymtabNode* pRoutineId) {
 
 }
 
+/// XXX fixme
 void TParser::ParseCaseBranch(TSymtabNode* pRoutineId, const TType *pExprType) {
     // c switch easier to parse that Pascal???
 }
 
+/// XXX fixme
 void TParser::ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType) {
     GetTokenAppend();
 
@@ -223,6 +290,14 @@ void TParser::ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType) {
     ParseStatementList(pRoutineId, tcBreak);
 }
 
+/** ParseCompound       Parse compounded statements.
+ * 
+ *      {
+ *         <statements>;
+ *      }
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseCompound(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 
@@ -232,6 +307,14 @@ void TParser::ParseCompound(TSymtabNode* pRoutineId) {
 
 }
 
+/** ParseRETURN         Parse return statements.
+ * 
+ *      return;
+ *      or
+ *      return <expression>;
+ * 
+ * @param pRoutineId : ptr to this statements function Id. 
+ */
 void TParser::ParseRETURN(TSymtabNode* pRoutineId) {
     GetTokenAppend();
 

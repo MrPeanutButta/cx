@@ -1,21 +1,3 @@
-//fig 9-11
-//  *************************************************************
-//  *                                                           *
-//  *   T R A C E R                                             *
-//  *                                                           *
-//  *   Print debugging runtime trace messages.                 *
-//  *                                                           *
-//  *   CLASSES: TExecutor                                      *
-//  *                                                           *
-//  *   FILE:    prog9-1/tracer.cpp                             *
-//  *                                                           *
-//  *   MODULE:  Executor                                       *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -25,48 +7,40 @@
 
 using namespace std;
 
-//--------------------------------------------------------------
-//  TraceRoutineEntry   Trace the entry into a routine.
-//
-//      pId : ptr to the routine name's symbol table node
-//--------------------------------------------------------------
-
+/** TraceRoutineEntry   Trace the entry into a routine.
+ * 
+ * @param pRoutineId : ptr to the routine name's symbol table node.
+ */
 void TExecutor::TraceRoutineEntry(const TSymtabNode *pRoutineId) {
     if (traceRoutineFlag) {
         cout << ">> Entering routine " << pRoutineId->String() << endl;
     }
 }
 
-//--------------------------------------------------------------
-//  TraceRoutineExit    Trace the exit from a routine.
-//
-//      pId : ptr to the routine name's symbol table node
-//--------------------------------------------------------------
-
+/** TraceRoutineExit    Trace the exit from a routine.
+ * 
+ * @param pRoutineId : ptr to the routine name's symbol table node
+ */
 void TExecutor::TraceRoutineExit(const TSymtabNode *pRoutineId) {
     if (traceRoutineFlag) {
         cout << ">> Exiting routine " << pRoutineId->String() << endl;
     }
 }
 
-//--------------------------------------------------------------
-//  TraceStatement      Trace the execution of a statement.
-//--------------------------------------------------------------
-
+/** TraceStatement      Trace the execution of a statement.
+ */
 void TExecutor::TraceStatement(void) {
     if (traceStatementFlag) cout << ">>  At " << currentLineNumber
             << endl;
 }
 
-//--------------------------------------------------------------
-//  TraceDataStore      Trace the storing of data into a
-//                      variable or formal parameter.
-//
-//      pTargetId  : ptr to the target name's symbol table node
-//      pDataValue : ptr to the data value
-//      pDataType  : ptr to the data's type object
-//--------------------------------------------------------------
-
+/** TraceDataStore      Trace the storing of data into a
+ *                      variable or formal parameter.
+ * 
+ * @param pTargetId  : ptr to the target name's symbol table node.
+ * @param pDataValue : ptr to the data value.
+ * @param pDataType  : ptr to the data's type object.
+ */
 void TExecutor::TraceDataStore(const TSymtabNode *pTargetId,
         const void *pDataValue,
         const TType *pDataType) {
@@ -82,15 +56,13 @@ void TExecutor::TraceDataStore(const TSymtabNode *pTargetId,
     }
 }
 
-//--------------------------------------------------------------
-//  TraceDataFetch      Trace the fetching of data from a
-//                      variable or formal parameter.
-//
-//      pId        : ptr to the variable name's symbol table node
-//      pDataValue : ptr to the data value
-//      pDataType  : ptr to the data's type object
-//--------------------------------------------------------------
-
+/** TraceDataFetch      Trace the fetching of data from a
+ *                      variable or formal parameter.
+ * 
+ * @param pId        : ptr to the variable name's symbol table node.
+ * @param pDataValue : ptr to the data value.
+ * @param pDataType  : ptr to the data's type object.
+ */
 void TExecutor::TraceDataFetch(const TSymtabNode *pId,
         const void *pDataValue,
         const TType *pDataType) {
@@ -106,13 +78,11 @@ void TExecutor::TraceDataFetch(const TSymtabNode *pId,
     }
 }
 
-//--------------------------------------------------------------
-//  TraceDataValue      Trace a data value.
-//
-//      pDataValue : ptr to the data value
-//      pDataType  : ptr to the data's type object
-//--------------------------------------------------------------
-
+/** TraceDataValue      Trace a data value.
+ * 
+ * @param pDataValue : ptr to the data value.
+ * @param pDataType  : ptr to the data's type object.
+ */
 void TExecutor::TraceDataValue(const void *pDataValue,
         const TType *pDataType) {
     char text[maxInputBufferSize]; // text for value
@@ -146,4 +116,3 @@ void TExecutor::TraceDataValue(const void *pDataValue,
 
     cout << text << endl;
 }
-//endfig

@@ -1,6 +1,14 @@
 #include "common.h"
 #include "parser.h"
 
+/** ParseTypeDefinitions    Parse a list of type definitions
+ *                          separated by commas:
+ *
+ *                              <type> <id>, ... ;
+ * 
+ * @param pRoutineId : ptr to symbol table node of program,
+ *                     procedure, or function identifier.
+ */
 void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
     TSymtabNode *pLastId = nullptr;
 
@@ -35,6 +43,11 @@ void TParser::ParseTypeDefinitions(TSymtabNode *pRoutineId) {
     }
 }
 
+/** ParseTypeSpec       Parse a type specification.
+ * 
+ * @param pNode : ptr to object node.
+ * @return ptr to type object.
+ */
 TType *TParser::ParseTypeSpec(TSymtabNode *pNode) {
     switch (token) {
         case tcIdentifier:
@@ -70,11 +83,26 @@ TType *TParser::ParseTypeSpec(TSymtabNode *pNode) {
     }
 }
 
+/** ParseIdentifierType     In a type defintion of the form
+ *
+ *                               <id-1> = <id-2>
+ *
+ *                          parse <id-2>.
+ * 
+ * @param pId2 : ptr to symbol table node of <id-2>.
+ * @return ptr to type object of <id-2>.
+ */
 TType *TParser::ParseIdentifierType(const TSymtabNode *pId2) {
     GetTokenAppend();
     return pId2->pType;
 }
 
+/** ParseEnumerationType    Parse a enumeration type
+ *                          specification:
+ *      enum <id> { <enum-list> };
+ *  
+ * @return  
+ */
 TType *TParser::ParseEnumerationType(void) {
     TType *pType = new TType(fcEnum, sizeof (int), nullptr);
     TSymtabNode *pLastId = nullptr;
@@ -122,6 +150,14 @@ TType *TParser::ParseEnumerationType(void) {
     return pType;
 }
 
+/** ParseSubrangeType       Parse a subrange type specification.
+ * 
+ * NOTE:
+ *      Not implemented.
+ * 
+ * @param pMinId
+ * @return 
+ */
 TType *TParser::ParseSubrangeType(TSymtabNode* pMinId) {
     TType *pType = new TType(fcSubrange, 0, nullptr);
 
@@ -147,6 +183,16 @@ TType *TParser::ParseSubrangeType(TSymtabNode* pMinId) {
     return pType;
 }
 
+/** ParseSubrangeLimit      Parse a mininum or maximum limit
+ *                          constant of a subrange type.
+ * 
+ * NOTE:
+ *      Not implemented.
+ * 
+ * @param pLimitId
+ * @param limit
+ * @return 
+ */
 TType *TParser::ParseSubrangeLimit(TSymtabNode* pLimitId, int& limit) {
     TType *pType = pDummyType;
     TTokenCode sign = tcDummy;

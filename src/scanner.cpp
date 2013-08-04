@@ -1,34 +1,15 @@
-//  *************************************************************
-//  *                                                           *
-//  *   S C A N N E R                                           *
-//  *                                                           *
-//  *   Scan the text input file.                               *
-//  *                                                           *
-//  *   CLASSES: TTextScanner                                   *
-//  *                                                           *
-//  *   FILE:    prog3-2/scanner.cpp                            *
-//  *                                                           *
-//  *   MODULE:  Scanner                                        *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include <map>
 #include "scanner.h"
 #include "misc.h"
 
 char_code_map charCodeMap; // maps a character to its code
 
-//--------------------------------------------------------------
-//  Constructor     Construct a scanner by constructing the
-//                  text input file buffer and initializing the
-//                  character code map.
-//
-//      pBuffer : ptr to text input buffer to scan
-//--------------------------------------------------------------
-
+/** Constructor     Construct a scanner by constructing the
+ *                  text input file buffer and initializing the
+ *                  character code map.
+ * 
+ * @param pBuffer : ptr to text input buffer to scan.
+ */
 TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
 : pTextInBuffer(pBuffer) {
     char i;
@@ -68,14 +49,12 @@ TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
     charCodeMap['`'] = charCodeMap['@'] = ccError;
 }
 
-//fig 3-16
-//--------------------------------------------------------------
-//  SkipWhiteSpace      Repeatedly fetch characters from the
-//                      text input as long as they're
-//                      whitespace. Each comment is a whitespace
-//                      character.
-//--------------------------------------------------------------
-
+/** SkipWhiteSpace      Repeatedly fetch characters from the
+ *                      text input as long as they're
+ *                      whitespace. Each comment is a whitespace
+ *                      character.
+ * 
+ */
 void TTextScanner::SkipWhiteSpace(void) {
     char ch = pTextInBuffer->Char();
 
@@ -105,15 +84,12 @@ void TTextScanner::SkipWhiteSpace(void) {
     } while ((charCodeMap[ch] == ccWhiteSpace)
             || (ch == '/'));
 }
-//endfig
 
-//--------------------------------------------------------------
-//  Get         Extract the next token from the text input,
-//              based on the current character.
-//
-//  Return: pointer to the extracted token
-//--------------------------------------------------------------
-
+/** Get         Extract the next token from the text input,
+ *              based on the current character.
+ * 
+ * @return pointer to the extracted token.
+ */
 TToken * TTextScanner::Get(void) {
     TToken *pToken; // ptr to token to return
 

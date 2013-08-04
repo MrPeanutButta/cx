@@ -3,6 +3,11 @@
 #include "common.h"
 #include "types.h"
 
+/** ParseExpression     Parse an expression (binary relational
+ *                      operators = < > <> <= and >= ).
+ * 
+ * @return ptr to the expression's type object.
+ */
 TType *TParser::ParseExpression(void) {
 
     TType *pResultType;
@@ -22,16 +27,12 @@ TType *TParser::ParseExpression(void) {
     return pResultType;
 }
 
-TType * TParser::ParseSuffix(TSymtabNode *pNode) {
-    if (token == tcPlusPlus) {
-        GetTokenAppend();
-    } else if (token == tcMinusMinus) {
-        GetTokenAppend();
-    }
-
-    return pNode->pType;
-}
-
+/** ParseSimpleExpression       Parse a simple expression
+ *                              (unary operators + or - , and
+ *                              binary operators + - and ||).
+ * 
+ * @return ptr to the simple expression's type object.
+ */
 TType *TParser::ParseSimpleExpression(void) {
 
     TType *pResultType;
@@ -72,6 +73,11 @@ TType *TParser::ParseSimpleExpression(void) {
     return pResultType;
 }
 
+/** ParseTerm           Parse a term (binary operators * / 
+ *                      % and &&).
+ * 
+ * @return ptr to the term's type object.
+ */
 TType *TParser::ParseTerm(void) {
 
     TType *pResultType;
@@ -115,6 +121,12 @@ TType *TParser::ParseTerm(void) {
     return pResultType;
 }
 
+/** ParseFactor         Parse a factor (identifier, number,
+ *                      string, ! <factor>, or parenthesized
+ *                      subexpression).
+ * 
+ * @return ptr to the factor's type object.
+ */
 TType *TParser::ParseFactor(void) {
 
     TType *pResultType;
@@ -243,6 +255,13 @@ TType *TParser::ParseFactor(void) {
     return pResultType;
 }
 
+/** ParseVariable       Parse variable type, and assignment operators (= -- ++
+ *                      += -= *= /= %= <<= >>= &= ^= |=).
+ *                      Also parsed ([] and .).
+ * 
+ * @param pId : variable node id.
+ * @return variables type object ptr.
+ */
 TType *TParser::ParseVariable(const TSymtabNode* pId) {
     TType *pResultType = pId->pType;
 
@@ -411,6 +430,14 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
     return pResultType;
 }
 
+/** ParseSubscripts     Parse a bracketed list of subscripts
+ *                      following an array variable:
+ *
+ *                          [ <expr> ]
+ * 
+ * @param pType : ptr to the array's type object.
+ * @return ptr to the array element's type object.
+ */
 TType *TParser::ParseSubscripts(const TType* pType) {
     do {
         GetTokenAppend();
@@ -433,6 +460,14 @@ TType *TParser::ParseSubscripts(const TType* pType) {
     return (TType *) pType;
 }
 
+/** ParseField          Parse a field following a record
+ *                      variable:
+ *
+ *                          . <id>
+ * 
+ * @param pType : ptr to the record's type object
+ * @return ptr to the field's type object.
+ */
 TType *TParser::ParseField(const TType* pType) {
     GetTokenAppend();
 
