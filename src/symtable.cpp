@@ -1,21 +1,3 @@
-//  *************************************************************
-//  *                                                           *
-//  *   S Y M B O L   T A B L E                                 *
-//  *                                                           *
-//  *   Manage a symbol table.                      		*
-//  *                                                           *
-//  *	CLASSES: TDefn, TSymtabNode, TSymtab, TSymtabStack	*
-//  *		 TLineNumNode, TLineNumList			*
-//  *                                                           *
-//  *   FILE:    prog8-1/symtab.cpp                             *
-//  *                                                           *
-//  *   MODULE:  Symbol table                                   *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include <cstdio>
 #include <iostream>
 #include "error.h"
@@ -29,20 +11,19 @@ using namespace std;
 int asmLabelIndex = 0; // assembly label index
 bool xrefFlag = false; // true = cross-referencing on, false = off
 
-//              ****************
-//              *              *
-//              *  Definition  *
-//              *              *
-//              ****************
+/****************
+ *              *
+ *  Definition  *
+ *              *
+ ****************/
 
-//--------------------------------------------------------------
-//  Destructor      Delete the local symbol table and icode of a
-//                  program, procedure or function definition.
-//                  Note that the parameter and local identifier
-//                  chains are deleted along with the local
-//                  symbol table.
-//--------------------------------------------------------------
-
+/** Destructor      Delete the local symbol table and icode of a
+ *                  program, procedure or function definition.
+ *                  Note that the parameter and local identifier
+ *                  chains are deleted along with the local
+ *                  symbol table.
+ * 
+ */
 TDefn::~TDefn(void) {
     switch (how) {
 
@@ -59,21 +40,19 @@ TDefn::~TDefn(void) {
     }
 }
 
-//              ***********************
-//              *                     *
-//              *  Symbol Table Node  *
-//              *                     *
-//              ***********************
+/***********************
+ *                     *
+ *  Symbol Table Node  *
+ *                     *
+ ***********************/
 
-//--------------------------------------------------------------
-//  Constructor     Construct a symbol table node by initial-
-//                  izing its subtree pointers and the pointer
-//                  to its symbol string.
-//
-//      pStr : ptr to the symbol string
-//      dc   : definition code
-//--------------------------------------------------------------
-
+/** Constructor     Construct a symbol table node by initial-
+ *                  izing its subtree pointers and the pointer
+ *                  to its symbol string.
+ * 
+ * @param pStr : ptr to the symbol string.
+ * @param dc   : definition code.
+ */
 TSymtabNode::TSymtabNode(const char *pStr, TDefnCode dc)
 : defn(dc) {
     left = right = next = NULL;
@@ -93,10 +72,9 @@ TSymtabNode::TSymtabNode(const char *pStr, TDefnCode dc)
     if (xrefFlag) pLineNumList = new TLineNumList;
 }
 
-//--------------------------------------------------------------
-//  Destructor      Deallocate a symbol table node.
-//--------------------------------------------------------------
-
+/** Destructor      Deallocate a symbol table node.
+ * 
+ */
 TSymtabNode::~TSymtabNode(void) {
     void RemoveType(TType *&pType);
 
@@ -110,14 +88,12 @@ TSymtabNode::~TSymtabNode(void) {
     if (pType != nullptr) RemoveType(pType);
 }
 
-//--------------------------------------------------------------
-//  Print       Print the symbol table node to the list file.
-//              First print the node's left subtree, then the
-//              node itself, and finally the node's right
-//              subtree.  For the node itself, first print its
-//              symbol string, and then its line numbers.
-//--------------------------------------------------------------
-
+/** Print       Print the symbol table node to the list file.
+ *              First print the node's left subtree, then the
+ *              node itself, and finally the node's right
+ *              subtree.  For the node itself, first print its
+ *              symbol string, and then its line numbers. 
+ */
 void TSymtabNode::Print(void) const {
     const int maxNamePrintWidth = 16;
 
@@ -137,11 +113,10 @@ void TSymtabNode::Print(void) const {
     if (right) right->Print();
 }
 
-//--------------------------------------------------------------
-//  PrintIdentifier         Print information about an
-//                          identifier's definition and type.
-//--------------------------------------------------------------
-
+/** PrintIdentifier         Print information about an
+ *                          identifier's definition and type.
+ * 
+ */
 void TSymtabNode::PrintIdentifier(void) const {
     switch (defn.how) {
         case dcConstant: PrintConstant();
@@ -155,11 +130,10 @@ void TSymtabNode::PrintIdentifier(void) const {
     }
 }
 
-//--------------------------------------------------------------
-//  PrintConstant       Print information about a constant
-//                      identifier for the cross-reference.
-//--------------------------------------------------------------
-
+/** PrintConstant       Print information about a constant
+ *                      identifier for the cross-reference.
+ * 
+ */
 void TSymtabNode::PrintConstant(void) const {
     extern TListBuffer list;
 
@@ -188,12 +162,11 @@ void TSymtabNode::PrintConstant(void) const {
     list.PutLine();
 }
 
-//--------------------------------------------------------------
-//  PrintVarOrField         Print information about a variable
-//                          or record field identifier for the
-//                          cross-reference.
-//--------------------------------------------------------------
-
+/** PrintVarOrField         Print information about a variable
+ *                          or record field identifier for the
+ *                          cross-reference.
+ * 
+ */
 void TSymtabNode::PrintVarOrField(void) const {
     extern TListBuffer list;
 
@@ -206,11 +179,10 @@ void TSymtabNode::PrintVarOrField(void) const {
     if ((defn.how == dcVariable) || (this->next)) list.PutLine();
 }
 
-//--------------------------------------------------------------
-//  PrintType           Print information about a type
-//                      identifier for the cross-reference.
-//--------------------------------------------------------------
-
+/** PrintType           Print information about a type
+ *                      identifier for the cross-reference.
+ * 
+ */
 void TSymtabNode::PrintType(void) const {
     list.PutLine();
     list.PutLine("Defined type");
@@ -219,13 +191,11 @@ void TSymtabNode::PrintType(void) const {
     list.PutLine();
 }
 
-//--------------------------------------------------------------
-//  Convert     Convert the symbol table node into a form
-//		suitable for the back end.
-//
-//	vpNodes : vector of node ptrs
-//--------------------------------------------------------------
-
+/** Convert     Convert the symbol table node into a form
+ *		suitable for the back end.
+ * 
+ * @param vpNodes : vector of node ptrs.
+ */
 void TSymtabNode::Convert(TSymtabNode *vpNodes[]) {
     //--First, convert the left subtree.
     if (left != nullptr) left->Convert(vpNodes);
@@ -237,21 +207,18 @@ void TSymtabNode::Convert(TSymtabNode *vpNodes[]) {
     if (right != nullptr) right->Convert(vpNodes);
 }
 
-//              ******************
-//              *                *
-//              *  Symbol Table  *
-//              *                *
-//              ******************
+             /******************
+              *                *
+              *  Symbol Table  *
+              *                *
+              ******************/
 
-//--------------------------------------------------------------
-//  Search      Search the symbol table for the node with a
-//              given name string.
-//
-//      pString : ptr to the name string to search for
-//
-//  Return: ptr to the node if found, else NULL
-//--------------------------------------------------------------
-
+/** Search      Search the symbol table for the node with a
+ *              given name string.
+ * 
+ * @param pString : ptr to the name string to search for.
+ * @return ptr to the node if found, else nullptr.
+ */
 TSymtabNode *TSymtab::Search(const char *pString) const {
     TSymtabNode *pNode = root; // ptr to symbol table node
     int comp;
@@ -271,19 +238,16 @@ TSymtabNode *TSymtab::Search(const char *pString) const {
     return pNode; // ptr to node, or NULL if not found
 }
 
-//--------------------------------------------------------------
-//  Enter       Search the symbol table for the node with a
-//              given name string.  If the node is found, return
-//              a pointer to it.  Else if not found, enter a new
-//              node with the name string, and return a pointer
-//              to the new node.
-//
-//      pString : ptr to the name string to enter
-//      dc      : definition code
-//
-//  Return: ptr to the node, whether existing or newly-entered
-//--------------------------------------------------------------
-
+/** Enter       Search the symbol table for the node with a
+ *              given name string.  If the node is found, return
+ *              a pointer to it.  Else if not found, enter a new
+ *              node with the name string, and return a pointer
+ *              to the new node.
+ * 
+ * @param pString : ptr to the name string to enter.
+ * @param dc      : definition code.
+ * @return ptr to the node, whether existing or newly-entered.
+ */
 TSymtabNode *TSymtab::Enter(const char *pString, TDefnCode dc) {
     TSymtabNode *pNode; // ptr to node
     TSymtabNode **ppNode = &root; // ptr to ptr to node
@@ -305,18 +269,15 @@ TSymtabNode *TSymtab::Enter(const char *pString, TDefnCode dc) {
     return pNode; // return a ptr to it
 }
 
-//--------------------------------------------------------------
-//  EnterNew    Search the symbol table for the given name
-//              string.  If the name is not already in there,
-//              enter it.  Otherwise, flag the redefined
-//              identifier error.
-//
-//      pString : ptr to name string to enter
-//      dc      : definition code
-//
-//  Return: ptr to symbol table node
-//--------------------------------------------------------------
-
+/** EnterNew    Search the symbol table for the given name
+ *              string.  If the name is not already in there,
+ *              enter it.  Otherwise, flag the redefined
+ *              identifier error.
+ * 
+ * @param pString : ptr to name string to enter.
+ * @param dc      : definition code.
+ * @return ptr to symbol table node.
+ */
 TSymtabNode *TSymtab::EnterNew(const char *pString, TDefnCode dc) {
     TSymtabNode *pNode = Search(pString);
 
@@ -326,13 +287,11 @@ TSymtabNode *TSymtab::EnterNew(const char *pString, TDefnCode dc) {
     return pNode;
 }
 
-//--------------------------------------------------------------
-//  Convert     Convert the symbol table into a form suitable
-//		for the back end.
-//
-//	vpSymtabs : vector of symbol table pointers
-//--------------------------------------------------------------
-
+/** Convert     Convert the symbol table into a form suitable
+ *		for the back end.
+ * 
+ * @param vpSymtabs : vector of symbol table pointers.
+ */
 void TSymtab::Convert(TSymtab *vpSymtabs[]) {
     //--Point the appropriate entry of the symbol table pointer vector
     //--to this symbol table.
@@ -344,18 +303,16 @@ void TSymtab::Convert(TSymtab *vpSymtabs[]) {
     root->Convert(vpNodes);
 }
 
-//              ************************
-//              *		       *
-//              *  Symbol Table Stack  *
-//              *		       *
-//              ************************
+             /************************
+              *		             *
+              *  Symbol Table Stack  *
+              *		             *
+              ************************/
 
-//fig 8-6
-//--------------------------------------------------------------
-//  Constructor	    Initialize the global (level 0) symbol
-//		    table, and set the others to NULL.
-//--------------------------------------------------------------
-
+/** Constructor	    Initialize the global (level 0) symbol
+ *		    table, and set the others to NULL.
+ * 
+ */
 TSymtabStack::TSymtabStack(void) {
     extern TSymtab globalSymtab;
     void InitializeStandardRoutines(TSymtab * pSymtab);
@@ -371,45 +328,19 @@ TSymtabStack::TSymtabStack(void) {
     //InitializeStandardRoutines(pSymtabs[0]);
 }
 
-//--------------------------------------------------------------
-//  Destructor	    Remove the predefined types.
-//--------------------------------------------------------------
-
+/** Destructor	    Remove the predefined types.
+ * 
+ */
 TSymtabStack::~TSymtabStack(void) {
     RemovePredefinedTypes();
 }
 
-//--------------------------------------------------------------
-//  SearchAvailableScopes   Search the symbol table stack for the given
-//                          name string in the current scope then global.
-//
-//      pString : ptr to name string to find
-//
-//  Return: ptr to symbol table node if found, else NULL
-//--------------------------------------------------------------
-
-TSymtabNode *TSymtabStack::SearchAvailableScopes(const char *pString) const {
-
-    // search local scope
-    TSymtabNode *pNode = pSymtabs[currentNestingLevel]->Search(pString);
-    if (pNode) return pNode;
-
-    // search global scope
-    pNode = pSymtabs[0]->Search(pString);
-    if (pNode) return pNode;
-
-    return nullptr;
-}
-
-//--------------------------------------------------------------
-//  SearchAll   Search the symbol table stack for the given
-//              name string.
-//
-//      pString : ptr to name string to find
-//
-//  Return: ptr to symbol table node if found, else NULL
-//--------------------------------------------------------------
-
+/** SearchAll   Search the symbol table stack for the given
+ *              name string.
+ * 
+ * @param pString : ptr to name string to find.
+ * @return ptr to symbol table node if found, else nullptr.
+ */
 TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
     for (int i = currentNestingLevel; i >= 0; --i) {
         TSymtabNode *pNode = pSymtabs[i]->Search(pString);
@@ -419,18 +350,15 @@ TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
     return nullptr;
 }
 
-//--------------------------------------------------------------
-//  Find        Search the symbol table stack for the given
-//              name string.  If the name is not already in
-//              there, flag the undefined identifier error,
-//		and then enter the name into the local symbol
-//		table.
-//
-//      pString : ptr to name string to find
-//
-//  Return: ptr to symbol table node
-//--------------------------------------------------------------
-
+/** Find        Search the symbol table stack for the given
+ *              name string.  If the name is not already in
+ *              there, flag the undefined identifier error,
+ *		and then enter the name into the local symbol
+ *		table.
+ * 
+ * @param pString : ptr to name string to find.
+ * @return ptr to symbol table node.
+ */
 TSymtabNode *TSymtabStack::Find(const char *pString) const {
     TSymtabNode *pNode = SearchAll(pString);
 
@@ -442,14 +370,11 @@ TSymtabNode *TSymtabStack::Find(const char *pString) const {
     return pNode;
 }
 
-//--------------------------------------------------------------
-//  EnterScope	Enter a new nested scope.  Increment the nesting
-//		level.  Push new scope's symbol table onto the
-//		stack.
-//
-//      pSymtab : ptr to scope's symbol table
-//--------------------------------------------------------------
-
+/** EnterScope	Enter a new nested scope.  Increment the nesting
+ *		level.  Push new scope's symbol table onto the
+ *		stack.
+ * 
+ */
 void TSymtabStack::EnterScope(void) {
 
     // dont overwrite mains scope
@@ -463,30 +388,26 @@ void TSymtabStack::EnterScope(void) {
     SetCurrentSymtab(new TSymtab);
 }
 
-//--------------------------------------------------------------
-//  ExitScope	Exit the current scope and return to the
-//		enclosing scope.  Decrement the nesting level.
-//		Pop the closed scope's symbol table off the
-//		stack and return a pointer to it.
-//
-//  Return: ptr to closed scope's symbol table
-//--------------------------------------------------------------
-
+/** ExitScope	Exit the current scope and return to the
+ *		enclosing scope.  Decrement the nesting level.
+ *		Pop the closed scope's symbol table off the
+ *		stack and return a pointer to it.
+ * 
+ * @return ptr to closed scope's symbol table.
+ */
 TSymtab *TSymtabStack::ExitScope(void) {
     return pSymtabs[currentNestingLevel--];
 }
-//endfig
 
-//              **********************
-//              *                    *
-//              *  Line Number List  *
-//              *                    *
-//              **********************
+             /**********************
+              *                    *
+              *  Line Number List  *
+              *                    *
+              **********************/
 
-//--------------------------------------------------------------
-//  Destructor      Deallocate a line number list.
-//--------------------------------------------------------------
-
+/** Destructor      Deallocate a line number list.
+ * 
+ */
 TLineNumList::~TLineNumList(void) {
     //--Loop to delete each node in the list.
     while (head) {
@@ -496,12 +417,11 @@ TLineNumList::~TLineNumList(void) {
     }
 }
 
-//--------------------------------------------------------------
-//  Update      Update the list by appending a new line number
-//              node if the line number isn't already in the
-//              list.
-//--------------------------------------------------------------
-
+/** Update      Update the list by appending a new line number
+ *              node if the line number isn't already in the
+ *              list.
+ * 
+ */
 void TLineNumList::Update(void) {
     //--If the line number is already there, it'll be at the tail.
     if (tail && (tail->number == currentLineNumber)) return;
@@ -511,14 +431,12 @@ void TLineNumList::Update(void) {
     tail = tail->next;
 }
 
-//--------------------------------------------------------------
-//  Print       Print the line number list.  Use more than one
-//              line if necessary; indent subsequent lines.
-//
-//      newLineFlag : if true, start a new line immediately
-//      indent      : amount to indent subsequent lines
-//--------------------------------------------------------------
-
+/** Print       Print the line number list.  Use more than one
+ *              line if necessary; indent subsequent lines.
+ * 
+ * @param newLineFlag : if true, start a new line immediately.
+ * @param indent      : amount to indent subsequent lines.
+ */
 void TLineNumList::Print(int newLineFlag, int indent) const {
     const int maxLineNumberPrintWidth = 4;
     const int maxLineNumbersPerLine = 10;

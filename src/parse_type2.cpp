@@ -1,6 +1,14 @@
 #include "common.h"
 #include "parser.h"
 
+/** ParseArrayType      Parse an array type specification.
+ * 
+ *      <type-id> <id> [ <const-index-size> ]; 
+ * 
+ * @param pRoutineId : ptr to fuction which owns this array.
+ * @param pArrayNode : ptr to array symtab node.
+ * @return ptr to array type object.
+ */
 TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode) {
     TType *pArrayType = new TType(fcArray, 0, nullptr);
     TType *pElmtType = pArrayType;
@@ -56,6 +64,13 @@ TType *TParser::ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode)
     return pArrayType;
 }
 
+/** ArraySize           Calculate the total byte size of an
+ *                      array type by recursively calculating
+ *                      the size of each dimension.
+ * 
+ * @param pArrayType : ptr to array type object.
+ * @return byte size.
+ */
 int TParser::ArraySize(TType * pArrayType) {
     if (pArrayType->array.pElmtType->size == 0) {
         pArrayType->array.pElmtType->size = ArraySize(pArrayType->array.pElmtType);
@@ -64,6 +79,15 @@ int TParser::ArraySize(TType * pArrayType) {
     return (pArrayType->array.elmtCount * pArrayType->array.pElmtType->size);
 }
 
+/** ParseComplexType
+ * 
+ * NOTE: 
+ *      Not implemented.
+ * 
+ * @param pRoutineId
+ * @param pNode
+ * @return 
+ */
 TType * TParser::ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode * pNode) {
 
     GetToken();
@@ -101,6 +125,15 @@ TType * TParser::ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode * pNode) 
     return pId->pType;
 }
 
+/** ParseMemberDecls
+ * 
+ * NOTE: 
+ *      Not implemented.
+ * 
+ * @param pRoutineId
+ * @param pComplexType
+ * @param offset
+ */
 void TParser::ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int offset) {
     // copy of base class would go here
 

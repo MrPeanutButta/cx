@@ -1,23 +1,3 @@
-//  *************************************************************
-//  *                                                           *
-//  *   P A R S E R                                             *
-//  *                                                           *
-//  *   Parse the source file for the Pascal Tokenizer          *
-//  *   utility program.                                        *
-//  *                                                           *
-//  *   CLASSES: TParser                                        *
-//  *                                                           *
-//  *   FILE:    prog3-2/parser.cpp                             *
-//  *                                                           *
-//  *   MODULE:  Parser                                         *
-//  *                                                           *
-//  *   Routines to parse the source file.                      *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include <cstdio>
 #include "common.h"
 #include "buffer.h"
@@ -25,13 +5,13 @@
 #include "parser.h"
 //#include "complist.h"
 
-//fig 3-22
-//--------------------------------------------------------------
-//  Parse       Parse the source file.  After listing each
-//              source line, extract and list its tokens.
-//--------------------------------------------------------------
 extern TSymtabNode *pProgram_ptr;
 
+/** Parse       Parse the source file.  After listing each
+ *              source line, extract and list its tokens.
+ * 
+ * @return ptr to '__cx_global__' program Id.
+ */
 TSymtabNode *TParser::Parse(void) {
 
     extern bool debugFlag;
@@ -82,6 +62,15 @@ TSymtabNode *TParser::Parse(void) {
 
 }
 
+/** Resync          Resynchronize the parser.  If the current
+ *                  token is not in one of the token lists,
+ *                  flag it as an error and then skip tokens
+ *                  up to one that is in a list or end of file.
+ * 
+ * @param pList1 : token list.
+ * @param pList2 : token list.
+ * @param pList3 : token list.
+ */
 void TParser::Resync(const TTokenCode* pList1,
         const TTokenCode* pList2,
         const TTokenCode* pList3) {

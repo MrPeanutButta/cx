@@ -8,6 +8,7 @@ const char *formStrings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
+//--Pointers to predefined types.
 TSymtabNode *pMain = nullptr;
 TType *pIntegerType = nullptr;
 TType *pFloatType = nullptr;
@@ -19,6 +20,12 @@ TType *pComplexType = nullptr;
 
 TType *pDummyType = nullptr;
 
+/** Constructors    General.
+ * 
+ * @param fc  : form code.
+ * @param s   : byte size of type.
+ * @param pId : ptr to symbol table node of type identifier.
+ */
 TType::TType(TFormCode fc, int s, TSymtabNode* pId)
 : form(fc), size(s), pTypeId(pId), refCount(0) {
 
@@ -34,6 +41,7 @@ TType::TType(TFormCode fc, int s, TSymtabNode* pId)
     }
 }
 
+
 TType::TType(int length)
 : size(length), form(fcArray), refCount(0) {
     pTypeId = nullptr;
@@ -48,6 +56,13 @@ TType::TType(int length)
     array.pIndexType->subrange.max = length;
 }
 
+/** Destructor      Delete the allocated objects according to
+ *                  the form code.  Note that the objects
+ *                  pointed to by enumeration.pConstIds and by
+ *                  subrange.pBaseType are deleted along with
+ *                  the symbol tables that contain their
+ *                  identifiers. 
+ */
 TType::~TType() {
     switch (form) {
         case fcSubrange:
@@ -66,6 +81,11 @@ TType::~TType() {
     }
 }
 
+/** PrintTypeSpec       Print information about a type
+ *                      specification for the cross-reference.
+ * 
+ * @param vc : vcVerbose or vcTerse to control the output.
+ */
 void TType::PrintTypeSpec(TVerbosityCode vc) {
     sprintf(list.text, "%s, size %d bytes. type id: ", formStrings[form], size);
 
@@ -89,6 +109,11 @@ void TType::PrintTypeSpec(TVerbosityCode vc) {
     }
 }
 
+/** PrintEnumType       Print information about an enumeration
+ *                      type for the cross-reference.
+ * 
+ * @param vc : vcVerbose or vcTerse to control the output.
+ */
 void TType::PrintEnumType(TVerbosityCode vc) const {
     if (vc == vcTerse) return;
 
@@ -104,6 +129,11 @@ void TType::PrintEnumType(TVerbosityCode vc) const {
     }
 }
 
+/** PrintSubrangeType   Print information about a subrange
+ *                      type for the cross-reference.
+ * 
+ * @param vc : vcVerbose or vcTerse to control the output.
+ */
 void TType::PrintSubrangeType(TVerbosityCode vc) const {
     if (vc == vcTerse) return;
 
@@ -118,6 +148,11 @@ void TType::PrintSubrangeType(TVerbosityCode vc) const {
     }
 }
 
+/** PrintArrayType      Print information about an array
+ *                      type for the cross-reference.
+ * 
+ * @param vc : vcVerbose or vcTerse to control the output.
+ */
 void TType::PrintArrayType(TVerbosityCode vc) const {
     if (vc == vcTerse) return;
 
@@ -135,6 +170,11 @@ void TType::PrintArrayType(TVerbosityCode vc) const {
     }
 }
 
+/** PrintRecordType     Print information about a record
+ *                      type for the cross-reference.
+ * 
+ * @param vc : vcVerbose or vcTerse to control the output.
+ */
 void TType::PrintRecordType(TVerbosityCode vc) {
     if (vc == vcTerse) return;
 
@@ -200,6 +240,13 @@ void TType::PrintRecordType(TVerbosityCode vc) {
     //    }
 }
 
+/** InitializePredefinedTypes   Initialize the predefined
+ *                              types by entering their
+ *                              identifiers into the symbol
+ *                              table.
+ * 
+ * @param pSymtab : ptr to symbol table.
+ */
 void InitializePredefinedTypes(TSymtab *pSymtab) {
 
     pMain = pSymtab->Enter("main", dcFunction);
@@ -258,6 +305,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     SetType(pDummyType, new TType(fcNone, 1, nullptr));
 }
 
+/** RemovePredefinedTypes       Remove the predefined types.
+ */
 void RemovePredefinedTypes(void) {
     RemoveType(pComplexType);
     RemoveType(pIntegerType);
@@ -269,6 +318,13 @@ void RemovePredefinedTypes(void) {
 
 void RemoveType(TType *&pType);
 
+/** SetType     Set the target type.  Increment the reference
+ *              count of the source type.
+ * 
+ * @param pTargetType : ref to ptr to target type object.
+ * @param pSourceType : ptr to source type object.
+ * @return ptr to source type object.
+ */
 TType *SetType(TType *&pTargetType, TType *pSourceType) {
     if (!pTargetType) RemoveType(pTargetType);
 
@@ -279,6 +335,12 @@ TType *SetType(TType *&pTargetType, TType *pSourceType) {
     return pSourceType;
 }
 
+/** RemoveType  Decrement a type object's reference count, and
+ *              delete the object and set its pointer to NULL
+ *              if the count becomes 0.
+ * 
+ * @param pType : ref to ptr to type object.
+ */
 void RemoveType(TType *&pType) {
     if (pType && (--pType->refCount == 0)) {
         delete pType;
@@ -286,6 +348,19 @@ void RemoveType(TType *&pType) {
     }
 }
 
+             /************************
+              *                      *
+              *  Type Compatibility  *
+              *                      *
+              ************************/
+
+/** CheckRelOpOperands  Check that the types of the two operands
+ *                      of a relational operator are compatible.
+ *                      Flag an incompatible type error if not.
+ * 
+ * @param pType1 : ptr to the first  operand's type object.
+ * @param pType2 : ptr to the second operand's type object.
+ */
 void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
@@ -311,6 +386,13 @@ void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
     Error(errIncompatibleTypes);
 }
 
+/** CheckIntegerOrReal  Check that the type of each operand is
+ *                      either integer or real.  Flag an
+ *                      incompatible type error if not.
+ * 
+ * @param pType1 : ptr to the first  operand's type object.
+ * @param pType2 : ptr to the second operand's type object or NULL.
+ */
 void CheckIntegerOrReal(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
 
@@ -327,6 +409,13 @@ void CheckIntegerOrReal(const TType *pType1, const TType *pType2) {
     }
 }
 
+/** CheckBoolean        Check that the type of each operand is
+ *                      boolean.  Flag an incompatible type
+ *                      error if not.
+ * 
+ * @param pType1 : ptr to the first  operand's type object.
+ * @param pType2 : ptr to the second operand's type object or NULL.
+ */
 void CheckBoolean(const TType *pType1, const TType *pType2) {
     if ((pType1->Base() != pBooleanType)
             || (pType2 && (pType2->Base() != pBooleanType))) {
@@ -334,6 +423,15 @@ void CheckBoolean(const TType *pType1, const TType *pType2) {
     }
 }
 
+/** CheckAssignmentTypeCompatible   Check that a value's type is
+ *                                  assignment compatible with
+ *                                  the target's type.  Flag an
+ *                                  error if not.
+ * 
+ * @param pTargetType : ptr to the target's type object.
+ * @param pValueType  : ptr to the value's  type object.
+ * @param ec          : error code.
+ */
 void CheckAssignmentTypeCompatible(const TType *pTargetType,
         const TType *pValueType, TErrorCode ec) {
 
@@ -371,6 +469,13 @@ void CheckAssignmentTypeCompatible(const TType *pTargetType,
     Error(ec);
 }
 
+/** IntegerOperands     Check that the types of both operands
+ *                      are integer.
+ * 
+ * @param pType1 : ptr to the first  operand's type object.
+ * @param pType2 : ptr to the second operand's type object.
+ * @return true if yes, false if no.
+ */
 bool IntegerOperands(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
@@ -378,6 +483,14 @@ bool IntegerOperands(const TType *pType1, const TType *pType2) {
     return (pType1 == pIntegerType) && (pType2 == pIntegerType);
 }
 
+/** RealOperands        Check that the types of both operands
+ *                      are real, or that one is real and the
+ *                      other is integer.
+ * 
+ * @param pType1 : ptr to the first  operand's type object.
+ * @param pType2 : ptr to the second operand's type object.
+ * @return true if yes, false if no.
+ */
 bool RealOperands(const TType *pType1, const TType *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();

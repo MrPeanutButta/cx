@@ -1,40 +1,20 @@
-//fig 3-18
-//  *************************************************************
-//  *                                                           *
-//  *   T O K E N S   (Numbers)                                 *
-//  *                                                           *
-//  *   Extract number tokens from the source file.             *
-//  *                                                           *
-//  *   CLASSES: TNumberToken,                                  *
-//  *                                                           *
-//  *   FILE:    prog3-2/tknnum.cpp                             *
-//  *                                                           *
-//  *   MODULE:  Scanner                                        *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include <cstring>
 #include <cstdio>
 #include <cmath>
 #include <sstream>
 #include "token.h"
 
-//              *******************
-//              *                 *
-//              *  Number Tokens  *
-//              *                 *
-//              *******************
+             /*******************
+              *                 *
+              *  Number Tokens  *
+              *                 *
+              *******************/
 
-//--------------------------------------------------------------
-//  Get         Extract a number token from the source and set
-//              its value.
-//
-//      pBuffer : ptr to text input buffer
-//--------------------------------------------------------------
-
+/** Get         Extract a number token from the source and set
+ *              its value.
+ * 
+ * @param buffer : ptr to text input buffer.
+ */
 void TNumberToken::Get(TTextInBuffer &buffer) {
     const int maxInteger = 32767;
     const int maxExponent = 37;
@@ -139,18 +119,14 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
     code = tcNumber;
 }
 
-//--------------------------------------------------------------
-//  AccumulateValue     Extract a number part from the source
-//                      and set its value.
-//
-//      pBuffer : ptr to text input buffer
-//      value   : accumulated value (from one or more calls)
-//      ec      : error code if failure
-//
-//  Return: true  if success
-//          false if failure
-//--------------------------------------------------------------
-
+/** AccumulateValue     Extract a number part from the source
+ *                      and set its value.
+ * 
+ * @param buffer : ptr to text input buffer.
+ * @param value  : accumulated value (from one or more calls).
+ * @param ec     : error code if failure.
+ * @return true  if success false if failure.
+ */
 int TNumberToken::AccumulateValue(TTextInBuffer &buffer,
         float &value, TErrorCode ec) {
     const int maxDigitCount = 20;
@@ -176,10 +152,9 @@ int TNumberToken::AccumulateValue(TTextInBuffer &buffer,
     return true; // success
 }
 
-//--------------------------------------------------------------
-//  Print       Print the token to the list file.
-//--------------------------------------------------------------
-
+/** Print       Print the token to the list file.
+ * 
+ */
 void TNumberToken::Print(void) const {
     if (type == tyInteger) {
         sprintf(list.text, "\t%-18s =%d", ">> integer:",
@@ -191,4 +166,3 @@ void TNumberToken::Print(void) const {
 
     list.PutLine();
 }
-//endfig

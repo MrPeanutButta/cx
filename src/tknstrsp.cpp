@@ -1,37 +1,16 @@
-//fig 3-19
-//  *************************************************************
-//  *                                                           *
-//  *   T O K E N S   (Strings and Specials)                    *
-//  *                                                           *
-//  *   Routines to extract string and special symbol tokens    *
-//  *   from the source file.                                   *
-//  *                                                           *
-//  *   CLASSES: TStringToken, TSpecialToken, TErrorToken       *
-//  *                                                           *
-//  *   FILE:    prog3-2/tknstrsp.cpp                           *
-//  *                                                           *
-//  *   MODULE:  Scanner                                        *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include <cstdio>
 #include "token.h"
 
-//              *******************
-//              *                 *
-//              *  String Tokens  *
-//              *                 *
-//              *******************
+             /*******************
+              *                 *
+              *  String Tokens  *
+              *                 *
+              *******************/
 
-//--------------------------------------------------------------
-//  Get     Get a string token from the source.
-//
-//      pBuffer : ptr to text input buffer
-//--------------------------------------------------------------
-
+/** Get     Get a string token from the source.
+ * 
+ * @param buffer : ptr to text input buffer.
+ */
 void TStringToken::Get(TTextInBuffer &buffer) {
     char ch; // current character
     char *ps = string; // ptr to char in string
@@ -63,6 +42,10 @@ void TStringToken::Get(TTextInBuffer &buffer) {
     *ps = '\0';
 }
 
+/** Get         Extract single quoted char ' '
+ * 
+ * @param buffer : ptr to text input buffer.
+ */
 void TCharToken::Get(TTextInBuffer &buffer) {
     char ch; // current character
     char *ps = string; // ptr to char in string
@@ -82,33 +65,31 @@ void TCharToken::Get(TTextInBuffer &buffer) {
     *ps = '\0';
 }
 
+
 void TCharToken::Print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> char:", string);
     list.PutLine();
 }
 
-//--------------------------------------------------------------
-//  Print       Print the token to the list file.
-//--------------------------------------------------------------
-
+/** Print       Print the token to the list file.
+ * 
+ */
 void TStringToken::Print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> string:", string);
     list.PutLine();
 }
 
-//              ********************
-//              *                  *
-//              *  Special Tokens  *
-//              *                  *
-//              ********************
+             /********************
+              *                  *
+              *  Special Tokens  *
+              *                  *
+              ********************/
 
-//--------------------------------------------------------------
-//  Get         Extract a one- or two-character special symbol
-//              token from the source.
-//
-//      pBuffer : ptr to text input buffer
-//--------------------------------------------------------------
-
+/** Get         Extract a one-, two-, or three-character special symbol
+ *              token from the source.
+ * 
+ * @param buffer : ptr to text input buffer.
+ */
 void TSpecialToken::Get(TTextInBuffer &buffer) {
     char ch = buffer.Char();
     char *ps = string;
@@ -146,11 +127,6 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
             } else code = tcBitOR;
             break;
         case '~': ch = buffer.GetChar();
-            //            if (ch == '=') {
-            //                *ps++ = '=';
-            //                code = tcBitNotEqual;
-            //                buffer.GetChar();
-            //} else 
             code = tcBitNOT;
             break;
         case '*': ch = buffer.GetChar();
@@ -299,27 +275,24 @@ void TSpecialToken::Get(TTextInBuffer &buffer) {
     *ps = '\0';
 }
 
-//--------------------------------------------------------------
-//  Print       Print the token to the list file.
-//--------------------------------------------------------------
-
+/** Print       Print the token to the list file.
+ * 
+ */
 void TSpecialToken::Print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> special:", string);
     list.PutLine();
 }
 
-//              *****************
-//              *               *
-//              *  Error Token  *
-//              *               *
-//              *****************
+             /*****************
+              *               *
+              *  Error Token  *
+              *               *
+              *****************/
 
-//--------------------------------------------------------------
-//  Get         Extract an invalid character from the source.
-//
-//      pBuffer : ptr to text input buffer
-//--------------------------------------------------------------
-
+/** Get         Extract an invalid character from the source.
+ * 
+ * @param buffer : ptr to text input buffer.
+ */
 void TErrorToken::Get(TTextInBuffer &buffer) {
     string[0] = buffer.Char();
     string[1] = '\0';
@@ -327,4 +300,3 @@ void TErrorToken::Get(TTextInBuffer &buffer) {
     buffer.GetChar();
     Error(errUnrecognizable);
 }
-//endfig

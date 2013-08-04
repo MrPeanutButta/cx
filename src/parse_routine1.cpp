@@ -1,26 +1,24 @@
-//--------------------------------------------------------------
-//  ParseFunctionHeader     Parse a function header:
-//
-//                              FUNCTION <id>
-//
-//                          or:
-//
-//                              FUNCTION <id> : <type-id>
-//
-//                          or:
-//
-//                              FUNCTION <id> ( <parm-list> )
-//                                            : <type-id>
-//
-//  Return: ptr to function id's symbol table node
-//--------------------------------------------------------------
-
 #include <cstring>
 #include "common.h"
 #include "parser.h"
 
 extern TSymtabNode *pProgram_ptr;
 
+/** ParseFunctionHeader         Parse a function header:
+ *
+ *                              <type-id> <id> (<parm-list>);
+ * 
+ *                          or:
+ *
+ *                              <type-id> <id> (<parm-list>){}
+ * 
+ * NOTE:
+ *      If scope == 0 and pProgram_ptr->foundGlobalEnd == false;
+ *      Set main's location in icode only when function body is found.
+ * 
+ * @param pFunctionNode : ptr to the function id's symbol table node.
+ * @return ptr to function id's symbol table node.
+ */
 TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     //--Enter the next nesting level and open a new scope
     //--for the function.
@@ -74,14 +72,14 @@ TSymtabNode *TParser::ParseFunctionHeader(TSymtabNode *pFunctionNode) {
     return pFunctionNode;
 }
 
-//--------------------------------------------------------------
-//  ParseBlock      Parse a routine's block:
-//
-//                      <declarations> <compound-statement>
-//
-//      pRoutineId : ptr to symbol table node of routine's id
-//--------------------------------------------------------------
-
+/** ParseBlock      Parse a function's block:
+ *                      
+ *                      {
+ *                              <compound-statement>
+ *                      }
+ * 
+ * @param pRoutineId : ptr to symbol table node of function's id.
+ */
 void TParser::ParseBlock(TSymtabNode *pRoutineId) {
     //--<compound-statement> : Reset the icode and append BEGIN to it,
     //--                       and then parse the compound statement.
@@ -94,4 +92,3 @@ void TParser::ParseBlock(TSymtabNode *pRoutineId) {
     //--Set the program's or routine's icode.
     pRoutineId->defn.routine.pIcode = new TIcode(icode);
 }
-//endfig

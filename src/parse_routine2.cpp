@@ -1,41 +1,15 @@
-
-//fig 8-15
-//  *************************************************************
-//  *                                                           *
-//  *   P A R S E R   (Routines #2)                             *
-//  *                                                           *
-//  *   Parse formal parameters, procedure and function calls,  *
-//  *   and actual parameters.                                  *
-//  *                                                           *
-//  *   CLASSES: TParser                                        *
-//  *                                                           *
-//  *   FILE:    prog8-1/parsrtn2.cpp                           *
-//  *                                                           *
-//  *   MODULE:  Parser                                         *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #include "common.h"
 #include "parser.h"
 
-//--------------------------------------------------------------
-//  ParseFormalParmList     Parse a formal parameter list:
-//
-//                              ( VAR <id-list> : <type-id> ;
-//                                <id-list> : <type-id> ;
-//                                ... )
-//
-//      count     : ref to count of parameters
-//      totalSize : ref to total byte size of all parameters
-//
-//  Return: ptr to head of parm id symbol table node list
-//--------------------------------------------------------------
-
+/** ParseFormalParmList     Parse a formal parameter list:
+ *
+ *                              ( <type-id> <id-list> ); or {
+ * 
+ * @param count
+ * @param totalSize
+ * @return 
+ */
 TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
-    //extern int execFlag;
 
     TSymtabNode *pParmId; // ptrs to parm symtab nodes
     TSymtabNode *pFirstId, *pLastId;
@@ -65,7 +39,7 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
 
         pFirstId = nullptr;
 
-        //--VAR or value parameter?
+        //--Reference or value parameter?
         if (token == tcBitANDorAddrOf) {
             parmDefn = dcReference;
             GetTokenAppend();
@@ -131,16 +105,13 @@ TSymtabNode *TParser::ParseFormalParmList(int &count, int &totalSize) {
     return pParmList;
 }
 
-//--------------------------------------------------------------
-//  ParseSubroutineCall     Parse a call to a declared or a
-//                          standard procedure or function.
-//
-//      pRoutineId    : ptr to routine id's symbol table node
-//      parmCheckFlag : true to check parameter, false not to
-//
-//  Return: ptr to the subroutine's type object
-//--------------------------------------------------------------
-
+/** ParseSubroutineCall     Parse a call to a declared or a
+ *                          standard procedure or function.
+ * 
+ * @param pRoutineId    : ptr to routine id's symbol table node.
+ * @param parmCheckFlag : true to check parameter, false not to
+ * @return ptr to the subroutine's type object
+ */
 TType *TParser::ParseSubroutineCall(const TSymtabNode *pRoutineId,
         int parmCheckFlag) {
     //GetTokenAppend();
@@ -153,16 +124,13 @@ TType *TParser::ParseSubroutineCall(const TSymtabNode *pRoutineId,
             : ParseDeclaredSubroutineCall(pRoutineId, parmCheckFlag);
 }
 
-//--------------------------------------------------------------
-//  ParseDeclaredSubroutineCall Parse a call to a declared
-//                              procedure or function.
-//
-//      pRoutineId    : ptr to subroutine id's symbol table node
-//      parmCheckFlag : true to check parameter, false not to
-//
-//  Return: ptr to the subroutine's type object
-//--------------------------------------------------------------
-
+/** ParseDeclaredSubroutineCall Parse a call to a declared
+ *                              procedure or function.
+ * 
+ * @param pRoutineId    : ptr to subroutine id's symbol table node.
+ * @param parmCheckFlag : true to check parameter, false not to.
+ * @return ptr to the subroutine's type object.
+ */
 TType *TParser::ParseDeclaredSubroutineCall
 (const TSymtabNode *pRoutineId,
         int parmCheckFlag) {
@@ -170,15 +138,13 @@ TType *TParser::ParseDeclaredSubroutineCall
     return pRoutineId->pType;
 }
 
-//--------------------------------------------------------------
-//  ParseActualParmList     Parse an actual parameter list:
-//
-//                              ( <expr-list> )
-//
-//      pRoutineId    : ptr to routine id's symbol table node
-//      parmCheckFlag : true to check parameter, false not to
-//--------------------------------------------------------------
-
+/** ParseActualParmList     Parse an actual parameter list:
+ *
+ *                              ( <expr-list> )
+ * 
+ * @param pRoutineId    : ptr to routine id's symbol table node.
+ * @param parmCheckFlag : true to check parameter, false not to.
+ */
 void TParser::ParseActualParmList(const TSymtabNode *pRoutineId,
         int parmCheckFlag) {
     TSymtabNode *pFormalId = pRoutineId ? pRoutineId->defn.routine.
@@ -209,15 +175,13 @@ void TParser::ParseActualParmList(const TSymtabNode *pRoutineId,
     if (parmCheckFlag && pFormalId) Error(errWrongNumberOfParms);
 }
 
-//--------------------------------------------------------------
-//  ParseActualParm     Parse an actual parameter.  Make sure it
-//                      matches the corresponding formal parm.
-//
-//      pFormalId     : ptr to the corresponding formal parm
-//                      id's symbol table node
-//      parmCheckFlag : true to check parameter, false not to
-//--------------------------------------------------------------
-
+/** ParseActualParm     Parse an actual parameter.  Make sure it
+ *                      matches the corresponding formal parm.
+ * 
+ * @param pFormalId     : ptr to the corresponding formal parm
+ *                        id's symbol table node
+ * @param parmCheckFlag : true to check parameter, false not to.
+ */
 void TParser::ParseActualParm(const TSymtabNode *pFormalId,
         int parmCheckFlag) {
     //--If we're not checking the actual parameters against
@@ -275,4 +239,3 @@ void TParser::ParseActualParm(const TSymtabNode *pFormalId,
 
 
 }
-//endfig
