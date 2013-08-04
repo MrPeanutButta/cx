@@ -85,6 +85,9 @@ void TExecutor::TraceDataFetch(const TSymtabNode *pId,
  */
 void TExecutor::TraceDataValue(const void *pDataValue,
         const TType *pDataType) {
+    
+    if(pDataType->form == fcStream) return;
+    
     char text[maxInputBufferSize]; // text for value
 
     if (pDataType == pFloatType) {

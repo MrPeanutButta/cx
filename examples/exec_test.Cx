@@ -67,6 +67,8 @@ int main(){
     int array[10];
     int test = root * 2;
 
+    __cx_stdout__ = test;
+
     bool test_bool = true;
 
     float test_float = 5.5;
@@ -76,6 +78,7 @@ int main(){
     do{
             array[i] = isqrt(root);
             root = isqrt(test);
+            __cx_stdout__ = root;
 	}while (i++ < 10);
 
     return root;
