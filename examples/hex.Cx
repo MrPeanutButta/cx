@@ -1,9 +1,9 @@
-{
-    x = 0xffffffff;
+int main(){
+    int x = 0xffff;
 
-    a = x << 3;
+    int a = x << 3;
 
-    output = a;
+    __cx_stdout__ = a;
 
     return 0;
 }

@@ -99,7 +99,10 @@ class TNumberToken : public TToken {
     int countErrorFlag; // true if too many digits, else false
 
     int AccumulateValue(TTextInBuffer &buffer,
-            float &value, TErrorCode ec);
+            float &value, uint8_t &radix, TErrorCode ec);
+    
+    bool IsXDigit(const char &c);
+    int CharValue(const char &c);
 
 public:
 

@@ -8,18 +8,19 @@
 #ifndef TYPES_H
 #define	TYPES_H
 
+#include <cstdio>
 #include "error.h"
 #include "symtable.h"
 
 using namespace std;
 
 extern TType *pIntegerType, *pFloatType, *pBooleanType, *pCharType,
-        *pDummyType, *pComplexType;
+        *pDummyType, *pComplexType, *pFileType;
 
 extern TSymtabNode *pMain;
 
 enum TFormCode {
-    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex
+    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex, fcStream
 };
 
 extern const char *formStrings[];
@@ -61,6 +62,11 @@ public:
             // seperate public, private and protected tables
             //ScopedSymtab MemberTable;
         } complex;
+        
+        struct {
+            // file stream
+            FILE *pFileStream;
+        }stream;
     };
 
     //struct {
@@ -79,7 +85,8 @@ public:
 
     bool IsScalar(void) const {
         return (form != fcArray) &&
-                (form != fcComplex);
+                (form != fcComplex) &&
+                (form != fcStream);
     }
 
     TType *Base(void) const {

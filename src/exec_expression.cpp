@@ -516,9 +516,11 @@ TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
  */
 TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
         int addressFlag) {
-
+    
     TType *pType = pId->pType;
 
+    if(pType->form == fcStream) return pType;
+    
     //--Get the variable's runtime stack address.
     TStackItem *pEntry = runStack.GetValueAddress(pId);
     Push((pId->defn.how == dcReference) || (!pType->IsScalar())
