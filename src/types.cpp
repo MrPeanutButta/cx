@@ -10,6 +10,10 @@ const char *formStrings[] = {
 
 //--Pointers to predefined types.
 TSymtabNode *pMain = nullptr;
+TSymtabNode *pStdIn = nullptr;
+TSymtabNode *pStdOut = nullptr;
+TSymtabNode *pStdErr = nullptr;
+
 TType *pIntegerType = nullptr;
 TType *pFloatType = nullptr;
 TType *pDoubleType = nullptr;
@@ -17,6 +21,7 @@ TType *pBooleanType = nullptr;
 TType *pCharType = nullptr;
 TType *pClassType = nullptr;
 TType *pComplexType = nullptr;
+TType *pFileType = nullptr;
 
 TType *pDummyType = nullptr;
 
@@ -261,6 +266,8 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     TSymtabNode *pCharId = pSymtab->Enter("char", dcType);
     TSymtabNode *pFalseId = pSymtab->Enter("false", dcConstant);
     TSymtabNode *pTrueId = pSymtab->Enter("true", dcConstant);
+    
+    TSymtabNode *pFileId = pSymtab->Enter("file", dcType);
 
     if (!pIntegerType) {
         SetType(pIntegerType, new TType(fcScalar, sizeof (int), pIntegerId));
@@ -277,6 +284,10 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     }
     if (!pComplexType) {
         SetType(pComplexType, new TType(fcComplex, sizeof (TType), pComplexId));
+    }
+    
+    if(!pFileType){
+        SetType(pFileType, new TType(fcStream, sizeof(FILE), pFileId));
     }
 
     SetType(pMain->pType, pIntegerType);
@@ -301,7 +312,19 @@ void InitializePredefinedTypes(TSymtab *pSymtab) {
     SetType(pFalseId->pType, pBooleanType);
 
     pFalseId->next = pTrueId;
+    
+    pStdOut = pSymtab->Enter("__cx_stdout__", ::dcVariable);
+    SetType(pStdOut->pType, pFileType);
+    pStdOut->pType->stream.pFileStream = stdout;
 
+    pStdIn = pSymtab->Enter("__cx_stdin__", ::dcVariable);
+    SetType(pStdIn->pType, pFileType);
+    pStdIn->pType->stream.pFileStream = stdin;
+    
+    pStdErr = pSymtab->Enter("__cx_stderr__", ::dcVariable);
+    SetType(pStdErr->pType, pFileType);
+    pStdErr->pType->stream.pFileStream = stderr;
+    
     SetType(pDummyType, new TType(fcNone, 1, nullptr));
 }
 
@@ -314,6 +337,7 @@ void RemovePredefinedTypes(void) {
     RemoveType(pBooleanType);
     RemoveType(pCharType);
     RemoveType(pDummyType);
+    RemoveType(pFileType);
 }
 
 void RemoveType(TType *&pType);

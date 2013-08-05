@@ -92,7 +92,10 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
     else if ((pTargetId->defn.how != dcType)) {
         if (!TokenIn(token, tlAssignOps))GetToken();
         pTargetType = ExecuteVariable(pTargetId, true);
-        pTarget = (TStackItem *) Pop()->__addr;
+
+        if (pTargetType->form != fcStream) {
+            pTarget = (TStackItem *) Pop()->__addr;
+        }
     }
 
     switch (token) {
@@ -108,15 +111,19 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
             if (pTargetType == pFloatType) {
 
                 if (!pExprType2) {
+
                     pTarget->__float =
                             (pExprType->Base() == pIntegerType)
                             ? Pop()->__int // real := integer
                             : Pop()->__float; // real := real
+
                 } else {
+
                     pTarget->__float =
                             (pExprType2->Base() == pIntegerType)
                             ? Pop()->__int // real := integer
                             : Pop()->__float; // real := real
+
                 }
             } else if (((pTargetType->Base() == pIntegerType) &&
                     (pTargetType->Base()->form != fcArray)) ||
@@ -139,7 +146,10 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
 
                 //--integer     := integer
                 //--enumeration := enumeration
+
+
                 pTarget->__int = value;
+
 
             } else if (pTargetType->Base() == pCharType) {
                 char value = Pop()->__char;
@@ -147,6 +157,20 @@ void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
 
                 //--character := character
                 pTarget->__char = value;
+            } else if (pTargetType->Base() == pFileType) {
+
+                if (pExprType == pIntegerType) {
+                    int __i = Pop()->__int;
+                    fprintf(pTargetId->pType->stream.pFileStream, "%i", __i);
+                } else if (pExprType == pFloatType) {
+                    float __f = Pop()->__float;
+                    fprintf(pTargetId->pType->stream.pFileStream, "%f", __f);
+                } else if (pExprType == pCharType) {
+                    char __c = Pop()->__char;
+                    fprintf(pTargetId->pType->stream.pFileStream, "%c", __c);
+                }
+
+
             } else {
                 void *pSource = Pop()->__addr;
 

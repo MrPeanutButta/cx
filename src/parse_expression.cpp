@@ -313,12 +313,16 @@ TType *TParser::ParseVariable(const TSymtabNode* pId) {
                     pExprTypeCastFollow = ParseExpression();
 
                     // check if compatible
-                    CheckAssignmentTypeCompatible(pExprType, pExprTypeCastFollow,
-                            errIncompatibleAssignment);
+                    if (pResultType->form != fcStream) {
+                        CheckAssignmentTypeCompatible(pExprType, pExprTypeCastFollow,
+                                errIncompatibleAssignment);
+                    }
                 }
 
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                if (pResultType->form != fcStream) {
+                    CheckAssignmentTypeCompatible(pResultType, pExprType,
+                            errIncompatibleAssignment);
+                }
             }
                 break;
             case tcMinusMinus:
