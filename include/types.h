@@ -14,10 +14,10 @@
 
 using namespace std;
 
-extern TType *pIntegerType, *pFloatType, *pBooleanType, *pCharType,
-        *pDummyType, *pComplexType, *pFileType;
+extern cx_type *pIntegerType, *pFloatType, *pBooleanType, *pCharType,
+        *pDummyType, *p_complex_type, *pFileType;
 
-extern TSymtabNode *pMain;
+extern cx_symtab_node *pMain;
 
 enum TFormCode {
     fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex, fcStream
@@ -25,28 +25,28 @@ enum TFormCode {
 
 extern const char *formStrings[];
 
-class TType {
+class cx_type {
     int refCount;
 public:
     TFormCode form;
     int size;
-    TSymtabNode *pTypeId;
+    cx_symtab_node *pTypeId;
 
     union {
 
         struct {
-            TSymtabNode *pConstIds;
+            cx_symtab_node *pConstIds;
             int max;
         } enumeration;
 
         struct {
-            TType *pBaseType;
+            cx_type *pBaseType;
             int min, max;
         } subrange;
 
         struct {
-            TType *pIndexType;
-            TType *pElmtType;
+            cx_type *pIndexType;
+            cx_type *pElmtType;
             // first address at intdex 0
             void * start_address;
             void * end_address;
@@ -57,31 +57,31 @@ public:
         struct {
             /* used only for internal to class.
              * connects all scopes to a single table */
-            TSymtab *pSymtabClassScope;
+            cx_symtab *pSymtabClassScope;
 
             // seperate public, private and protected tables
-            //ScopedSymtab MemberTable;
+            //cx_scoped_symtab MemberTable;
         } complex;
-        
+
         struct {
             // file stream
             FILE *pFileStream;
-        }stream;
+        } stream;
     };
 
     //struct {
     /* used only for internal to class.
      * connects all scopes to a single table */
-    //TSymtab *pSymtabClassScope;
+    //cx_symtab *pSymtabClassScope;
 
     // seperate public, private and protected tables
-    //ScopedSymtab MemberTable;
+    //cx_scoped_symtab MemberTable;
     //} complex;
 
-    TType(TFormCode fc, int s, TSymtabNode *pId);
-    TType(int length);
+    cx_type(TFormCode fc, int s, cx_symtab_node *p_id);
+    cx_type(int length);
 
-    ~TType();
+    ~cx_type();
 
     bool IsScalar(void) const {
         return (form != fcArray) &&
@@ -89,8 +89,8 @@ public:
                 (form != fcStream);
     }
 
-    TType *Base(void) const {
-        return form == fcSubrange ? subrange.pBaseType : (TType *) this;
+    cx_type *Base(void) const {
+        return form == fcSubrange ? subrange.pBaseType : (cx_type *) this;
     }
 
     enum TVerbosityCode {
@@ -103,26 +103,26 @@ public:
     void PrintArrayType(TVerbosityCode vc) const;
     void PrintRecordType(TVerbosityCode vc);
 
-    friend TType *SetType(TType *&pTargetType, TType *pSourceType);
-    friend void RemoveType(TType *&pType);
+    friend cx_type *SetType(cx_type *&p_target_type, cx_type *pSourceType);
+    friend void RemoveType(cx_type *&p_type);
 
-    friend void CheckRelOpOperands(const TType *pType1,
-            const TType *pType2);
-    friend void CheckIntegerOrReal(const TType *pType1,
-            const TType *Type2 = nullptr);
-    friend void CheckBoolean(const TType *pType1,
-            const TType *pType2 = nullptr);
-    friend void CheckAssignmentTypeCompatible(const TType *pTargetType,
-            const TType *pValueType,
-            TErrorCode ec);
-    friend bool IntegerOperands(const TType *pType1,
-            const TType *pType2);
-    friend bool RealOperands(const TType *pType1,
-            const TType *pType2);
+    friend void CheckRelOpOperands(const cx_type *pType1,
+            const cx_type *pType2);
+    friend void CheckIntegerOrReal(const cx_type *pType1,
+            const cx_type *Type2 = nullptr);
+    friend void CheckBoolean(const cx_type *pType1,
+            const cx_type *pType2 = nullptr);
+    friend void CheckAssignmentTypeCompatible(const cx_type *p_target_type,
+            const cx_type *pValueType,
+            cx_error_code ec);
+    friend bool IntegerOperands(const cx_type *pType1,
+            const cx_type *pType2);
+    friend bool RealOperands(const cx_type *pType1,
+            const cx_type *pType2);
 };
 
-void InitializePredefinedTypes(TSymtab *pSymtab);
-void RemovePredefinedTypes(void);
+void initialize_builtin_types(cx_symtab *p_symtab);
+void remove_builtin_types(void);
 
 
 

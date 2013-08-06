@@ -1,19 +1,3 @@
-//extern TSymtab globalSymtab;
-//  *************************************************************
-//  *                                                           *
-//  *   E X E C U T O R   (Header)                              *
-//  *                                                           *
-//  *   CLASSES: TStackItem, TRuntimeStack, TExecutor           *
-//  *                                                           *
-//  *   FILE:    prog10-1/exec.h                                *
-//  *                                                           *
-//  *   MODULE:  Executor                                       *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef exec_h
 #define exec_h
 
@@ -24,198 +8,192 @@
 #include "icode.h"
 #include "backend.h"
 
-//--------------------------------------------------------------
-//  TStackItem          Item pushed onto the runtime stack.
-//--------------------------------------------------------------
+///  cx_stack_item          Item pushed onto the runtime stack.
 
-union TStackItem {
-    int __int;
-    float __float;
-    double __double;
-    char __char;
-    void *__addr;
+union cx_stack_item {
+    int int__;
+    float float__;
+    double double__;
+    char char__;
+    void *addr__;
 };
 
 using namespace std;
 
-//--------------------------------------------------------------
-//  TRuntimeStack       Runtime stack class.
-//--------------------------------------------------------------
+///  cx_runtime_stack       Runtime stack class.
 
-class TRuntimeStack {
+class cx_runtime_stack {
 
     enum {
-        stackSize = 31250,
-        frameHeaderSize = 5,
+        stack_size = 31250,
+        frame_header_size = 5,
     };
 
-    //--Stack frame header
+    // Stack frame header
 
-    struct TFrameHeader {
-        TStackItem functionValue;
-        TStackItem staticLink;
-        TStackItem dynamicLink;
+    struct cx_frame_header {
+        cx_stack_item function_value;
+        cx_stack_item static_link;
+        cx_stack_item dynamic_link;
 
         struct {
-            TStackItem icode;
-            TStackItem location;
-        } returnAddress;
+            cx_stack_item icode;
+            cx_stack_item location;
+        } return_address;
     };
 
-    //stack<TStackItem *> rstack;
-    TStackItem stack[stackSize]; // stack items
-    TStackItem *tos; // ptr to the top of the stack
-    TStackItem *pFrameBase; // ptr to current stack frame base
+    //stack<cx_stack_item *> rstack;
+    cx_stack_item stack[stack_size]; // stack items
+    cx_stack_item *tos; // ptr to the top of the stack
+    cx_stack_item *p_frame_base; // ptr to current stack frame base
 
 public:
-    TRuntimeStack(void);
+    cx_runtime_stack(void);
 
-    void Push(int value) {
-        if (tos < &stack[stackSize - 1]) (++tos)->__int = value;
-        else RuntimeError(rteStackOverflow);
+    void push(int value) {
+        if (tos < &stack[stack_size - 1]) (++tos)->int__ = value;
+        else cx_runtime_error(rte_stack_overflow);
     }
 
-    void Push(float value) {
-        if (tos < &stack[stackSize - 1]) (++tos)->__float = value;
-        else RuntimeError(rteStackOverflow);
+    void push(float value) {
+        if (tos < &stack[stack_size - 1]) (++tos)->float__ = value;
+        else cx_runtime_error(rte_stack_overflow);
     }
 
-    void Push(char value) {
-        if (tos < &stack[stackSize - 1]) (++tos)->__char = value;
-        else RuntimeError(rteStackOverflow);
+    void push(char value) {
+        if (tos < &stack[stack_size - 1]) (++tos)->char__ = value;
+        else cx_runtime_error(rte_stack_overflow);
     }
 
-    void Push(void *addr) {
-        if (tos < &stack[stackSize - 1]) (++tos)->__addr = addr;
-        else RuntimeError(rteStackOverflow);
+    void push(void *addr) {
+        if (tos < &stack[stack_size - 1]) (++tos)->addr__ = addr;
+        else cx_runtime_error(rte_stack_overflow);
     }
 
-    TStackItem *PushFrameHeader(int oldLevel, int newLevel,
-            TIcode *pIcode);
-    void ActivateFrame(TStackItem *pNewFrameBase, int location);
-    void PopFrame(const TSymtabNode *pRoutineId, TIcode *&pIcode);
+    cx_stack_item *push_frame_header(int old_level, int new_level,
+            cx_icode *p_icode);
+    void activate_frame(cx_stack_item *p_new_frame_base, int location);
+    void pop_frame(const cx_symtab_node *p_function_id, cx_icode *&p_icode);
 
-    TStackItem *Pop(void) {
+    cx_stack_item *pop(void) {
         return tos--;
     }
 
-    TStackItem *TOS(void) const {
+    cx_stack_item *top_of_stack(void) const {
         return tos;
     }
 
-    void AllocateValue(TSymtabNode *pId);
-    void DeallocateValue(const TSymtabNode *pId);
+    void allocate_value(cx_symtab_node *p_id);
+    void deallocate_value(const cx_symtab_node *p_id);
 
-    TStackItem *GetValueAddress(const TSymtabNode *pId);
+    cx_stack_item *get_value_address(const cx_symtab_node *p_id);
 };
 
-//--------------------------------------------------------------
-//  TExecutor           Executor subclass of TBackend.
-//--------------------------------------------------------------
+//  cx_executor           Executor subclass of cx_backend.
 
-class TExecutor : public TBackend {
-    long stmtCount; // count of executed statements
-    TRuntimeStack runStack; // ptr to runtime stack
+class cx_executor : public cx_backend {
+    long statement_count; // count of executed statements
+    cx_runtime_stack run_stack; // ptr to runtime stack
 
-    int eofFlag; // true if at end of file, else false
+    bool eof_flag; // true if at end of file, else false
 
-    bool breakLoop;
+    bool break_loop; // if true, breaks current loop
 
-    //--Trace flags
-    int traceRoutineFlag; // true to trace routine entry/exit
-    int traceStatementFlag; // true to trace statements
-    int traceStoreFlag; // true to trace data stores
-    int traceFetchFlag; // true to trace data fetches
+    // Trace flags
+    int trace_routine_flag; // true to trace routine entry/exit
+    int trace_statement_flag; // true to trace statements
+    int trace_store_flag; // true to trace data stores
+    int trace_fetch_flag; // true to trace data fetches
 
-    //--Routines
-    void InitializeGlobal(TSymtabNode *pProgramId);
-    void ExecuteRoutine(TSymtabNode *pRoutineId);
-    void EnterRoutine(TSymtabNode *pRoutineId);
-    void ExitRoutine(TSymtabNode *pRoutineId);
-    TType *ExecuteSubroutineCall(TSymtabNode *pRoutineId);
-    TType *ExecuteDeclaredSubroutineCall(TSymtabNode *pRoutineId);
-    TType *ExecuteStandardSubroutineCall(TSymtabNode *pRoutineId);
-    void ExecuteActualParameters(TSymtabNode *pRoutineId);
+    // Routines
+    void initialize_global(cx_symtab_node *p_program_id);
+    void execute_routine(cx_symtab_node *p_function_id);
+    void enter_routine(cx_symtab_node *p_function_id);
+    void exit_routine(cx_symtab_node *p_function_id);
+    cx_type *execute_subroutine_call(cx_symtab_node *p_function_id);
+    cx_type *execute_declared_subroutine_call(cx_symtab_node *p_function_id);
+    cx_type *execute_standard_subroutine_call(cx_symtab_node *p_function_id);
+    void execute_actual_parameters(cx_symtab_node *p_function_id);
 
-    //--Statements
-    TSymtabNode *EnterNew(TSymtabNode *pFunction, const char *pString);
-    TSymtabNode *AllocNewNode(TSymtabNode *pRoutineId);
-    void ExecuteStatement(TSymtabNode *pRoutineId);
-    void ExecuteStatementList(TSymtabNode *pRoutineId, TTokenCode terminator);
-    void ExecuteAssignment(const TSymtabNode *pTargetId);
-    void ExecuteDO(TSymtabNode *pRoutineId);
-    void ExecuteWHILE(TSymtabNode *pRoutineId);
-    void ExecuteIF(TSymtabNode *pRoutineId);
-    void ExecuteFOR(TSymtabNode *pRoutineId);
-    void ExecuteSWITCH(TSymtabNode *pRoutineId);
-    void ExecuteRETURN(TSymtabNode *pRoutineId);
-    void ExecuteCompound(TSymtabNode *pRoutineId);
+    // Statements
+    cx_symtab_node *enter_new(cx_symtab_node *p_function_id, const char *p_string);
+    cx_symtab_node *allocate_new_node(cx_symtab_node *p_function_id);
+    void execute_statement(cx_symtab_node *p_function_id);
+    void execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator);
+    void execute_assignment(const cx_symtab_node *p_target_id);
+    void execute_DO(cx_symtab_node *p_function_id);
+    void execute_WHILE(cx_symtab_node *p_function_id);
+    void execute_IF(cx_symtab_node *p_function_id);
+    void execute_FOR(cx_symtab_node *p_function_id);
+    void execute_SWITCH(cx_symtab_node *p_function_id);
+    void execute_RETURN(cx_symtab_node *p_function_id);
+    void execute_compound(cx_symtab_node *p_function_id);
 
-    //--Expressions
-    TType *ExecuteExpression(void);
-    TType *ExecuteSimpleExpression(void);
-    TType *ExecuteTerm(void);
-    TType *ExecuteFactor(void);
-    TType *ExecuteConstant(const TSymtabNode *pId);
-    TType *ExecuteVariable(const TSymtabNode *pId, int addressFlag);
-    TType *ExecuteSubscripts(const TType *pType);
-    TType *ExecuteField(void);
+    // Expressions
+    cx_type *execute_expression(void);
+    cx_type *execute_simple_expression(void);
+    cx_type *execute_term(void);
+    cx_type *execute_factor(void);
+    cx_type *execute_constant(const cx_symtab_node *p_id);
+    cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
+    cx_type *execute_subscripts(const cx_type *p_type);
+    cx_type *execute_field(void);
 
-    //--Tracing
-    void TraceRoutineEntry(const TSymtabNode *pRoutineId);
-    void TraceRoutineExit(const TSymtabNode *pRoutineId);
-    void TraceStatement(void);
-    void TraceDataStore(const TSymtabNode *pTargetId,
-            const void *pDataValue,
-            const TType *pDataType);
-    void TraceDataFetch(const TSymtabNode *pId,
-            const void *pDataValue,
-            const TType *pDataType);
-    void TraceDataValue(const void *pDataValue,
-            const TType *pDataType);
+    // Tracing
+    void trace_routine_entry(const cx_symtab_node *p_function_id);
+    void trace_routine_exit(const cx_symtab_node *p_function_id);
+    void trace_statement(void);
+    void trace_data_store(const cx_symtab_node *p_target_id,
+            const void *p_data_value,
+            const cx_type *p_data_type);
+    void trace_data_fetch(const cx_symtab_node *p_id,
+            const void *p_data_value,
+            const cx_type *p_data_type);
+    void trace_data_value(const void *p_data_value,
+            const cx_type *p_data_type);
 
-    void RangeCheck(const TType *pTargetType, int value);
+    void range_check(const cx_type *p_target_type, int value);
 
-    void Push(int value) {
-        runStack.Push(value);
+    void push(int value) {
+        run_stack.push(value);
     }
 
-    void Push(float value) {
-        runStack.Push(value);
+    void push(float value) {
+        run_stack.push(value);
     }
 
-    void Push(char value) {
-        runStack.Push(value);
+    void push(char value) {
+        run_stack.push(value);
     }
 
-    void Push(void *addr) {
-        runStack.Push(addr);
+    void push(void *addr) {
+        run_stack.push(addr);
     }
 
-    TStackItem *Pop(void) {
-        return runStack.Pop();
+    cx_stack_item *pop(void) {
+        return run_stack.pop();
     }
 
-    TStackItem *TOS(void) const {
-        return runStack.TOS();
+    cx_stack_item *top_of_stack(void) const {
+        return run_stack.top_of_stack();
     }
 
 public:
 
-    TExecutor(void) : TBackend() {
-        stmtCount = 0;
+    cx_executor(void) : cx_backend() {
+        statement_count = 0;
 
-        extern bool debugFlag;
+        extern bool cx_dev_debug_flag;
 
-        traceRoutineFlag = debugFlag;
-        traceStatementFlag = debugFlag;
-        traceStoreFlag = debugFlag;
-        traceFetchFlag = debugFlag;
+        trace_routine_flag = cx_dev_debug_flag;
+        trace_statement_flag = cx_dev_debug_flag;
+        trace_store_flag = cx_dev_debug_flag;
+        trace_fetch_flag = cx_dev_debug_flag;
 
-        breakLoop = false;
+        break_loop = false;
     }
 
-    virtual void Go(TSymtabNode *pProgramId);
+    virtual void go(cx_symtab_node *p_program_id);
 };
 
 #endif

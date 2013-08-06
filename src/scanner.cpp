@@ -2,119 +2,119 @@
 #include "scanner.h"
 #include "misc.h"
 
-char_code_map charCodeMap; // maps a character to its code
+cx_char_code_map char_code_map; // maps a character to its code
 
 /** Constructor     Construct a scanner by constructing the
  *                  text input file buffer and initializing the
  *                  character code map.
  * 
- * @param pBuffer : ptr to text input buffer to scan.
+ * @param p_buffer : ptr to text input buffer to scan.
  */
-TTextScanner::TTextScanner(TTextInBuffer *pBuffer)
-: pTextInBuffer(pBuffer) {
+cx_text_scanner::cx_text_scanner(cx_text_in_buffer *p_buffer)
+: p_text_in_buffer(p_buffer) {
     char i;
 
-    //--Initialize the character code map.
-    for (i = 'a'; i <= 'z'; ++i) charCodeMap[i] = ccLetter;
-    for (i = 'A'; i <= 'Z'; ++i) charCodeMap[i] = ccLetter;
-    for (i = '0'; i <= '9'; ++i) charCodeMap[i] = ccDigit;
+    // Initialize the character code map.
+    for (i = 'a'; i <= 'z'; ++i) char_code_map[i] = cc_letter;
+    for (i = 'A'; i <= 'Z'; ++i) char_code_map[i] = cc_letter;
+    for (i = '0'; i <= '9'; ++i) char_code_map[i] = cc_digit;
 
-    charCodeMap['_' ] = ccLetter;
+    char_code_map['_' ] = cc_letter;
 
-    charCodeMap['+' ] = charCodeMap['-' ] = ccSpecial;
-    charCodeMap['*' ] = charCodeMap['/' ] = ccSpecial;
-    charCodeMap['=' ] = charCodeMap['^' ] = ccSpecial;
-    charCodeMap['.' ] = charCodeMap[',' ] = ccSpecial;
-    charCodeMap['<' ] = charCodeMap['>' ] = ccSpecial;
-    charCodeMap['(' ] = charCodeMap[')' ] = ccSpecial;
-    charCodeMap['[' ] = charCodeMap[']' ] = ccSpecial;
-    charCodeMap['{' ] = charCodeMap['}' ] = ccSpecial;
-    charCodeMap[':' ] = charCodeMap[';' ] = ccSpecial;
+    char_code_map['+' ] = char_code_map['-' ] = cc_special;
+    char_code_map['*' ] = char_code_map['/' ] = cc_special;
+    char_code_map['=' ] = char_code_map['^' ] = cc_special;
+    char_code_map['.' ] = char_code_map[',' ] = cc_special;
+    char_code_map['<' ] = char_code_map['>' ] = cc_special;
+    char_code_map['(' ] = char_code_map[')' ] = cc_special;
+    char_code_map['[' ] = char_code_map[']' ] = cc_special;
+    char_code_map['{' ] = char_code_map['}' ] = cc_special;
+    char_code_map[':' ] = char_code_map[';' ] = cc_special;
 
-    charCodeMap['#' ] = charCodeMap['?' ] = ccSpecial;
-    charCodeMap['~' ] = charCodeMap['|' ] = ccSpecial;
-    charCodeMap['&' ] = charCodeMap['!' ] = ccSpecial;
-    charCodeMap['%' ] = ccSpecial;
+    char_code_map['#' ] = char_code_map['?' ] = cc_special;
+    char_code_map['~' ] = char_code_map['|' ] = cc_special;
+    char_code_map['&' ] = char_code_map['!' ] = cc_special;
+    char_code_map['%' ] = cc_special;
 
-    charCodeMap[' ' ] = charCodeMap['\t'] = ccWhiteSpace;
-    charCodeMap['\n'] = charCodeMap['\0'] = ccWhiteSpace;
-    charCodeMap['\r'] = charCodeMap['\f'] = ccWhiteSpace;
-    charCodeMap['\\'] = ccWhiteSpace;
+    char_code_map[' ' ] = char_code_map['\t'] = cc_white_space;
+    char_code_map['\n'] = char_code_map['\0'] = cc_white_space;
+    char_code_map['\r'] = char_code_map['\f'] = cc_white_space;
+    char_code_map['\\'] = cc_white_space;
 
-    charCodeMap['\''] = ccQuote;
-    charCodeMap['\"'] = ccQuoteQuote;
+    char_code_map['\''] = cc_quote;
+    char_code_map['\"'] = cc_double_quote;
 
-    charCodeMap[eofChar] = ccEndOfFile;
+    char_code_map[eof_char] = cc_end_of_file;
 
-    charCodeMap['`'] = charCodeMap['@'] = ccError;
+    char_code_map['`'] = char_code_map['@'] = cc_error;
 }
 
-/** SkipWhiteSpace      Repeatedly fetch characters from the
+/** skip_whitespace      Repeatedly fetch characters from the
  *                      text input as long as they're
  *                      whitespace. Each comment is a whitespace
  *                      character.
  * 
  */
-void TTextScanner::SkipWhiteSpace(void) {
-    char ch = pTextInBuffer->Char();
+void cx_text_scanner::skip_whitespace(void) {
+    char ch = p_text_in_buffer->current_char();
 
     do {
-        if (charCodeMap[ch] == ccWhiteSpace) {
-            ch = pTextInBuffer->GetChar();
+        if (char_code_map[ch] == cc_white_space) {
+            ch = p_text_in_buffer->get_char();
         } else if (ch == '/') {
-            ch = pTextInBuffer->GetChar();
+            ch = p_text_in_buffer->get_char();
             if (ch == '/') {
-                while (ch != '\0') ch = pTextInBuffer->GetChar();
+                while (ch != '\0') ch = p_text_in_buffer->get_char();
             } else if (ch == '*') {
-                while (ch != eofChar) {
-                    ch = pTextInBuffer->GetChar();
+                while (ch != eof_char) {
+                    ch = p_text_in_buffer->get_char();
                     if (ch == '*') {
-                        ch = pTextInBuffer->GetChar();
+                        ch = p_text_in_buffer->get_char();
                         if (ch == '/') {
-                            ch = pTextInBuffer->GetChar();
+                            ch = p_text_in_buffer->get_char();
                             break;
                         }
                     }
                 }
             } else {
-                pTextInBuffer->PutBackChar();
+                p_text_in_buffer->put_back_char();
                 break;
             }
         }
-    } while ((charCodeMap[ch] == ccWhiteSpace)
+    } while ((char_code_map[ch] == cc_white_space)
             || (ch == '/'));
 }
 
-/** Get         Extract the next token from the text input,
+/** get         Extract the next__ token from the text input,
  *              based on the current character.
  * 
  * @return pointer to the extracted token.
  */
-TToken * TTextScanner::Get(void) {
-    TToken *pToken; // ptr to token to return
+cx_token * cx_text_scanner::get(void) {
+    cx_token *p_token; // ptr to token to return
 
-    SkipWhiteSpace();
+    skip_whitespace();
 
-    //--Determine the token class, based on the current character.
-    switch (charCodeMap[pTextInBuffer->Char()]) {
-        case ccLetter: pToken = &wordToken;
+    // Determine the token class, based on the current character.
+    switch (char_code_map[p_text_in_buffer->current_char()]) {
+        case cc_letter: p_token = &word_token;
             break;
-        case ccDigit: pToken = &numberToken;
+        case cc_digit: p_token = &number_token;
             break;
-        case ccQuoteQuote: pToken = &stringToken;
+        case cc_double_quote: p_token = &string_token;
             break;
-        case ccQuote: pToken = &charToken;
+        case cc_quote: p_token = &char_token;
             break;
-        case ccSpecial: pToken = &specialToken;
+        case cc_special: p_token = &special_token;
             break;
-        case ccEndOfFile: pToken = &eofToken;
+        case cc_end_of_file: p_token = &eof_token;
             break;
-        default: pToken = &errorToken;
+        default: p_token = &error_token;
             break;
     }
 
-    //--Extract a token of that class, and return a pointer to it.
-    pToken->Get(*pTextInBuffer);
-    return pToken;
+    // Extract a token of that class, and return a pointer to it.
+    p_token->get(*p_text_in_buffer);
+    return p_token;
 }
 

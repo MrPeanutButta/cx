@@ -7,114 +7,114 @@
 
 using namespace std;
 
-/** TraceRoutineEntry   Trace the entry into a routine.
+/** trace_routine_entry   Trace the entry into a routine.
  * 
- * @param pRoutineId : ptr to the routine name's symbol table node.
+ * @param p_function_id : ptr to the routine name's symbol table node.
  */
-void TExecutor::TraceRoutineEntry(const TSymtabNode *pRoutineId) {
-    if (traceRoutineFlag) {
-        cout << ">> Entering routine " << pRoutineId->String() << endl;
+void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
+    if (trace_routine_flag) {
+        cout << ">> Entering routine " << p_function_id->string__() << endl;
     }
 }
 
-/** TraceRoutineExit    Trace the exit from a routine.
+/** trace_routine_exit    Trace the exit from a routine.
  * 
- * @param pRoutineId : ptr to the routine name's symbol table node
+ * @param p_function_id : ptr to the routine name's symbol table node
  */
-void TExecutor::TraceRoutineExit(const TSymtabNode *pRoutineId) {
-    if (traceRoutineFlag) {
-        cout << ">> Exiting routine " << pRoutineId->String() << endl;
+void cx_executor::trace_routine_exit(const cx_symtab_node *p_function_id) {
+    if (trace_routine_flag) {
+        cout << ">> Exiting routine " << p_function_id->string__() << endl;
     }
 }
 
-/** TraceStatement      Trace the execution of a statement.
+/** trace_statement      Trace the execution of a statement.
  */
-void TExecutor::TraceStatement(void) {
-    if (traceStatementFlag) cout << ">>  At " << currentLineNumber
+void cx_executor::trace_statement(void) {
+    if (trace_statement_flag) cout << ">>  At " << current_line_number
             << endl;
 }
 
-/** TraceDataStore      Trace the storing of data into a
+/** trace_data_store      Trace the storing of data into a
  *                      variable or formal parameter.
  * 
- * @param pTargetId  : ptr to the target name's symbol table node.
- * @param pDataValue : ptr to the data value.
- * @param pDataType  : ptr to the data's type object.
+ * @param p_target_id  : ptr to the target name's symbol table node.
+ * @param p_data_value : ptr to the data value.
+ * @param p_data_type  : ptr to the data's type object.
  */
-void TExecutor::TraceDataStore(const TSymtabNode *pTargetId,
-        const void *pDataValue,
-        const TType *pDataType) {
-    if (traceStoreFlag) {
-        TFormCode form = pTargetId->pType->form;
+void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
+        const void *p_data_value,
+        const cx_type *p_data_type) {
+    if (trace_store_flag) {
+        TFormCode form = p_target_id->p_type->form;
 
-        cout << ">>   " << pTargetId->String();
+        cout << ">>   " << p_target_id->string__();
         if (form == fcArray) cout << "[*]";
         else if (form == fcComplex) cout << ".*";
         cout << " <== ";
 
-        TraceDataValue(pDataValue, pDataType);
+        trace_data_value(p_data_value, p_data_type);
     }
 }
 
-/** TraceDataFetch      Trace the fetching of data from a
+/** trace_data_fetch      Trace the fetching of data from a
  *                      variable or formal parameter.
  * 
- * @param pId        : ptr to the variable name's symbol table node.
- * @param pDataValue : ptr to the data value.
- * @param pDataType  : ptr to the data's type object.
+ * @param p_id        : ptr to the variable name's symbol table node.
+ * @param p_data_value : ptr to the data value.
+ * @param p_data_type  : ptr to the data's type object.
  */
-void TExecutor::TraceDataFetch(const TSymtabNode *pId,
-        const void *pDataValue,
-        const TType *pDataType) {
-    if (traceFetchFlag) {
-        TFormCode form = pId->pType->form;
+void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
+        const void *p_data_value,
+        const cx_type *p_data_type) {
+    if (trace_fetch_flag) {
+        TFormCode form = p_id->p_type->form;
 
-        cout << ">>   " << pId->String();
+        cout << ">>   " << p_id->string__();
         if (form == fcArray) cout << "[*]";
         else if (form == fcComplex) cout << ".*";
         cout << ": ";
 
-        TraceDataValue(pDataValue, pDataType);
+        trace_data_value(p_data_value, p_data_type);
     }
 }
 
-/** TraceDataValue      Trace a data value.
+/** trace_data_value      Trace a data value.
  * 
- * @param pDataValue : ptr to the data value.
- * @param pDataType  : ptr to the data's type object.
+ * @param p_data_value : ptr to the data value.
+ * @param p_data_type  : ptr to the data's type object.
  */
-void TExecutor::TraceDataValue(const void *pDataValue,
-        const TType *pDataType) {
-    
-    if(pDataType->form == fcStream) return;
-    
-    char text[maxInputBufferSize]; // text for value
+void cx_executor::trace_data_value(const void *p_data_value,
+        const cx_type *p_data_type) {
 
-    if (pDataType == pFloatType) {
-        sprintf(text, "%0.6g", ((TStackItem *) pDataValue)->__float);
-    } else if (pDataType == pCharType) {
-        sprintf(text, "'%c'", ((TStackItem *) pDataValue)->__char);
-    } else if (pDataType == pBooleanType) {
-        strcpy(text, ((TStackItem *) pDataValue)->__int == 0
+    if (p_data_type->form == fcStream) return;
+
+    char text[max_input_buffer_size]; // text for value
+
+    if (p_data_type == pFloatType) {
+        sprintf(text, "%0.6g", ((cx_stack_item *) p_data_value)->float__);
+    } else if (p_data_type == pCharType) {
+        sprintf(text, "'%c'", ((cx_stack_item *) p_data_value)->char__);
+    } else if (p_data_type == pBooleanType) {
+        strcpy(text, ((cx_stack_item *) p_data_value)->int__ == 0
                 ? "false" : "true");
-    } else if (pDataType->form == fcArray) {
-        if (pDataType->array.pElmtType == pCharType) {
-            int length = pDataType->array.elmtCount;
-            memcpy(text + 1, pDataValue, length);
+    } else if (p_data_type->form == fcArray) {
+        if (p_data_type->array.pElmtType == pCharType) {
+            int length = p_data_type->array.elmtCount;
+            memcpy(text + 1, p_data_value, length);
             text[0] = '\'';
             text[length + 1] = '\'';
             text[length + 2] = '\0';
         } else strcpy(text, "<array>");
-    } else if (pDataType->form == fcComplex) {
+    } else if (p_data_type->form == fcComplex) {
         strcpy(text, "<complex>");
-    } else if (pDataType->Base()->form == fcEnum) {
-        int count = ((TStackItem *) pDataValue)->__int;
-        TSymtabNode *pId = pDataType->Base()->enumeration.pConstIds;
-        while (--count >= 0) pId = pId->next;
-        strcpy(text, pId->String());
+    } else if (p_data_type->Base()->form == fcEnum) {
+        int count = ((cx_stack_item *) p_data_value)->int__;
+        cx_symtab_node *p_id = p_data_type->Base()->enumeration.pConstIds;
+        while (--count >= 0) p_id = p_id->next__;
+        strcpy(text, p_id->string__());
     } else {
-        TStackItem *tmp = (TStackItem *) pDataValue;
-        sprintf(text, "%d", tmp->__int);
+        cx_stack_item *tmp = (cx_stack_item *) p_data_value;
+        sprintf(text, "%d", tmp->int__);
     }
 
     cout << text << endl;

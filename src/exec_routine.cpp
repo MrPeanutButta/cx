@@ -9,186 +9,186 @@
 #include "common.h"
 #include "exec.h"
 
-/** ExecuteRoutine    	Execute a program, procedure, or
+/** execute_routine    	Execute a program, procedure, or
  *			function.
  *
- * @param pRoutineId : ptr to the routine symtab node
+ * @param p_function_id : ptr to the routine symtab node
  */
-void TExecutor::ExecuteRoutine(TSymtabNode *pRoutineId) {
+void cx_executor::execute_routine(cx_symtab_node *p_function_id) {
 
-    EnterRoutine(pRoutineId);
+    enter_routine(p_function_id);
 
-    ExecuteCompound(pRoutineId);
+    execute_compound(p_function_id);
 
-    ExitRoutine(pRoutineId);
+    exit_routine(p_function_id);
 }
 
-/** EnterRoutine    	Enter a routine:  Switch to its
+/** enter_routine    	enter a routine:  Switch to its
  *			intermediate code and allocate its
  *			local variables on the runtime stack.
  *
- * @param pRoutineId : ptr to routine name's symbol table node
+ * @param p_function_id : ptr to routine name's symbol table node
  */
-void TExecutor::EnterRoutine(TSymtabNode * pRoutineId) {
-    TSymtabNode *pId; // ptr to local variable's symtab node
+void cx_executor::enter_routine(cx_symtab_node * p_function_id) {
+    cx_symtab_node *p_id; // ptr to local variable's symtab node
 
-    TraceRoutineEntry(pRoutineId);
+    trace_routine_entry(p_function_id);
 
-    //--Allocate the callee's local variables.
-    for (pId = pRoutineId->defn.routine.locals.pVariableIds;
-            pId;
-            pId = pId->next) runStack.AllocateValue(pId);
+    // Allocate the callee's local variables.
+    for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
+            p_id;
+            p_id = p_id->next__) run_stack.allocate_value(p_id);
 
-    //--Switch to the callee's intermediate code.
-    pIcode = pRoutineId->defn.routine.pIcode;
-    pIcode->Reset();
+    // Switch to the callee's intermediate code.
+    p_icode = p_function_id->defn.routine.p_icode;
+    p_icode->reset();
 
 }
 
-/** ExitRoutine    	Exit a routine:  Deallocate its local
+/** exit_routine    	Exit a routine:  Deallocate its local
  *			parameters and variables, pop its frame
  *			off the runtime stack, and return to the
  *			caller's intermediate code.
  *
- * @param pRoutineId : ptr to routine name's symbol table node
+ * @param p_function_id : ptr to routine name's symbol table node
  */
-void TExecutor::ExitRoutine(TSymtabNode *pRoutineId) {
-    TSymtabNode *pId; // ptr to symtab node of local variable or parm
+void cx_executor::exit_routine(cx_symtab_node *p_function_id) {
+    cx_symtab_node *p_id; // ptr to symtab node of local variable or parm
 
-    TraceRoutineExit(pRoutineId);
+    trace_routine_exit(p_function_id);
 
-    //--Deallocate local parameters and variables.
-    for (pId = pRoutineId->defn.routine.locals.pParmsIds;
-            pId;
-            pId = pId->next) runStack.DeallocateValue(pId);
-    for (pId = pRoutineId->defn.routine.locals.pVariableIds;
-            pId;
-            pId = pId->next) runStack.DeallocateValue(pId);
+    // Deallocate local parameters and variables.
+    for (p_id = p_function_id->defn.routine.locals.p_parms_ids;
+            p_id;
+            p_id = p_id->next__) run_stack.deallocate_value(p_id);
+    for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
+            p_id;
+            p_id = p_id->next__) run_stack.deallocate_value(p_id);
 
-    //--Pop off the callee's stack frame and return to the caller's
-    //--intermediate code.
-    runStack.PopFrame(pRoutineId, pIcode);
+    // pop off the callee's stack frame and return to the caller's
+    // intermediate code.
+    run_stack.pop_frame(p_function_id, p_icode);
 }
 
-/** ExecuteSubroutineCall	Execute a call to a procedure or
+/** execute_subroutine_call	Execute a call to a procedure or
  *				or a function.
  *
- * @param pRoutineId : ptr to the subroutine name's symtab node
+ * @param p_function_id : ptr to the subroutine name's symtab node
  *
  * @return: ptr to the call's type object
  */
-TType *TExecutor::ExecuteSubroutineCall(TSymtabNode *pRoutineId) {
-    /*return pRoutineId->defn.routine.which == rcDeclared
-                ? ExecuteDeclaredSubroutineCall(pRoutineId)
-                : ExecuteStandardSubroutineCall(pRoutineId);*/
-    return ExecuteDeclaredSubroutineCall(pRoutineId);
+cx_type *cx_executor::execute_subroutine_call(cx_symtab_node *p_function_id) {
+    /*return p_function_id->defn.routine.which == rc_declared
+                ? execute_declared_subroutine_call(p_function_id)
+                : execute_standard_subroutine_call(p_function_id);*/
+    return execute_declared_subroutine_call(p_function_id);
 }
 
-/** ExecuteDeclaredSubroutineCall   Execute a call to a declared
+/** execute_declared_subroutine_call   Execute a call to a declared
  *				    procedure or function.
  *
- * @param pRoutineId : ptr to the subroutine name's symtab node
+ * @param p_function_id : ptr to the subroutine name's symtab node
  *
  * @return: ptr to the call's type object
  */
-TType *TExecutor::ExecuteDeclaredSubroutineCall
-(TSymtabNode *pRoutineId) {
-    int oldLevel = currentNestingLevel; // level of caller
-    int newLevel = pRoutineId->level + 1; // level of callee's locals
+cx_type *cx_executor::execute_declared_subroutine_call
+(cx_symtab_node *p_function_id) {
+    int old_level = current_nesting_level; // level of caller
+    int new_level = p_function_id->level + 1; // level of callee's locals
 
-    //--Set up a new stack frame for the callee.
-    TStackItem *pNewFrameBase = runStack.PushFrameHeader
-            (oldLevel, newLevel, pIcode);
+    // Set up a new stack frame for the callee.
+    cx_stack_item *p_new_frame_base = run_stack.push_frame_header
+            (old_level, new_level, p_icode);
 
-    //--Push actual parameter values onto the stack.
-    GetToken();
+    // push actual parameter values onto the stack.
+    get_token();
 
-    if (token == tcLParen) {
-        ExecuteActualParameters(pRoutineId);
+    if (token == tc_left_paren) {
+        execute_actual_parameters(p_function_id);
     }
 
-    //-- )
-    GetToken();
+    //  )
+    get_token();
 
-    //--Activate the new stack frame ...
-    currentNestingLevel = newLevel;
-    runStack.ActivateFrame(pNewFrameBase, CurrentLocation() - 1);
+    // Activate the new stack frame ...
+    current_nesting_level = new_level;
+    run_stack.activate_frame(p_new_frame_base, current_location() - 1);
 
-    //--... and execute the callee.
-    ExecuteRoutine(pRoutineId);
+    // ... and execute the callee.
+    execute_routine(p_function_id);
 
-    //--Return to the caller.  Restore the current token.
-    currentNestingLevel = oldLevel;
-    GetToken();
+    // Return to the caller.  Restore the current token.
+    current_nesting_level = old_level;
+    get_token();
 
-    return pRoutineId->pType;
+    return p_function_id->p_type;
 }
 
-/** ExecuteActualParameters	Execute the actual parameters of
+/** execute_actual_parameters	Execute the actual parameters of
  *				a declared subroutine call.
  *
- * @param pRoutineId : ptr to the subroutine name's symtab node
+ * @param p_function_id : ptr to the subroutine name's symtab node
  */
-void TExecutor::ExecuteActualParameters(TSymtabNode *pRoutineId) {
-    TSymtabNode *pFormalId; // ptr to formal parm's symtab node
+void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
+    cx_symtab_node *p_formal_id; // ptr to formal parm's symtab node
 
-    //--Loop to execute each actual parameter.
-    for (pFormalId = pRoutineId->defn.routine.locals.pParmsIds;
-            pFormalId;
-            pFormalId = pFormalId->next) {
+    // Loop to execute each actual parameter.
+    for (p_formal_id = p_function_id->defn.routine.locals.p_parms_ids;
+            p_formal_id;
+            p_formal_id = p_formal_id->next__) {
 
-        TType *pFormalType = pFormalId->pType;
-        GetToken();
+        cx_type *pFormalType = p_formal_id->p_type;
+        get_token();
 
-        /* Reference parameter: ExecuteVariable will leave the actual
+        /* Reference parameter: execute_variable will leave the actual
          * parameter's address on top of the stack. */
-        if (pFormalId->defn.how == dcReference) {
-            ExecuteVariable(pNode, true);
-            pFormalId->runstackItem = TOS();
-            GetToken();
-        }//--Value parameter
+        if (p_formal_id->defn.how == dc_reference) {
+            execute_variable(p_node, true);
+            p_formal_id->runstack_item = top_of_stack();
+            get_token();
+        }// value parameter
         else {
-            TType *pActualType = ExecuteExpression();
+            cx_type *pActualType = execute_expression();
 
             if ((pFormalType == pFloatType) &&
                     (pActualType->Base() == pIntegerType)) {
 
-                //--real formal := integer actual:
-                //--Convert integer value to real.
-                Push(float(Pop()->__int));
-                pFormalId->runstackItem = TOS();
+                // real formal := integer actual:
+                // convert integer value to real.
+                push(float(pop()->int__));
+                p_formal_id->runstack_item = top_of_stack();
             } else if (!pFormalType->IsScalar()) {
 
-                //--Formal parameter is an array or a record:
-                //--Make a copy of the actual parameter's value.
+                // Formal parameter is an array or a record:
+                // Make a copy of the actual parameter's value.
                 void *addr = new char[pFormalType->size];
-                memcpy(addr, Pop()->__addr, pFormalType->size);
-                Push(addr);
-                pFormalId->runstackItem = TOS();
+                memcpy(addr, pop()->addr__, pFormalType->size);
+                push(addr);
+                p_formal_id->runstack_item = top_of_stack();
             } else {
 
-                //--Range check an integer or enumeration
-                //--formal parameter.
-                RangeCheck(pFormalType, TOS()->__int);
-                pFormalId->runstackItem = TOS();
+                // Range check an integer or enumeration
+                // formal parameter.
+                range_check(pFormalType, top_of_stack()->int__);
+                p_formal_id->runstack_item = top_of_stack();
             }
         }
     }
 }
 
-/** ExecuteRETURN	Assign a return value to the functions StackItem and
+/** execute_RETURN	Assign a return value to the functions StackItem and
  *                      set current location to the return line of the caller.
  *      
  *      return;
  *      return <expression>;
  * 
- * @param pRoutineId : ptr to the subroutine name's symtab node
+ * @param p_function_id : ptr to the subroutine name's symtab node
  */
-void TExecutor::ExecuteRETURN(TSymtabNode *pRoutine) {
+void cx_executor::execute_RETURN(cx_symtab_node *pRoutine) {
 
-    ExecuteAssignment(pRoutine);
-    GoTo(pRoutine->defn.routine.returnMarker);
+    execute_assignment(pRoutine);
+    go_to(pRoutine->defn.routine.return_marker);
 
-    GetToken();
+    get_token();
 }
 

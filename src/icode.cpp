@@ -14,7 +14,7 @@ const char *symbolStrings[] = {
     "}", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
     "&&", "!", "\'", "\"",
 
-    "if", "return", "continue", "friend", "true", "goto", "try",
+    "if", "return", "continue", "friend", "true", "go_to", "try",
     "delete", "short", "typeid", "do", "singed",
     "typename", "break", "double", "long", "sizeof", "union",
     "case", "static", "unsigned", "catch", "else", "namespace",
@@ -30,266 +30,266 @@ const char *symbolStrings[] = {
  * 
  * @param icode : icode to copy.
  */
-TIcode::TIcode(const TIcode &icode) {
-    int length = int(icode.cursor - icode.pCode); // length of icode
+cx_icode::cx_icode(const cx_icode &icode) {
+    int length = int(icode.cursor - icode.p_code); // length of icode
 
-    //--Copy icode.
-    pCode = cursor = new char[length];
-    memcpy(pCode, icode.pCode, length);
+    // Copy icode.
+    p_code = cursor = new char[length];
+    memcpy(p_code, icode.p_code, length);
 }
 
-/** CheckBounds         Guard against code segment overflow.
+/** check_bounds         Guard against code segment overflow.
  * 
  * @param size : number of bytes to append.
  */
-void TIcode::CheckBounds(int size) {
-    if (cursor + size >= &pCode[codeSegmentSize]) {
-        Error(errCodeSegmentOverflow);
-        AbortTranslation(abortCodeSegmentOverflow);
+void cx_icode::check_bounds(int size) {
+    if (cursor + size >= &p_code[code_segment_size]) {
+        cx_error(err_code_segment_overflow);
+        abort_translation(abort_code_segment_overflow);
     }
 }
 
-/** Put(TTokenCode)     Append a token code to the intermediate
+/** put(cx_token_code)     Append a token code to the intermediate
  *                      code.
  * 
  * @param tc : token code.
  */
-void TIcode::Put(TTokenCode tc) {
-    if (errorCount > 0) return;
+void cx_icode::put(cx_token_code tc) {
+    if (error_count > 0) return;
 
     char code = tc;
-    CheckBounds(sizeof (char));
+    check_bounds(sizeof (char));
     memcpy((void *) cursor, (const void *) &code, sizeof (char));
     cursor += sizeof (char);
 }
 
-/** Put(TSymtabNode *)      Append a symbol table node's symbol
+/** put(cx_symtab_node *)      Append a symbol table node's symbol
  *                          table and node indexes to the
  *                          intermediate code.
  * 
- * @param pNode : ptr to symtab node
+ * @param p_node : ptr to symtab node
  */
-void TIcode::Put(const TSymtabNode *pNode) {
-    if (errorCount > 0) return;
+void cx_icode::put(const cx_symtab_node *p_node) {
+    if (error_count > 0) return;
 
-    short xSymtab = pNode->SymtabIndex();
-    short xNode = pNode->NodeIndex();
+    short xsymtab = p_node->symtab_index();
+    short xnode = p_node->node_index();
 
-    CheckBounds(2 * sizeof (short));
+    check_bounds(2 * sizeof (short));
     memcpy((void *) cursor,
-            (const void *) &xSymtab, sizeof (short));
+            (const void *) &xsymtab, sizeof (short));
     memcpy((void *) (cursor + sizeof (short)),
-            (const void *) &xNode, sizeof (short));
+            (const void *) &xnode, sizeof (short));
     cursor += 2 * sizeof (short);
 }
 
-/** Get         Extract the next token from the
+/** get         Extract the next__ token from the
  *              intermediate code.
  * 
  * @return ptr to the extracted token.
  */
-TToken *TIcode::Get(void) {
-    TToken *pToken; // ptr to token to return
+cx_token *cx_icode::get(void) {
+    cx_token *p_token; // ptr to token to return
     char code; // token code read from the file
-    TTokenCode token;
+    cx_token_code token;
 
-    //--Loop to process any line markers
-    //--and extract the next token code.
+    // Loop to process any line markers
+    // and extract the next__ token code.
     do {
-        //--First read the token code.
+        // First read the token code.
         memcpy((void *) &code, (const void *) cursor, sizeof (char));
         cursor += sizeof (char);
-        token = (code > 0) ? (TTokenCode) code : tcDummy;
+        token = (code > 0) ? (cx_token_code) code : tc_dummy;
 
-        //--If it's a line marker, extract the line number.
-        if (token == mcLineMarker) {
+        // If it's a line marker, extract the line number.
+        if (token == mc_line_marker) {
             short number;
 
             memcpy((void *) &number, (const void *) cursor,
                     sizeof (short));
-            currentLineNumber = number;
+            current_line_number = number;
             cursor += sizeof (short);
         }
-    } while (token == mcLineMarker);
+    } while (token == mc_line_marker);
 
-    //--Determine the token class, based on the token code.
+    // Determine the token class, based on the token code.
     switch (token) {
-        case tcNumber: pToken = &numberToken;
+        case tc_number: p_token = &number_token;
             break;
-        case tcString: pToken = &stringToken;
-            break;
-
-        case tcIdentifier:
-            pToken = &wordToken;
-            pToken->code = tcIdentifier;
+        case tc_string: p_token = &string_token;
             break;
 
-        case mcLocationMarker:
-            pToken = &specialToken;
-            pToken->code = token;
+        case tc_identifier:
+            p_token = &word_token;
+            p_token->code__ = tc_identifier;
+            break;
+
+        case mc_location_marker:
+            p_token = &special_token;
+            p_token->code__ = token;
             break;
         default:
-            if (token < tcIf) {
-                pToken = &specialToken;
-                pToken->code = token;
+            if (token < tc_IF) {
+                p_token = &special_token;
+                p_token->code__ = token;
             } else {
-                pToken = &wordToken; // reserved word
-                pToken->code = token;
+                p_token = &word_token; // reserved word
+                p_token->code__ = token;
             }
             break;
     }
 
-    //--Extract the symbol table node and set the token string.
+    // Extract the symbol table node and set the token string.
     switch (token) {
-        case tcIdentifier:
-        case tcNumber:
-        case tcChar:
-        case tcString:
-            pNode = GetSymtabNode();
-            strcpy(pToken->string, pNode->String());
+        case tc_identifier:
+        case tc_number:
+        case tc_char:
+        case tc_string:
+            p_node = get_symtab_node();
+            strcpy(p_token->string, p_node->string__());
             break;
 
-        case mcLocationMarker:
-            pNode = NULL;
-            pToken->string[0] = '\0';
+        case mc_location_marker:
+            p_node = NULL;
+            p_token->string[0] = '\0';
             break;
-        case tcEndOfFile:
-        case tcDummy:
+        case tc_end_of_file:
+        case tc_dummy:
             break;
         default:
 
-            pNode = NULL;
-            strcpy(pToken->string, symbolStrings[code]);
+            p_node = NULL;
+            strcpy(p_token->string, symbolStrings[code]);
             break;
     }
 
-    return pToken;
+    return p_token;
 }
 
-/** GetSymtabNode       Extract a symbol table node pointer
+/** get_symtab_node       Extract a symbol table node pointer
  *                      from the intermediate code.
  * 
  * @return ptr to the symbol table node
  */
-TSymtabNode *TIcode::GetSymtabNode(void) {
-    extern TSymtab **vpSymtabs;
-    short xSymtab, xNode; // symbol table and node indexes
+cx_symtab_node *cx_icode::get_symtab_node(void) {
+    extern cx_symtab **p_vector_symtabs;
+    short xsymtab, xnode; // symbol table and node indexes
 
-    memcpy((void *) &xSymtab, cursor,
+    memcpy((void *) &xsymtab, cursor,
             sizeof (short));
-    memcpy((void *) &xNode, (const void *) (cursor + sizeof (short)),
+    memcpy((void *) &xnode, (const void *) (cursor + sizeof (short)),
             sizeof (short));
     cursor += 2 * sizeof (short);
 
-    return vpSymtabs[xSymtab]->Get(xNode);
+    return p_vector_symtabs[xsymtab]->get(xnode);
 }
 
-/** InsertLineMarker    Insert a line marker into the
+/** insert_line_marker    Insert a line marker into the
  *                      intermediate code just before the
  *                      last appended token code. 
  */
-void TIcode::InsertLineMarker(void) {
-    if (errorCount > 0) return;
+void cx_icode::insert_line_marker(void) {
+    if (error_count > 0) return;
 
-    //--Remember the last appended token code;
+    // Remember the last appended token code;
     char lastCode;
     cursor -= sizeof (char);
     memcpy((void *) &lastCode, (const void *) cursor, sizeof (char));
 
-    //--Insert a statement marker code
-    //--followed by the current line number.
-    char code = mcLineMarker;
-    short number = currentLineNumber;
-    CheckBounds(sizeof (char) + sizeof (short));
+    // Insert a statement marker code
+    // followed by the current line number.
+    char code = mc_line_marker;
+    short number = current_line_number;
+    check_bounds(sizeof (char) + sizeof (short));
     memcpy((void *) cursor, (const void *) &code, sizeof (char));
     cursor += sizeof (char);
     memcpy((void *) cursor, (const void *) &number, sizeof (short));
     cursor += sizeof (short);
 
-    //--Re-append the last token code;
+    // Re-append the last token code;
     memcpy((void *) cursor, (const void *) &lastCode, sizeof (char));
     cursor += sizeof (char);
 }
 
-/** PutLocationMarker   Append a location marker to the
+/** put_location_marker   Append a location marker to the
  *                      intermediate code.
  * 
  * @return location of the location marker's offset.
  */
-int TIcode::PutLocationMarker(void) {
-    if (errorCount > 0) return 0;
+int cx_icode::put_location_marker(void) {
+    if (error_count > 0) return 0;
 
-    //--Append the location marker code.
-    char code = mcLocationMarker;
-    CheckBounds(sizeof (char));
+    // Append the location marker code.
+    char code = mc_location_marker;
+    check_bounds(sizeof (char));
     memcpy((void *) cursor, (const void *) &code, sizeof (char));
     cursor += sizeof (char);
 
-    //--Append 0 as a placeholder for the location offset.
-    //--Remember the current location of the offset itself.
+    // Append 0 as a placeholder for the location offset.
+    // Remember the current location of the offset itself.
     short offset = 0;
-    int atLocation = CurrentLocation();
-    CheckBounds(sizeof (short));
+    int atLocation = current_location();
+    check_bounds(sizeof (short));
     memcpy((void *) cursor, (const void *) &offset, sizeof (short));
     cursor += sizeof (short);
 
     return atLocation;
 }
 
-/** FixupLocationMarker     Fixup a location marker in the
+/** fixup_location_marker     Fixup a location marker in the
  *                          intermediate code by patching in the
  *                          offset of the current token's
  *                          location.
  * 
  * @param location : location of the offset to fix up.
  */
-void TIcode::FixupLocationMarker(int location) {
-    //--Patch in the offset of the current token's location.
-    short offset = CurrentLocation() - 1;
-    memcpy((void *) (pCode + location), (const void *) &offset,
+void cx_icode::fixup_location_marker(int location) {
+    // Patch in the offset of the current token's location.
+    short offset = current_location() - 1;
+    memcpy((void *) (p_code + location), (const void *) &offset,
             sizeof (short));
 }
 
-/** GetLocationMarker       Extract a location marker from the
+/** get_location_marker       Extract a location marker from the
  *                          intermediate code.
  * 
  * @return location offset.
  */
-int TIcode::GetLocationMarker(void) {
+int cx_icode::get_location_marker(void) {
     short offset; // location offset
 
-    //--Extract the offset from the location marker.
+    // Extract the offset from the location marker.
     memcpy((void *) &offset, (const void *) cursor, sizeof (short));
     cursor += sizeof (short);
 
     return int(offset);
 }
 
-/** PutCaseItem         Append a CASE item to the intermediate
+/** put_case_item         Append a CASE item to the intermediate
  *                      code.
  * 
  * @param value   : CASE label value
  * @param location: location of CASE branch statement
  */
-void TIcode::PutCaseItem(int value, int location) {
-    if (errorCount > 0) return;
+void cx_icode::put_case_item(int value, int location) {
+    if (error_count > 0) return;
 
     short offset = location & 0xffff;
 
-    CheckBounds(sizeof (int) + sizeof (short));
+    check_bounds(sizeof (int) + sizeof (short));
     memcpy((void *) cursor, (const void *) &value, sizeof (int));
     cursor += sizeof (int);
     memcpy((void *) cursor, (const void *) &offset, sizeof (short));
     cursor += sizeof (short);
 }
 
-/** GetCaseItem         Extract a CASE item from the
+/** get_case_item         Extract a CASE item from the
  *                      intermediate code.
  * 
  * @param value   : ref to CASE label value
  * @param location: ref to location of CASE branch statement
  */
-void TIcode::GetCaseItem(int &value, int &location) {
+void cx_icode::get_case_item(int &value, int &location) {
     int val;
     short offset;
 

@@ -16,183 +16,184 @@ using namespace std;
  *******************/
 
 ///  Constructor
-TRuntimeStack::TRuntimeStack(void) {
+
+cx_runtime_stack::cx_runtime_stack(void) {
 
     memset(&stack, 0, sizeof (stack));
 
     tos = &stack[-1]; // point to just below bottom of stack
-    pFrameBase = &stack[ 0]; // point to bottom of stack
+    p_frame_base = &stack[ 0]; // point to bottom of stack
 
-    //--Initialize the program's stack frame at the bottom.
-    Push(0); // function return value
-    Push(0); // static  link
-    Push(0); // dynamic link
-    Push(0); // return address icode pointer
-    Push(0); // return address icode location
+    // Initialize the program's stack frame at the bottom.
+    push(0); // function return value
+    push(0); // static  link
+    push(0); // dynamic link
+    push(0); // return address icode pointer
+    push(0); // return address icode location
 }
 
-/** PushFrameHeader     Push the callee subroutine's stack frame
+/** push_frame_header     push the callee subroutine's stack frame
  *                     header onto the runtime stack.  (Leave
  *                     it inactive.)
  *
- * @param oldLevel : nesting level of the caller routine
- * @param newLevel : nesting level of the callee subroutine's
+ * @param old_level : nesting level of the caller routine
+ * @param new_level : nesting level of the callee subroutine's
  *                     formal parameters and local variables
- * @param pIcode   : ptr to caller's intermediate code
+ * @param p_icode   : ptr to caller's intermediate code
  *
  * @return: ptr to the base of the callee's stack frame
  */
-TStackItem *TRuntimeStack::PushFrameHeader(int oldLevel, int newLevel,
-        TIcode *pIcode) {
-    TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
-    TStackItem *pNewFrameBase = tos + 1; /* point to item just above
-                                          *  current TOS item */
+cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
+        cx_icode *p_icode) {
+    cx_frame_header *pHeader = (cx_frame_header *) p_frame_base;
+    cx_stack_item *p_new_frame_base = tos + 1; /* point to item just above
+                                          *  current top_of_stack item */
 
-    Push(0); // function return value (placeholder)
+    push(0); // function return value (placeholder)
 
-    //--Compute the static link.
-    if (newLevel == oldLevel + 1) {
+    // Compute the static link.
+    if (new_level == old_level + 1) {
 
         /*--Callee nested within caller:
-         *--Push address of caller's stack frame.*/
-        Push(pHeader);
-    } else if (newLevel == oldLevel) {
+         *--push address of caller's stack frame.*/
+        push(pHeader);
+    } else if (new_level == old_level) {
 
         /*--Callee at same level as caller:
-          --Push address of common parent's stack frame.*/
-        Push(pHeader->staticLink.__addr);
-    } else /* newLevel < oldLevel */ {
+          --push address of common parent's stack frame.*/
+        push(pHeader->static_link.addr__);
+    } else /* new_level < old_level */ {
 
         /*--Callee nested less deeply than caller:
-          --Push address of nearest common ancestor's stack frame.*/
-        int delta = oldLevel - newLevel;
+          --push address of nearest common ancestor's stack frame.*/
+        int delta = old_level - new_level;
 
         while (delta-- >= 0) {
-            pHeader = (TFrameHeader *) pHeader->staticLink.__addr;
+            pHeader = (cx_frame_header *) pHeader->static_link.addr__;
         }
-        Push(pHeader);
+        push(pHeader);
     }
 
-    Push(pFrameBase); // dynamic link
-    Push(pIcode); // return address icode pointer
-    Push(0); // return address icode location (placeholder)
+    push(p_frame_base); // dynamic link
+    push(p_icode); // return address icode pointer
+    push(0); // return address icode location (placeholder)
 
-    return pNewFrameBase;
+    return p_new_frame_base;
 }
 
-/** ActivateFrame       Activate the newly-allocated stack frame
+/** activate_frame       Activate the newly-allocated stack frame
  *                       by pointing the frame base pointer to it
  *                       and setting the return address location.
  *
- * @param pNewFrameBase : ptr to the new stack frame base
+ * @param p_new_frame_base : ptr to the new stack frame base
  * @param location      : return address location
  */
 
-void TRuntimeStack::ActivateFrame(TStackItem *pNewFrameBase,
+void cx_runtime_stack::activate_frame(cx_stack_item *p_new_frame_base,
         int location) {
-    pFrameBase = pNewFrameBase;
-    ((TFrameHeader *) pFrameBase)->returnAddress
-            .location.__int = location;
+    p_frame_base = p_new_frame_base;
+    ((cx_frame_header *) p_frame_base)->return_address
+            .location.int__ = location;
 }
 
-/** PopFrame    Pop the current frame from the runtime stack.
+/** pop_frame    pop the current frame from the runtime stack.
  *              If it's for a function, leave the return value
  *              on the top of the stack.
  *
- * @param pRoutineId : ptr to subroutine name's symbol table node
- * @param pIcode     : ref to ptr to caller's intermediate code
+ * @param p_function_id : ptr to subroutine name's symbol table node
+ * @param p_icode     : ref to ptr to caller's intermediate code
  */
-void TRuntimeStack::PopFrame(const TSymtabNode *pRoutineId,
-        TIcode *&pIcode) {
-    TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
+void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
+        cx_icode *&p_icode) {
+    cx_frame_header *pHeader = (cx_frame_header *) p_frame_base;
 
-    //--Don't do anything if it's the bottommost stack frame.
-    if (pFrameBase != &stack[0]) {
+    // Don't do anything if it's the bottommost stack frame.
+    if (p_frame_base != &stack[0]) {
 
-        //--Return to the caller's intermediate code.
-        pIcode = (TIcode *) pHeader->returnAddress.icode.__addr;
-        pIcode->GoTo(pHeader->returnAddress.location.__int);
+        // Return to the caller's intermediate code.
+        p_icode = (cx_icode *) pHeader->return_address.icode.addr__;
+        p_icode->go_to(pHeader->return_address.location.int__);
 
-        //--Cut the stack back.  Leave a function value on top.
-        tos = (TStackItem *) pFrameBase;
-        if (pRoutineId->defn.how != dcFunction) --tos;
-        pFrameBase = (TStackItem *) pHeader->dynamicLink.__addr;
+        // Cut the stack back.  Leave a function value on top.
+        tos = (cx_stack_item *) p_frame_base;
+        if (p_function_id->defn.how != dc_function) --tos;
+        p_frame_base = (cx_stack_item *) pHeader->dynamic_link.addr__;
     }
 }
 
-/** AllocateValue       Allocate a runtime stack item for the
+/** allocate_value       Allocate a runtime stack item for the
  *                       value of a formal parameter or a local
  *                       variable.
  *
- * @param pId : ptr to symbol table node of variable or parm
+ * @param p_id : ptr to symbol table node of variable or parm
  */
-void TRuntimeStack::AllocateValue(TSymtabNode *pId) {
-    TType *pType = pId->pType->Base(); // ptr to type object of value
+void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
+    cx_type *p_type = p_id->p_type->Base(); // ptr to type object of value
 
-    if ((pType->form != fcArray) && (pType->form != fcComplex)) {
-        if (pType == pIntegerType) Push(0);
-        else if (pType == pFloatType) Push(0.0f);
-        else if (pType == pBooleanType) Push(0);
-        else if (pType == pCharType) Push('\0');
-        else if (pType->form == fcEnum) Push(0);
+    if ((p_type->form != fcArray) && (p_type->form != fcComplex)) {
+        if (p_type == pIntegerType) push(0);
+        else if (p_type == pFloatType) push(0.0f);
+        else if (p_type == pBooleanType) push(0);
+        else if (p_type == pCharType) push('\0');
+        else if (p_type->form == fcEnum) push(0);
     } else {
 
-        //--Array or record
-        void *addr = new char[pType->size];
-        Push(addr);
-        pId->pType->array.start_address = addr;
+        // Array or record
+        void *addr = new char[p_type->size];
+        push(addr);
+        p_id->p_type->array.start_address = addr;
     }
 
     /* save runstack address.
      * this negates the need to calculate the
      * variables offset. */
-    pId->runstackItem = TOS();
+    p_id->runstack_item = top_of_stack();
 }
 
-/** DeallocateValue    Deallocate the data area of an array or
+/** deallocate_value    Deallocate the data area of an array or
  *                      record value of a formal value parameter
  *                      or a local variable.
  *
- * @param pId : ptr to symbol table node of variable or parm
+ * @param p_id : ptr to symbol table node of variable or parm
  */
-void TRuntimeStack::DeallocateValue(const TSymtabNode *pId) {
-    if ((!pId->pType->IsScalar()) && (pId->defn.how != dcReference)) {
-        TStackItem *pValue = pId->runstackItem;
+void cx_runtime_stack::deallocate_value(const cx_symtab_node *p_id) {
+    if ((!p_id->p_type->IsScalar()) && (p_id->defn.how != dc_reference)) {
+        cx_stack_item *pValue = p_id->runstack_item;
 
-        if (pValue->__addr != nullptr) delete[] pValue->__addr;
+        if (pValue->addr__ != nullptr) delete[] pValue->addr__;
     }
 }
 
-/** GetValueAddress     Get the address of the runtime stack
+/** get_value_address     get the address of the runtime stack
  *                      item that contains the value of a formal
  *                      parameter or a local variable.  If
  *                      nonlocal, follow the static links to the
  *                      appropriate stack frame.
  *
- * @param pId : ptr to symbol table node of variable or parm
+ * @param p_id : ptr to symbol table node of variable or parm
  *
  * @return    : ptr to the runtime stack item containing the
  *                 variable, parameter, or function return value
  */
-TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
-    bool functionFlag = pId->defn.how == dcFunction; // true if function
+cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
+    bool functionFlag = p_id->defn.how == dc_function; // true if function
     //   else false
-    TFrameHeader *pHeader = (TFrameHeader *) pFrameBase;
+    cx_frame_header *pHeader = (cx_frame_header *) p_frame_base;
 
     /*--Compute the difference between the current nesting level
      *--and the level of the variable or parameter.  Treat a function
      *--value as if it were a local variable of the function.  (Local
      *--variables are one level higher than the function name.)*/
-    int delta = currentNestingLevel - pId->level;
+    int delta = current_nesting_level - p_id->level;
     if (functionFlag) --delta;
 
-    //--Chase static links delta times.
+    // Chase static links delta times.
     while (delta-- > 0) {
-        pHeader = (TFrameHeader *) pHeader->staticLink.__addr;
+        pHeader = (cx_frame_header *) pHeader->static_link.addr__;
     }
 
-    return functionFlag ? &pHeader->functionValue
-            : pId->runstackItem;
+    return functionFlag ? &pHeader->function_value
+            : p_id->runstack_item;
 }
 
 /**************
@@ -202,60 +203,61 @@ TStackItem *TRuntimeStack::GetValueAddress(const TSymtabNode *pId) {
  **************/
 
 
-///  Go                  Start the executor.
-void TExecutor::Go(TSymtabNode *pProgramId) {
-    //--Initialize standard input and output.
-    eofFlag = cin.eof();
+///  go                  Start the executor.
+
+void cx_executor::go(cx_symtab_node *p_program_id) {
+    // Initialize standard input and output.
+    eof_flag = cin.eof();
     cout.setf(ios::fixed, ios::floatfield);
     cout << endl;
 
-    //--Execute the program.
-    breakLoop = false;
+    // Execute the program.
+    break_loop = false;
 
-    InitializeGlobal(pProgramId);
-    //ExecuteRoutine(pProgramId);
-    ExitRoutine(pProgramId);
+    initialize_global(p_program_id);
+    //execute_routine(p_program_id);
+    exit_routine(p_program_id);
 
-    extern bool debugFlag;
+    extern bool cx_dev_debug_flag;
 
-    if (debugFlag) {
-        //--Print the executor's summary.
+    if (cx_dev_debug_flag) {
+        // print the executor's summary.
         cout << endl;
-        cout << "Successful completion.  " << stmtCount
+        cout << "Successful completion.  " << statement_count
                 << " statements executed." << endl;
     }
 }
 
-/** RangeCheck      Range check an assignment to a subrange.
+/** range_check      Range check an assignment to a subrange.
  *
- * @param pTargetType : ptr to target type object
+ * @param p_target_type : ptr to target type object
  * @param value       : integer value to assign
  */
-void TExecutor::RangeCheck(const TType *pTargetType, int value) {
+void cx_executor::range_check(const cx_type *p_target_type, int value) {
 
-    if ((pTargetType->form == fcSubrange)
-            && ((value < pTargetType->subrange.min)
-            || (value > pTargetType->subrange.max))) {
-        RuntimeError(rteValueOutOfRange);
+    if ((p_target_type->form == fcSubrange)
+            && ((value < p_target_type->subrange.min)
+            || (value > p_target_type->subrange.max))) {
+        cx_runtime_error(rte_value_out_of_range);
     }
 }
 
-/** InitializeGlobal    Init global scope and execute it's icode
+/** initialize_global    Init global scope and execute it's icode
  *                      to make sure global variable get initialized
  *
- * @param pProgramId
+ * @param p_program_id
  */
-void TExecutor::InitializeGlobal(TSymtabNode* pProgramId) {
+void cx_executor::initialize_global(cx_symtab_node* p_program_id) {
 
-    //--Set up a new stack frame for the callee.
-    TStackItem *pNewFrameBase = runStack.PushFrameHeader
-            (0, 0, pProgramId->defn.routine.pIcode);
+    // Set up a new stack frame for the callee.
+    cx_stack_item *p_new_frame_base = run_stack.push_frame_header
+            (0, 0, p_program_id->defn.routine.p_icode);
 
-    //--Activate the new stack frame ...
-    currentNestingLevel = 0;
-    runStack.ActivateFrame(pNewFrameBase, pProgramId->defn.routine.returnMarker);
+    // Activate the new stack frame ...
+    current_nesting_level = 0;
+    run_stack.activate_frame(p_new_frame_base, p_program_id->defn.routine.return_marker);
 
-    EnterRoutine(pProgramId);
-    GetToken();
-    ExecuteStatement(pProgramId);
+    enter_routine(p_program_id);
+    get_token();
+    execute_statement(p_program_id);
 }

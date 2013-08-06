@@ -1,302 +1,301 @@
 #include <cstdio>
 #include "token.h"
 
-             /*******************
-              *                 *
-              *  String Tokens  *
-              *                 *
-              *******************/
+/*******************
+ *                 *
+ *  string__ Tokens  *
+ *                 *
+ *******************/
 
-/** Get     Get a string token from the source.
+/** get     get a string token from the source.
  * 
  * @param buffer : ptr to text input buffer.
  */
-void TStringToken::Get(TTextInBuffer &buffer) {
+void cx_string_token::get(cx_text_in_buffer &buffer) {
     char ch; // current character
     char *ps = string; // ptr to char in string
 
     *ps++ = '\"'; // opening quote
 
-    //--Get the string.
-    ch = buffer.GetChar(); // first char after opening quote
-    while (ch != eofChar) {
+    // get the string.
+    ch = buffer.get_char(); // first char after opening quote
+    while (ch != eof_char) {
         if (ch == '\"') { // look for another quote
 
-            //--Fetched a quote.  Now check for an adjacent quote,
-            //--since two consecutive quotes represent a single
-            //--quote in the string.
-            ch = buffer.GetChar();
+            // Fetched a quote.  Now check for an adjacent quote,
+            // since two consecutive quotes represent a single
+            // quote in the string.
+            ch = buffer.get_char();
             if (ch != '\"') break; // not another quote, so previous
             //   quote ended the string
-        }//--Replace the end of line character with a blank.
+        }// Replace the end of line character with a blank.
         else if (ch == '\0') ch = ' ';
 
-        //--Append current char to string, then get the next char.
+        // Append current char to string, then get the next__ char.
         *ps++ = ch;
-        ch = buffer.GetChar();
+        ch = buffer.get_char();
     }
 
-    if (ch == eofChar) Error(errUnexpectedEndOfFile);
+    if (ch == eof_char) cx_error(err_unexpected_eof);
 
     *ps++ = '\"'; // closing quote
     *ps = '\0';
 }
 
-/** Get         Extract single quoted char ' '
+/** get         Extract single quoted char ' '
  * 
  * @param buffer : ptr to text input buffer.
  */
-void TCharToken::Get(TTextInBuffer &buffer) {
+void cx_char_token::get(cx_text_in_buffer &buffer) {
     char ch; // current character
     char *ps = string; // ptr to char in string
 
     *ps++ = '\''; // opening quote
-    //--Get the string.
-    ch = buffer.GetChar(); // first char after opening quote
+    // get the string.
+    ch = buffer.get_char(); // first char after opening quote
     *ps++ = ch;
-    //--Append current char to string, then get the next char.
-    ch = buffer.GetChar();
+    // Append current char to string, then get the next__ char.
+    ch = buffer.get_char();
 
-    if (ch != '\'') Error(errMissingSingleQuote);
-    if (ch == eofChar) Error(errUnexpectedEndOfFile);
+    if (ch != '\'') cx_error(err_missing_single_quote);
+    if (ch == eof_char) cx_error(err_unexpected_eof);
 
-    ch = buffer.GetChar();
+    ch = buffer.get_char();
     *ps++ = '\''; // closing quote
     *ps = '\0';
 }
 
-
-void TCharToken::Print(void) const {
+void cx_char_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> char:", string);
-    list.PutLine();
+    list.put_line();
 }
 
-/** Print       Print the token to the list file.
+/** print       print the token to the list file.
  * 
  */
-void TStringToken::Print(void) const {
+void cx_string_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> string:", string);
-    list.PutLine();
+    list.put_line();
 }
 
-             /********************
-              *                  *
-              *  Special Tokens  *
-              *                  *
-              ********************/
+/********************
+ *                  *
+ *  Special Tokens  *
+ *                  *
+ ********************/
 
-/** Get         Extract a one-, two-, or three-character special symbol
+/** get         Extract a one-, two-, or three-character special symbol
  *              token from the source.
  * 
  * @param buffer : ptr to text input buffer.
  */
-void TSpecialToken::Get(TTextInBuffer &buffer) {
-    char ch = buffer.Char();
+void cx_special_token::get(cx_text_in_buffer &buffer) {
+    char ch = buffer.current_char();
     char *ps = string;
 
     *ps++ = ch;
 
     switch (ch) {
-        case '^': ch = buffer.GetChar();
+        case '^': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcBitXOREqual;
-                buffer.GetChar();
-            } else code = tcBitXOR;
+                code__ = tc_bit_XOR_equal;
+                buffer.get_char();
+            } else code__ = tc_bit_XOR;
             break;
-        case '&': ch = buffer.GetChar();
+        case '&': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcBitANDEqual;
-                buffer.GetChar();
+                code__ = tc_bit_AND_equal;
+                buffer.get_char();
             } else if (ch == '&') {
                 *ps++ = '&';
-                code = tcLogicAnd;
-                buffer.GetChar();
-            } else code = tcBitANDorAddrOf;
+                code__ = tc_logic_AND;
+                buffer.get_char();
+            } else code__ = tc_bit_AND;
             break;
-        case '|': ch = buffer.GetChar();
+        case '|': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcBitOREqual;
-                buffer.GetChar();
+                code__ = tc_bit_OR_equal;
+                buffer.get_char();
             } else if (ch == '|') {
                 *ps++ = '|';
-                code = tcLogicOr;
-                buffer.GetChar();
-            } else code = tcBitOR;
+                code__ = tc_logic_OR;
+                buffer.get_char();
+            } else code__ = tc_bit_OR;
             break;
-        case '~': ch = buffer.GetChar();
-            code = tcBitNOT;
+        case '~': ch = buffer.get_char();
+            code__ = tc_bit_NOT;
             break;
-        case '*': ch = buffer.GetChar();
+        case '*': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcStarEqual;
-                buffer.GetChar();
-            } else code = tcStar;
+                code__ = tc_star_equal;
+                buffer.get_char();
+            } else code__ = tc_star;
             break;
-        case '(': code = tcLParen;
-            buffer.GetChar();
+        case '(': code__ = tc_left_paren;
+            buffer.get_char();
             break;
-        case ')': code = tcRParen;
-            buffer.GetChar();
+        case ')': code__ = tc_right_paren;
+            buffer.get_char();
             break;
-        case '-': ch = buffer.GetChar();
+        case '-': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcMinusEqual;
-                buffer.GetChar();
+                code__ = tc_minus_equal;
+                buffer.get_char();
             } else if (ch == '-') {
                 *ps++ = '-';
-                code = tcMinusMinus;
-                buffer.GetChar();
+                code__ = tc_minus_minus;
+                buffer.get_char();
             } else if (ch == '>') {
                 *ps++ = '>';
-                code = tcPointerMember;
-                buffer.GetChar();
-            } else code = tcMinus;
+                code__ = tc_pointer_member;
+                buffer.get_char();
+            } else code__ = tc_minus;
             break;
-        case '+': ch = buffer.GetChar();
+        case '+': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcPlusEqual;
-                buffer.GetChar();
+                code__ = tc_plus_equal;
+                buffer.get_char();
             } else if (ch == '+') {
                 *ps++ = '+';
-                code = tcPlusPlus;
-                buffer.GetChar();
-            } else code = tcPlus;
+                code__ = tc_plus_plus;
+                buffer.get_char();
+            } else code__ = tc_plus;
             break;
-        case '=': ch = buffer.GetChar();
+        case '=': ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcEqualEqual;
-                buffer.GetChar();
-            } else code = tcEqual;
+                code__ = tc_equal_equal;
+                buffer.get_char();
+            } else code__ = tc_equal;
             break;
-        case '[': code = tcLeftSubscript;
-            buffer.GetChar();
+        case '[': code__ = tc_left_subscript;
+            buffer.get_char();
             break;
-        case ']': code = tcRightSubscript;
-            buffer.GetChar();
+        case ']': code__ = tc_right_subscript;
+            buffer.get_char();
             break;
-        case '{': code = tcLBracket;
-            buffer.GetChar();
+        case '{': code__ = tc_left_bracket;
+            buffer.get_char();
             break;
-        case '}': code = tcRBracket;
-            buffer.GetChar();
+        case '}': code__ = tc_right_bracket;
+            buffer.get_char();
             break;
-        case ';': code = tcSemicolon;
-            buffer.GetChar();
+        case ';': code__ = tc_semicolon;
+            buffer.get_char();
             break;
-        case ',': code = tcComma;
-            buffer.GetChar();
+        case ',': code__ = tc_comma;
+            buffer.get_char();
             break;
-        case '/': ch = buffer.GetChar(); // /, /=
+        case '/': ch = buffer.get_char(); // /, /=
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcForwardSlashEqual;
-                buffer.GetChar();
-            } else code = tcForwardSlash;
+                code__ = tc_divide_equal;
+                buffer.get_char();
+            } else code__ = tc_divide;
             break;
-        case ':': ch = buffer.GetChar(); // : or ::
+        case ':': ch = buffer.get_char(); // : or ::
             if (ch == ':') {
                 *ps++ = ':';
-                code = tcColonColon;
-                buffer.GetChar();
-            } else code = tcColon;
+                code__ = tc_colon_colon;
+                buffer.get_char();
+            } else code__ = tc_colon;
             break;
-        case '<': ch = buffer.GetChar(); // < or <=
+        case '<': ch = buffer.get_char(); // < or <=
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcLe;
-                buffer.GetChar();
+                code__ = tc_lessthan_equal;
+                buffer.get_char();
             } else if (ch == '<') {
                 *ps++ = '<';
-                ch = buffer.GetChar();
+                ch = buffer.get_char();
                 if (ch == '=') {
                     *ps++ = '=';
-                    code = tcBitLeftShiftEqual;
-                    buffer.GetChar();
-                } else code = tcBitLeftShift;
-            } else code = tcLt;
+                    code__ = tc_bit_leftshift_equal;
+                    buffer.get_char();
+                } else code__ = tc_bit_leftshift;
+            } else code__ = tc_lessthan;
             break;
-        case '>': ch = buffer.GetChar(); // > or >=
+        case '>': ch = buffer.get_char(); // > or >=
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcGe;
-                buffer.GetChar();
+                code__ = tc_greaterthan_equal;
+                buffer.get_char();
             } else if (ch == '>') {
                 *ps++ = '>';
-                ch = buffer.GetChar();
+                ch = buffer.get_char();
                 if (ch == '=') {
                     *ps++ = '=';
-                    code = tcBitRightShiftEqual;
-                    buffer.GetChar();
-                } else code = tcBitRightShift;
-            } else code = tcGt;
+                    code__ = tc_bit_rightshift_equal;
+                    buffer.get_char();
+                } else code__ = tc_bit_rightshift;
+            } else code__ = tc_greaterthan;
             break;
-        case '!': ch = buffer.GetChar(); // ! or !=
+        case '!': ch = buffer.get_char(); // ! or !=
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcNe;
-                buffer.GetChar();
-            } else code = tcLogicNOT;
+                code__ = tc_not_equal;
+                buffer.get_char();
+            } else code__ = tc_logic_NOT;
             break;
-        case '%': ch = buffer.GetChar(); // ! or !=
+        case '%': ch = buffer.get_char(); // ! or !=
             if (ch == '=') {
                 *ps++ = '=';
-                code = tcModEqual;
-                buffer.GetChar();
-            } else code = tcMod;
+                code__ = tc_modulas_equal;
+                buffer.get_char();
+            } else code__ = tc_modulas;
             break;
-        case '.': ch = buffer.GetChar();
+        case '.': ch = buffer.get_char();
             if (ch == '.') {
                 *ps++ = '.';
-                code = tcDotDot;
-                buffer.GetChar();
-            } else code = tcDot;
+                code__ = tc_dot_dot;
+                buffer.get_char();
+            } else code__ = tc_dot;
             break;
-        case '?': code = tcQuestionMark;
-            buffer.GetChar();
+        case '?': code__ = tc_questionmark;
+            buffer.get_char();
             break;
-        case '#': code = tcPound;
-            buffer.GetChar();
+        case '#': code__ = tc_pound;
+            buffer.get_char();
             break;
-        case '\"': code = tcQuoteQuote;
-            buffer.GetChar();
-        default: code = tcError; // error
-            buffer.GetChar();
-            Error(errUnrecognizable);
+        case '\"': code__ = tc_double_quote;
+            buffer.get_char();
+        default: code__ = tc_error; // error
+            buffer.get_char();
+            cx_error(err_unrecognizable);
             break;
     }
 
     *ps = '\0';
 }
 
-/** Print       Print the token to the list file.
+/** print       print the token to the list file.
  * 
  */
-void TSpecialToken::Print(void) const {
+void cx_special_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> special:", string);
-    list.PutLine();
+    list.put_line();
 }
 
-             /*****************
-              *               *
-              *  Error Token  *
-              *               *
-              *****************/
+/*****************
+ *               *
+ *  cx_error Token  *
+ *               *
+ *****************/
 
-/** Get         Extract an invalid character from the source.
+/** get         Extract an invalid character from the source.
  * 
  * @param buffer : ptr to text input buffer.
  */
-void TErrorToken::Get(TTextInBuffer &buffer) {
-    string[0] = buffer.Char();
+void cx_error_token::get(cx_text_in_buffer &buffer) {
+    string[0] = buffer.current_char();
     string[1] = '\0';
 
-    buffer.GetChar();
-    Error(errUnrecognizable);
+    buffer.get_char();
+    cx_error(err_unrecognizable);
 }

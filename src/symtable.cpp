@@ -8,8 +8,8 @@
 
 using namespace std;
 
-int asmLabelIndex = 0; // assembly label index
-bool xrefFlag = false; // true = cross-referencing on, false = off
+int asm_label_index = 0; // assembly label index
+bool xreference_flag = false; // true = cross-referencing on, false = off
 
 /****************
  *              *
@@ -24,15 +24,15 @@ bool xrefFlag = false; // true = cross-referencing on, false = off
  *                  symbol table.
  * 
  */
-TDefn::~TDefn(void) {
+cx_define::~cx_define(void) {
     switch (how) {
 
-        case dcProgram:
-        case dcFunction:
+        case dc_program:
+        case dc_function:
 
-            if (routine.which == rcDeclared) {
-                if (routine.pSymtab != nullptr) delete routine.pSymtab;
-                if (routine.pIcode != nullptr) delete routine.pIcode;
+            if (routine.which == rc_declared) {
+                if (routine.p_symtab != nullptr) delete routine.p_symtab;
+                if (routine.p_icode != nullptr) delete routine.p_icode;
             }
             break;
 
@@ -50,421 +50,421 @@ TDefn::~TDefn(void) {
  *                  izing its subtree pointers and the pointer
  *                  to its symbol string.
  * 
- * @param pStr : ptr to the symbol string.
- * @param dc   : definition code.
+ * @param p_str : ptr to the symbol string.
+ * @param dc    : definition code.
  */
-TSymtabNode::TSymtabNode(const char *pStr, TDefnCode dc)
+cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
 : defn(dc) {
-    left = right = next = NULL;
-    pLineNumList = NULL;
-    pType = NULL;
-    xNode = 0;
-    globalFinishLocation = 0;
-    foundGlobalEnd = false;
-    level = currentNestingLevel;
-    labelIndex = ++asmLabelIndex;
+    left = right = next__ = NULL;
+    p_line_num_list = NULL;
+    p_type = NULL;
+    xnode = 0;
+    global_finish_location = 0;
+    found_global_end = false;
+    level = current_nesting_level;
+    label_index = ++asm_label_index;
 
-    //--Allocate and copy the symbol string.
-    pString = new char[strlen(pStr) + 1];
-    strcpy(pString, pStr);
+    // Allocate and copy the symbol string.
+    p_string = new char[strlen(p_str) + 1];
+    strcpy(p_string, p_str);
 
-    //--If cross-referencing, update the line number list.
-    if (xrefFlag) pLineNumList = new TLineNumList;
+    // If cross-referencing, update the line number list.
+    if (xreference_flag) p_line_num_list = new cx_line_num_list;
 }
 
 /** Destructor      Deallocate a symbol table node.
  * 
  */
-TSymtabNode::~TSymtabNode(void) {
-    void RemoveType(TType *&pType);
+cx_symtab_node::~cx_symtab_node(void) {
+    void RemoveType(cx_type *&p_type);
 
-    //--First the subtrees (if any).
+    // First the subtrees (if any).
     if (left != nullptr)delete left;
     if (right != nullptr) delete right;
 
-    //--Then delete this node's components.
-    if (pString != nullptr) delete[] pString;
-    if (pLineNumList != nullptr) delete pLineNumList;
-    if (pType != nullptr) RemoveType(pType);
+    // Then delete this node's components.
+    if (p_string != nullptr) delete[] p_string;
+    if (p_line_num_list != nullptr) delete p_line_num_list;
+    if (p_type != nullptr) RemoveType(p_type);
 }
 
-/** Print       Print the symbol table node to the list file.
+/** print       print the symbol table node to the list file.
  *              First print the node's left subtree, then the
  *              node itself, and finally the node's right
  *              subtree.  For the node itself, first print its
  *              symbol string, and then its line numbers. 
  */
-void TSymtabNode::Print(void) const {
+void cx_symtab_node::print(void) const {
     const int maxNamePrintWidth = 16;
 
-    //--Pirst, print left subtree
-    if (left) left->Print();
+    // Pirst, print left subtree
+    if (left) left->print();
 
-    //--Print the node:  first the name, then the list of line numbers,
-    //--                 and then the identifier information.
-    sprintf(list.text, "%*s", maxNamePrintWidth, pString);
-    if (pLineNumList) {
-        pLineNumList->Print(strlen(pString) > maxNamePrintWidth,
+    // print the node:  first the name, then the list of line numbers,
+    //                  and then the identifier information.
+    sprintf(list.text, "%*s", maxNamePrintWidth, p_string);
+    if (p_line_num_list) {
+        p_line_num_list->print(strlen(p_string) > maxNamePrintWidth,
                 maxNamePrintWidth);
-    } else list.PutLine();
-    PrintIdentifier();
+    } else list.put_line();
+    print_identifier();
 
-    //--Finally, print right subtree
-    if (right) right->Print();
+    // Finally, print right subtree
+    if (right) right->print();
 }
 
-/** PrintIdentifier         Print information about an
+/** print_identifier         print information about an
  *                          identifier's definition and type.
  * 
  */
-void TSymtabNode::PrintIdentifier(void) const {
+void cx_symtab_node::print_identifier(void) const {
     switch (defn.how) {
-        case dcConstant: PrintConstant();
+        case dc_constant: print_constant();
             break;
-        case dcType: PrintType();
+        case dc_type: print_type();
             break;
 
-        case dcVariable:
-        case dcMember: PrintVarOrField();
+        case dc_variable:
+        case dc_member: print_var_or_field();
             break;
     }
 }
 
-/** PrintConstant       Print information about a constant
+/** print_constant       print information about a constant
  *                      identifier for the cross-reference.
  * 
  */
-void TSymtabNode::PrintConstant(void) const {
-    extern TListBuffer list;
+void cx_symtab_node::print_constant(void) const {
+    extern cx_list_buffer list;
 
-    list.PutLine();
-    list.PutLine("Defined constant");
+    list.put_line();
+    list.put_line("Defined constant");
 
-    //--Value
-    if ((pType == pIntegerType) ||
-            (pType->form == fcEnum)) {
-        sprintf(list.text, "Value = %d",
-                defn.constant.value.__int);
-    } else if (pType == pFloatType) {
-        sprintf(list.text, "Value = %g",
-                defn.constant.value.__float);
-    } else if (pType == pCharType) {
-        sprintf(list.text, "Value = '%c'",
-                defn.constant.value.__char);
-    } else if (pType->form == fcArray) {
-        sprintf(list.text, "Value = '%s'",
-                defn.constant.value.pString);
+    // value
+    if ((p_type == pIntegerType) ||
+            (p_type->form == fcEnum)) {
+        sprintf(list.text, "value = %d",
+                defn.constant.value.int__);
+    } else if (p_type == pFloatType) {
+        sprintf(list.text, "value = %g",
+                defn.constant.value.float__);
+    } else if (p_type == pCharType) {
+        sprintf(list.text, "value = '%c'",
+                defn.constant.value.char__);
+    } else if (p_type->form == fcArray) {
+        sprintf(list.text, "value = '%s'",
+                defn.constant.value.p_string);
     }
-    list.PutLine();
+    list.put_line();
 
-    //--Type information
-    if (pType) pType->PrintTypeSpec(TType::vcTerse);
-    list.PutLine();
+    // type information
+    if (p_type) p_type->PrintTypeSpec(cx_type::vcTerse);
+    list.put_line();
 }
 
-/** PrintVarOrField         Print information about a variable
+/** print_var_or_field         print information about a variable
  *                          or record field identifier for the
  *                          cross-reference.
  * 
  */
-void TSymtabNode::PrintVarOrField(void) const {
-    extern TListBuffer list;
+void cx_symtab_node::print_var_or_field(void) const {
+    extern cx_list_buffer list;
 
-    list.PutLine();
-    list.PutLine(defn.how == dcVariable ? "Declared variable"
+    list.put_line();
+    list.put_line(defn.how == dc_variable ? "Declared variable"
             : "Declared record field");
 
-    //--Type information
-    if (pType) pType->PrintTypeSpec(TType::vcTerse);
-    if ((defn.how == dcVariable) || (this->next)) list.PutLine();
+    // type information
+    if (p_type) p_type->PrintTypeSpec(cx_type::vcTerse);
+    if ((defn.how == dc_variable) || (this->next__)) list.put_line();
 }
 
-/** PrintType           Print information about a type
+/** print_type           print information about a type
  *                      identifier for the cross-reference.
  * 
  */
-void TSymtabNode::PrintType(void) const {
-    list.PutLine();
-    list.PutLine("Defined type");
+void cx_symtab_node::print_type(void) const {
+    list.put_line();
+    list.put_line("Defined type");
 
-    if (pType) pType->PrintTypeSpec(TType::vcVerbose);
-    list.PutLine();
+    if (p_type) p_type->PrintTypeSpec(cx_type::vcVerbose);
+    list.put_line();
 }
 
-/** Convert     Convert the symbol table node into a form
+/** convert     convert the symbol table node into a form
  *		suitable for the back end.
  * 
- * @param vpNodes : vector of node ptrs.
+ * @param p_vector_nodes : vector of node ptrs.
  */
-void TSymtabNode::Convert(TSymtabNode *vpNodes[]) {
-    //--First, convert the left subtree.
-    if (left != nullptr) left->Convert(vpNodes);
+void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
+    // First, convert the left subtree.
+    if (left != nullptr) left->convert(p_vector_nodes);
 
-    //--Convert the node.
-    vpNodes[xNode] = this;
+    // convert the node.
+    p_vector_nodes[xnode] = this;
 
-    //--Finally, convert the right subtree.
-    if (right != nullptr) right->Convert(vpNodes);
+    // Finally, convert the right subtree.
+    if (right != nullptr) right->convert(p_vector_nodes);
 }
 
-             /******************
-              *                *
-              *  Symbol Table  *
-              *                *
-              ******************/
+/******************
+ *                *
+ *  Symbol Table  *
+ *                *
+ ******************/
 
-/** Search      Search the symbol table for the node with a
+/** search      search the symbol table for the node with a
  *              given name string.
  * 
- * @param pString : ptr to the name string to search for.
+ * @param p_string : ptr to the name string to search for.
  * @return ptr to the node if found, else nullptr.
  */
-TSymtabNode *TSymtab::Search(const char *pString) const {
-    TSymtabNode *pNode = root; // ptr to symbol table node
+cx_symtab_node *cx_symtab::search(const char *p_string) const {
+    cx_symtab_node *p_node = root__; // ptr to symbol table node
     int comp;
 
-    //--Loop to search the table.
-    while (pNode) {
-        comp = strcmp(pString, pNode->pString); // compare names
+    // Loop to search the table.
+    while (p_node) {
+        comp = strcmp(p_string, p_node->p_string); // compare names
         if (comp == 0) break; // found!
 
-        //--Not yet found:  next search left or right subtree.
-        pNode = comp < 0 ? pNode->left : pNode->right;
+        // Not yet found:  next__ search left or right subtree.
+        p_node = comp < 0 ? p_node->left : p_node->right;
     }
 
-    //--If found and cross-referencing, update the line number list.
-    if (xrefFlag && (comp == 0)) pNode->pLineNumList->Update();
+    // If found and cross-referencing, update the line number list.
+    if (xreference_flag && (comp == 0)) p_node->p_line_num_list->update();
 
-    return pNode; // ptr to node, or NULL if not found
+    return p_node; // ptr to node, or NULL if not found
 }
 
-/** Enter       Search the symbol table for the node with a
+/** enter       search the symbol table for the node with a
  *              given name string.  If the node is found, return
  *              a pointer to it.  Else if not found, enter a new
  *              node with the name string, and return a pointer
  *              to the new node.
  * 
- * @param pString : ptr to the name string to enter.
+ * @param p_string : ptr to the name string to enter.
  * @param dc      : definition code.
  * @return ptr to the node, whether existing or newly-entered.
  */
-TSymtabNode *TSymtab::Enter(const char *pString, TDefnCode dc) {
-    TSymtabNode *pNode; // ptr to node
-    TSymtabNode **ppNode = &root; // ptr to ptr to node
+cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
+    cx_symtab_node *p_node; // ptr to node
+    cx_symtab_node **ppNode = &root__; // ptr to ptr to node
 
-    //--Loop to search table for insertion point.
-    while ((pNode = *ppNode) != NULL) {
-        int comp = strcmp(pString, pNode->pString); // compare strings
-        if (comp == 0) return pNode; // found!
+    // Loop to search table for insertion point.
+    while ((p_node = *ppNode) != NULL) {
+        int comp = strcmp(p_string, p_node->p_string); // compare strings
+        if (comp == 0) return p_node; // found!
 
-        //--Not yet found:  next search left or right subtree.
-        ppNode = comp < 0 ? &(pNode->left) : &(pNode->right);
+        // Not yet found:  next__ search left or right subtree.
+        ppNode = comp < 0 ? &(p_node->left) : &(p_node->right);
     }
 
-    //--Create and insert a new node.
-    pNode = new TSymtabNode(pString, dc); // create a new node,
-    pNode->xSymtab = xSymtab; // set its symtab and
-    pNode->xNode = cntNodes++; // node indexes,
-    *ppNode = pNode; // insert it, and
-    return pNode; // return a ptr to it
+    // Create and insert a new node.
+    p_node = new cx_symtab_node(p_string, dc); // create a new node,
+    p_node->xsymtab = xsymtab; // set its symtab and
+    p_node->xnode = nodes_count++; // node indexes,
+    *ppNode = p_node; // insert it, and
+    return p_node; // return a ptr to it
 }
 
-/** EnterNew    Search the symbol table for the given name
+/** enter_new    search the symbol table for the given name
  *              string.  If the name is not already in there,
  *              enter it.  Otherwise, flag the redefined
  *              identifier error.
  * 
- * @param pString : ptr to name string to enter.
+ * @param p_string : ptr to name string to enter.
  * @param dc      : definition code.
  * @return ptr to symbol table node.
  */
-TSymtabNode *TSymtab::EnterNew(const char *pString, TDefnCode dc) {
-    TSymtabNode *pNode = Search(pString);
+cx_symtab_node *cx_symtab::enter_new(const char *p_string, cx_define_code dc) {
+    cx_symtab_node *p_node = search(p_string);
 
-    if (!pNode) pNode = Enter(pString, dc);
-    else Error(errRedefinedIdentifier);
+    if (!p_node) p_node = enter(p_string, dc);
+    else cx_error(err_redefined_identifier);
 
-    return pNode;
+    return p_node;
 }
 
-/** Convert     Convert the symbol table into a form suitable
+/** convert     convert the symbol table into a form suitable
  *		for the back end.
  * 
- * @param vpSymtabs : vector of symbol table pointers.
+ * @param p_vector_symtabs : vector of symbol table pointers.
  */
-void TSymtab::Convert(TSymtab *vpSymtabs[]) {
-    //--Point the appropriate entry of the symbol table pointer vector
-    //--to this symbol table.
-    vpSymtabs[xSymtab] = this;
+void cx_symtab::convert(cx_symtab *p_vector_symtabs[]) {
+    // Point the appropriate entry of the symbol table pointer vector
+    // to this symbol table.
+    p_vector_symtabs[xsymtab] = this;
 
-    //--Allocate the symbol table node pointer vector
-    //--and convert the nodes.
-    vpNodes = new TSymtabNode *[cntNodes];
-    root->Convert(vpNodes);
+    // Allocate the symbol table node pointer vector
+    // and convert the nodes.
+    p_vector_nodes = new cx_symtab_node *[nodes_count];
+    root__->convert(p_vector_nodes);
 }
 
-             /************************
-              *		             *
-              *  Symbol Table Stack  *
-              *		             *
-              ************************/
+/************************
+ *		             *
+ *  Symbol Table Stack  *
+ *		             *
+ ************************/
 
 /** Constructor	    Initialize the global (level 0) symbol
  *		    table, and set the others to NULL.
  * 
  */
-TSymtabStack::TSymtabStack(void) {
-    extern TSymtab globalSymtab;
-    void InitializeStandardRoutines(TSymtab * pSymtab);
+cx_symtab_stack::cx_symtab_stack(void) {
+    extern cx_symtab cx_global_symtab;
+    void InitializeStandardRoutines(cx_symtab * p_symtab);
 
-    currentNestingLevel = 0;
-    for (int i = 1; i < maxNestingLevel; ++i) pSymtabs[i] = nullptr;
+    current_nesting_level = 0;
+    for (int i = 1; i < max_nesting_level; ++i) p_symtabs[i] = nullptr;
 
-    //--Initialize the global nesting level.
-    pSymtabs[0] = &globalSymtab;
+    // Initialize the global nesting level.
+    p_symtabs[0] = &cx_global_symtab;
 
-    InitializePredefinedTypes(pSymtabs[0]);
+    initialize_builtin_types(p_symtabs[0]);
 
-    //InitializeStandardRoutines(pSymtabs[0]);
+    //InitializeStandardRoutines(p_symtabs[0]);
 }
 
 /** Destructor	    Remove the predefined types.
  * 
  */
-TSymtabStack::~TSymtabStack(void) {
-    RemovePredefinedTypes();
+cx_symtab_stack::~cx_symtab_stack(void) {
+    remove_builtin_types();
 }
 
-/** SearchAll   Search the symbol table stack for the given
+/** search_all   search the symbol table stack for the given
  *              name string.
  * 
- * @param pString : ptr to name string to find.
+ * @param p_string : ptr to name string to find.
  * @return ptr to symbol table node if found, else nullptr.
  */
-TSymtabNode *TSymtabStack::SearchAll(const char *pString) const {
-    for (int i = currentNestingLevel; i >= 0; --i) {
-        TSymtabNode *pNode = pSymtabs[i]->Search(pString);
-        if (pNode) return pNode;
+cx_symtab_node *cx_symtab_stack::search_all(const char *p_string) const {
+    for (int i = current_nesting_level; i >= 0; --i) {
+        cx_symtab_node *p_node = p_symtabs[i]->search(p_string);
+        if (p_node) return p_node;
     }
 
     return nullptr;
 }
 
-/** Find        Search the symbol table stack for the given
+/** find        search the symbol table stack for the given
  *              name string.  If the name is not already in
  *              there, flag the undefined identifier error,
  *		and then enter the name into the local symbol
  *		table.
  * 
- * @param pString : ptr to name string to find.
+ * @param p_string : ptr to name string to find.
  * @return ptr to symbol table node.
  */
-TSymtabNode *TSymtabStack::Find(const char *pString) const {
-    TSymtabNode *pNode = SearchAll(pString);
+cx_symtab_node *cx_symtab_stack::find(const char *p_string) const {
+    cx_symtab_node *p_node = search_all(p_string);
 
-    if (!pNode) {
-        Error(errUndefinedIdentifier);
-        pNode = pSymtabs[currentNestingLevel]->Enter(pString);
+    if (!p_node) {
+        cx_error(err_undefined_identifier);
+        p_node = p_symtabs[current_nesting_level]->enter(p_string);
     }
 
-    return pNode;
+    return p_node;
 }
 
-/** EnterScope	Enter a new nested scope.  Increment the nesting
- *		level.  Push new scope's symbol table onto the
+/** enter_scope	enter a new nested scope.  Increment the nesting
+ *		level.  push new scope's symbol table onto the
  *		stack.
  * 
  */
-void TSymtabStack::EnterScope(void) {
+void cx_symtab_stack::enter_scope(void) {
 
     // dont overwrite mains scope
-    //if (currentNestingLevel <= 1)++currentNestingLevel;
+    //if (current_nesting_level <= 1)++current_nesting_level;
 
-    if (++currentNestingLevel > maxNestingLevel) {
-        Error(errNestingTooDeep);
-        AbortTranslation(abortNestingTooDeep);
+    if (++current_nesting_level > max_nesting_level) {
+        cx_error(err_nesting_too_deep);
+        abort_translation(abort_nesting_too_deep);
     }
 
-    SetCurrentSymtab(new TSymtab);
+    set_current_symtab(new cx_symtab);
 }
 
-/** ExitScope	Exit the current scope and return to the
+/** exit_scope	Exit the current scope and return to the
  *		enclosing scope.  Decrement the nesting level.
- *		Pop the closed scope's symbol table off the
+ *		pop the closed scope's symbol table off the
  *		stack and return a pointer to it.
  * 
  * @return ptr to closed scope's symbol table.
  */
-TSymtab *TSymtabStack::ExitScope(void) {
-    return pSymtabs[currentNestingLevel--];
+cx_symtab *cx_symtab_stack::exit_scope(void) {
+    return p_symtabs[current_nesting_level--];
 }
 
-             /**********************
-              *                    *
-              *  Line Number List  *
-              *                    *
-              **********************/
+/**********************
+ *                    *
+ *  Line Number List  *
+ *                    *
+ **********************/
 
 /** Destructor      Deallocate a line number list.
  * 
  */
-TLineNumList::~TLineNumList(void) {
-    //--Loop to delete each node in the list.
+cx_line_num_list::~cx_line_num_list(void) {
+    // Loop to delete each node in the list.
     while (head) {
-        TLineNumNode *pNode = head; // ptr to node to delete
-        head = head->next; // move down the list
-        delete pNode; // delete node
+        cx_line_num_node *p_node = head; // ptr to node to delete
+        head = head->next__; // move down the list
+        delete p_node; // delete node
     }
 }
 
-/** Update      Update the list by appending a new line number
+/** update      update the list by appending a new line number
  *              node if the line number isn't already in the
  *              list.
  * 
  */
-void TLineNumList::Update(void) {
-    //--If the line number is already there, it'll be at the tail.
-    if (tail && (tail->number == currentLineNumber)) return;
+void cx_line_num_list::update(void) {
+    // If the line number is already there, it'll be at the tail.
+    if (tail && (tail->number == current_line_number)) return;
 
-    //--Append the new node.
-    tail->next = new TLineNumNode;
-    tail = tail->next;
+    // Append the new node.
+    tail->next__ = new cx_line_num_node;
+    tail = tail->next__;
 }
 
-/** Print       Print the line number list.  Use more than one
+/** print       print the line number list.  Use more than one
  *              line if necessary; indent subsequent lines.
  * 
- * @param newLineFlag : if true, start a new line immediately.
+ * @param new_line_flag : if true, start a new line immediately.
  * @param indent      : amount to indent subsequent lines.
  */
-void TLineNumList::Print(int newLineFlag, int indent) const {
+void cx_line_num_list::print(int new_line_flag, int indent) const {
     const int maxLineNumberPrintWidth = 4;
     const int maxLineNumbersPerLine = 10;
 
     int n; // count of numbers per line
-    TLineNumNode *pNode; // ptr to line number node
+    cx_line_num_node *p_node; // ptr to line number node
     char *plt = &list.text[strlen(list.text)];
     // ptr to where in list text to append
 
-    n = newLineFlag ? 0 : maxLineNumbersPerLine;
+    n = new_line_flag ? 0 : maxLineNumbersPerLine;
 
-    //--Loop over line number nodes in the list.
-    for (pNode = head; pNode; pNode = pNode->next) {
+    // Loop over line number nodes in the list.
+    for (p_node = head; p_node; p_node = p_node->next__) {
 
-        //--Start a new list line if the current one is full.
+        // Start a new list line if the current one is full.
         if (n == 0) {
-            list.PutLine();
+            list.put_line();
             sprintf(list.text, "%*s", indent, " ");
             plt = &list.text[indent];
             n = maxLineNumbersPerLine;
         }
 
-        //--Append the line number to the list text.
-        sprintf(plt, "%*d", maxLineNumberPrintWidth, pNode->number);
+        // Append the line number to the list text.
+        sprintf(plt, "%*d", maxLineNumberPrintWidth, p_node->number);
         plt += maxLineNumberPrintWidth;
         --n;
     }
 
-    list.PutLine();
+    list.put_line();
 }
 

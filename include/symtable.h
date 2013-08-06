@@ -5,8 +5,8 @@
  * Created on June 19, 2013, 12:17 AM
  */
 
-#ifndef SYMTABLE_H
-#define	SYMTABLE_H
+#ifndef symtable_h
+#define	symtable_h
 
 #include <map>
 #include <cstring>
@@ -14,60 +14,60 @@
 
 using namespace std;
 
-extern bool xrefFlag;
-extern int currentLineNumber;
-extern int currentNestingLevel;
-extern int asmLabelIndex;
+extern bool xreference_flag;
+extern int current_line_number;
+extern int current_nesting_level;
+extern int asm_label_index;
 
-class TSymtab;
-class TSymtabNode;
-class TLineNumList;
-class TIcode;
-class TType;
+class cx_symtab;
+class cx_symtab_node;
+class cx_line_num_list;
+class cx_icode;
+class cx_type;
 
-extern union TStackItem;
+extern union cx_stack_item;
 
 // for public, private and protected scopes
-typedef map<TTokenCode, TSymtab *> ScopedSymtab;
+typedef map<cx_token_code, cx_symtab *> cx_scoped_symtab;
 
-enum TDefnCode {
-    dcUndefined, dcConstant, dcType, dcVariable, dcMember,
-    dcValueParm, dcReference, dcPointer,
-    dcProgram, dcFunction
+enum cx_define_code {
+    dc_undefined, dc_constant, dc_type, dc_variable, dc_member,
+    dc_value_parm, dc_reference, dc_pointer,
+    dc_program, dc_function
 };
 
-enum TRoutineCode {
-    rcDeclared, rcForward,
+enum cx_routine_code {
+    rc_declared, rc_forward,
 };
 
-struct TLocalIds {
-    TSymtabNode *pParmsIds;
-    TSymtabNode *pConstantIds;
-    TSymtabNode *pTypeIds;
-    TSymtabNode *pVariableIds;
-    TSymtabNode *pRoutineIds;
+struct cx_local_ids {
+    cx_symtab_node *p_parms_ids;
+    cx_symtab_node *p_constant_ids;
+    cx_symtab_node *p_type_ids;
+    cx_symtab_node *p_variable_ids;
+    cx_symtab_node *p_function_ids;
 };
 
-class TDefn {
+class cx_define {
 public:
 
-    TDefnCode how;
+    cx_define_code how;
 
     union {
 
         struct {
-            TDataValue value;
+            cx_data_value value;
         } constant;
 
         struct {
-            TRoutineCode which;
-            int returnMarker;
-            int parmCount;
-            int totalParmSize;
-            int totalLocalSize;
-            TLocalIds locals;
-            TSymtab *pSymtab;
-            TIcode *pIcode;
+            cx_routine_code which;
+            int return_marker;
+            int parm_count;
+            int total_parm_size;
+            int total_local_size;
+            cx_local_ids locals;
+            cx_symtab *p_symtab;
+            cx_icode *p_icode;
         } routine;
 
         struct {
@@ -75,228 +75,224 @@ public:
         } data;
     };
 
-    TDefn(TDefnCode dc) {
+    cx_define(cx_define_code dc) {
         how = dc;
     }
-    ~TDefn();
+    ~cx_define();
 };
 
-class TSymtabNode {
-    TSymtabNode *left, *right;
-    char *pString;
-    short xSymtab;
-    short xNode;
-    TLineNumList *pLineNumList;
+class cx_symtab_node {
+    cx_symtab_node *left, *right;
+    char *p_string;
+    short xsymtab;
+    short xnode;
+    cx_line_num_list *p_line_num_list;
 
-    friend class TSymtab;
+    friend class cx_symtab;
 
 public:
 
-    TSymtabNode *next;
-    TSymtabNode *prev;
+    cx_symtab_node *next__;
+    cx_symtab_node *prev;
 
-    TType *pType;
+    cx_type *p_type;
 
-    TDefn defn;
+    cx_define defn;
     int level;
-    int labelIndex;
-    int globalFinishLocation;
-    int strLength;
-    bool foundGlobalEnd;
+    int label_index;
+    int global_finish_location;
+    int string_length;
+    bool found_global_end;
 
     // pointer to runstack item
-    TStackItem *runstackItem;
+    cx_stack_item *runstack_item;
 
-    TSymtabNode(const char *pStr, TDefnCode dc = dcUndefined);
-    ~TSymtabNode();
+    cx_symtab_node(const char *p_string, cx_define_code dc = dc_undefined);
+    ~cx_symtab_node();
 
-    TSymtabNode *LeftSubtree(void) const {
+    cx_symtab_node *left_subtree(void) const {
         return left;
     }
 
-    TSymtabNode *RightSubtree(void) const {
+    cx_symtab_node *right_subtree(void) const {
         return right;
     }
 
-    char *String(void) const {
-        return pString;
+    char *string__(void) const {
+        return p_string;
     }
 
-    void RenameNode(const char *pStr) {
-        if (pString != nullptr) {
-            delete pString;
-            pString = nullptr;
+    /*void rename_node(const char *p_string) {
+        if (p_string != nullptr) {
+            delete p_string;
+            p_string = nullptr;
         }
 
-        pString = new char[strlen(pStr)];
-        strcpy(pString, pStr);
+        p_string = new char[strlen(p_string)];
+        strcpy(p_string, p_string);
+    }*/
+
+    short symtab_index(void) const {
+        return xsymtab;
     }
 
-    short SymtabIndex(void) const {
-        return xSymtab;
+    short node_index(void) const {
+        return xnode;
     }
 
-    short NodeIndex(void) const {
-        return xNode;
-    }
+    void convert(cx_symtab_node *p_vector_nodes[]);
 
-    void Convert(TSymtabNode *vpNodes[]);
-
-    void Print(void) const;
-    void PrintIdentifier(void) const;
-    void PrintConstant(void) const;
-    void PrintVarOrField(void) const;
-    void PrintType(void) const;
+    void print(void) const;
+    void print_identifier(void) const;
+    void print_constant(void) const;
+    void print_var_or_field(void) const;
+    void print_type(void) const;
 };
 
-class TSymtab {
-    TSymtabNode *root;
-    TSymtabNode **vpNodes;
-    short cntNodes;
-    short xSymtab;
-    TSymtab *next;
+class cx_symtab {
+    cx_symtab_node *root__;
+    cx_symtab_node **p_vector_nodes;
+    short nodes_count;
+    short xsymtab;
+    cx_symtab *next__;
 
 public:
 
-    TSymtab() : cntNodes(0), xSymtab(0) {
-        extern int cntSymtabs;
-        extern TSymtab *pSymtabList;
+    cx_symtab() : nodes_count(0), xsymtab(0) {
+        extern int symtab_count;
+        extern cx_symtab *p_symtab_list;
 
-        root = nullptr;
-        vpNodes = nullptr;
-        xSymtab = cntSymtabs++;
+        root__ = nullptr;
+        p_vector_nodes = nullptr;
+        xsymtab = symtab_count++;
 
-        next = pSymtabList;
-        pSymtabList = this;
+        next__ = p_symtab_list;
+        p_symtab_list = this;
     }
 
-    ~TSymtab() {
-        if (root != nullptr) delete root;
-        if (vpNodes != nullptr) delete [] vpNodes;
+    ~cx_symtab() {
+        if (root__ != nullptr) delete root__;
+        if (p_vector_nodes != nullptr) delete [] p_vector_nodes;
     }
 
-    TSymtabNode *Search(const char *pString) const;
-    TSymtabNode *Enter(const char *pString, TDefnCode dc = dcUndefined);
-    TSymtabNode *EnterNew(const char *pString, TDefnCode dc = dcUndefined);
+    cx_symtab_node *search(const char *p_string) const;
+    cx_symtab_node *enter(const char *p_string, cx_define_code dc = dc_undefined);
+    cx_symtab_node *enter_new(const char *p_string, cx_define_code dc = dc_undefined);
 
-    TSymtabNode *Root(void) const {
-        return root;
+    cx_symtab_node *root(void) const {
+        return root__;
     }
 
-    void ConnectTables(ScopedSymtab &classSymtab) {
+    void connect_tables(cx_scoped_symtab &class_symtab) {
 
-        /*root = classSymtab[tcPublic]->root;
-        root->left = classSymtab[tcProtected]->root;
-        root->right = classSymtab[tcPrivate]->root;*/
+        /*root__ = class_symtab[tc_PUBLIC]->root__;
+        root__->left = class_symtab[tc_PROTECTED]->root__;
+        root__->right = class_symtab[tc_PRIVATE]->root__;*/
     }
 
-    TSymtabNode *Get(short xNode) const {
-        if (vpNodes == nullptr) return nullptr;
+    cx_symtab_node *get(short xnode) const {
+        if (p_vector_nodes == nullptr) return nullptr;
 
-        return vpNodes[xNode];
+        return p_vector_nodes[xnode];
     }
 
-    TSymtab *Next(void) const {
-        return next;
+    cx_symtab *next(void) const {
+        return next__;
     }
 
-    TSymtabNode **NodeVector(void) const {
-        return vpNodes;
+    cx_symtab_node **node_vector(void) const {
+        return p_vector_nodes;
     }
 
-    int NodeCount(void)const {
-        return cntNodes;
+    int node_count(void)const {
+        return nodes_count;
     }
 
-    void Print(void) const {
-        root->Print();
+    void print(void) const {
+        root__->print();
     }
 
-    void Convert(TSymtab *vpSymtabs[]);
+    void convert(cx_symtab *p_vector_symtabs[]);
 
 };
 
-class TLineNumNode {
-    TLineNumNode *next;
+class cx_line_num_node {
+    cx_line_num_node *next__;
     const int number;
 
-    friend class TLineNumList;
+    friend class cx_line_num_list;
 
 public:
 
-    TLineNumNode() :
-    number(currentLineNumber) {
-        next = nullptr;
+    cx_line_num_node() :
+    number(current_line_number) {
+        next__ = nullptr;
     }
 };
 
-class TLineNumList {
-    TLineNumNode *head, *tail;
+class cx_line_num_list {
+    cx_line_num_node *head, *tail;
 
 public:
 
-    TLineNumList() :
-    head(new TLineNumNode), tail(new TLineNumNode) {
+    cx_line_num_list() :
+    head(new cx_line_num_node), tail(new cx_line_num_node) {
     }
 
-    virtual ~TLineNumList();
+    virtual ~cx_line_num_list();
 
-    void Update(void);
-    void Print(int newLineFlag, int indent) const;
+    void update(void);
+    void print(int new_line_flag, int indent) const;
 };
 
-//fig 8-5
-//--------------------------------------------------------------
-//  TSymtabStack      Symbol table stack class.
-//--------------------------------------------------------------
+///  cx_symtab_stack      Symbol table stack class.
 
-class TSymtabStack {
+class cx_symtab_stack {
 
     enum {
-        maxNestingLevel = 8
+        max_nesting_level = 8
     };
 
-    TSymtab *pSymtabs[maxNestingLevel]; // stack of symbol table ptrs
+    cx_symtab *p_symtabs[max_nesting_level]; // stack of symbol table ptrs
 
-    void InitializeMain(void);
+    //void InitializeMain(void);
 
 public:
-    TSymtabStack(void);
-    ~TSymtabStack(void);
+    cx_symtab_stack(void);
+    ~cx_symtab_stack(void);
 
-    TSymtabNode *SearchLocal(const char *pString) {
-        return pSymtabs[currentNestingLevel]->Search(pString);
+    cx_symtab_node *search_local(const char *p_string) {
+        return p_symtabs[current_nesting_level]->search(p_string);
     }
 
-    TSymtabNode *EnterLocal(const char *pString,
-            TDefnCode dc = dcUndefined) {
-        return pSymtabs[currentNestingLevel]->Enter(pString, dc);
+    cx_symtab_node *enter_local(const char *p_string,
+            cx_define_code dc = dc_undefined) {
+        return p_symtabs[current_nesting_level]->enter(p_string, dc);
     }
 
-    TSymtabNode *EnterNewLocal(const char *pString,
-            TDefnCode dc = dcUndefined) {
-        return pSymtabs[currentNestingLevel]->EnterNew(pString, dc);
+    cx_symtab_node *enter_new_local(const char *p_string,
+            cx_define_code dc = dc_undefined) {
+        return p_symtabs[current_nesting_level]->enter_new(p_string, dc);
     }
 
-    TSymtab *GetCurrentSymtab(void) const {
-        return pSymtabs[currentNestingLevel];
+    cx_symtab *get_current_symtab(void) const {
+        return p_symtabs[current_nesting_level];
     }
 
-    void SetCurrentSymtab(TSymtab *pSymtab) {
-        pSymtabs[currentNestingLevel] = pSymtab;
+    void set_current_symtab(cx_symtab *p_symtab) {
+        p_symtabs[current_nesting_level] = p_symtab;
     }
 
-    void SetScope(int scopeLevel) {
-        currentNestingLevel = scopeLevel;
+    void set_scope(int scopeLevel) {
+        current_nesting_level = scopeLevel;
     }
 
-    TSymtabNode *SearchAvailableScopes(const char *pString) const;
-    TSymtabNode *SearchAll(const char *pString) const;
-    TSymtabNode *Find(const char *pString) const;
-    void EnterScope(void);
-    TSymtab *ExitScope(void);
+    cx_symtab_node *search_available_scopes(const char *p_string) const;
+    cx_symtab_node *search_all(const char *p_string) const;
+    cx_symtab_node *find(const char *p_string) const;
+    void enter_scope(void);
+    cx_symtab *exit_scope(void);
 };
-//endfig
 
 #endif	/* SYMTABLE_H */
 

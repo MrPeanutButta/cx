@@ -1,16 +1,3 @@
-//  *************************************************************
-//  *                                                           *
-//  *   M I S C E L L A N E O U S   (Header)			*
-//  *                                                           *
-//  *   FILE:    prog3-2/misc.h					*
-//  *                                                           *
-//  *   MODULE:  Common                                         *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef misc_h
 #define misc_h
 
@@ -18,130 +5,119 @@
 #include <map>
 #include <string>
 
-//--------------------------------------------------------------
-//  TCharCode           Character codes.
-//--------------------------------------------------------------
+///  cx_char_code           Character codes.
 
-enum TCharCode {
-    ccLetter, ccDigit, ccSpecial, ccQuote, ccQuoteQuote, ccWhiteSpace,
-    ccEndOfFile, ccError,
+enum cx_char_code {
+    cc_letter, cc_digit, cc_special, cc_quote, cc_double_quote, cc_white_space,
+    cc_end_of_file, cc_error
 };
 
-//fig 3-14
-//--------------------------------------------------------------
-//  TTokenCode          Token codes.
-//--------------------------------------------------------------
+///  cx_token_code          Token codes.
 
-enum TTokenCode {
-    tcDummy = 0,
-    tcIdentifier, tcNumber, tcString, tcEndOfFile, tcError,
+enum cx_token_code {
+    tc_dummy = 0,
+    tc_identifier, tc_number, tc_string, tc_char, tc_end_of_file, tc_error,
 
     //operators and punctuation
     //bitwise
-    tcBitXOR, // ^
-    tcBitANDorAddrOf, // &
-    tcBitOR, // |
-    tcBitNOT, // ~
-    tcBitXOREqual, // ^=
-    tcBitANDEqual, // &=
-    tcBitOREqual, // |=
-    tcBitLeftShift, // <<
-    tcBitLeftShiftEqual, // <<=
-    tcBitRightShift, // >>
-    tcBitRightShiftEqual, // >>=
+    tc_bit_XOR, // ^
+    tc_bit_AND, // &
+    tc_bit_OR, // |
+    tc_bit_NOT, // ~
+    tc_bit_XOR_equal, // ^=
+    tc_bit_AND_equal, // &=
+    tc_bit_OR_equal, // |=
+    tc_bit_leftshift, // <<
+    tc_bit_leftshift_equal, // <<=
+    tc_bit_rightshift, // >>
+    tc_bit_rightshift_equal, // >>=
 
-    tcMinus, // -
-    tcMinusEqual, // -=
-    tcPlus, // +
-    tcPlusEqual, // +=
-    tcEqual, // =
-    tcMinusMinus, // --
-    tcPlusPlus, // ++
-    tcForwardSlash, // /
-    tcForwardSlashEqual, // /=
-    tcStar, // *
-    tcStarEqual, // *=
-    tcLt, // <
-    tcGt, // >
-    tcEqualEqual, // ==
-    tcLe, // <=
-    tcGe, // >=
-    tcNe, // !=
-    tcMod, // %
-    tcModEqual, // %=
+    tc_minus, // -
+    tc_minus_equal, // -=
+    tc_plus, // +
+    tc_plus_equal, // +=
+    tc_equal, // =
+    tc_minus_minus, // --
+    tc_plus_plus, // ++
+    tc_divide, // /
+    tc_divide_equal, // /=
+    tc_star, // *
+    tc_star_equal, // *=
+    tc_lessthan, // <
+    tc_greaterthan, // >
+    tc_equal_equal, // ==
+    tc_lessthan_equal, // <=
+    tc_greaterthan_equal, // >=
+    tc_not_equal, // !=
+    tc_modulas, // %
+    tc_modulas_equal, // %=
 
     //punctuation
-    tcLeftSubscript, // [
-    tcRightSubscript, // ]
-    tcQuestionMark, // ?
-    tcPound, // #
-    tcDotStar, // .*
-    tcLParen, // (
-    tcRParen, // )
+    tc_left_subscript, // [
+    tc_right_subscript, // ]
+    tc_questionmark, // ?
+    tc_pound, // #
+    tc_dot_star, // .*
+    tc_left_paren, // (
+    tc_right_paren, // )
 
-    tcLBracket, // {
-    tcRBracket, // }
-    tcColon, // :
-    tcSemicolon, // ;
+    tc_left_bracket, // {
+    tc_right_bracket, // }
+    tc_colon, // :
+    tc_semicolon, // ;
 
-    tcComma, // ,
-    tcDotDotDot, // ...
+    tc_comma, // ,
+    tc_dot_dot_dot, // ...
 
     // member access
-    tcDot, // .
-    tcDotDot, // ..
-    tcColonColon, // ::
-    tcPointerMember, // ->
-    tcMemberPointer, // ->*
+    tc_dot, // .
+    tc_dot_dot, // ..
+    tc_colon_colon, // ::
+    tc_pointer_member, // ->
+    tc_member_pointer, // ->*
 
     //logic
-    tcLogicOr, // ||
-    tcLogicAnd, // &&
-    tcLogicNOT, // !
-    tcQuote, // '
-    tcQuoteQuote, // "
+    tc_logic_OR, // ||
+    tc_logic_AND, // &&
+    tc_logic_NOT, // !
+    tc_single_quote, // '
+    tc_double_quote, // "
 
-    tcIf, tcReturn, tcContinue, tcFriend, tcTrue, tcGoto, tcTry, tcDelete,
-    tcShort, tcTypeId, tcBool, tcDo, tcInt, tcSigned, tcTypeName,
-    tcBreak, tcDouble, tcLong, tcSizeOf, tcUnion, tcCase, tcStatic,
-    tcUnsigned, tcCatch, tcElse, tcNameSpace, tcUsing, tcChar, tcCharDef,
-    tcEnum, tcNew, tcVirtual, tcChar16_t, tcExplicit, tcNoExcept,
-    tcChar32_t, tcExport, tcNullptr, tcSwitch, tcStruct, tcVoid,
-    tcClass, tcExtern, tcOperator, tcTemplate, tcConst, tcFalse,
-    tcPrivate, tcThis, tcWhile, tcFloat, tcProtected, tcThreadLocal,
-    tcFor, tcPublic, tcThrow, tcDefault, tcTypeDef, tcMutable, tcInclude,
-    tcStringDef
-};
-//endfig
-
-//--------------------------------------------------------------
-//  TDataType           Data type.
-//--------------------------------------------------------------
-
-enum TDataType {
-    tyDummy, tyInteger, tyReal, tyCharacter, tyString,
+    tc_IF, tc_RETURN, tc_CONTINUE, tc_FRIEND, tc_GOTO, tc_TRY, tc_DELETE,
+    tc_TYPEID, tc_DO, tc_SIGNED, tc_TYPENAME,
+    tc_BREAK, tc_SIZEOF, tc_CASE, tc_STATIC,
+    tc_UNSIGNED, tc_CATCH, tc_ELSE, tc_NAMESPACE, tc_USING,
+    tc_NEW, tc_VIRTUAL, tc_EXPLICIT, tc_NOEXCEPT,
+    tc_EXPORT, tc_NULLPTR, tc_SWITCH,
+    tc_EXTERN, tc_OPERATOR, tc_TEMPLATE, tc_CONST,
+    tc_PRIVATE, tc_THIS, tc_WHILE, tc_PROTECTED, tc_THREADLOCAL,
+    tc_FOR, tc_PUBLIC, tc_THROW, tc_DEFAULT, tc_TYPEDEF, tc_MUTABLE, tc_INCLUDE
 };
 
-//--------------------------------------------------------------
-//  TDataValue          Data value.
-//--------------------------------------------------------------
+///  cx_data_type           Data type.
 
-union TDataValue {
-    int __int;
-    unsigned int __u_int;
-    float __float;
-    double __double;
-    char __char;
-    unsigned char __u_char;
+enum cx_data_type {
+    ty_dummy, ty_integer, ty_real, ty_character, ty_string,
+};
 
-    bool __bool;
+///  cx_data_value          Data value.
+
+union cx_data_value {
+    int int__;
+    unsigned int u_int__;
+    float float__;
+    double double__;
+    char char__;
+    unsigned char u_char__;
+
+    bool bool__;
 
     //needed???
-    char *pString;
+    char *p_string;
 };
 
-typedef std::map<char, TCharCode> char_code_map;
-typedef std::map<std::string, TTokenCode> token_map;
+typedef std::map<char, cx_char_code> cx_char_code_map;
+typedef std::map<std::string, cx_token_code> token_map;
 
 #endif
 
