@@ -13,7 +13,7 @@
 #include "symtable.h"
 #include "types.h"
 
-using namespace std;
+
 
 //extern cx_icode icode;
 extern cx_symtab cx_global_symtab;
@@ -63,7 +63,7 @@ class cx_parser {
     cx_type *parse_identifier_type(const cx_symtab_node *p_id2);
 
     cx_type *parse_enum_header(cx_symtab_node *p_function_id);
-    cx_type *ParseEnumerationType(void);
+    cx_type *parse_enumeration_type(void);
 
     cx_type *parse_subrange_type(cx_symtab_node *p_min_id);
     cx_type *parse_subrange_limit(cx_symtab_node *p_limit_id, int &limit);
@@ -79,7 +79,7 @@ class cx_parser {
     //cx_type *p_complex_type,
     //int offset);
     //cx_symtab_node *parse_id_sublist(const cx_symtab_node *p_function_id,
-    //const cx_type *p_complex_type, cx_symtab_node *&pLastId);
+    //const cx_type *p_complex_type, cx_symtab_node *&p_last_id);
 
     // expressions
     cx_type *parse_expression(void);

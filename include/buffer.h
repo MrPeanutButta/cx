@@ -7,7 +7,7 @@
 #include "misc.h"
 #include "error.h"
 
-using namespace std;
+
 
 /***********
  *         *
@@ -26,7 +26,7 @@ const int max_input_buffer_size = 256;
 
 class cx_text_in_buffer {
 protected:
-    fstream file; // input text file
+    std::fstream file; // input text file
     char *const p_file_name; // ptr to the file name
     char text[max_input_buffer_size]; // input text buffer
     char *p_char; /* ptr to the current char

@@ -40,7 +40,7 @@ cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name, cx_abort_cod
     strcpy(p_file_name, p_input_file_name);
 
     // Open the input file.  Abort if failed.
-    file.open(p_file_name, ios::in);
+    file.open(p_file_name, std::ios::in);
     if (!file.good()) abort_translation(ac);
 }
 
@@ -53,7 +53,7 @@ cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name, cx_abort_cod
  *          or the end-of-file character.
  */
 char cx_text_in_buffer::get_char(void) {
-    const int tabSize = 8; // size of tabs
+    const int tab_size = 8; // size of tabs
     char ch; // character to return
 
     if (*p_char == eof_char) return eof_char; // end of file
@@ -65,8 +65,8 @@ char cx_text_in_buffer::get_char(void) {
     }
 
     // If tab character, increment input_position to the next__
-    // multiple of tabSize.
-    if (ch == '\t') input_position += tabSize - input_position % tabSize;
+    // multiple of tab_size.
+    if (ch == '\t') input_position += tab_size - input_position % tab_size;
 
     return ch;
 }
@@ -147,8 +147,8 @@ char cx_source_buffer::get_line(void) {
  *               *
  *****************/
 
-const int maxPrintLineLength = 80;
-const int maxLinesPerPage = 50;
+const int max_printline_length = 80;
+const int max_lines_per_page = 50;
 
 cx_list_buffer list; // the list file buffer
 
@@ -156,11 +156,11 @@ cx_list_buffer list; // the list file buffer
  *                      print the page header.
  */
 void cx_list_buffer::print_page_header(void) {
-    const char formFeedChar = '\f';
+    const char form_feed_char = '\f';
 
-    cout << formFeedChar << "Page " << ++page_number
+    std::cout << form_feed_char << "Page " << ++page_number
             << "   " << p_source_file_name << "   " << date
-            << endl << endl;
+            << std::endl << std::endl;
 
     line_count = 0;
 }
@@ -193,13 +193,13 @@ void cx_list_buffer::initialize(const char *p_file_name) {
 
 void cx_list_buffer::put_line(void) {
     // Start a new page if the current one is full.
-    if (list_flag && (line_count == maxLinesPerPage)) print_page_header();
+    if (list_flag && (line_count == max_lines_per_page)) print_page_header();
 
     // Truncate the line if it's too long.
-    text[maxPrintLineLength] = '\0';
+    text[max_printline_length] = '\0';
 
     // print the text line, and then blank out the text.
-    cout << text << endl;
+    std::cout << text << std::endl;
     memset(text, '\0', sizeof (text));
 
     ++line_count;

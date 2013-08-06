@@ -7,6 +7,15 @@
 #include <cctype>
 #include "token.h"
 
+/// radix number bases
+
+enum cx_radix_base {
+    rb_DECIMAL = 10,
+    rb_BINARY = 2,
+    rb_HEXADECIMAL = 16,
+    rb_OCTAL = 8
+};
+
 /*******************
  *                 *
  *  Number Tokens  *
@@ -20,17 +29,14 @@
  */
 void cx_number_token::get(cx_text_in_buffer &buffer) {
 
-    float numValue = 0.0; /* value of number ignoring
+    float number_value = 0.0; /* value of number ignoring
                            * the decimal point */
-    int wholePlaces = 0; // no. digits before the decimal point
-    int decimalPlaces = 0; // no. digits after  the decimal point
-    char exponentSign = '+';
-    float eValue = 0.0; // value of number after 'E'
+    int whole_places = 0; // no. digits before the decimal point
+    int decimal_places = 0; // no. digits after  the decimal point
+    char exponent_sign = '+';
+    float e_value = 0.0; // value of number after 'E'
     int exponent = 0; // final value of exponent
-    bool sawDotDotFlag = false; // true if encountered '..',
-
-    // assume base 10 radix
-    radix = 10;
+    bool saw_dot_dot_Flag = false; // true if encountered '..',
 
     ch = buffer.current_char();
     ps = string;
@@ -40,11 +46,37 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
     type__ = ty_integer; /* we don't know what it is yet, but
                        * assume it'll be an integer */
 
+    // assume base 10 radix
+    radix = rb_DECIMAL;
+
+    // octal base
+    if (ch == '0') {
+        radix = rb_OCTAL;
+        ch = buffer.get_char();
+        switch (ch) {
+            case 'x':
+                radix = rb_HEXADECIMAL;
+                ch = buffer.get_char();
+                break;
+            case 'b':
+                radix = rb_BINARY;
+                ch = buffer.get_char();
+                break;
+            case '.':
+                radix = rb_DECIMAL;
+                ch = buffer.put_back_char();
+                break;
+            default:
+                ch = buffer.put_back_char();
+                break;
+        }
+    }
+
     /* get the whole part of the number by accumulating
-     * the values of its digits into numValue.  wholePlaces keeps
+     * the values of its digits into number_value.  whole_places keeps
      * track of the number of digits in this part. */
-    if (!accumulate_value(buffer, numValue, err_invalid_number)) return;
-    wholePlaces = digit_count;
+    if (!accumulate_value(buffer, number_value, err_invalid_number)) return;
+    whole_places = digit_count;
 
     /* If the current character is a dot, then either we have a
      * fraction part or we are seeing the first character of a '..'
@@ -56,38 +88,38 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
 
             /* We have a .. token.  Back up bufferp so that the
              * token can be extracted next__. */
-            sawDotDotFlag = true;
+            saw_dot_dot_Flag = true;
             buffer.put_back_char();
         } else {
             type__ = ty_real;
             *ps++ = '.';
 
-            // We have a fraction part.  Accumulate it into numValue.
-            if (!accumulate_value(buffer, numValue,
+            // We have a fraction part.  Accumulate it into number_value.
+            if (!accumulate_value(buffer, number_value,
                     err_invalid_fraction)) return;
-            decimalPlaces = digit_count - wholePlaces;
+            decimal_places = digit_count - whole_places;
         }
     }
 
     /* get the exponent part, if any. There cannot be an
      * exponent part if we already saw the '..' token. */
-    if (!sawDotDotFlag && ((ch == 'E') || (ch == 'e'))) {
+    if (!saw_dot_dot_Flag && ((ch == 'E') || (ch == 'e'))) {
         type__ = ty_real;
         *ps++ = ch;
         ch = buffer.get_char();
 
         // Fetch the exponent's sign, if any.
         if ((ch == '+') || (ch == '-')) {
-            *ps++ = exponentSign = ch;
+            *ps++ = exponent_sign = ch;
             ch = buffer.get_char();
         }
 
-        // Accumulate the value of the number after 'E' into eValue.
+        // Accumulate the value of the number after 'E' into e_value.
         digit_count = 0;
-        if (!accumulate_value(buffer, eValue,
+        if (!accumulate_value(buffer, e_value,
                 err_invalid_exponent)) return;
 
-        if (exponentSign == '-') eValue = -eValue;
+        if (exponent_sign == '-') e_value = -e_value;
     }
 
     // Were there too many digits?
@@ -98,22 +130,22 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
 
     /* Calculate and check the final exponent value,
      * and then use it to adjust the number's value. */
-    exponent = int(eValue) - decimalPlaces;
-    if ((exponent + wholePlaces < FLT_MIN_10_EXP) ||
-            (exponent + wholePlaces > FLT_MAX_10_EXP)) {
+    exponent = int(e_value) - decimal_places;
+    if ((exponent + whole_places < FLT_MIN_10_EXP) ||
+            (exponent + whole_places > FLT_MAX_10_EXP)) {
         cx_error(err_real_out_of_range);
         return;
     }
-    if (exponent != 0) numValue *= float(pow((double) 10, exponent));
+    if (exponent != 0) number_value *= float(pow((double) 10, exponent));
 
     // Check and set the numeric value.
     if (type__ == ty_integer) {
-        if ((numValue < INT_MIN) || (numValue > INT_MAX)) {
+        if ((number_value < INT_MIN) || (number_value > INT_MAX)) {
             cx_error(err_integer_out_of_range);
             return;
         }
-        value__.int__ = int(numValue);
-    } else value__.float__ = numValue;
+        value__.int__ = int(number_value);
+    } else value__.float__ = number_value;
 
     *ps = '\0';
     code__ = tc_number;
@@ -130,10 +162,11 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
 int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
         float &value, cx_error_code ec) {
 
-    const int maxDigitCount = 20;
+    const int max_digit_count = 20;
 
-    // cx_error if the first character is not a digit.
-    if (char_code_map[ch] != cc_digit) {
+    /* cx_error if the first character is not a digit 
+     * and radix base is not hex */
+    if ((char_code_map[ch] != cc_digit) && (!isxdigit(ch))) {
         cx_error(ec);
         return false; // failure
     }
@@ -144,35 +177,31 @@ int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
 
         *ps++ = ch;
 
-        if (++digit_count <= maxDigitCount) {
-            value = radix * value + char_value(ch); // shift left and add
+        if (++digit_count <= max_digit_count) {
+            value = radix * value + char_value(ch); // shift left__ and add
         } else count_error_flag = true; // too many digits
 
         ch = buffer.get_char();
 
-        // hex base
-        if (ch == 'x') {
-            radix = 16;
-            ch = buffer.get_char();
-        }
-
-        // binary base
-        if (ch == 'b') radix = 2;
-
-    } while ((char_code_map[ch] == cc_digit) || is_x_digit(ch));
+    } while ((char_code_map[ch] == cc_digit) || isxdigit(ch));
 
     return true; // success
 }
 
 int cx_number_token::char_value(const char &c) {
-    char xc = tolower(c);
-    if (is_x_digit(xc)) {
-        switch (xc) {
+    if (isxdigit(c)) {
+        switch (c) {
+            case 'A':
             case 'a': return 10;
+            case 'B':
             case 'b': return 11;
+            case 'C':
             case 'c': return 12;
+            case 'D':
             case 'd': return 13;
+            case 'E':
             case 'e': return 14;
+            case 'F':
             case 'f': return 15;
         }
     }
@@ -180,13 +209,13 @@ int cx_number_token::char_value(const char &c) {
     return (c - '0');
 }
 
+/** C already has this function
 bool cx_number_token::is_x_digit(const char& c) {
-    char xc = tolower(c);
-
-    return (xc == 'a') || (xc == 'b') || (xc == 'c') ||
-            (xc == 'd') || (xc == 'e') || (xc == 'f') ||
-            ((xc >= '0') && (xc <= '9'));
-}
+    return (c == 'a') || (c == 'A') || (c == 'b') || (c == 'B') ||
+            (c == 'c') || (c == 'C') || (c == 'd') || (c == 'D') ||
+            (c == 'e') || (c == 'E') || (c == 'f') || (c == 'F') ||
+            ((c >= '0') && (c <= '9'));
+}*/
 
 /** print       print the token to the list file.
  * 

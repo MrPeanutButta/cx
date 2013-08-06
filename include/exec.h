@@ -18,7 +18,7 @@ union cx_stack_item {
     void *addr__;
 };
 
-using namespace std;
+
 
 ///  cx_runtime_stack       Runtime stack class.
 

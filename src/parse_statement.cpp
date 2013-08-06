@@ -93,7 +93,7 @@ cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
 void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
 
 
-    int breakPoint = put_location_marker();
+    int break_point = put_location_marker();
     get_token_append(); //do
 
     parse_statement_list(p_function_id, tc_WHILE);
@@ -101,11 +101,11 @@ void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
     conditional_get_token_append(tc_WHILE, err_missing_WHILE);
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    CheckBoolean(parse_expression());
+    check_boolean(parse_expression());
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
-    fixup_location_marker(breakPoint);
+    fixup_location_marker(break_point);
 }
 
 /** parse_WHILE          parse while statement.
@@ -117,18 +117,18 @@ void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
  */
 void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
 
-    int breakPoint = put_location_marker();
+    int break_point = put_location_marker();
 
     get_token_append(); // while
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    CheckBoolean(parse_expression());
+    check_boolean(parse_expression());
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
     parse_statement(p_function_id);
 
-    fixup_location_marker(breakPoint);
+    fixup_location_marker(break_point);
 }
 
 /** parse_IF             parse if/else statements.
@@ -147,30 +147,30 @@ void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
     // Append a placeholder location marker for where to go to if
     // <expr> is false.  Remember the location of this placeholder
     // so it can be fixed up below.
-    int atFalseLocationMarker = put_location_marker();
+    int at_false_location_marker = put_location_marker();
 
     get_token_append();
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    CheckBoolean(parse_expression());
+    check_boolean(parse_expression());
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
     parse_statement(p_function_id);
     while (token == tc_semicolon) get_token_append();
 
-    fixup_location_marker(atFalseLocationMarker);
+    fixup_location_marker(at_false_location_marker);
     if (token == tc_ELSE) {
         // Append a placeholder location marker for the token that
         // follows the IF statement.  Remember the location of this
         // placeholder so it can be fixed up below.
-        int atFollowLocationMarker = put_location_marker();
+        int at_follow_location_marker = put_location_marker();
 
         get_token_append();
         parse_statement(p_function_id);
         while (token == tc_semicolon) get_token_append();
 
-        fixup_location_marker(atFollowLocationMarker);
+        fixup_location_marker(at_follow_location_marker);
     }
 }
 
@@ -183,10 +183,10 @@ void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
  */
 void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
 
-    int breakPoint = put_location_marker();
+    int break_point = put_location_marker();
     int statementMarker = put_location_marker();
-    int conditionMarker = put_location_marker();
-    int incrementMarker = put_location_marker();
+    int condition_marker = put_location_marker();
+    int increment_marker = put_location_marker();
 
     get_token_append(); // for
 
@@ -198,15 +198,15 @@ void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
         conditional_get_token_append(tc_semicolon, err_missing_semicolon);
     } else get_token_append();
 
-    fixup_location_marker(conditionMarker);
+    fixup_location_marker(condition_marker);
     if (token != tc_semicolon) {
 
         // expr 2
-        CheckBoolean(parse_expression());
+        check_boolean(parse_expression());
         conditional_get_token_append(tc_semicolon, err_missing_semicolon);
     } else get_token_append();
 
-    fixup_location_marker(incrementMarker);
+    fixup_location_marker(increment_marker);
     if (token != tc_right_paren) {
         // expr 3
         parse_expression();
@@ -215,7 +215,7 @@ void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
     fixup_location_marker(statementMarker);
     parse_statement(p_function_id);
-    fixup_location_marker(breakPoint);
+    fixup_location_marker(break_point);
 
 }
 
@@ -236,13 +236,13 @@ void cx_parser::parse_SWITCH(cx_symtab_node* p_function_id) {
     get_token_append();
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    cx_type *p_expr_type = parse_expression()->Base();
+    cx_type *p_expr_type = parse_expression()->base_type();
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
-    if ((p_expr_type != pIntegerType)
-            && (p_expr_type != pCharType)
-            && (p_expr_type->form != fcEnum)) {
+    if ((p_expr_type != p_integer_type)
+            && (p_expr_type != p_char_type)
+            && (p_expr_type->form != fc_enum)) {
         cx_error(err_incompatible_types);
     }
 
@@ -261,10 +261,10 @@ void cx_parser::parse_case_branch(cx_symtab_node* p_function_id, const cx_type *
 void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p_expr_type) {
     get_token_append();
 
-    bool signFlag(false);
+    bool sign_flag(false);
 
     if (token_in(token, tokenlist_unary_ops)) {
-        signFlag = true;
+        sign_flag = true;
         get_token_append();
     }
 
@@ -281,7 +281,7 @@ void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p
             get_token_append();
             break;
         case tc_string:
-            if (signFlag || (strlen(p_token->string__()) != 3)) {
+            if (sign_flag || (strlen(p_token->string__()) != 3)) {
                 cx_error(err_invalid_constant);
             }
     }
@@ -304,7 +304,7 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
 
     parse_statement_list(p_function_id, tc_right_bracket);
 
-    conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+    conditional_get_token_append(tc_right_bracket, err_missing_right___bracket);
 
 }
 
@@ -320,6 +320,6 @@ void cx_parser::parse_RETURN(cx_symtab_node* p_function_id) {
     get_token_append();
 
     // expr 1
-    CheckAssignmentTypeCompatible(p_function_id->p_type, parse_expression(),
+    check_assignment_type_compatible(p_function_id->p_type, parse_expression(),
             err_incompatible_types);
 }

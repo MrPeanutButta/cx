@@ -7,7 +7,7 @@
 //  *                                                           *
 //  *   MODULE:  Common                                         *
 //  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
+//  *   Copyright__ (c) 1996 by Ronald Mak                        *
 //  *   For instructional purposes only.  No warranties.        *
 //  *                                                           *
 //  *************************************************************
@@ -55,9 +55,9 @@ extern const cx_token_code tokenlist_equal_equal[];
 extern const cx_token_code tokenlist_do[];
 extern const cx_token_code tokenlist_left_bracket [];
 extern const cx_token_code tokenlist_colon[];
-extern const cx_token_code tokenlist_right_bracket[];
+extern const cx_token_code tokenlist_right___bracket[];
 extern const cx_token_code tokenlist_semicolon[];
-extern const cx_token_code tokenlist_right_paren[];
+extern const cx_token_code tokenlist_right___paren[];
 extern const cx_token_code tokenlist_left_paren[];
 
 extern const cx_token_code tokenlist_declaration_start[];
@@ -75,7 +75,7 @@ extern const cx_token_code tokenlist_subscript_or_field_start[];
 extern const cx_token_code tokenlist_identifier_follow[];
 
 
-bool token_in(cx_token_code tc, const cx_token_code *pList);
+bool token_in(cx_token_code tc, const cx_token_code *p_list);
 
 // mains scope level on the symtab stack
 #define __MAIN_ENTRY__ symtab_stack.find("main")
