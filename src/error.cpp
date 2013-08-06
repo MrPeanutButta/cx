@@ -11,13 +11,13 @@
 #include "buffer.h"
 #include "error.h"
 
-int errorCount = 0; // count of syntax errors
-bool errorArrowFlag = true; // true if print arrows under syntax
+int error_count = 0; // count of syntax errors
+bool error_arrow_flag = true; // true if print arrows under syntax
 
 //   errors, false if not
-int errorArrowOffset = 8; // offset for printing the error arrow
+int error_arrow_offset = 8; // offset for printing the error arrow
 
-///  Abort messages      Keyed to enumeration type TAbortCode.
+///  Abort messages      Keyed to enumeration type cx_abort_code.
 const char *abortMsg[] = {
     NULL,
     "Invalid command line arguments",
@@ -26,19 +26,19 @@ const char *abortMsg[] = {
     "Failed to open assembly file",
     "Too many syntax errors",
     "Stack overflow",
-    "Code segment overflow",
+    "code segment overflow",
     "Nesting too deep",
     "Runtime error",
     "Unimplemented feature",
 };
 
-/** AbortTranslation    A fatal error occurred during the
- *                     translation.  Print the abort code
+/** abort_translation    A fatal error occurred during the
+ *                     translation.  print the abort code
  *                     to the error file and then exit.
  *
  * @param ac : abort code
  */
-void AbortTranslation(TAbortCode ac) {
+void abort_translation(cx_abort_code ac) {
     cerr << "*** fatal translator error: " << abortMsg[-ac] << endl;
     exit(ac);
 }
@@ -46,7 +46,7 @@ void AbortTranslation(TAbortCode ac) {
 
 
 /* Syntax error messages       Keyed to enumeration type
- *                             TErrorCode.
+ *                             cx_error_code.
  */
 const char *errorMessages[] = {
     "No error",
@@ -106,42 +106,42 @@ const char *errorMessages[] = {
     "Invalid reference variable",
     "Not a record variable",
     "Missing variable",
-    "Code segment overflow",
+    "code segment overflow",
     "Unimplemented feature",
     "Missing (",
     "Missing '"
 };
 
-/** Error       Print an arrow under the error and then
+/** cx_error       print an arrow under the error and then
  *              print the error message.
  *
  * @param ec : error code
  */
-void Error(TErrorCode ec) {
+void cx_error(cx_error_code ec) {
     const int maxSyntaxErrors = 0;
 
-    int errorPosition = errorArrowOffset + inputPosition - 1;
+    int errorPosition = error_arrow_offset + input_position - 1;
 
-    //--Print the arrow pointing to the token just scanned.
-    if (errorArrowFlag) {
+    // print the arrow pointing to the token just scanned.
+    if (error_arrow_flag) {
         sprintf(list.text, "%*s^", errorPosition, " ");
-        list.PutLine();
+        list.put_line();
     }
 
-    //--Print the error message.
+    // print the error message.
     sprintf(list.text, "*** error: %s", errorMessages[ec]);
-    list.PutLine();
+    list.put_line();
 
-    if (++errorCount > maxSyntaxErrors) {
-        list.PutLine("Too many syntax errors.  Translation aborted.");
-        AbortTranslation(abortTooManySyntaxErrors);
+    if (++error_count > maxSyntaxErrors) {
+        list.put_line("Too many syntax errors.  Translation aborted.");
+        abort_translation(abort_too_many_syntax_errors);
     }
 }
 
 const char *runtimeErrorMessages[] = {
     "No runtime error",
     "Runtime stack overflow",
-    "Value out of range",
+    "value out of range",
     "Invalid CASE expression value",
     "Division by zero",
     "Invalid standard function argument",
@@ -149,11 +149,11 @@ const char *runtimeErrorMessages[] = {
     "Unimplemented runtime feature"
 };
 
-void RuntimeError(TRuntimeErrorCode ec) {
-    extern int currentLineNumber;
+void cx_runtime_error(cx_runtime_error_code ec) {
+    extern int current_line_number;
 
-    cout << "\nruntime error in line <" << currentLineNumber << ">: "
+    cout << "\nruntime error in line <" << current_line_number << ">: "
             << runtimeErrorMessages[ec] << endl;
 
-    exit(abortRuntimeError);
+    exit(abort_runtime_error);
 }

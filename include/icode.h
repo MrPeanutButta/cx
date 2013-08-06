@@ -1,18 +1,3 @@
-//  *************************************************************
-//  *                                                           *
-//  *   I N T E R M E D I A T E   C O D E   (Header)            *
-//  *                                                           *
-//  *   CLASSES: TIcode                                         *
-//  *                                                           *
-//  *   FILE:    prog10-1/icode.h                               *
-//  *                                                           *
-//  *   MODULE:  Intermediate code                              *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef icode_h
 #define icode_h
 
@@ -20,65 +5,63 @@
 #include "token.h"
 #include "scanner.h"
 
-const TTokenCode mcLineMarker = ((TTokenCode) 127);
-const TTokenCode mcLocationMarker = ((TTokenCode) 126);
+const cx_token_code mc_line_marker = ((cx_token_code) 127);
+const cx_token_code mc_location_marker = ((cx_token_code) 126);
 
-//--------------------------------------------------------------
-//  TIcode      Intermediate code subclass of TScanner.
-//--------------------------------------------------------------
+class cx_symtab_node;
 
-class TSymtabNode;
+///  cx_icode      Intermediate code subclass of cx_scanner.
 
-class TIcode : public TScanner {
+class cx_icode : public cx_scanner {
 
     enum {
-        codeSegmentSize = 4096
+        code_segment_size = 4096
     };
 
-    char *pCode; // ptr to the code segment
+    char *p_code; // ptr to the code segment
     char *cursor; // ptr to current code location
-    TSymtabNode *pNode; // ptr to extracted symbol table node
+    cx_symtab_node *p_node; // ptr to extracted symbol table node
 
-    void CheckBounds(int size);
-    TSymtabNode *GetSymtabNode(void);
+    void check_bounds(int size);
+    cx_symtab_node *get_symtab_node(void);
 
 public:
-    TIcode(const TIcode &icode); // copy constructor
+    cx_icode(const cx_icode &icode); // copy constructor
 
-    TIcode(void) {
-        pCode = cursor = new char[codeSegmentSize];
+    cx_icode(void) {
+        p_code = cursor = new char[code_segment_size];
     }
 
-    ~TIcode(void) {
-        if (pCode != nullptr) delete[] pCode;
+    ~cx_icode(void) {
+        if (p_code != nullptr) delete[] p_code;
     }
 
-    void Put(TTokenCode tc);
-    void Put(const TSymtabNode *pNode);
-    void InsertLineMarker(void);
-    int PutLocationMarker(void);
-    void FixupLocationMarker(int location);
-    int GetLocationMarker(void);
-    void PutCaseItem(int value, int location);
-    void GetCaseItem(int &value, int &location);
+    void put(cx_token_code tc);
+    void put(const cx_symtab_node *p_node);
+    void insert_line_marker(void);
+    int put_location_marker(void);
+    void fixup_location_marker(int location);
+    int get_location_marker(void);
+    void put_case_item(int value, int location);
+    void get_case_item(int &value, int &location);
 
-    void Reset(void) {
-        cursor = pCode;
+    void reset(void) {
+        cursor = p_code;
     }
 
-    void GoTo(int location) {
-        cursor = pCode + location;
+    void go_to(int location) {
+        cursor = p_code + location;
     }
 
-    int CurrentLocation(void) const {
-        return cursor - pCode;
+    int current_location(void) const {
+        return cursor - p_code;
     }
 
-    TSymtabNode *SymtabNode(void) const {
-        return pNode;
+    cx_symtab_node *symtab_node(void) const {
+        return p_node;
     }
 
-    virtual TToken *Get(void);
+    virtual cx_token *get(void);
 };
 
 #endif

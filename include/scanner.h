@@ -1,19 +1,3 @@
-//fig 3-5
-//  *************************************************************
-//  *                                                           *
-//  *   S C A N N E R   (Header)                                *
-//  *                                                           *
-//  *   CLASSES: TScanner, TTextScanner                         *
-//  *                                                           *
-//  *   FILE:    prog3-1/scanner.h                              *
-//  *                                                           *
-//  *   MODULE:  Scanner                                        *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef scanner_h
 #define scanner_h
 
@@ -21,48 +5,44 @@
 #include "buffer.h"
 #include "token.h"
 
-//--------------------------------------------------------------
-//  TScanner            Abstract scanner class.
-//--------------------------------------------------------------
+///  cx_scanner            Abstract scanner class.
 
-class TScanner {
+class cx_scanner {
 protected:
 
-    //--Tokens extracted and returned by the scanner.
-    TWordToken wordToken;
-    TNumberToken numberToken;
-    TStringToken stringToken;
-    TCharToken charToken;
-    TSpecialToken specialToken;
-    TEOFToken eofToken;
-    TErrorToken errorToken;
+    // Tokens extracted and returned by the scanner.
+    cx_word_token word_token;
+    cx_number_token number_token;
+    cx_string_token string_token;
+    cx_char_token char_token;
+    cx_special_token special_token;
+    cx_EOF_token eof_token;
+    cx_error_token error_token;
 
 public:
 
-    virtual ~TScanner(void) {
+    virtual ~cx_scanner(void) {
     }
 
-    virtual TToken *Get(void) = 0;
+    virtual cx_token *get(void) = 0;
 };
 
-//--------------------------------------------------------------
-//  TTextScanner        Text scanner subclass of TScanner.
-//--------------------------------------------------------------
+///  cx_text_scanner        Text scanner subclass of cx_scanner.
 
-class TTextScanner : public TScanner {
-    TTextInBuffer * const pTextInBuffer; // ptr to input text buffer
-    //   to scan
+class cx_text_scanner : public cx_scanner {
+    cx_text_in_buffer * const p_text_in_buffer; /* ptr to input text buffer
+                                                 * to scan */
 
-    void SkipWhiteSpace(void);
+    void skip_whitespace(void);
 
 public:
-    TTextScanner(TTextInBuffer *pBuffer);
+    cx_text_scanner(cx_text_in_buffer *p_buffer);
 
-    virtual ~TTextScanner(void) {
-        delete pTextInBuffer;
+    virtual ~cx_text_scanner(void) {
+        delete p_text_in_buffer;
     }
 
-    virtual TToken *Get(void);
+    virtual cx_token *get(void);
 };
 
 #endif

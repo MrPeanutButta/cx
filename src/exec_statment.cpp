@@ -10,602 +10,602 @@
 
 using namespace std;
 
-/** ExecuteStatement   	Execute a Cx statement
+/** execute_statement   	Execute a Cx statement
  *
- * @param pRoutineId : ptr to the routine symtab node
+ * @param p_function_id : ptr to the routine symtab node
  */
-void TExecutor::ExecuteStatement(TSymtabNode *pRoutineId) {
-    if (token != tcLBracket) {
-        ++stmtCount;
-        TraceStatement();
+void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
+    if (token != tc_left_bracket) {
+        ++statement_count;
+        trace_statement();
     }
 
     switch (token) {
-        case tcIdentifier:
+        case tc_identifier:
         {
-            if (pNode->defn.how == dcFunction) {
-                ExecuteSubroutineCall(pNode);
+            if (p_node->defn.how == dc_function) {
+                execute_subroutine_call(p_node);
             } else {
-                ExecuteAssignment(pNode);
+                execute_assignment(p_node);
             }
         }
             break;
-        case tcDo: ExecuteDO(pRoutineId);
+        case tc_DO: execute_DO(p_function_id);
             break;
-        case tcWhile: ExecuteWHILE(pRoutineId);
+        case tc_WHILE: execute_WHILE(p_function_id);
             break;
-        case tcIf: ExecuteIF(pRoutineId);
+        case tc_IF: execute_IF(p_function_id);
             break;
-        case tcFor: ExecuteFOR(pRoutineId);
+        case tc_FOR: execute_FOR(p_function_id);
             break;
-        case tcSwitch: //ParseSWITCH();
+        case tc_SWITCH: //parse_SWITCH();
             break;
-        case tcCase:
-        case tcDefault://ParseCaseLabel();
+        case tc_CASE:
+        case tc_DEFAULT://parse_case_label();
             break;
-        case tcBreak:
-            GetToken();
-            breakLoop = true;
+        case tc_BREAK:
+            get_token();
+            break_loop = true;
             break;
-        case tcLBracket: ExecuteCompound(pRoutineId);
+        case tc_left_bracket: execute_compound(p_function_id);
             break;
-        case tcReturn: ExecuteRETURN(pRoutineId);
+        case tc_RETURN: execute_RETURN(p_function_id);
             break;
     }
 }
 
-/** ExecuteStatementList        Execute a list or compounded
+/** execute_statement_list        Execute a list or compounded
  *                              statements until a terminator token
  *                              is reached.
  *
- * @param pRoutineId : ptr to the routine symtab node
+ * @param p_function_id : ptr to the routine symtab node
  * @param terminator : token to terminate compound execution.
  */
-void TExecutor::ExecuteStatementList(TSymtabNode *pRoutineId, TTokenCode terminator) {
+void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator) {
     do {
-        ExecuteStatement(pRoutineId);
+        execute_statement(p_function_id);
 
-        while (token == tcSemicolon) GetToken();
-    } while ((token != terminator) && (token != tcDummy) && (!breakLoop));
+        while (token == tc_semicolon) get_token();
+    } while ((token != terminator) && (token != tc_dummy) && (!break_loop));
 }
 
-/** ExecuteAssignment 	Execute assignment.
+/** execute_assignment 	Execute assignment.
  *
- *      pTargetId =, +=, -=, ++, --, /=, *=, %=, ^=
+ *      p_target_id =, +=, -=, ++, --, /=, *=, %=, ^=
  *                >>=, <<=, &=, |= <expression>;
  * 
- * @param pTargetId : ptr to the symtab node being assigned some value
+ * @param p_target_id : ptr to the symtab node being assigned some value
  *                    on the stack.
  */
-void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId) {
-    TStackItem *pTarget = nullptr; // runtime stack address of target
-    TType *pTargetType = nullptr; // ptr to target type object
-    TType *pExprType = nullptr; // ptr to expression type object
-    TType *pExprType2 = nullptr; // reserved for casting
+void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
+    cx_stack_item *pTarget = nullptr; // runtime stack address of target
+    cx_type *p_target_type = nullptr; // ptr to target type object
+    cx_type *p_expr_type = nullptr; // ptr to expression type object
+    cx_type *pExprType2 = nullptr; // reserved for casting
 
-    if (pTargetId->defn.how == dcFunction) {
-        pTargetType = pTargetId->pType;
-        pTarget = runStack.GetValueAddress(pTargetId);
-    }//--Assignment to variable or formal parameter.
-        //--ExecuteVariable leaves the target address on
-        //--top of the runtime stack.
-    else if ((pTargetId->defn.how != dcType)) {
-        if (!TokenIn(token, tlAssignOps))GetToken();
-        pTargetType = ExecuteVariable(pTargetId, true);
+    if (p_target_id->defn.how == dc_function) {
+        p_target_type = p_target_id->p_type;
+        pTarget = run_stack.get_value_address(p_target_id);
+    }// Assignment to variable or formal parameter.
+        // execute_variable leaves the target address on
+        // top of the runtime stack.
+    else if ((p_target_id->defn.how != dc_type)) {
+        if (!token_in(token, tokenlist_assign_ops))get_token();
+        p_target_type = execute_variable(p_target_id, true);
 
-        if (pTargetType->form != fcStream) {
-            pTarget = (TStackItem *) Pop()->__addr;
+        if (p_target_type->form != fcStream) {
+            pTarget = (cx_stack_item *) pop()->addr__;
         }
     }
 
     switch (token) {
-        case tcReturn:
-        case tcEqual:
+        case tc_RETURN:
+        case tc_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
+            get_token();
+            p_expr_type = execute_expression();
 
-            if (token != tcSemicolon) pExprType2 = ExecuteExpression();
+            if (token != tc_semicolon) pExprType2 = execute_expression();
 
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
 
                 if (!pExprType2) {
 
-                    pTarget->__float =
-                            (pExprType->Base() == pIntegerType)
-                            ? Pop()->__int // real := integer
-                            : Pop()->__float; // real := real
+                    pTarget->float__ =
+                            (p_expr_type->Base() == pIntegerType)
+                            ? pop()->int__ // real := integer
+                            : pop()->float__; // real := real
 
                 } else {
 
-                    pTarget->__float =
+                    pTarget->float__ =
                             (pExprType2->Base() == pIntegerType)
-                            ? Pop()->__int // real := integer
-                            : Pop()->__float; // real := real
+                            ? pop()->int__ // real := integer
+                            : pop()->float__; // real := real
 
                 }
-            } else if (((pTargetType->Base() == pIntegerType) &&
-                    (pTargetType->Base()->form != fcArray)) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            } else if (((p_target_type->Base() == pIntegerType) &&
+                    (p_target_type->Base()->form != fcArray)) ||
+                    (p_target_type->Base()->form == fcEnum)) {
                 int value(0);
 
                 if (!pExprType2) {
-                    value = ((pExprType->Base() == pIntegerType) ||
-                            (pExprType->Base() == pBooleanType))
-                            ? Pop()->__int // real := integer
-                            : Pop()->__float; // real := real
+                    value = ((p_expr_type->Base() == pIntegerType) ||
+                            (p_expr_type->Base() == pBooleanType))
+                            ? pop()->int__ // real := integer
+                            : pop()->float__; // real := real
                 } else {
                     value = ((pExprType2->Base() == pIntegerType) ||
                             (pExprType2->Base() == pBooleanType))
-                            ? Pop()->__int // real := integer
-                            : Pop()->__float; // real := real
+                            ? pop()->int__ // real := integer
+                            : pop()->float__; // real := real
                 }
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-
-
-                pTarget->__int = value;
+                // integer     := integer
+                // enumeration := enumeration
 
 
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                pTarget->int__ = value;
 
-                //--character := character
-                pTarget->__char = value;
-            } else if (pTargetType->Base() == pFileType) {
 
-                if (pExprType == pIntegerType) {
-                    int __i = Pop()->__int;
-                    fprintf(pTargetId->pType->stream.pFileStream, "%i", __i);
-                } else if (pExprType == pFloatType) {
-                    float __f = Pop()->__float;
-                    fprintf(pTargetId->pType->stream.pFileStream, "%f", __f);
-                } else if (pExprType == pCharType) {
-                    char __c = Pop()->__char;
-                    fprintf(pTargetId->pType->stream.pFileStream, "%c", __c);
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
+
+                // character := character
+                pTarget->char__ = value;
+            } else if (p_target_type->Base() == pFileType) {
+
+                if (p_expr_type == pIntegerType) {
+                    int __i = pop()->int__;
+                    fprintf(p_target_id->p_type->stream.pFileStream, "%i", __i);
+                } else if (p_expr_type == pFloatType) {
+                    float __f = pop()->float__;
+                    fprintf(p_target_id->p_type->stream.pFileStream, "%f", __f);
+                } else if (p_expr_type == pCharType) {
+                    char __c = pop()->char__;
+                    fprintf(p_target_id->p_type->stream.pFileStream, "%c", __c);
                 }
 
 
             } else {
-                void *pSource = Pop()->__addr;
+                void *pSource = pop()->addr__;
 
-                //--array  := array
-                //--record := record
-                memcpy(pTarget, pSource, pTargetType->size);
+                // array  := array
+                // record := record
+                memcpy(pTarget, pSource, p_target_type->size);
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcPlusPlus:
+        case tc_plus_plus:
         {
-            GetToken();
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float++;
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
-                pTarget->__int++;
-            } else if (pTargetType->Base() == pCharType) {
-                pTarget->__char++;
+            get_token();
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
+                pTarget->float__++;
+            } else if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
+                pTarget->int__++;
+            } else if (p_target_type->Base() == pCharType) {
+                pTarget->char__++;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcMinusMinus:
+        case tc_minus_minus:
         {
-            GetToken();
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float--;
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
-                pTarget->__int--;
-            } else if (pTargetType->Base() == pCharType) {
-                pTarget->__char--;
+            get_token();
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
+                pTarget->float__--;
+            } else if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
+                pTarget->int__--;
+            } else if (p_target_type->Base() == pCharType) {
+                pTarget->char__--;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcPlusEqual:
+        case tc_plus_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float += pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
+                pTarget->float__ += p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
+            } else if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
+                int value = p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int += value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ += value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char += value;
+                // character := character
+                pTarget->char__ += value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcMinusEqual:
+        case tc_minus_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float -= pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
+                pTarget->float__ -= p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
+            } else if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
+                int value = p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int -= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ -= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char -= value;
+                // character := character
+                pTarget->char__ -= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcStarEqual:
+        case tc_star_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
+            get_token();
+            p_expr_type = execute_expression();
 
             // if not semicolon, this may be an expression following a cast.
-            if (token != tcSemicolon)ExecuteExpression();
+            if (token != tc_semicolon)execute_expression();
 
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float *= pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
+                pTarget->float__ *= p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
+            } else if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
+                int value = p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int *= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ *= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char -= value;
+                // character := character
+                pTarget->char__ -= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcForwardSlashEqual:
+        case tc_divide_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if (pTargetType == pFloatType) {
-                pTarget->__float /= pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
-            } else if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if (p_target_type == pFloatType) {
+                pTarget->float__ /= p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
+            } else if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = pExprType->Base() == pIntegerType
-                        ? Pop()->__int // real := integer
-                        : Pop()->__float; // real := real
+                int value = p_expr_type->Base() == pIntegerType
+                        ? pop()->int__ // real := integer
+                        : pop()->float__; // real := real
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int /= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ /= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char /= value;
+                // character := character
+                pTarget->char__ /= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcModEqual:
+        case tc_modulas_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = Pop()->__int; // real := integer
+                int value = pop()->int__; // real := integer
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int %= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ %= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char %= value;
+                // character := character
+                pTarget->char__ %= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcBitLeftShiftEqual:
+        case tc_bit_leftshift_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = Pop()->__int; // real := integer
+                int value = pop()->int__; // real := integer
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int <<= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ <<= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char <<= value;
+                // character := character
+                pTarget->char__ <<= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcBitRightShiftEqual:
+        case tc_bit_rightshift_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = Pop()->__int; // real := integer
+                int value = pop()->int__; // real := integer
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int >>= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ >>= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char >>= value;
+                // character := character
+                pTarget->char__ >>= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcBitANDEqual:
+        case tc_bit_AND_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = Pop()->__int; // real := integer
+                int value = pop()->int__; // real := integer
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int &= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ &= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char <<= value;
+                // character := character
+                pTarget->char__ <<= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcBitXOREqual:
+        case tc_bit_XOR_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = Pop()->__int; // real := integer
+                int value = pop()->int__; // real := integer
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int <<= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ <<= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char ^= value;
+                // character := character
+                pTarget->char__ ^= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
-        case tcBitOREqual:
+        case tc_bit_OR_equal:
         {
-            GetToken();
-            pExprType = ExecuteExpression();
-            //--Do the assignment.
-            if ((pTargetType->Base() == pIntegerType) ||
-                    (pTargetType->Base()->form == fcEnum)) {
+            get_token();
+            p_expr_type = execute_expression();
+            // Do the assignment.
+            if ((p_target_type->Base() == pIntegerType) ||
+                    (p_target_type->Base()->form == fcEnum)) {
 
-                int value = Pop()->__int; // real := integer
+                int value = pop()->int__; // real := integer
 
-                RangeCheck(pTargetType, value);
+                range_check(p_target_type, value);
 
-                //--integer     := integer
-                //--enumeration := enumeration
-                pTarget->__int <<= value;
-            } else if (pTargetType->Base() == pCharType) {
-                char value = Pop()->__char;
-                RangeCheck(pTargetType, value);
+                // integer     := integer
+                // enumeration := enumeration
+                pTarget->int__ <<= value;
+            } else if (p_target_type->Base() == pCharType) {
+                char value = pop()->char__;
+                range_check(p_target_type, value);
 
-                //--character := character
-                pTarget->__char |= value;
+                // character := character
+                pTarget->char__ |= value;
             }
 
-            TraceDataStore(pTargetId, pTarget, pTargetType);
+            trace_data_store(p_target_id, pTarget, p_target_type);
         }
             break;
     }
 }
 
-/** ExecuteDO   Executes do/while statement while <expression> is true.
+/** execute_DO   Executes do/while statement while <expression> is true.
  * 
  *      do
  *      <staement>;
  *      while(<expression>);
  * 
- * @param pRoutineId : routine ID this statement is apart of. 
+ * @param p_function_id : routine ID this statement is apart of. 
  */
-void TExecutor::ExecuteDO(TSymtabNode * pRoutineId) {
+void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 
-    int breakPoint; // = GetLocationMarker();
-    int atLoopStart = CurrentLocation(); // location of loop start in icode;
+    int breakPoint; // = get_location_marker();
+    int atLoopStart = current_location(); // location of loop start in icode;
     int condition = 0;
 
     do {
 
-        GetToken(); // do
-        breakPoint = GetLocationMarker();
-        GetToken();
+        get_token(); // do
+        breakPoint = get_location_marker();
+        get_token();
 
-        ExecuteStatementList(pRoutineId, tcWhile);
+        execute_statement_list(p_function_id, tc_WHILE);
 
-        if (breakLoop) {
-            GoTo(breakPoint);
-            GetToken();
+        if (break_loop) {
+            go_to(breakPoint);
+            get_token();
             break;
         }
 
-        GetToken(); //while
-        ExecuteExpression(); // (condition)
-        condition = Pop()->__int;
+        get_token(); //while
+        execute_expression(); // (condition)
+        condition = pop()->int__;
 
-        if (condition != 0) this->GoTo(atLoopStart);
-    } while (CurrentLocation() == atLoopStart);
+        if (condition != 0) this->go_to(atLoopStart);
+    } while (current_location() == atLoopStart);
 
     // reset break flag
-    breakLoop = false;
+    break_loop = false;
 
 }
 
-/** ExecuteWHILE        Executes while statement while <expression> is true.
+/** execute_WHILE        Executes while statement while <expression> is true.
  * 
  *      while(<expression>)
  *            <statement>;
  * 
- * @param pRoutineId : routine ID this statement is apart of. 
+ * @param p_function_id : routine ID this statement is apart of. 
  */
-void TExecutor::ExecuteWHILE(TSymtabNode * pRoutineId) {
+void cx_executor::execute_WHILE(cx_symtab_node * p_function_id) {
 
     int breakPoint;
-    int atLoopStart = CurrentLocation();
+    int atLoopStart = current_location();
     int condition = 0;
 
     do {
 
-        GetToken(); // while
-        breakPoint = GetLocationMarker();
-        GetToken();
+        get_token(); // while
+        breakPoint = get_location_marker();
+        get_token();
 
-        GetToken(); //-- (
-        ExecuteExpression();
-        condition = Pop()->__int;
-        GetToken(); //-- )
+        get_token(); //  (
+        execute_expression();
+        condition = pop()->int__;
+        get_token(); //  )
         if (condition != 0) {
-            ExecuteStatement(pRoutineId);
+            execute_statement(p_function_id);
 
-            if (breakLoop) {
-                GoTo(breakPoint);
-                GetToken();
+            if (break_loop) {
+                go_to(breakPoint);
+                get_token();
                 break;
             }
 
-            GoTo(atLoopStart);
-        } else GoTo(breakPoint);
+            go_to(atLoopStart);
+        } else go_to(breakPoint);
 
 
 
-    } while (CurrentLocation() == atLoopStart);
+    } while (current_location() == atLoopStart);
 
     // reset break
-    breakLoop = false;
+    break_loop = false;
 }
 
-/** ExecuteCompound     Execute statement block.
+/** execute_compound     Execute statement block.
  * 
  *      {       // begin
  *              <statements>;
  *      }       // end
  * 
- * @param pRoutineId : routine ID this statement is apart of. 
+ * @param p_function_id : routine ID this statement is apart of. 
  */
-void TExecutor::ExecuteCompound(TSymtabNode * pRoutineId) {
+void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
 
-    GetToken();
+    get_token();
 
-    ExecuteStatementList(pRoutineId, tcRBracket);
+    execute_statement_list(p_function_id, tc_right_bracket);
 
-    if (token == tcRBracket)GetToken();
+    if (token == tc_right_bracket)get_token();
 }
 
-/** ExecuteIF   Executes if statements.
+/** execute_IF   Executes if statements.
  * 
  *      if(<boolean expression>)
  *              <statement>;
@@ -614,117 +614,117 @@ void TExecutor::ExecuteCompound(TSymtabNode * pRoutineId) {
  *      else 
  *              <statement>;
  * 
- * @param pRoutineId : routine ID this statement is apart of. 
+ * @param p_function_id : routine ID this statement is apart of. 
  */
-void TExecutor::ExecuteIF(TSymtabNode * pRoutineId) {
-    //-- if
-    GetToken();
+void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
+    //  if
+    get_token();
 
-    //--Get the location of where to go to if <expr> is false.
-    int atFalse = GetLocationMarker();
-    GetToken();
+    // get the location of where to go to if <expr> is false.
+    int atFalse = get_location_marker();
+    get_token();
 
-    //--(
-    GetToken();
+    // (
+    get_token();
 
-    ExecuteExpression();
-    int condition = Pop()->__int;
+    execute_expression();
+    int condition = pop()->int__;
 
-    //--)
-    GetToken();
+    // )
+    get_token();
 
     if (condition != 0) {
 
-        //--True: { or single statement
-        ExecuteStatement(pRoutineId);
-        while (token == tcSemicolon)GetToken();
+        // True: { or single statement
+        execute_statement(p_function_id);
+        while (token == tc_semicolon)get_token();
 
-        //--If there is an ELSE part, jump around it.
-        if (token == tcElse) {
-            GetToken();
-            GoTo(GetLocationMarker());
-            GetToken(); // token following the IF statement
+        // If there is an ELSE part, jump around it.
+        if (token == tc_ELSE) {
+            get_token();
+            go_to(get_location_marker());
+            get_token(); // token following the IF statement
         }
     } else {
 
-        //--False: Go to the false location.
-        GoTo(atFalse);
-        GetToken();
+        // False: Go to the false location.
+        go_to(atFalse);
+        get_token();
 
-        if (token == tcElse) {
+        if (token == tc_ELSE) {
 
-            //--ELSE <stmt-2>
-            GetToken();
-            GetLocationMarker(); // skip over location marker
-            //--{ or single statement
-            GetToken();
-            ExecuteStatement(pRoutineId);
+            // ELSE <stmt-2>
+            get_token();
+            get_location_marker(); // skip over location marker
+            // { or single statement
+            get_token();
+            execute_statement(p_function_id);
 
-            while (token == tcSemicolon)GetToken();
+            while (token == tc_semicolon)get_token();
         }
     }
 }
 
-/** ExecuteFOR  Executes for statement.
+/** execute_FOR  Executes for statement.
  *          initialize   condition     increment
  *      for(<statement>; <expression>; <expression>)
  *              <statement>;
  * 
- * @param pRoutineId
+ * @param p_function_id
  */
-void TExecutor::ExecuteFOR(TSymtabNode * pRoutineId) {
+void cx_executor::execute_FOR(cx_symtab_node * p_function_id) {
 
     int condition = 0;
 
-    GetToken(); //--for
-    //--Get the location of where to go to if <expr> is false.
-    int breakPoint = GetLocationMarker();
-    GetToken();
-    int statementLocation = GetLocationMarker();
-    GetToken();
-    int conditionMarker = GetLocationMarker();
-    GetToken();
-    int incrementMarker = GetLocationMarker();
+    get_token(); // for
+    // get the location of where to go to if <expr> is false.
+    int breakPoint = get_location_marker();
+    get_token();
+    int statementLocation = get_location_marker();
+    get_token();
+    int conditionMarker = get_location_marker();
+    get_token();
+    int incrementMarker = get_location_marker();
 
 
-    GetToken();
+    get_token();
 
-    //--(
-    GetToken();
+    // (
+    get_token();
 
-    if (token != tcSemicolon) {
+    if (token != tc_semicolon) {
         // declaration would go here //
-        ExecuteAssignment(pNode);
+        execute_assignment(p_node);
     }
 
     do {
-        GetToken(); //-- ;
-        if (token != tcSemicolon) {
+        get_token(); //  ;
+        if (token != tc_semicolon) {
 
             // expr 2
-            ExecuteExpression();
-            GetToken(); //-- ;
-        } else GetToken();
+            execute_expression();
+            get_token(); //  ;
+        } else get_token();
 
-        condition = Pop()->__int;
+        condition = pop()->int__;
         if (condition != 0) {
-            GoTo(statementLocation);
-            GetToken();
-            ExecuteStatement(pRoutineId);
-            if (breakLoop) GoTo(breakPoint);
+            go_to(statementLocation);
+            get_token();
+            execute_statement(p_function_id);
+            if (break_loop) go_to(breakPoint);
         } else {
-            GoTo(breakPoint);
-            GetToken();
+            go_to(breakPoint);
+            get_token();
             break;
         }
 
-        GoTo(incrementMarker);
-        GetToken();
+        go_to(incrementMarker);
+        get_token();
         // expr 3
-        ExecuteExpression();
+        execute_expression();
 
-        GoTo(conditionMarker);
-    } while (CurrentLocation() == conditionMarker);
+        go_to(conditionMarker);
+    } while (current_location() == conditionMarker);
 
-    breakLoop = false;
+    break_loop = false;
 }

@@ -19,66 +19,66 @@
 #include "symtable.h"
 #include "icode.h"
 
-extern int currentLineNumber;
-extern int currentNestingLevel;
-extern TSymtab globalSymtab;
-extern int cntSymtabs;
-extern TSymtab *pSymtabList;
-extern TSymtab **vpSymtabs;
+extern int current_line_number;
+extern int current_nesting_level;
+extern cx_symtab cx_global_symtab;
+extern int symtab_count;
+extern cx_symtab *p_symtab_list;
+extern cx_symtab **p_vector_symtabs;
 
-extern TSymtab globalSymtab;
+extern cx_symtab cx_global_symtab;
 
 // tokens that can start a statement
-extern const TTokenCode tlStatementStart[];
+extern const cx_token_code tokenlist_statement_start[];
 
 // tokens that can follow a statement
-extern const TTokenCode tlStatementFollow[];
+extern const cx_token_code tokenlist_statement_follow[];
 
-extern const TTokenCode tlCaseLabelStart[];
-extern const TTokenCode tlExpressionStart[];
+extern const cx_token_code tokenlist_caselabel_start[];
+extern const cx_token_code tokenlist_expression_start[];
 
-extern const TTokenCode tlExpressionFollow[];
+extern const cx_token_code tokenlist_expression_follow[];
 
-extern const TTokenCode tlAssignOps[];
+extern const cx_token_code tokenlist_assign_ops[];
 
-extern const TTokenCode tlRelOps[];
+extern const cx_token_code tokenlist_relation_ops[];
 
-extern const TTokenCode tlUnaryOps[];
+extern const cx_token_code tokenlist_unary_ops[];
 
-extern const TTokenCode tlAddOps[];
+extern const cx_token_code tokenlist_add_ops[];
 
-extern const TTokenCode tlMulOps[];
+extern const cx_token_code tokenlist_mul_ops[];
 
-extern const TTokenCode tlProgramEnd[];
+extern const cx_token_code tokenlist_program_end[];
 
-extern const TTokenCode tlEqualEqual[];
-extern const TTokenCode tlDo[];
-extern const TTokenCode tlLBracket [];
-extern const TTokenCode tlColonp[];
-extern const TTokenCode tlRBracket[];
-extern const TTokenCode tlSemicolon[];
-extern const TTokenCode tlRParen[];
-extern const TTokenCode tlLParen[];
+extern const cx_token_code tokenlist_equal_equal[];
+extern const cx_token_code tokenlist_do[];
+extern const cx_token_code tokenlist_left_bracket [];
+extern const cx_token_code tokenlist_colon[];
+extern const cx_token_code tokenlist_right_bracket[];
+extern const cx_token_code tokenlist_semicolon[];
+extern const cx_token_code tokenlist_right_paren[];
+extern const cx_token_code tokenlist_left_paren[];
 
-extern const TTokenCode tlDeclarationStart[];
-extern const TTokenCode tlDeclarationFollow[];
-extern const TTokenCode tlIdentifierStart[];
-extern const TTokenCode tlSublistFollow[];
-extern const TTokenCode tlFieldDeclFollow[];
-extern const TTokenCode tlEnumConstStart[];
-extern const TTokenCode tlEnumConstFollow[];
-extern const TTokenCode tlSubrangeLimitFollow[];
-extern const TTokenCode tlIndexStart[];
-extern const TTokenCode tlIndexFollow[];
-extern const TTokenCode tlIndexListFollow[];
-extern const TTokenCode tlSubscriptOrFieldStart[];
-extern const TTokenCode tlIdentifierFollow[];
+extern const cx_token_code tokenlist_declaration_start[];
+extern const cx_token_code tokenlist_declaration_follow[];
+extern const cx_token_code tokenlist_identifier_start[];
+extern const cx_token_code tokenlist_sublist_follow[];
+extern const cx_token_code tokenlist_field_decl_follow[];
+extern const cx_token_code tokenlist_enum_const_start[];
+extern const cx_token_code tokenlist_enum_const_follow[];
+extern const cx_token_code tokenlist_subrange_limit_follow[];
+extern const cx_token_code tokenlist_index_start[];
+extern const cx_token_code tokenlist_index_follow[];
+extern const cx_token_code tokenlist_index_list_follow[];
+extern const cx_token_code tokenlist_subscript_or_field_start[];
+extern const cx_token_code tokenlist_identifier_follow[];
 
 
-bool TokenIn(TTokenCode tc, const TTokenCode *pList);
+bool token_in(cx_token_code tc, const cx_token_code *pList);
 
 // mains scope level on the symtab stack
-#define __MAIN_ENTRY__ symtabStack.Find("main")
+#define __MAIN_ENTRY__ symtab_stack.find("main")
 
 #endif
 //endfig

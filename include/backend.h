@@ -1,18 +1,3 @@
-//  *************************************************************
-//  *                                                           *
-//  *   B A C K E N D  (Header)                                 *
-//  *                                                           *
-//  *   CLASSES: TBackend                                       *
-//  *                                                           *
-//  *   FILE:    prog10-1/backend.h                             *
-//  *                                                           *
-//  *   MODULE:  Back end                                       *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef backend_h
 #define backend_h
 
@@ -21,45 +6,43 @@
 #include "token.h"
 #include "icode.h"
 
-//--------------------------------------------------------------
-//  TBackend            Abstract back end class.
-//--------------------------------------------------------------
+/// cx_backend            Abstract back end class.
 
-class TBackend {
+class cx_backend {
 protected:
-    TToken *pToken; // ptr to the current token
-    TTokenCode token; // code of current token
-    TIcode *pIcode; // ptr to current icode
-    TSymtabNode *pNode; // ptr to symtab node
+    cx_token *p_token; // ptr to the current token
+    cx_token_code token; // code of current token
+    cx_icode *p_icode; // ptr to current icode
+    cx_symtab_node *p_node; // ptr to symtab node
 
-    void GetToken(void) {
-        pToken = pIcode->Get();
-        token = pToken->Code();
-        pNode = pIcode->SymtabNode();
+    void get_token(void) {
+        p_token = p_icode->get();
+        token = p_token->code();
+        p_node = p_icode->symtab_node();
     }
 
-    void GoTo(int location) {
-        pIcode->GoTo(location);
+    void go_to(int location) {
+        p_icode->go_to(location);
     }
 
-    int CurrentLocation(void) const {
-        return pIcode->CurrentLocation();
+    int current_location(void) const {
+        return p_icode->current_location();
     }
 
-    int GetLocationMarker(void) {
-        return pIcode->GetLocationMarker();
+    int get_location_marker(void) {
+        return p_icode->get_location_marker();
     }
 
-    void GetCaseItem(int &value, int &location) {
-        pIcode->GetCaseItem(value, location);
+    void get_case_item(int &value, int &location) {
+        p_icode->get_case_item(value, location);
     }
 
 public:
 
-    virtual ~TBackend(void) {
+    virtual ~cx_backend(void) {
     }
 
-    virtual void Go(TSymtabNode *pRoutineId) = 0;
+    virtual void go(cx_symtab_node *p_function_id) = 0;
 };
 
 #endif

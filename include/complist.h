@@ -5,33 +5,33 @@
  * Created on June 13, 2013, 11:31 PM
  */
 
-#ifndef COMPLIST_H
-#define	COMPLIST_H
+#ifndef complist_h
+#define	complist_h
 
 #include "buffer.h"
 
-const int maxCompactTextLength = 72;
+const int max_compact_text_length = 72;
 
-class TCompactListBuffer : public TTextOutBuffer {
+class cx_compact_list_buffer : public cx_text_out_buffer {
 private:
-    int textLength;
-    char *pText;
+    int text_length;
+    char *p_text;
 
 public:
 
-    TCompactListBuffer() :
-    textLength(0) {
-        pText = text;
-        *pText = '\0';
+    cx_compact_list_buffer() :
+    text_length(0) {
+        p_text = text;
+        *p_text = '\0';
     }
 
-    ~TCompactListBuffer() {
+    ~cx_compact_list_buffer() {
 
     };
 
-    void PutBlank(void);
-    void Put(const char *pString);
-    void PutLine(void);
+    void put_blank(void);
+    void put(const char *p_string);
+    void put_line(void);
 
 };
 

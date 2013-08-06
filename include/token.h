@@ -1,21 +1,3 @@
-//fig 3-15
-//  *************************************************************
-//  *                                                           *
-//  *   T O K E N S   (Header)                                  *
-//  *                                                           *
-//  *	CLASSES: TToken, TWordToken, TNumberToken, 		*
-//  *		 TStringToken, TSpecialToken, TEOFToken,	*
-//  *		 TErrorToken                                    *
-//  *                                                           *
-//  *   FILE:    prog3-2/token.h                                *
-//  *                                                           *
-//  *   MODULE:  Scanner                                        *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef token_h
 #define token_h
 
@@ -24,188 +6,175 @@
 #include "buffer.h"
 
 
-extern char_code_map charCodeMap;
+extern cx_char_code_map char_code_map;
 
-//--------------------------------------------------------------
-//  TToken              Abstract token class.
-//--------------------------------------------------------------
+///  cx_token              Abstract token class.
+class cx_icode;
 
-class TIcode;
-
-class TToken {
+class cx_token {
 protected:
 
-    friend TIcode;
+    friend cx_icode;
 
-    TTokenCode code;
-    TDataType type;
-    TDataValue value;
-    char string[maxInputBufferSize];
+    cx_token_code code__;
+    cx_data_type type__;
+    cx_data_value value__;
+    char string[max_input_buffer_size];
 
 public:
 
-    TToken(void) {
-        code = tcDummy;
-        type = tyDummy;
-        value.__int = 0;
+    cx_token(void) {
+        code__ = tc_dummy;
+        type__ = ty_dummy;
+        value__.int__ = 0;
         string[0] = '\0';
     }
 
-    TTokenCode Code() const {
-        return code;
+    cx_token_code code() const {
+        return code__;
     }
 
-    TDataType Type() const {
-        return type;
+    cx_data_type type() const {
+        return type__;
     }
 
-    TDataValue Value() const {
-        return value;
+    cx_data_value value() const {
+        return value__;
     }
 
-    char *String() {
+    char *string__() {
         return string;
     }
 
-    virtual void Get(TTextInBuffer &buffer) = 0;
-    virtual int IsDelimiter(void) const = 0;
-    virtual void Print(void) const = 0;
+    virtual void get(cx_text_in_buffer &buffer) = 0;
+    virtual int is_delimiter(void) const = 0;
+    virtual void print(void) const = 0;
 };
 
-//--------------------------------------------------------------
-//  TWordToken          Word token subclass of TToken.
-//--------------------------------------------------------------
+///  cx_word_token          Word token subclass of cx_token.
 
-class TWordToken : public TToken {
-    void CheckForReservedWord(void);
+class cx_word_token : public cx_token {
+    void check_for_reserved_word(void);
 
 public:
-    virtual void Get(TTextInBuffer &buffer);
+    virtual void get(cx_text_in_buffer &buffer);
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return false;
     }
-    virtual void Print(void) const;
+    virtual void print(void) const;
 };
 
-//--------------------------------------------------------------
-//  TNumberToken        Number token subclass of TToken.
-//--------------------------------------------------------------
+//  cx_number_token        Number token subclass of cx_token.
 
-class TNumberToken : public TToken {
+class cx_number_token : public cx_token {
     char ch; // char fetched from input buffer
     char *ps; // ptr into token string
-    int digitCount; // total no. of digits in number
-    int countErrorFlag; // true if too many digits, else false
+    int digit_count; // total no. of digits in number
+    bool count_error_flag; // true if too many digits, else false
 
-    int AccumulateValue(TTextInBuffer &buffer,
-            float &value, uint8_t &radix, TErrorCode ec);
-    
-    bool IsXDigit(const char &c);
-    int CharValue(const char &c);
+    uint8_t radix; // number base
+
+    int accumulate_value(cx_text_in_buffer &buffer,
+            float &value, cx_error_code ec);
+
+    bool is_x_digit(const char &c);
+    int char_value(const char &c);
 
 public:
 
-    TNumberToken() {
-        code = tcNumber;
+    cx_number_token() {
+        code__ = tc_number;
     }
 
-    virtual void Get(TTextInBuffer &buffer);
+    virtual void get(cx_text_in_buffer &buffer);
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return false;
     }
-    virtual void Print(void) const;
+    virtual void print(void) const;
 };
 
-//--------------------------------------------------------------
-//  TStringToken        String token subclass of TToken.
-//--------------------------------------------------------------
+///  cx_string_token        string__ token subclass of cx_token.
 
-class TStringToken : public TToken {
+class cx_string_token : public cx_token {
 public:
 
-    TStringToken() {
-        code = tcString;
+    cx_string_token() {
+        code__ = tc_string;
     }
 
-    virtual void Get(TTextInBuffer &buffer);
+    virtual void get(cx_text_in_buffer &buffer);
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return true;
     }
-    virtual void Print(void) const;
+    virtual void print(void) const;
 };
 
-class TCharToken : public TToken {
+class cx_char_token : public cx_token {
 public:
 
-    TCharToken() {
-        code = tcChar;
+    cx_char_token() {
+        code__ = tc_char;
     }
 
-    virtual void Get(TTextInBuffer &buffer);
+    virtual void get(cx_text_in_buffer &buffer);
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return true;
     }
-    virtual void Print(void) const;
+    virtual void print(void) const;
 };
 
-//--------------------------------------------------------------
-//  TSpecialToken       Special token subclass of TToken.
-//--------------------------------------------------------------
+///  cx_special_token       Special token subclass of cx_token.
 
-class TSpecialToken : public TToken {
+class cx_special_token : public cx_token {
 public:
-    virtual void Get(TTextInBuffer &buffer);
+    virtual void get(cx_text_in_buffer &buffer);
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return true;
     }
-    virtual void Print(void) const;
+    virtual void print(void) const;
 };
 
-//--------------------------------------------------------------
-//  TEOFToken           End-of-file token subclass of TToken.
-//--------------------------------------------------------------
+///  cx_EOF_token           End-of-file token subclass of cx_token.
 
-class TEOFToken : public TToken {
+class cx_EOF_token : public cx_token {
 public:
 
-    TEOFToken() {
-        code = tcEndOfFile;
+    cx_EOF_token() {
+        code__ = tc_end_of_file;
     }
 
-    virtual void Get(TTextInBuffer &buffer) {
+    virtual void get(cx_text_in_buffer &buffer) {
     }
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return false;
     }
 
-    virtual void Print(void) const {
+    virtual void print(void) const {
     }
 };
 
-//--------------------------------------------------------------
-//  TErrorToken         Error token subclass of TToken.
-//--------------------------------------------------------------
+///  cx_error_token         cx_error token subclass of cx_token.
 
-class TErrorToken : public TToken {
+class cx_error_token : public cx_token {
 public:
 
-    TErrorToken() {
-        code = tcError;
+    cx_error_token() {
+        code__ = tc_error;
     }
 
-    virtual void Get(TTextInBuffer &buffer);
+    virtual void get(cx_text_in_buffer &buffer);
 
-    virtual int IsDelimiter(void) const {
+    virtual int is_delimiter(void) const {
         return false;
     }
 
-    virtual void Print(void) const {
+    virtual void print(void) const {
     }
 };
 

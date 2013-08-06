@@ -3,67 +3,67 @@
 #include "common.h"
 #include "types.h"
 
-/** ParseExpression     Parse an expression (binary relational
+/** parse_expression     parse an expression (binary relational
  *                      operators = < > <> <= and >= ).
  * 
  * @return ptr to the expression's type object.
  */
-TType *TParser::ParseExpression(void) {
+cx_type *cx_parser::parse_expression(void) {
 
-    TType *pResultType;
-    TType *pOperandType;
+    cx_type *pResultType;
+    cx_type *pOperandType;
 
-    pResultType = ParseSimpleExpression();
+    pResultType = parse_simple_expression();
 
-    if (TokenIn(token, tlRelOps)) {
-        GetTokenAppend();
-        pOperandType = ParseSimpleExpression();
+    if (token_in(token, tokenlist_relation_ops)) {
+        get_token_append();
+        pOperandType = parse_simple_expression();
         CheckRelOpOperands(pResultType, pOperandType);
         pResultType = pBooleanType;
     }
 
-    Resync(tlExpressionFollow, tlStatementFollow, tlStatementStart);
+    resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
 
     return pResultType;
 }
 
-/** ParseSimpleExpression       Parse a simple expression
+/** parse_simple_expression       parse a simple expression
  *                              (unary operators + or - , and
  *                              binary operators + - and ||).
  * 
  * @return ptr to the simple expression's type object.
  */
-TType *TParser::ParseSimpleExpression(void) {
+cx_type *cx_parser::parse_simple_expression(void) {
 
-    TType *pResultType;
-    TType *pOperandType;
-    TTokenCode op;
+    cx_type *pResultType;
+    cx_type *pOperandType;
+    cx_token_code op;
     bool unaryOpFlag = false;
 
-    if (TokenIn(token, tlUnaryOps)) {
+    if (token_in(token, tokenlist_unary_ops)) {
         unaryOpFlag = true;
-        GetTokenAppend();
+        get_token_append();
     }
 
-    pResultType = ParseTerm();
+    pResultType = parse_term();
 
     if (unaryOpFlag) CheckIntegerOrReal(pResultType);
 
-    while (TokenIn(token, tlAddOps)) {
+    while (token_in(token, tokenlist_add_ops)) {
         op = token;
-        GetTokenAppend();
-        pOperandType = ParseTerm();
+        get_token_append();
+        pOperandType = parse_term();
 
         switch (op) {
-            case tcPlus:
-            case tcMinus:
+            case tc_plus:
+            case tc_minus:
                 if (IntegerOperands(pResultType, pOperandType)) {
                     pResultType = pIntegerType;
                 } else if (RealOperands(pResultType, pOperandType)) {
                     pResultType = pFloatType;
-                } else Error(errIncompatibleTypes);
+                } else cx_error(err_incompatible_types);
                 break;
-            case tcLogicOr:
+            case tc_logic_OR:
                 CheckBoolean(pResultType, pOperandType);
                 pResultType = pBooleanType;
                 break;
@@ -73,45 +73,45 @@ TType *TParser::ParseSimpleExpression(void) {
     return pResultType;
 }
 
-/** ParseTerm           Parse a term (binary operators * / 
+/** parse_term           parse a term (binary operators * / 
  *                      % and &&).
  * 
  * @return ptr to the term's type object.
  */
-TType *TParser::ParseTerm(void) {
+cx_type *cx_parser::parse_term(void) {
 
-    TType *pResultType;
-    TType *pOperandType;
-    TTokenCode op;
+    cx_type *pResultType;
+    cx_type *pOperandType;
+    cx_token_code op;
 
-    pResultType = ParseFactor();
+    pResultType = parse_factor();
 
-    while (TokenIn(token, tlMulOps)) {
+    while (token_in(token, tokenlist_mul_ops)) {
 
         op = token;
-        GetTokenAppend();
-        pOperandType = ParseFactor();
+        get_token_append();
+        pOperandType = parse_factor();
 
         switch (op) {
-            case tcStar:
+            case tc_star:
                 if (IntegerOperands(pResultType, pOperandType)) {
                     pResultType = pIntegerType;
                 } else if (RealOperands(pResultType, pOperandType)) {
                     pResultType = pFloatType;
-                } else Error(errIncompatibleTypes);
+                } else cx_error(err_incompatible_types);
                 break;
-            case tcForwardSlash:
+            case tc_divide:
                 if (IntegerOperands(pResultType, pOperandType) ||
                         RealOperands(pResultType, pOperandType)) {
                     pResultType = pIntegerType;
-                } else Error(errIncompatibleTypes);
+                } else cx_error(err_incompatible_types);
                 break;
-            case tcMod:
+            case tc_modulas:
                 if (IntegerOperands(pResultType, pOperandType)) {
                     pResultType = pIntegerType;
-                } else Error(errIncompatibleTypes);
+                } else cx_error(err_incompatible_types);
                 break;
-            case tcLogicAnd:
+            case tc_logic_AND:
                 CheckBoolean(pResultType, pOperandType);
                 pResultType = pBooleanType;
                 break;
@@ -121,133 +121,133 @@ TType *TParser::ParseTerm(void) {
     return pResultType;
 }
 
-/** ParseFactor         Parse a factor (identifier, number,
+/** parse_factor         parse a factor (identifier, number,
  *                      string, ! <factor>, or parenthesized
  *                      subexpression).
  * 
  * @return ptr to the factor's type object.
  */
-TType *TParser::ParseFactor(void) {
+cx_type *cx_parser::parse_factor(void) {
 
-    TType *pResultType;
+    cx_type *pResultType;
 
     switch (token) {
-        case tcIdentifier:
+        case tc_identifier:
         {
-            TSymtabNode *pNode = SearchAll(pToken->String());
+            cx_symtab_node *p_node = search_all(p_token->string__());
 
-            if (pNode == nullptr)
-                Error(errUndefinedIdentifier);
+            if (p_node == nullptr)
+                cx_error(err_undefined_identifier);
 
-            icode.Put(pNode);
+            icode.put(p_node);
 
-            switch (pNode->defn.how) {
-                case dcFunction:
-                    GetTokenAppend();
-                    //CondGetTokenAppend(tcLParen, ::errMissingLeftParen);
-                    pResultType = ParseSubroutineCall(pNode, true);
+            switch (p_node->defn.how) {
+                case dc_function:
+                    get_token_append();
+                    //conditional_get_token_append(tc_left_paren, ::err_missing_left_paren);
+                    pResultType = parse_subroutine_call(p_node, true);
                     break;
-                case dcConstant:
-                    GetTokenAppend();
-                    pResultType = pNode->pType;
+                case dc_constant:
+                    get_token_append();
+                    pResultType = p_node->p_type;
                     break;
 
-                case dcType:
-                    GetTokenAppend();
-                    pResultType = pNode->pType;
+                case dc_type:
+                    get_token_append();
+                    pResultType = p_node->p_type;
                     break;
-                case dcVariable:
-                case dcValueParm:
-                case dcReference:
-                case dcMember:
-                    GetTokenAppend();
-                    pResultType = ParseVariable(pNode);
+                case dc_variable:
+                case dc_value_parm:
+                case dc_reference:
+                case dc_member:
+                    get_token_append();
+                    pResultType = parse_variable(p_node);
                     break;
                 default:
-                    Error(errUndefinedIdentifier);
+                    cx_error(err_undefined_identifier);
                     break;
 
             }
         }
             break;
-        case tcNumber:
+        case tc_number:
         {
-            TSymtabNode *pNode = SearchAll(pToken->String());
+            cx_symtab_node *p_node = search_all(p_token->string__());
 
-            if (!pNode) {
-                pNode = EnterLocal(pToken->String());
+            if (!p_node) {
+                p_node = enter_local(p_token->string__());
 
-                if (pToken->Type() == tyInteger) {
-                    pNode->pType = pIntegerType;
-                    pNode->defn.constant.value.__int = pToken->Value().__int;
+                if (p_token->type() == ty_integer) {
+                    p_node->p_type = pIntegerType;
+                    p_node->defn.constant.value.int__ = p_token->value().int__;
                 } else {
-                    pNode->pType = pFloatType;
-                    pNode->defn.constant.value.__float = pToken->Value().__float;
+                    p_node->p_type = pFloatType;
+                    p_node->defn.constant.value.float__ = p_token->value().float__;
                 }
             }
 
-            pResultType = pNode->pType;
-            icode.Put(pNode);
+            pResultType = p_node->p_type;
+            icode.put(p_node);
         }
-            GetTokenAppend();
+            get_token_append();
             break;
 
-        case tcChar:
-        case tcString:
+        case tc_char:
+        case tc_string:
         {
 
-            char *pString = pToken->String();
-            TSymtabNode *pNode = SearchAll(pToken->String());
+            char *p_string = p_token->string__();
+            cx_symtab_node *p_node = search_all(p_token->string__());
 
-            if (!pNode) {
-                pNode = EnterLocal(pToken->String());
+            if (!p_node) {
+                p_node = enter_local(p_token->string__());
 
 
-                //pString = pNode->String();
-                //int length = strlen(pString) - 2;
-                int length = pNode->strLength = strlen(pString) - 2;
+                //p_string = p_node->string__();
+                //int length = strlen(p_string) - 2;
+                int length = p_node->string_length = strlen(p_string) - 2;
                 //pResultType = length == 1 ?
-                // pCharType : new TType(length);
+                // pCharType : new cx_type(length);
 
-                SetType(pNode->pType, pCharType);
+                SetType(p_node->p_type, pCharType);
 
                 if (length == 1) {
-                    pNode->defn.constant.value.__char = pString[1];
+                    p_node->defn.constant.value.char__ = p_string[1];
                 } else {
-                    pNode->defn.constant.value.pString = &pString[1];
-                    pNode->pType->form = fcArray;
-                    pNode->pType->array.elmtCount = length;
-                    pNode->pType->array.maxIndex = (pNode->pType->array.elmtCount - 1);
-                    pNode->pType->array.minIndex = 0;
-                    pNode->pType->array.pElmtType = pCharType;
-                    pNode->pType->array.pIndexType = pIntegerType;
+                    p_node->defn.constant.value.p_string = &p_string[1];
+                    p_node->p_type->form = fcArray;
+                    p_node->p_type->array.elmtCount = length;
+                    p_node->p_type->array.maxIndex = (p_node->p_type->array.elmtCount - 1);
+                    p_node->p_type->array.minIndex = 0;
+                    p_node->p_type->array.pElmtType = pCharType;
+                    p_node->p_type->array.pIndexType = pIntegerType;
                 }
 
-                pResultType = pNode->pType;
+                pResultType = p_node->p_type;
             }
-            icode.Put(pNode);
+            icode.put(p_node);
 
-            GetTokenAppend();
+            get_token_append();
         }
             break;
 
-        case tcLParen:
-            GetTokenAppend();
-            pResultType = ParseExpression();
+        case tc_left_paren:
+            get_token_append();
+            pResultType = parse_expression();
 
-            CondGetTokenAppend(tcRParen, errMissingRightParen);
+            conditional_get_token_append(tc_right_paren, err_missing_right_paren);
             break;
-        case tcLogicNOT:
-            GetTokenAppend();
-            CheckBoolean(ParseFactor());
+        case tc_logic_NOT:
+            get_token_append();
+            CheckBoolean(parse_factor());
             pResultType = pBooleanType;
 
             break;
-        case tcSemicolon:
+        case tc_semicolon:
             //pResultType = pDummyType;
             break;
         default:
-            Error(errInvalidExpression);
+            cx_error(err_invalid_expression);
             pResultType = pDummyType;
             break;
     }
@@ -255,240 +255,240 @@ TType *TParser::ParseFactor(void) {
     return pResultType;
 }
 
-/** ParseVariable       Parse variable type, and assignment operators (= -- ++
+/** parse_variable       parse variable type, and assignment operators (= -- ++
  *                      += -= *= /= %= <<= >>= &= ^= |=).
  *                      Also parsed ([] and .).
  * 
- * @param pId : variable node id.
+ * @param p_id : variable node id.
  * @return variables type object ptr.
  */
-TType *TParser::ParseVariable(const TSymtabNode* pId) {
-    TType *pResultType = pId->pType;
+cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
+    cx_type *pResultType = p_id->p_type;
 
-    switch (pId->defn.how) {
-        case dcVariable:
-        case dcValueParm:
-        case dcReference:
-        case dcPointer:
-        case dcFunction:
-        case dcUndefined:
+    switch (p_id->defn.how) {
+        case dc_variable:
+        case dc_value_parm:
+        case dc_reference:
+        case dc_pointer:
+        case dc_function:
+        case dc_undefined:
             break;
 
         default:
             pResultType = pDummyType;
-            Error(errInvalidIdentifierUsage);
+            cx_error(err_invalid_identifier_usage);
             break;
     }
 
-    //-- [ or . : Loop to parse any subscripts and fields.
+    //  [ or . : Loop to parse any subscripts and fields.
     int doneFlag = false;
     do {
         switch (token) {
 
-            case tcLeftSubscript:
-                pResultType = ParseSubscripts(pResultType);
+            case tc_left_subscript:
+                pResultType = parse_subscripts(pResultType);
                 break;
 
-            case tcDot:
-                pResultType = ParseField(pResultType);
+            case tc_dot:
+                pResultType = parse_field(pResultType);
                 break;
 
             default: doneFlag = true;
         }
     } while (!doneFlag);
 
-    if (TokenIn(token, tlAssignOps)) {
-        TType *pExprType = nullptr;
-        TType *pExprTypeCastFollow = nullptr;
+    if (token_in(token, tokenlist_assign_ops)) {
+        cx_type *p_expr_type = nullptr;
+        cx_type *pExprTypeCastFollow = nullptr;
 
         switch (token) {
-            case tcEqual:
+            case tc_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
+                get_token_append();
+                p_expr_type = parse_expression();
 
                 // if not semicolon, this may be an expression following a cast.
-                // Keep pExprType same type, but we need to parse the expr.
-                if (token != tcSemicolon) {
-                    pExprTypeCastFollow = ParseExpression();
+                // Keep p_expr_type same type, but we need to parse the expr.
+                if (token != tc_semicolon) {
+                    pExprTypeCastFollow = parse_expression();
 
                     // check if compatible
                     if (pResultType->form != fcStream) {
-                        CheckAssignmentTypeCompatible(pExprType, pExprTypeCastFollow,
-                                errIncompatibleAssignment);
+                        CheckAssignmentTypeCompatible(p_expr_type, pExprTypeCastFollow,
+                                err_incompatible_assignment);
                     }
                 }
 
                 if (pResultType->form != fcStream) {
-                    CheckAssignmentTypeCompatible(pResultType, pExprType,
-                            errIncompatibleAssignment);
+                    CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                            err_incompatible_assignment);
                 }
             }
                 break;
-            case tcMinusMinus:
-                GetTokenAppend();
+            case tc_minus_minus:
+                get_token_append();
                 break;
-            case tcPlusPlus:
-                GetTokenAppend();
+            case tc_plus_plus:
+                get_token_append();
                 break;
-            case tcPlusEqual:
+            case tc_plus_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcMinusEqual:
+            case tc_minus_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcStarEqual:
+            case tc_star_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcForwardSlashEqual:
+            case tc_divide_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcModEqual:
+            case tc_modulas_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcBitLeftShiftEqual:
+            case tc_bit_leftshift_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcBitRightShiftEqual:
+            case tc_bit_rightshift_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcBitANDEqual:
+            case tc_bit_AND_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcBitXOREqual:
+            case tc_bit_XOR_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcBitOREqual:
+            case tc_bit_OR_equal:
             {
-                GetTokenAppend();
-                pExprType = ParseExpression();
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+                get_token_append();
+                p_expr_type = parse_expression();
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
-            case tcComma:
-            case tcSemicolon:
+            case tc_comma:
+            case tc_semicolon:
                 break;
                 break;
-            case tcIdentifier:
-                GetTokenAppend();
-                pExprType = pResultType;
-                CheckAssignmentTypeCompatible(pResultType, pExprType,
-                        errIncompatibleAssignment);
+            case tc_identifier:
+                get_token_append();
+                p_expr_type = pResultType;
+                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                        err_incompatible_assignment);
             default:
-                Error(errInvalidAssignment);
+                cx_error(err_invalid_assignment);
                 break;
         }
     }
 
-    while (TokenIn(token, tlSubscriptOrFieldStart)) {
-        pResultType = token == tcLeftSubscript ? ParseSubscripts(pResultType)
-                : ParseField(pResultType);
+    while (token_in(token, tokenlist_subscript_or_field_start)) {
+        pResultType = token == tc_left_subscript ? parse_subscripts(pResultType)
+                : parse_field(pResultType);
     }
 
     return pResultType;
 }
 
-/** ParseSubscripts     Parse a bracketed list of subscripts
+/** parse_subscripts     parse a bracketed list of subscripts
  *                      following an array variable:
  *
  *                          [ <expr> ]
  * 
- * @param pType : ptr to the array's type object.
+ * @param p_type : ptr to the array's type object.
  * @return ptr to the array element's type object.
  */
-TType *TParser::ParseSubscripts(const TType* pType) {
+cx_type *cx_parser::parse_subscripts(const cx_type* p_type) {
     do {
-        GetTokenAppend();
+        get_token_append();
 
-        if (pType->form == fcArray) {
-            CheckAssignmentTypeCompatible(pType->array.pIndexType,
-                    ParseExpression(),
-                    errIncompatibleTypes);
+        if (p_type->form == fcArray) {
+            CheckAssignmentTypeCompatible(p_type->array.pIndexType,
+                    parse_expression(),
+                    err_incompatible_types);
 
-            pType = pType->array.pElmtType;
+            p_type = p_type->array.pElmtType;
         } else {
-            Error(errTooManySubscripts);
-            ParseExpression();
+            cx_error(err_too_many_subscripts);
+            parse_expression();
         }
 
-    } while (token == tcComma);
+    } while (token == tc_comma);
 
-    CondGetTokenAppend(tcRightSubscript, errMissingRightSubscript);
+    conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
 
-    return (TType *) pType;
+    return (cx_type *) p_type;
 }
 
-/** ParseField          Parse a field following a record
+/** parse_field          parse a field following a record
  *                      variable:
  *
  *                          . <id>
  * 
- * @param pType : ptr to the record's type object
+ * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
-TType *TParser::ParseField(const TType* pType) {
-    GetTokenAppend();
+cx_type *cx_parser::parse_field(const cx_type* p_type) {
+    get_token_append();
 
-    if ((token == tcIdentifier) && (pType->form == fcComplex)) {
-        //  TSymtabNode *pFieldId = pType->complex.//->Search(pToken->String());
+    if ((token == tc_identifier) && (p_type->form == fcComplex)) {
+        //  cx_symtab_node *pFieldId = p_type->complex.//->search(p_token->string__());
 
-        // if (!pFieldId) Error(errInvalidField);
+        // if (!pFieldId) cx_error(err_invalid_field);
 
-        //  icode.Put(pFieldId);
+        //  icode.put(pFieldId);
 
-        GetTokenAppend();
+        get_token_append();
 
-        // return pFieldId ? pFieldId->pType : pDummyType;
+        // return pFieldId ? pFieldId->p_type : pDummyType;
     } else {
 
-        Error(errInvalidField);
-        GetTokenAppend();
+        cx_error(err_invalid_field);
+        get_token_append();
         return pDummyType;
 
     }

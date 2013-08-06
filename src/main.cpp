@@ -18,9 +18,9 @@
 
 // turn on to view Cx debugging
 #ifdef __CX_DEBUG__
-bool debugFlag = true;
+bool cx_dev_debug_flag = true;
 #else
-bool debugFlag = false;
+bool cx_dev_debug_flag = false;
 #endif 
 
 /** main        main entry point
@@ -31,59 +31,59 @@ bool debugFlag = false;
  */
 int main(int argc, char *argv[]) {
 
-    //--Check the command line arguments.
+    // Check the command line arguments.
     if (argc < 2) {
         cerr << "usage: " << argv[0] << " <source file>" << endl;
-        AbortTranslation(abortInvalidCommandLineArgs);
+        abort_translation(abort_invalid_commandline_args);
     }
 
-    listFlag = debugFlag;
-    errorArrowFlag = debugFlag;
+    list_flag = cx_dev_debug_flag;
+    error_arrow_flag = cx_dev_debug_flag;
 
-    //--Create the parser for the source file,
-    //--and then parse the file.
-    TParser *parser = new TParser(new TSourceBuffer(argv[1]));
+    // Create the parser for the source file,
+    // and then parse the file.
+    cx_parser *parser = new cx_parser(new cx_source_buffer(argv[1]));
 
-    
+
 #ifdef __CX_PROFILE_EXECUTION__
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 #endif
-    
-    TSymtabNode *pProgramId = parser->Parse();
-    
+
+    cx_symtab_node *p_program_id = parser->parse();
+
 #ifdef __CX_PROFILE_EXECUTION__
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
     std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
 #endif
-    
+
     delete parser;
 
-    if (errorCount == 0) {
-        vpSymtabs = new TSymtab *[cntSymtabs];
-        for (TSymtab *pSt = pSymtabList; pSt; pSt = pSt->Next()) {
+    if (error_count == 0) {
+        p_vector_symtabs = new cx_symtab *[symtab_count];
+        for (cx_symtab *pSt = p_symtab_list; pSt; pSt = pSt->next()) {
             if (pSt != nullptr) {
-                if (pSt->Root() != nullptr)pSt->Convert(vpSymtabs);
+                if (pSt->root() != nullptr)pSt->convert(p_vector_symtabs);
             }
         }
 
-        TBackend *pBackend = new TExecutor;
+        cx_backend *pBackend = new cx_executor;
 
 #ifdef __CX_PROFILE_EXECUTION__
         std::cin.get();
         t1 = high_resolution_clock::now();
 #endif
-        
-        pBackend->Go(pProgramId);
-        
+
+        pBackend->go(p_program_id);
+
 #ifdef __CX_PROFILE_EXECUTION__
         t2 = high_resolution_clock::now();
         time_span = duration_cast < duration<double >> (t2 - t1);
         std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 #endif
-        
-        delete[] vpSymtabs;
+
+        delete[] p_vector_symtabs;
         delete pBackend;
     }
 

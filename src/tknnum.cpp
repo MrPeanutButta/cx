@@ -7,20 +7,18 @@
 #include <cctype>
 #include "token.h"
 
-             /*******************
-              *                 *
-              *  Number Tokens  *
-              *                 *
-              *******************/
+/*******************
+ *                 *
+ *  Number Tokens  *
+ *                 *
+ *******************/
 
-/** Get         Extract a number token from the source and set
+/** get         Extract a number token from the source and set
  *              its value.
  * 
  * @param buffer : ptr to text input buffer.
  */
-void TNumberToken::Get(TTextInBuffer &buffer) {
-    //const int maxInteger = ;
-    //const int maxExponent = 37;
+void cx_number_token::get(cx_text_in_buffer &buffer) {
 
     float numValue = 0.0; /* value of number ignoring
                            * the decimal point */
@@ -30,98 +28,98 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
     float eValue = 0.0; // value of number after 'E'
     int exponent = 0; // final value of exponent
     bool sawDotDotFlag = false; // true if encountered '..',
-    
-    // assume base 10 radix
-    uint8_t radix = 10;
 
-    ch = buffer.Char();
+    // assume base 10 radix
+    radix = 10;
+
+    ch = buffer.current_char();
     ps = string;
-    digitCount = 0;
-    countErrorFlag = false;
-    code = tcError; 
-    type = tyInteger; /* we don't know what it is yet, but
+    digit_count = 0;
+    count_error_flag = false;
+    code__ = tc_error;
+    type__ = ty_integer; /* we don't know what it is yet, but
                        * assume it'll be an integer */
 
-    //--Get the whole part of the number by accumulating
-    //--the values of its digits into numValue.  wholePlaces keeps
-    //--track of the number of digits in this part.
-    if (!AccumulateValue(buffer, numValue, radix, errInvalidNumber)) return;
-    wholePlaces = digitCount;
+    /* get the whole part of the number by accumulating
+     * the values of its digits into numValue.  wholePlaces keeps
+     * track of the number of digits in this part. */
+    if (!accumulate_value(buffer, numValue, err_invalid_number)) return;
+    wholePlaces = digit_count;
 
-    //--If the current character is a dot, then either we have a
-    //--fraction part or we are seeing the first character of a '..'
-    //--token.  To find out, we must fetch the next character.
+    /* If the current character is a dot, then either we have a
+     * fraction part or we are seeing the first character of a '..'
+     * token.  To find out, we must fetch the next__ character. */
     if (ch == '.') {
-        ch = buffer.GetChar();
+        ch = buffer.get_char();
 
         if (ch == '.') {
 
-            //--We have a .. token.  Back up bufferp so that the
-            //--token can be extracted next.
+            /* We have a .. token.  Back up bufferp so that the
+             * token can be extracted next__. */
             sawDotDotFlag = true;
-            buffer.PutBackChar();
+            buffer.put_back_char();
         } else {
-            type = tyReal;
+            type__ = ty_real;
             *ps++ = '.';
 
-            //--We have a fraction part.  Accumulate it into numValue.
-            if (!AccumulateValue(buffer, numValue, radix, 
-                    errInvalidFraction)) return;
-            decimalPlaces = digitCount - wholePlaces;
+            // We have a fraction part.  Accumulate it into numValue.
+            if (!accumulate_value(buffer, numValue,
+                    err_invalid_fraction)) return;
+            decimalPlaces = digit_count - wholePlaces;
         }
     }
 
-    //--Get the exponent part, if any. There cannot be an
-    //--exponent part if we already saw the '..' token.
+    /* get the exponent part, if any. There cannot be an
+     * exponent part if we already saw the '..' token. */
     if (!sawDotDotFlag && ((ch == 'E') || (ch == 'e'))) {
-        type = tyReal;
+        type__ = ty_real;
         *ps++ = ch;
-        ch = buffer.GetChar();
+        ch = buffer.get_char();
 
-        //--Fetch the exponent's sign, if any.
+        // Fetch the exponent's sign, if any.
         if ((ch == '+') || (ch == '-')) {
             *ps++ = exponentSign = ch;
-            ch = buffer.GetChar();
+            ch = buffer.get_char();
         }
 
-        //--Accumulate the value of the number after 'E' into eValue.
-        digitCount = 0;
-        if (!AccumulateValue(buffer, eValue, radix,
-                errInvalidExponent)) return;
-        
+        // Accumulate the value of the number after 'E' into eValue.
+        digit_count = 0;
+        if (!accumulate_value(buffer, eValue,
+                err_invalid_exponent)) return;
+
         if (exponentSign == '-') eValue = -eValue;
     }
 
-    //--Were there too many digits?
-    if (countErrorFlag) {
-        Error(errTooManyDigits);
+    // Were there too many digits?
+    if (count_error_flag) {
+        cx_error(err_too_many_digits);
         return;
     }
 
-    //--Calculate and check the final exponent value,
-    //--and then use it to adjust the number's value.
+    /* Calculate and check the final exponent value,
+     * and then use it to adjust the number's value. */
     exponent = int(eValue) - decimalPlaces;
     if ((exponent + wholePlaces < FLT_MIN_10_EXP) ||
             (exponent + wholePlaces > FLT_MAX_10_EXP)) {
-        Error(errRealOutOfRange);
+        cx_error(err_real_out_of_range);
         return;
     }
     if (exponent != 0) numValue *= float(pow((double) 10, exponent));
 
-    //--Check and set the numeric value.
-    if (type == tyInteger) {
+    // Check and set the numeric value.
+    if (type__ == ty_integer) {
         if ((numValue < INT_MIN) || (numValue > INT_MAX)) {
-            Error(errIntegerOutOfRange);
+            cx_error(err_integer_out_of_range);
             return;
         }
-        value.__int = int(numValue);
-    } else value.__float = numValue;
+        value__.int__ = int(numValue);
+    } else value__.float__ = numValue;
 
     *ps = '\0';
-    code = tcNumber;
+    code__ = tc_number;
 }
 
-/** AccumulateValue     Extract a number part from the source
+/** accumulate_value     Extract a number part from the source
  *                      and set its value.
  * 
  * @param buffer : ptr to text input buffer.
@@ -129,78 +127,78 @@ void TNumberToken::Get(TTextInBuffer &buffer) {
  * @param ec     : error code if failure.
  * @return true  if success false if failure.
  */
-int TNumberToken::AccumulateValue(TTextInBuffer &buffer,
-        float &value, uint8_t &radix, TErrorCode ec) {
-    
+int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
+        float &value, cx_error_code ec) {
+
     const int maxDigitCount = 20;
 
-    //--Error if the first character is not a digit.
-    if (charCodeMap[ch] != ccDigit) {
-        Error(ec);
+    // cx_error if the first character is not a digit.
+    if (char_code_map[ch] != cc_digit) {
+        cx_error(ec);
         return false; // failure
     }
 
-    //--Accumulate the value as long as the total allowable
-    //--number of digits has not been exceeded.
+    /* Accumulate the value as long as the total allowable
+     * number of digits has not been exceeded. */
     do {
-        
+
         *ps++ = ch;
 
-        if (++digitCount <= maxDigitCount) {
-            value = radix * value + CharValue(ch); // shift left and add
-        } else countErrorFlag = true; // too many digits
+        if (++digit_count <= maxDigitCount) {
+            value = radix * value + char_value(ch); // shift left and add
+        } else count_error_flag = true; // too many digits
 
-        ch = buffer.GetChar();
-                
+        ch = buffer.get_char();
+
         // hex base
-        if(ch == 'x') {
+        if (ch == 'x') {
             radix = 16;
-            ch = buffer.GetChar();
+            ch = buffer.get_char();
         }
-        
+
         // binary base
-        if(ch == 'b') radix = 2;
-        
-    } while ((charCodeMap[ch] == ccDigit) || IsXDigit(ch));
+        if (ch == 'b') radix = 2;
+
+    } while ((char_code_map[ch] == cc_digit) || is_x_digit(ch));
 
     return true; // success
 }
 
-int TNumberToken::CharValue(const char &c){
+int cx_number_token::char_value(const char &c) {
     char xc = tolower(c);
-    if(IsXDigit(xc)){
-        switch(xc){
+    if (is_x_digit(xc)) {
+        switch (xc) {
             case 'a': return 10;
-            case 'b' : return 11;
-            case 'c' : return 12;
-            case 'd' : return 13;
-            case 'e' : return 14;
-            case 'f' : return 15;
+            case 'b': return 11;
+            case 'c': return 12;
+            case 'd': return 13;
+            case 'e': return 14;
+            case 'f': return 15;
         }
     }
-    
+
     return (c - '0');
 }
 
-bool TNumberToken::IsXDigit(const char& c){
+bool cx_number_token::is_x_digit(const char& c) {
     char xc = tolower(c);
-    
-    return (xc == 'a') || (xc == 'b') || (xc == 'c') || 
-           (xc == 'd') || (xc == 'e') || (xc == 'f') ||
-           ((xc >= '0') && (xc <= '9'));
+
+    return (xc == 'a') || (xc == 'b') || (xc == 'c') ||
+            (xc == 'd') || (xc == 'e') || (xc == 'f') ||
+            ((xc >= '0') && (xc <= '9'));
 }
 
-/** Print       Print the token to the list file.
+/** print       print the token to the list file.
  * 
  */
-void TNumberToken::Print(void) const {
-    if (type == tyInteger) {
+void cx_number_token::print(void) const {
+    if (type__ == ty_integer) {
         sprintf(list.text, "\t%-18s =%d", ">> integer:",
-                value.__int);
+                value__.int__);
     } else {
         sprintf(list.text, "\t%-18s =%g", ">> real:",
-                value.__float);
+                value__.float__);
     }
 
-    list.PutLine();
+    list.put_line();
 }

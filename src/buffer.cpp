@@ -19,70 +19,70 @@
  ***********************/
 
 // special end-of-file character
-const char eofChar = 0x7F;
+const char eof_char = 0x7F;
 
 /* "virtual" position of the current char
  *  In the input buffer (with tabs expanded) */
-int inputPosition;
+int input_position;
 
 // true if list source lines, else false
-int listFlag = true;
+int list_flag = true;
 
 /** Constructor     Construct a input text buffer by opening the
  *                  input file.
  *
- * @param pInputFileName : ptr to the name of the input file
+ * @param p_input_file_name : ptr to the name of the input file
  * @param ac             : abort code to use if open failed
  */
-TTextInBuffer::TTextInBuffer(const char *pInputFileName, TAbortCode ac)
-: pFileName(new char[strlen(pInputFileName) + 1]) {
-    //--Copy the input file name.
-    strcpy(pFileName, pInputFileName);
+cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name, cx_abort_code ac)
+: p_file_name(new char[strlen(p_input_file_name) + 1]) {
+    // Copy the input file name.
+    strcpy(p_file_name, p_input_file_name);
 
-    //--Open the input file.  Abort if failed.
-    file.open(pFileName, ios::in);
-    if (!file.good()) AbortTranslation(ac);
+    // Open the input file.  Abort if failed.
+    file.open(p_file_name, ios::in);
+    if (!file.good()) abort_translation(ac);
 }
 
-/** GetChar        Fetch and return the next character from the
+/** get_char        Fetch and return the next__ character from the
  *                 text buffer.  If at the end of the buffer,
- *                 read the next source line.  If at the end of
+ *                 read the next__ source line.  If at the end of
  *                 the file, return the end-of-file character.
  *
- * @return next character from the source file
+ * @return next__ character from the source file
  *          or the end-of-file character.
  */
-char TTextInBuffer::GetChar(void) {
+char cx_text_in_buffer::get_char(void) {
     const int tabSize = 8; // size of tabs
     char ch; // character to return
 
-    if (*pChar == eofChar) return eofChar; // end of file
-    else if (*pChar == '\0') ch = GetLine(); // null
-    else { // next char
-        ++pChar;
-        ++inputPosition;
-        ch = *pChar;
+    if (*p_char == eof_char) return eof_char; // end of file
+    else if (*p_char == '\0') ch = get_line(); // null
+    else { // next__ char
+        ++p_char;
+        ++input_position;
+        ch = *p_char;
     }
 
-    //--If tab character, increment inputPosition to the next
-    //--multiple of tabSize.
-    if (ch == '\t') inputPosition += tabSize - inputPosition % tabSize;
+    // If tab character, increment input_position to the next__
+    // multiple of tabSize.
+    if (ch == '\t') input_position += tabSize - input_position % tabSize;
 
     return ch;
 }
 
-/** PutBackChar     Put the current character back into the
- *                  input buffer so that the next call to
- *                  GetChar will fetch this character. (Only
+/** put_back_char     put the current character back into the
+ *                  input buffer so that the next__ call to
+ *                  get_char will fetch this character. (Only
  *                  called to put back a '.')
  *
  * @return the previous character
  */
-char TTextInBuffer::PutBackChar(void) {
-    --pChar;
-    --inputPosition;
+char cx_text_in_buffer::put_back_char(void) {
+    --p_char;
+    --input_position;
 
-    return *pChar;
+    return *p_char;
 }
 
 /*******************
@@ -95,50 +95,50 @@ char TTextInBuffer::PutBackChar(void) {
  *                  source file.  Initialize the list file, and
  *                  read the first line from the source file.
  *
- * @param pSourceFileName : ptr to name of source file
+ * @param p_source_file_name : ptr to name of source file
  */
-TSourceBuffer::TSourceBuffer(const char *pSourceFileName)
-: TTextInBuffer(pSourceFileName, abortSourceFileOpenFailed) {
-    //--Initialize the list file and read the first source line.
-    if (listFlag) list.Initialize(pSourceFileName);
-    GetLine();
+cx_source_buffer::cx_source_buffer(const char *p_source_file_name)
+: cx_text_in_buffer(p_source_file_name, abort_source_file_open_failed) {
+    // Initialize the list file and read the first source line.
+    if (list_flag) list.initialize(p_source_file_name);
+    get_line();
 }
 
-/** GetLine         Read the next line from the source file, and
+/** get_line         Read the next__ line from the source file, and
  *                  print it to the list file preceded by the
  *                  line number and the current nesting level.
  *
  * @return first character of the source line, or the
  *          end-of-file character if at the end of the file
  */
-char TSourceBuffer::GetLine(void) {
-    extern int currentNestingLevel;
+char cx_source_buffer::get_line(void) {
+    extern int current_nesting_level;
 
-    //--If at the end of the source file, return the end-of-file char.
-    if (file.eof()) pChar = (char *) &eofChar;
+    // If at the end of the source file, return the end-of-file char.
+    if (file.eof()) p_char = (char *) &eof_char;
 
-        //--Else read the next source line and print it to the list file.
+        // Else read the next__ source line and print it to the list file.
     else {
         memset(text, '\0', sizeof (text));
 
 
-        file.getline(text, maxInputBufferSize);
+        file.getline(text, max_input_buffer_size);
 
-        pChar = text; // point to first source line char
+        p_char = text; // point to first source line char
 
-        // if listFlag == true, list the source to stdout
-        if (listFlag) {
-            list.PutLine(
+        // if list_flag == true, list the source to stdout
+        if (list_flag) {
+            list.put_line(
                     text,
-                    ++currentLineNumber,
-                    currentNestingLevel
+                    ++current_line_number,
+                    current_nesting_level
                     );
         }
 
     }
 
-    inputPosition = 0;
-    return *pChar;
+    input_position = 0;
+    return *p_char;
 }
 
 /*****************
@@ -150,61 +150,62 @@ char TSourceBuffer::GetLine(void) {
 const int maxPrintLineLength = 80;
 const int maxLinesPerPage = 50;
 
-TListBuffer list; // the list file buffer
+cx_list_buffer list; // the list file buffer
 
-/** PrintPageHeader     Start a new page of the list file and
+/** print_page_header     Start a new page of the list file and
  *                      print the page header.
  */
-void TListBuffer::PrintPageHeader(void) {
+void cx_list_buffer::print_page_header(void) {
     const char formFeedChar = '\f';
 
-    cout << formFeedChar << "Page " << ++pageNumber
-            << "   " << pSourceFileName << "   " << date
+    cout << formFeedChar << "Page " << ++page_number
+            << "   " << p_source_file_name << "   " << date
             << endl << endl;
 
-    lineCount = 0;
+    line_count = 0;
 }
 
 /** Initialize      Initialize the list buffer.  Set the date
  *                  for the page header, and print the first
  *                  header.
  *
- * @param pFileName : ptr to source file name (for page header)
+ * @param p_file_name : ptr to source file name (for page header)
  */
-void TListBuffer::Initialize(const char *pFileName) {
+void cx_list_buffer::initialize(const char *p_file_name) {
     memset(text, '\0', sizeof (text));
-    pageNumber = 0;
+    page_number = 0;
 
-    //--Copy the input file name.
-    pSourceFileName = new char[strlen(pFileName) + 1];
-    strcpy(pSourceFileName, pFileName);
+    // Copy the input file name.
+    p_source_file_name = new char[strlen(p_file_name) + 1];
+    strcpy(p_source_file_name, p_file_name);
 
-    //--Set the date.
+    // Set the date.
     time_t timer;
     time(&timer);
     strcpy(date, asctime(localtime(&timer)));
     date[strlen(date) - 1] = '\0'; // remove '\n' at end
 
-    PrintPageHeader();
+    print_page_header();
 }
 
 
-///  PutLine         Print a line of text to the list file.
-void TListBuffer::PutLine(void) {
-    //--Start a new page if the current one is full.
-    if (listFlag && (lineCount == maxLinesPerPage)) PrintPageHeader();
+///  put_line         print a line of text to the list file.
 
-    //--Truncate the line if it's too long.
+void cx_list_buffer::put_line(void) {
+    // Start a new page if the current one is full.
+    if (list_flag && (line_count == maxLinesPerPage)) print_page_header();
+
+    // Truncate the line if it's too long.
     text[maxPrintLineLength] = '\0';
 
-    //--Print the text line, and then blank out the text.
+    // print the text line, and then blank out the text.
     cout << text << endl;
     memset(text, '\0', sizeof (text));
 
-    ++lineCount;
+    ++line_count;
 }
 
-TTextOutBuffer::~TTextOutBuffer() {
+cx_text_out_buffer::~cx_text_out_buffer() {
 
 }
 

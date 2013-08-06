@@ -1,20 +1,3 @@
-//fig 2-3
-//  *************************************************************
-//  *                                                           *
-//  *   I / O   B U F F E R S   (Header)                        *
-//  *                                                           *
-//  *   CLASSES: TTextInBuffer,  TSourceBuffer                  *
-//  *            TTextOutBuffer, TListBuffer                    *
-//  *                                                           *
-//  *   FILE:    prog2-1/buffer.h                               *
-//  *                                                           *
-//  *   MODULE:  Buffer                                         *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef buffer_h
 #define buffer_h
 
@@ -26,121 +9,114 @@
 
 using namespace std;
 
-//              ***********
-//              *         *
-//              *  Input  *
-//              *         *
-//              ***********
+/***********
+ *         *
+ *  Input  *
+ *         *
+ ***********/
 
-extern const char eofChar;
-extern int inputPosition;
-extern int listFlag;
+extern const char eof_char;
+extern int input_position;
+extern int list_flag;
 extern int level;
 
-const int maxInputBufferSize = 256;
+const int max_input_buffer_size = 256;
 
-//--------------------------------------------------------------
-//  TTextInBuffer       Abstract text input buffer class.
-//--------------------------------------------------------------
+///  cx_text_in_buffer       Abstract text input buffer class.
 
-class TTextInBuffer {
+class cx_text_in_buffer {
 protected:
     fstream file; // input text file
-    char *const pFileName; // ptr to the file name
-    char text[maxInputBufferSize]; // input text buffer
-    char *pChar; // ptr to the current char
-    //   in the text buffer
+    char *const p_file_name; // ptr to the file name
+    char text[max_input_buffer_size]; // input text buffer
+    char *p_char; /* ptr to the current char
+                   * in the text buffer */
 
-    virtual char GetLine(void) = 0;
+    virtual char get_line(void) = 0;
 
 public:
-    TTextInBuffer(const char *pInputFileName, TAbortCode ac);
+    cx_text_in_buffer(const char *p_input_file_name, cx_abort_code ac);
 
-    virtual ~TTextInBuffer(void) {
+    virtual ~cx_text_in_buffer(void) {
         file.close();
-        delete pFileName;
+        delete p_file_name;
     }
 
-    const char *FileName(void) {
-        return pFileName;
+    const char *file_name(void) {
+        return p_file_name;
     }
 
-    char Char(void) const {
-        return *pChar;
+    char current_char(void) const {
+        return *p_char;
     }
-    char GetChar(void);
-    char PutBackChar(void);
+    char get_char(void);
+    char put_back_char(void);
 };
 
-//--------------------------------------------------------------
-//  TSourceBuffer       Source buffer subclass of TTextInBuffer.
-//--------------------------------------------------------------
 
-class TSourceBuffer : public TTextInBuffer {
-    virtual char GetLine(void);
+///  cx_source_buffer       Source buffer subclass of cx_text_in_buffer.
+
+class cx_source_buffer : public cx_text_in_buffer {
+    virtual char get_line(void);
 
 public:
-    TSourceBuffer(const char *pSourceFileName);
+    cx_source_buffer(const char *p_source_file_name);
 };
 
-//              ************
-//              *          *
-//              *  Output  *
-//              *          *
-//              ************
+/************
+ *          *
+ *  Output  *
+ *          *
+ ************/
 
-//--------------------------------------------------------------
-//  TTextOutBuffer      Abstract text output buffer class.
-//--------------------------------------------------------------
 
-class TTextOutBuffer {
+///  cx_text_out_buffer      Abstract text output buffer class.
+
+class cx_text_out_buffer {
 public:
 
-    virtual ~TTextOutBuffer() = 0;
+    virtual ~cx_text_out_buffer() = 0;
 
-    char text[maxInputBufferSize + 16]; // output text buffer
+    char text[max_input_buffer_size + 16]; // output text buffer
 
-    virtual void PutLine(void) = 0;
+    virtual void put_line(void) = 0;
 
-    void PutLine(const char *pText) {
-        strcpy(text, pText);
-        PutLine();
+    void put_line(const char *p_text) {
+        strcpy(text, p_text);
+        put_line();
     }
 };
 
-//--------------------------------------------------------------
-//  TListBuffer         List buffer subclass of TTextOutBuffer.
-//--------------------------------------------------------------
 
-class TListBuffer : public TTextOutBuffer {
-    char *pSourceFileName; // ptr to source file name (for page header)
+///  cx_list_buffer         List buffer subclass of cx_text_out_buffer.
+
+class cx_list_buffer : public cx_text_out_buffer {
+    char *p_source_file_name; // ptr to source file name (for page header)
     char date[26]; // date string for page header
-    int pageNumber; // current page number
-    int lineCount; // count of lines in the current page
+    int page_number; // current page number
+    int line_count; // count of lines in the current page
 
-    void PrintPageHeader(void);
+    void print_page_header(void);
 
 public:
 
-    virtual ~TListBuffer(void) {
-        delete pSourceFileName;
+    virtual ~cx_list_buffer(void) {
+        delete p_source_file_name;
     }
 
-    void Initialize(const char *fileName);
-    virtual void PutLine(void);
+    void initialize(const char *p_file_name);
+    virtual void put_line(void);
 
-    void PutLine(const char *pText) {
-        TTextOutBuffer::PutLine(pText);
+    void put_line(const char *p_text) {
+        cx_text_out_buffer::put_line(p_text);
     }
 
-    void PutLine(const char *pText, int lineNumber, int nestingLevel) {
-        sprintf(text, "%4d %d: %s", lineNumber, nestingLevel, pText);
-        PutLine();
+    void put_line(const char *p_text, int line_number, int nesting_level) {
+        sprintf(text, "%4d %d: %s", line_number, nesting_level, p_text);
+        put_line();
     }
 };
 
-extern TListBuffer list;
+extern cx_list_buffer list;
 
 #endif
-//endfig
-

@@ -5,98 +5,98 @@
 #include "parser.h"
 //#include "complist.h"
 
-extern TSymtabNode *pProgram_ptr;
+extern cx_symtab_node *pProgram_ptr;
 
-/** Parse       Parse the source file.  After listing each
+/** parse       parse the source file.  After listing each
  *              source line, extract and list its tokens.
  * 
  * @return ptr to '__cx_global__' program Id.
  */
-TSymtabNode *TParser::Parse(void) {
+cx_symtab_node *cx_parser::parse(void) {
 
-    extern bool debugFlag;
-    
-    TSymtabNode *pProgramId = new TSymtabNode("__cx_global__", dcProgram);
-    pProgramId->defn.routine.which = rcDeclared;
-    pProgramId->defn.routine.parmCount = 0;
-    pProgramId->defn.routine.totalParmSize = 0;
-    pProgramId->defn.routine.totalLocalSize = 0;
-    pProgramId->defn.routine.locals.pParmsIds = NULL;
-    pProgramId->defn.routine.locals.pConstantIds = NULL;
-    pProgramId->defn.routine.locals.pTypeIds = NULL;
-    pProgramId->defn.routine.locals.pVariableIds = NULL;
-    pProgramId->defn.routine.locals.pRoutineIds = NULL;
-    pProgramId->defn.routine.pSymtab = NULL;
-    pProgramId->defn.routine.pIcode = NULL;
-    SetType(pProgramId->pType, pIntegerType);
+    extern bool cx_dev_debug_flag;
 
-    pProgram_ptr = pProgramId;
-    icode.Reset();
+    cx_symtab_node *p_program_id = new cx_symtab_node("__cx_global__", dc_program);
+    p_program_id->defn.routine.which = rc_declared;
+    p_program_id->defn.routine.parm_count = 0;
+    p_program_id->defn.routine.total_parm_size = 0;
+    p_program_id->defn.routine.total_local_size = 0;
+    p_program_id->defn.routine.locals.p_parms_ids = NULL;
+    p_program_id->defn.routine.locals.p_constant_ids = NULL;
+    p_program_id->defn.routine.locals.p_type_ids = NULL;
+    p_program_id->defn.routine.locals.p_variable_ids = NULL;
+    p_program_id->defn.routine.locals.p_function_ids = NULL;
+    p_program_id->defn.routine.p_symtab = NULL;
+    p_program_id->defn.routine.p_icode = NULL;
+    SetType(p_program_id->p_type, pIntegerType);
 
-    currentNestingLevel = 0;
-    //--Enter the nesting level 1 and open a new scope for the program.
-    symtabStack.SetCurrentSymtab(&globalSymtab);
-    icode.Put(tcLBracket);
-    GetTokenAppend();
+    pProgram_ptr = p_program_id;
+    icode.reset();
 
-    ParseStatementList(pProgramId, tcEndOfFile);
-    FixupLocationMarker(pProgramId->globalFinishLocation);
-    pProgramId->defn.routine.returnMarker = PutLocationMarker();
+    current_nesting_level = 0;
+    // enter the nesting level 1 and open a new scope for the program.
+    symtab_stack.set_current_symtab(&cx_global_symtab);
+    icode.put(tc_left_bracket);
+    get_token_append();
 
-    GetTokenAppend();
+    parse_statement_list(p_program_id, tc_end_of_file);
+    fixup_location_marker(p_program_id->global_finish_location);
+    p_program_id->defn.routine.return_marker = put_location_marker();
 
-    pProgramId->defn.routine.pSymtab = &globalSymtab; //symtabStack.ExitScope();
+    get_token_append();
 
-    Resync(tlProgramEnd);
-    CondGetTokenAppend(tcEndOfFile, errMissingRightBracket);
+    p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
 
-    if (debugFlag) {
-        list.PutLine();
-        sprintf(list.text, "%20d source lines.", currentLineNumber);
-        list.PutLine();
-        sprintf(list.text, "%20d syntax errors.", errorCount);
-        list.PutLine();
+    resync(tokenlist_program_end);
+    conditional_get_token_append(tc_end_of_file, err_missing_right_bracket);
+
+    if (cx_dev_debug_flag) {
+        list.put_line();
+        sprintf(list.text, "%20d source lines.", current_line_number);
+        list.put_line();
+        sprintf(list.text, "%20d syntax errors.", error_count);
+        list.put_line();
     }
 
-    return pProgramId;
+    return p_program_id;
 
 }
 
-/** Resync          Resynchronize the parser.  If the current
+/** resync          Resynchronize the parser.  If the current
  *                  token is not in one of the token lists,
  *                  flag it as an error and then skip tokens
  *                  up to one that is in a list or end of file.
  * 
- * @param pList1 : token list.
- * @param pList2 : token list.
- * @param pList3 : token list.
+ * @param p_list1 : token list.
+ * @param p_list2 : token list.
+ * @param p_list3 : token list.
  */
-void TParser::Resync(const TTokenCode* pList1,
-        const TTokenCode* pList2,
-        const TTokenCode* pList3) {
+void cx_parser::resync(const cx_token_code* p_list1,
+        const cx_token_code* p_list2,
+        const cx_token_code* p_list3) {
 
-    bool errorFlag = (!TokenIn(token, pList1)) &&
-            (!TokenIn(token, pList2)) &&
-            (!TokenIn(token, pList3));
+    bool errorFlag = (!token_in(token, p_list1)) &&
+            (!token_in(token, p_list2)) &&
+            (!token_in(token, p_list3));
 
     if (errorFlag) {
-        TErrorCode errorCode = token == tcEndOfFile
-                ? errUnexpectedEndOfFile
-                : errUnexpectedToken;
+        cx_error_code errorCode = token == tc_end_of_file
+                ? err_unexpected_eof
+                : err_unexpected_token;
 
-        Error(errorCode);
+        cx_error(errorCode);
 
-        while ((!TokenIn(token, pList1)) &&
-                (!TokenIn(token, pList2)) &&
-                (!TokenIn(token, pList3)) &&
-                (token != tcReturn) &&
-                (token != tcEndOfFile)) {
-            GetTokenAppend();
+        while ((!token_in(token, p_list1)) &&
+                (!token_in(token, p_list2)) &&
+                (!token_in(token, p_list3)) &&
+                (token != tc_RETURN) &&
+                (token != tc_end_of_file)) {
+            get_token_append();
         }
 
-        if ((token == tcEndOfFile) &&
-                (errorCode != errUnexpectedEndOfFile)) {
-            Error(errUnexpectedEndOfFile);
+        if ((token == tc_end_of_file) &&
+                (errorCode != err_unexpected_eof)) {
+            cx_error(err_unexpected_eof);
         }
     }
 }
