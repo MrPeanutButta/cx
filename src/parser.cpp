@@ -5,7 +5,7 @@
 #include "parser.h"
 //#include "complist.h"
 
-extern cx_symtab_node *pProgram_ptr;
+extern cx_symtab_node *p_program_ptr_id;
 
 /** parse       parse the source file.  After listing each
  *              source line, extract and list its tokens.
@@ -21,16 +21,16 @@ cx_symtab_node *cx_parser::parse(void) {
     p_program_id->defn.routine.parm_count = 0;
     p_program_id->defn.routine.total_parm_size = 0;
     p_program_id->defn.routine.total_local_size = 0;
-    p_program_id->defn.routine.locals.p_parms_ids = NULL;
-    p_program_id->defn.routine.locals.p_constant_ids = NULL;
-    p_program_id->defn.routine.locals.p_type_ids = NULL;
-    p_program_id->defn.routine.locals.p_variable_ids = NULL;
-    p_program_id->defn.routine.locals.p_function_ids = NULL;
-    p_program_id->defn.routine.p_symtab = NULL;
-    p_program_id->defn.routine.p_icode = NULL;
-    SetType(p_program_id->p_type, pIntegerType);
+    p_program_id->defn.routine.locals.p_parms_ids = nullptr;
+    p_program_id->defn.routine.locals.p_constant_ids = nullptr;
+    p_program_id->defn.routine.locals.p_type_ids = nullptr;
+    p_program_id->defn.routine.locals.p_variable_ids = nullptr;
+    p_program_id->defn.routine.locals.p_function_ids = nullptr;
+    p_program_id->defn.routine.p_symtab = nullptr;
+    p_program_id->defn.routine.p_icode = nullptr;
+    set_type(p_program_id->p_type, p_integer_type);
 
-    pProgram_ptr = p_program_id;
+    p_program_ptr_id = p_program_id;
     icode.reset();
 
     current_nesting_level = 0;
@@ -48,7 +48,7 @@ cx_symtab_node *cx_parser::parse(void) {
     p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
 
     resync(tokenlist_program_end);
-    conditional_get_token_append(tc_end_of_file, err_missing_right_bracket);
+    conditional_get_token_append(tc_end_of_file, err_missing_right___bracket);
 
     if (cx_dev_debug_flag) {
         list.put_line();

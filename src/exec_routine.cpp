@@ -137,7 +137,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
             p_formal_id;
             p_formal_id = p_formal_id->next__) {
 
-        cx_type *pFormalType = p_formal_id->p_type;
+        cx_type *p_formal_type = p_formal_id->p_type;
         get_token();
 
         /* Reference parameter: execute_variable will leave the actual
@@ -148,28 +148,28 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
             get_token();
         }// value parameter
         else {
-            cx_type *pActualType = execute_expression();
+            cx_type *p_actual_type = execute_expression();
 
-            if ((pFormalType == pFloatType) &&
-                    (pActualType->Base() == pIntegerType)) {
+            if ((p_formal_type == p_float_type) &&
+                    (p_actual_type->base_type() == p_integer_type)) {
 
                 // real formal := integer actual:
                 // convert integer value to real.
                 push(float(pop()->int__));
                 p_formal_id->runstack_item = top_of_stack();
-            } else if (!pFormalType->IsScalar()) {
+            } else if (!p_formal_type->is_scalar_type()) {
 
                 // Formal parameter is an array or a record:
                 // Make a copy of the actual parameter's value.
-                void *addr = new char[pFormalType->size];
-                memcpy(addr, pop()->addr__, pFormalType->size);
+                void *addr = new char[p_formal_type->size];
+                memcpy(addr, pop()->addr__, p_formal_type->size);
                 push(addr);
                 p_formal_id->runstack_item = top_of_stack();
             } else {
 
                 // Range check an integer or enumeration
                 // formal parameter.
-                range_check(pFormalType, top_of_stack()->int__);
+                range_check(p_formal_type, top_of_stack()->int__);
                 p_formal_id->runstack_item = top_of_stack();
             }
         }
@@ -184,11 +184,10 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
  * 
  * @param p_function_id : ptr to the subroutine name's symtab node
  */
-void cx_executor::execute_RETURN(cx_symtab_node *pRoutine) {
+void cx_executor::execute_RETURN(cx_symtab_node *p_function_id) {
 
-    execute_assignment(pRoutine);
-    go_to(pRoutine->defn.routine.return_marker);
+    execute_assignment(p_function_id);
+    go_to(p_function_id->defn.routine.return_marker);
 
     get_token();
 }
-

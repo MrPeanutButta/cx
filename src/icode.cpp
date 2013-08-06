@@ -4,8 +4,8 @@
 #include "symtable.h"
 #include "icode.h"
 
-const char *symbolStrings[] = {
-    NULL, NULL, NULL, NULL, NULL, NULL,
+const char *cx_symbol_strings[] = {
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
     //operators and punctuation
     "^", "&", "|", "~", "^=", "&=", "|=", "<<",
     "<<=", ">>", ">>=", "-", "-=", "+", "+=", "=", "--",
@@ -14,13 +14,13 @@ const char *symbolStrings[] = {
     "}", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
     "&&", "!", "\'", "\"",
 
-    "if", "return", "continue", "friend", "true", "go_to", "try",
-    "delete", "short", "typeid", "do", "singed",
-    "typename", "break", "double", "long", "sizeof", "union",
+    "if", "return", "continue", "friend", "go_to", "try",
+    "delete", "typeid", "do", "singed",
+    "typename", "break", "sizeof",
     "case", "static", "unsigned", "catch", "else", "namespace",
-    "using", "enum", "new", "virtual", "char16_t", "explicit",
-    "noexcept", "char32_t", "export", "nullptr", "switch", "struct",
-    "void", "class", "extern", "operator", "template", "const",
+    "using", "new", "virtual", "explicit",
+    "noexcept", "export", "nullptr", "switch",
+    "extern", "operator", "template", "const",
     "private", "this", "while", "protected", "threadlocal",
     "for", "public", "throw", "default", "typedef", "mutable", "include"
 };
@@ -150,7 +150,7 @@ cx_token *cx_icode::get(void) {
             break;
 
         case mc_location_marker:
-            p_node = NULL;
+            p_node = nullptr;
             p_token->string[0] = '\0';
             break;
         case tc_end_of_file:
@@ -158,8 +158,8 @@ cx_token *cx_icode::get(void) {
             break;
         default:
 
-            p_node = NULL;
-            strcpy(p_token->string, symbolStrings[code]);
+            p_node = nullptr;
+            strcpy(p_token->string, cx_symbol_strings[code]);
             break;
     }
 
@@ -192,9 +192,9 @@ void cx_icode::insert_line_marker(void) {
     if (error_count > 0) return;
 
     // Remember the last appended token code;
-    char lastCode;
+    char last_code;
     cursor -= sizeof (char);
-    memcpy((void *) &lastCode, (const void *) cursor, sizeof (char));
+    memcpy((void *) &last_code, (const void *) cursor, sizeof (char));
 
     // Insert a statement marker code
     // followed by the current line number.
@@ -207,7 +207,7 @@ void cx_icode::insert_line_marker(void) {
     cursor += sizeof (short);
 
     // Re-append the last token code;
-    memcpy((void *) cursor, (const void *) &lastCode, sizeof (char));
+    memcpy((void *) cursor, (const void *) &last_code, sizeof (char));
     cursor += sizeof (char);
 }
 
@@ -228,12 +228,12 @@ int cx_icode::put_location_marker(void) {
     // Append 0 as a placeholder for the location offset.
     // Remember the current location of the offset itself.
     short offset = 0;
-    int atLocation = current_location();
+    int at_location = current_location();
     check_bounds(sizeof (short));
     memcpy((void *) cursor, (const void *) &offset, sizeof (short));
     cursor += sizeof (short);
 
-    return atLocation;
+    return at_location;
 }
 
 /** fixup_location_marker     Fixup a location marker in the

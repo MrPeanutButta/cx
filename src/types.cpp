@@ -4,26 +4,26 @@
 #include "error.h"
 #include "types.h"
 
-const char *formStrings[] = {
+const char *form_strings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
 // Pointers to predefined types.
-cx_symtab_node *pMain = nullptr;
+cx_symtab_node *p_main_function_id = nullptr;
 cx_symtab_node *pStdIn = nullptr;
 cx_symtab_node *pStdOut = nullptr;
 cx_symtab_node *pStdErr = nullptr;
 
-cx_type *pIntegerType = nullptr;
-cx_type *pFloatType = nullptr;
+cx_type *p_integer_type = nullptr;
+cx_type *p_float_type = nullptr;
 cx_type *pDoubleType = nullptr;
-cx_type *pBooleanType = nullptr;
-cx_type *pCharType = nullptr;
+cx_type *p_boolean_type = nullptr;
+cx_type *p_char_type = nullptr;
 cx_type *pClassType = nullptr;
 cx_type *p_complex_type = nullptr;
-cx_type *pFileType = nullptr;
+cx_type *p_file_type = nullptr;
 
-cx_type *pDummyType = nullptr;
+cx_type *p_dummy_type = nullptr;
 
 /** Constructors    General.
  * 
@@ -31,15 +31,15 @@ cx_type *pDummyType = nullptr;
  * @param s   : byte size of type.
  * @param p_id : ptr to symbol table node of type identifier.
  */
-cx_type::cx_type(TFormCode fc, int s, cx_symtab_node* p_id)
-: form(fc), size(s), pTypeId(p_id), refCount(0) {
+cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
+: form(fc), size(s), p_type_id(p_id), reference_count(0) {
 
     switch (fc) {
-        case fcSubrange:
-            subrange.pBaseType = nullptr;
+        case fc_subrange:
+            subrange.p_base_type = nullptr;
             break;
-        case fcArray:
-            array.pIndexType = array.pElmtType = nullptr;
+        case fc_array:
+            array.p_index_type = array.p_element_type = nullptr;
             break;
         default:
             break;
@@ -47,36 +47,36 @@ cx_type::cx_type(TFormCode fc, int s, cx_symtab_node* p_id)
 }
 
 cx_type::cx_type(int length)
-: size(length), form(fcArray), refCount(0) {
-    pTypeId = nullptr;
+: size(length), form(fc_array), reference_count(0) {
+    p_type_id = nullptr;
 
-    array.pIndexType = array.pElmtType = nullptr;
-    SetType(array.pIndexType, new cx_type(fcSubrange, sizeof (int), nullptr));
-    SetType(array.pElmtType, pCharType);
-    array.elmtCount = length;
+    array.p_index_type = array.p_element_type = nullptr;
+    set_type(array.p_index_type, new cx_type(fc_subrange, sizeof (int), nullptr));
+    set_type(array.p_element_type, p_char_type);
+    array.element_count = length;
 
-    SetType(array.pIndexType->subrange.pBaseType, pIntegerType);
-    array.pIndexType->subrange.min = 1;
-    array.pIndexType->subrange.max = length;
+    set_type(array.p_index_type->subrange.p_base_type, p_integer_type);
+    array.p_index_type->subrange.min = 1;
+    array.p_index_type->subrange.max = length;
 }
 
 /** Destructor      Delete the allocated objects according to
  *                  the form code.  Note that the objects
- *                  pointed to by enumeration.pConstIds and by
- *                  subrange.pBaseType are deleted along with
+ *                  pointed to by enumeration.p_const_ids and by
+ *                  subrange.p_base_type are deleted along with
  *                  the symbol tables that contain their
  *                  identifiers. 
  */
 cx_type::~cx_type() {
     switch (form) {
-        case fcSubrange:
-            RemoveType(subrange.pBaseType);
+        case fc_subrange:
+            remove_type(subrange.p_base_type);
             break;
-        case fcArray:
-            RemoveType(array.pIndexType);
-            RemoveType(array.pElmtType);
+        case fc_array:
+            remove_type(array.p_index_type);
+            remove_type(array.p_element_type);
             break;
-        case fcComplex:
+        case fc_complex:
             // delete complex.pSymtabPublic;
             break;
 
@@ -85,45 +85,45 @@ cx_type::~cx_type() {
     }
 }
 
-/** PrintTypeSpec       print information about a type
+/** print_type_spec       print information about a type
  *                      specification for the cross-reference.
  * 
- * @param vc : vcVerbose or vcTerse to control the output.
+ * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::PrintTypeSpec(TVerbosityCode vc) {
-    sprintf(list.text, "%s, size %d bytes. type id: ", formStrings[form], size);
+void cx_type::print_type_spec(cx_verbosity_code vc) {
+    sprintf(list.text, "%s, size %d bytes. type id: ", form_strings[form], size);
 
-    if (pTypeId) strcat(list.text, pTypeId->string__());
+    if (p_type_id) strcat(list.text, p_type_id->string__());
     else {
         strcat(list.text, "<unnamed>");
-        vc = vcVerbose;
+        vc = vc_verbose;
     }
 
     list.put_line();
 
     switch (form) {
-        case fcEnum: PrintEnumType(vc);
+        case fc_enum: print_enum_type(vc);
             break;
-        case fcSubrange: PrintSubrangeType(vc);
+        case fc_subrange: print_subrange_type(vc);
             break;
-        case fcArray: PrintArrayType(vc);
+        case fc_array: print_array_type(vc);
             break;
-        case fcComplex: PrintRecordType(vc);
+        case fc_complex: print_record_type(vc);
             break;
     }
 }
 
-/** PrintEnumType       print information about an enumeration
+/** print_enum_type       print information about an enumeration
  *                      type for the cross-reference.
  * 
- * @param vc : vcVerbose or vcTerse to control the output.
+ * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::PrintEnumType(TVerbosityCode vc) const {
-    if (vc == vcTerse) return;
+void cx_type::print_enum_type(cx_verbosity_code vc) const {
+    if (vc == vc_terse) return;
 
     list.put_line("---enum constant identifiers (value = name)---");
 
-    for (cx_symtab_node *p_const_id = enumeration.pConstIds;
+    for (cx_symtab_node *p_const_id = enumeration.p_const_ids;
             p_const_id; p_const_id = p_const_id->next__) {
         sprintf(list.text, "%d = %s",
                 p_const_id->defn.constant.value.int__,
@@ -133,54 +133,54 @@ void cx_type::PrintEnumType(TVerbosityCode vc) const {
     }
 }
 
-/** PrintSubrangeType   print information about a subrange
+/** print_subrange_type   print information about a subrange
  *                      type for the cross-reference.
  * 
- * @param vc : vcVerbose or vcTerse to control the output.
+ * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::PrintSubrangeType(TVerbosityCode vc) const {
-    if (vc == vcTerse) return;
+void cx_type::print_subrange_type(cx_verbosity_code vc) const {
+    if (vc == vc_terse) return;
 
     sprintf(list.text, "min value = %d, max value = %d",
             subrange.min, subrange.max);
 
     list.put_line();
 
-    if (subrange.pBaseType) {
+    if (subrange.p_base_type) {
         list.put_line("---base type---");
-        subrange.pBaseType->PrintTypeSpec(vcTerse);
+        subrange.p_base_type->print_type_spec(vc_terse);
     }
 }
 
-/** PrintArrayType      print information about an array
+/** print_array_type      print information about an array
  *                      type for the cross-reference.
  * 
- * @param vc : vcVerbose or vcTerse to control the output.
+ * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::PrintArrayType(TVerbosityCode vc) const {
-    if (vc == vcTerse) return;
+void cx_type::print_array_type(cx_verbosity_code vc) const {
+    if (vc == vc_terse) return;
 
-    sprintf(list.text, "%d elements", array.elmtCount);
+    sprintf(list.text, "%d elements", array.element_count);
     list.put_line();
 
-    if (array.pIndexType) {
+    if (array.p_index_type) {
         list.put_line("---index type---");
-        array.pIndexType->PrintTypeSpec(vcTerse);
+        array.p_index_type->print_type_spec(vc_terse);
     }
 
-    if (array.pElmtType) {
+    if (array.p_element_type) {
         list.put_line("---element type---");
-        array.pElmtType->PrintTypeSpec(vcTerse);
+        array.p_element_type->print_type_spec(vc_terse);
     }
 }
 
-/** PrintRecordType     print information about a record
+/** print_record_type     print information about a record
  *                      type for the cross-reference.
  * 
- * @param vc : vcVerbose or vcTerse to control the output.
+ * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::PrintRecordType(TVerbosityCode vc) {
-    if (vc == vcTerse) return;
+void cx_type::print_record_type(cx_verbosity_code vc) {
+    if (vc == vc_terse) return;
 
     list.put_line("member identifiers (offset : name)---");
     list.put_line();
@@ -190,24 +190,24 @@ void cx_type::PrintRecordType(TVerbosityCode vc) {
     //        return;
     //    }
 
-    //    for (cx_symtab_node *pFieldId = complex.pSymtabClassScope->root();
-    //            pFieldId; pFieldId = pFieldId->next__) {
+    //    for (cx_symtab_node *p_field_id = complex.p_class_scope_symtab->root();
+    //            p_field_id; p_field_id = p_field_id->next__) {
     //        sprintf(list.text, "\t%d : %s",
-    //                pFieldId->defn.data.offset,
-    //                pFieldId->string__());
+    //                p_field_id->defn.data.offset,
+    //                p_field_id->string__());
     //        list.put_line();
-    //        pFieldId->print_var_or_field();
+    //        p_field_id->print_var_or_field();
     //    }
     //
     //    list.put_line("public:\n");
     //
-    //    for (cx_symtab_node *pFieldId = complex.MemberTable[tc_PUBLIC]->root();
-    //            pFieldId; pFieldId = pFieldId->next__) {
+    //    for (cx_symtab_node *p_field_id = complex.MemberTable[tc_PUBLIC]->root();
+    //            p_field_id; p_field_id = p_field_id->next__) {
     //        sprintf(list.text, "\t%d : %s",
-    //                pFieldId->defn.data.offset,
-    //                pFieldId->string__());
+    //                p_field_id->defn.data.offset,
+    //                p_field_id->string__());
     //        list.put_line();
-    //        pFieldId->print_var_or_field();
+    //        p_field_id->print_var_or_field();
     //    }
     //
     //    list.put_line();
@@ -217,13 +217,13 @@ void cx_type::PrintRecordType(TVerbosityCode vc) {
     //        list.put_line("empty scope");
     //    } else {
     //
-    //        for (cx_symtab_node *pFieldId = complex.MemberTable[tc_PRIVATE]->root();
-    //                pFieldId; pFieldId = pFieldId->next__) {
+    //        for (cx_symtab_node *p_field_id = complex.MemberTable[tc_PRIVATE]->root();
+    //                p_field_id; p_field_id = p_field_id->next__) {
     //            sprintf(list.text, "\t%d : %s",
-    //                    pFieldId->defn.data.offset,
-    //                    pFieldId->string__());
+    //                    p_field_id->defn.data.offset,
+    //                    p_field_id->string__());
     //            list.put_line();
-    //            pFieldId->print_var_or_field();
+    //            p_field_id->print_var_or_field();
     //        }
     //    }
     //
@@ -233,13 +233,13 @@ void cx_type::PrintRecordType(TVerbosityCode vc) {
     //    if (!complex.MemberTable[tc_PROTECTED]) {
     //        list.put_line("empty scope");
     //    } else {
-    //        for (cx_symtab_node *pFieldId = complex.MemberTable[tc_PROTECTED]->root();
-    //                pFieldId; pFieldId = pFieldId->next__) {
+    //        for (cx_symtab_node *p_field_id = complex.MemberTable[tc_PROTECTED]->root();
+    //                p_field_id; p_field_id = p_field_id->next__) {
     //            sprintf(list.text, "\t%d : %s",
-    //                    pFieldId->defn.data.offset,
-    //                    pFieldId->string__());
+    //                    p_field_id->defn.data.offset,
+    //                    p_field_id->string__());
     //            list.put_line();
-    //            pFieldId->print_var_or_field();
+    //            p_field_id->print_var_or_field();
     //        }
     //    }
 }
@@ -253,8 +253,8 @@ void cx_type::PrintRecordType(TVerbosityCode vc) {
  */
 void initialize_builtin_types(cx_symtab *p_symtab) {
 
-    pMain = p_symtab->enter("main", dc_function);
-    pMain->defn.routine.which = rc_forward;
+    p_main_function_id = p_symtab->enter("main", dc_function);
+    p_main_function_id->defn.routine.which = rc_forward;
 
     cx_symtab_node *pIntegerId = p_symtab->enter("int", dc_type);
     cx_symtab_node *pFloatId = p_symtab->enter("float", dc_type);
@@ -268,106 +268,110 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     cx_symtab_node *pFileId = p_symtab->enter("file", dc_type);
 
-    if (!pIntegerType) {
-        SetType(pIntegerType, new cx_type(fcScalar, sizeof (int), pIntegerId));
+    if (!p_integer_type) {
+        set_type(p_integer_type, new cx_type(fc_scalar, sizeof (int), pIntegerId));
     }
-    if (!pFloatType) {
-        SetType(pFloatType, new cx_type(fcScalar, sizeof (float), pFloatId));
+    if (!p_float_type) {
+        set_type(p_float_type, new cx_type(fc_scalar, sizeof (float), pFloatId));
     }
 
-    if (!pBooleanType) {
-        SetType(pBooleanType, new cx_type(fcEnum, sizeof (int), pBooleanId));
+    if (!p_boolean_type) {
+        set_type(p_boolean_type, new cx_type(fc_enum, sizeof (int), pBooleanId));
     }
-    if (!pCharType) {
-        SetType(pCharType, new cx_type(fcScalar, sizeof (char), pCharId));
+    if (!p_char_type) {
+        set_type(p_char_type, new cx_type(fc_scalar, sizeof (char), pCharId));
     }
     if (!p_complex_type) {
-        SetType(p_complex_type, new cx_type(fcComplex, sizeof (cx_type), pComplexId));
+        set_type(p_complex_type, new cx_type(fc_complex, sizeof (cx_type), pComplexId));
     }
 
-    if (!pFileType) {
-        SetType(pFileType, new cx_type(fcStream, sizeof (FILE), pFileId));
+    if (!p_file_type) {
+        set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), pFileId));
     }
 
-    SetType(pMain->p_type, pIntegerType);
+    set_type(p_main_function_id->p_type, p_integer_type);
 
     // link each predefined type id's node to it's type object
-    SetType(pIntegerId->p_type, pIntegerType);
+    set_type(pIntegerId->p_type, p_integer_type);
 
-    SetType(pFloatId->p_type, pFloatType);
+    set_type(pFloatId->p_type, p_float_type);
 
-    SetType(pBooleanId->p_type, pBooleanType);
-    SetType(pCharId->p_type, pCharType);
+    set_type(pBooleanId->p_type, p_boolean_type);
+    set_type(pCharId->p_type, p_char_type);
 
-    SetType(pComplexId->p_type, p_complex_type);
+    set_type(pComplexId->p_type, p_complex_type);
 
-    pBooleanType->enumeration.max = 1;
-    pBooleanType->enumeration.pConstIds = pFalseId;
+    p_boolean_type->enumeration.max = 1;
+    p_boolean_type->enumeration.p_const_ids = pFalseId;
 
     pFalseId->defn.constant.value.int__ = 0;
     pTrueId->defn.constant.value.int__ = 1;
 
-    SetType(pTrueId->p_type, pBooleanType);
-    SetType(pFalseId->p_type, pBooleanType);
+    set_type(pTrueId->p_type, p_boolean_type);
+    set_type(pFalseId->p_type, p_boolean_type);
 
     pFalseId->next__ = pTrueId;
 
     pStdOut = p_symtab->enter("__cx_stdout__", ::dc_variable);
-    SetType(pStdOut->p_type, pFileType);
-    pStdOut->p_type->stream.pFileStream = stdout;
+    set_type(pStdOut->p_type, p_file_type);
+    pStdOut->p_type->stream.p_file_stream = stdout;
 
     pStdIn = p_symtab->enter("__cx_stdin__", ::dc_variable);
-    SetType(pStdIn->p_type, pFileType);
-    pStdIn->p_type->stream.pFileStream = stdin;
+    set_type(pStdIn->p_type, p_file_type);
+    pStdIn->p_type->stream.p_file_stream = stdin;
 
     pStdErr = p_symtab->enter("__cx_stderr__", ::dc_variable);
-    SetType(pStdErr->p_type, pFileType);
-    pStdErr->p_type->stream.pFileStream = stderr;
+    set_type(pStdErr->p_type, p_file_type);
+    pStdErr->p_type->stream.p_file_stream = stderr;
 
-    SetType(pDummyType, new cx_type(fcNone, 1, nullptr));
+    set_type(p_dummy_type, new cx_type(fc_none, 1, nullptr));
 }
 
 /** remove_builtin_types       Remove the predefined types.
  */
 void remove_builtin_types(void) {
-    RemoveType(p_complex_type);
-    RemoveType(pIntegerType);
-    RemoveType(pFloatType);
-    RemoveType(pBooleanType);
-    RemoveType(pCharType);
-    RemoveType(pDummyType);
-    RemoveType(pFileType);
+    remove_type(p_complex_type);
+    remove_type(p_integer_type);
+    remove_type(p_float_type);
+    remove_type(p_boolean_type);
+    remove_type(p_char_type);
+    remove_type(p_dummy_type);
+    remove_type(p_file_type);
 }
 
-void RemoveType(cx_type *&p_type);
+void remove_type(cx_type *&p_type);
 
-/** SetType     Set the target type.  Increment the reference
+/** set_type     Set the target type.  Increment the reference
  *              count of the source type.
  * 
  * @param p_target_type : ref to ptr to target type object.
- * @param pSourceType : ptr to source type object.
+ * @param p_source_type : ptr to source type object.
  * @return ptr to source type object.
  */
-cx_type *SetType(cx_type *&p_target_type, cx_type *pSourceType) {
-    if (!p_target_type) RemoveType(p_target_type);
+cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
+    if (!p_target_type) remove_type(p_target_type);
 
-    ++pSourceType->refCount;
+    ++p_source_type->reference_count;
 
-    p_target_type = pSourceType;
+    p_target_type = p_source_type;
 
-    return pSourceType;
+    return p_source_type;
 }
 
-/** RemoveType  Decrement a type object's reference count, and
- *              delete the object and set its pointer to NULL
+/** remove_type  Decrement a type object's reference count, and
+ *              delete the object and set its pointer to nullptr
  *              if the count becomes 0.
  * 
  * @param p_type : ref to ptr to type object.
  */
-void RemoveType(cx_type *&p_type) {
-    if (p_type && (--p_type->refCount == 0)) {
+void remove_type(cx_type *&p_type) {
+    if (p_type == nullptr) return;
+
+    if (p_type && (--p_type->reference_count == 0)) {
+
         delete p_type;
         p_type = nullptr;
+
     }
 }
 
@@ -377,154 +381,154 @@ void RemoveType(cx_type *&p_type) {
  *                      *
  ************************/
 
-/** CheckRelOpOperands  Check that the types of the two operands
+/** check_relational_op_operands  Check that the types of the two operands
  *                      of a relational operator are compatible.
  *                      Flag an incompatible type error if not.
  * 
- * @param pType1 : ptr to the first  operand's type object.
- * @param pType2 : ptr to the second operand's type object.
+ * @param p_type1 : ptr to the first  operand's type object.
+ * @param p_type2 : ptr to the second operand's type object.
  */
-void CheckRelOpOperands(const cx_type *pType1, const cx_type *pType2) {
-    pType1 = pType1->Base();
-    pType2 = pType2->Base();
+void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2) {
+    p_type1 = p_type1->base_type();
+    p_type2 = p_type2->base_type();
 
-    if ((pType1 == pType2) &&
-            ((pType1->form == fcScalar) || (pType1->form == fcEnum))) {
+    if ((p_type1 == p_type2) &&
+            ((p_type1->form == fc_scalar) || (p_type1->form == fc_enum))) {
         return;
     }
 
-    if (((pType1 == pIntegerType) && (pType2 == pFloatType))
-            || ((pType2 == pIntegerType) && (pType2 == pFloatType))) {
+    if (((p_type1 == p_integer_type) && (p_type2 == p_float_type))
+            || ((p_type2 == p_integer_type) && (p_type2 == p_float_type))) {
         return;
     }
 
-    if ((pType1->form == fcArray)
-            && (pType2->form == fcArray)
-            && (pType1->array.pElmtType == pCharType)
-            && (pType2->array.pElmtType == pCharType)
-            && (pType1->array.elmtCount == pType2->array.elmtCount)) {
+    if ((p_type1->form == fc_array)
+            && (p_type2->form == fc_array)
+            && (p_type1->array.p_element_type == p_char_type)
+            && (p_type2->array.p_element_type == p_char_type)
+            && (p_type1->array.element_count == p_type2->array.element_count)) {
         return;
     }
 
     cx_error(err_incompatible_types);
 }
 
-/** CheckIntegerOrReal  Check that the type of each operand is
+/** check_integer_or_real  Check that the type of each operand is
  *                      either integer or real.  Flag an
  *                      incompatible type error if not.
  * 
- * @param pType1 : ptr to the first  operand's type object.
- * @param pType2 : ptr to the second operand's type object or NULL.
+ * @param p_type1 : ptr to the first  operand's type object.
+ * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void CheckIntegerOrReal(const cx_type *pType1, const cx_type *pType2) {
-    pType1 = pType1->Base();
+void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
+    p_type1 = p_type1->base_type();
 
-    if ((pType1 != pIntegerType) && (pType1 != pFloatType)) {
+    if ((p_type1 != p_integer_type) && (p_type1 != p_float_type)) {
         cx_error(err_incompatible_types);
     }
 
-    if (pType2) {
-        pType2 = pType2->Base();
+    if (p_type2) {
+        p_type2 = p_type2->base_type();
 
-        if ((pType2 != pIntegerType) && (pType2 != pFloatType)) {
+        if ((p_type2 != p_integer_type) && (p_type2 != p_float_type)) {
             cx_error(err_incompatible_types);
         }
     }
 }
 
-/** CheckBoolean        Check that the type of each operand is
+/** check_boolean        Check that the type of each operand is
  *                      boolean.  Flag an incompatible type
  *                      error if not.
  * 
- * @param pType1 : ptr to the first  operand's type object.
- * @param pType2 : ptr to the second operand's type object or NULL.
+ * @param p_type1 : ptr to the first  operand's type object.
+ * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void CheckBoolean(const cx_type *pType1, const cx_type *pType2) {
-    if ((pType1->Base() != pBooleanType)
-            || (pType2 && (pType2->Base() != pBooleanType))) {
+void check_boolean(const cx_type *p_type1, const cx_type *p_type2) {
+    if ((p_type1->base_type() != p_boolean_type)
+            || (p_type2 && (p_type2->base_type() != p_boolean_type))) {
         cx_error(err_incompatible_types);
     }
 }
 
-/** CheckAssignmentTypeCompatible   Check that a value's type is
+/** check_assignment_type_compatible   Check that a value's type is
  *                                  assignment compatible with
  *                                  the target's type.  Flag an
  *                                  error if not.
  * 
  * @param p_target_type : ptr to the target's type object.
- * @param pValueType  : ptr to the value's  type object.
+ * @param p_value_type  : ptr to the value's  type object.
  * @param ec          : error code.
  */
-void CheckAssignmentTypeCompatible(const cx_type *p_target_type,
-        const cx_type *pValueType, cx_error_code ec) {
+void check_assignment_type_compatible(const cx_type *p_target_type,
+        const cx_type *p_value_type, cx_error_code ec) {
 
-    p_target_type = p_target_type->Base();
-    pValueType = pValueType->Base();
+    p_target_type = p_target_type->base_type();
+    p_value_type = p_value_type->base_type();
 
-    if (p_target_type == pValueType) return;
+    if (p_target_type == p_value_type) return;
 
-    if ((p_target_type == pFloatType)
-            && (pValueType == pIntegerType)) return;
+    if ((p_target_type == p_float_type)
+            && (p_value_type == p_integer_type)) return;
 
-    if ((p_target_type == pFloatType)
-            && (pValueType == pDoubleType)) return;
-
-    if ((p_target_type == pDoubleType)
-            && (pValueType == pIntegerType)) return;
+    if ((p_target_type == p_float_type)
+            && (p_value_type == pDoubleType)) return;
 
     if ((p_target_type == pDoubleType)
-            && (pValueType == pFloatType)) return;
+            && (p_value_type == p_integer_type)) return;
 
-    if ((p_target_type == pIntegerType)
-            && (pValueType == pFloatType)) return;
+    if ((p_target_type == pDoubleType)
+            && (p_value_type == p_float_type)) return;
 
-    if ((p_target_type == pIntegerType)
-            && (pValueType == pDoubleType)) return;
+    if ((p_target_type == p_integer_type)
+            && (p_value_type == p_float_type)) return;
 
-    if ((p_target_type->form == fcArray)
-            && (pValueType->form == fcArray)
-            && (p_target_type->array.pElmtType == pCharType)
-            && (pValueType->array.pElmtType == pCharType)) {
-        //&& (p_target_type->array.elmtCount == pValueType->array.elmtCount)) {
+    if ((p_target_type == p_integer_type)
+            && (p_value_type == pDoubleType)) return;
+
+    if ((p_target_type->form == fc_array)
+            && (p_value_type->form == fc_array)
+            && (p_target_type->array.p_element_type == p_char_type)
+            && (p_value_type->array.p_element_type == p_char_type)) {
+        //&& (p_target_type->array.element_count == p_value_type->array.element_count)) {
         return;
     }
 
     cx_error(ec);
 }
 
-/** IntegerOperands     Check that the types of both operands
+/** integer_operands     Check that the types of both operands
  *                      are integer.
  * 
- * @param pType1 : ptr to the first  operand's type object.
- * @param pType2 : ptr to the second operand's type object.
+ * @param p_type1 : ptr to the first  operand's type object.
+ * @param p_type2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool IntegerOperands(const cx_type *pType1, const cx_type *pType2) {
-    pType1 = pType1->Base();
-    pType2 = pType2->Base();
+bool integer_operands(const cx_type *p_type1, const cx_type *p_type2) {
+    p_type1 = p_type1->base_type();
+    p_type2 = p_type2->base_type();
 
-    return (pType1 == pIntegerType) && (pType2 == pIntegerType);
+    return (p_type1 == p_integer_type) && (p_type2 == p_integer_type);
 }
 
-/** RealOperands        Check that the types of both operands
+/** real_operands        Check that the types of both operands
  *                      are real, or that one is real and the
  *                      other is integer.
  * 
- * @param pType1 : ptr to the first  operand's type object.
- * @param pType2 : ptr to the second operand's type object.
+ * @param p_type1 : ptr to the first  operand's type object.
+ * @param p_type2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool RealOperands(const cx_type *pType1, const cx_type *pType2) {
-    pType1 = pType1->Base();
-    pType2 = pType2->Base();
+bool real_operands(const cx_type *p_type1, const cx_type *p_type2) {
+    p_type1 = p_type1->base_type();
+    p_type2 = p_type2->base_type();
 
-    return (pType1 == pFloatType) && (pType2 == pFloatType)
-            || (pType1 == pFloatType) && (pType2 == pIntegerType)
-            || (pType2 == pFloatType) && (pType1 == pIntegerType)
-            || (pType1 == pFloatType) && (pType2 == pDoubleType)
-            || (pType2 == pFloatType) && (pType1 == pDoubleType)
-            || (pType1 == pDoubleType) && (pType2 == pIntegerType)
-            || (pType2 == pDoubleType) && (pType1 == pIntegerType)
-            || (pType1 == pDoubleType) && (pType2 == pFloatType)
-            || (pType2 == pDoubleType) && (pType1 == pFloatType);
+    return (p_type1 == p_float_type) && (p_type2 == p_float_type)
+            || (p_type1 == p_float_type) && (p_type2 == p_integer_type)
+            || (p_type2 == p_float_type) && (p_type1 == p_integer_type)
+            || (p_type1 == p_float_type) && (p_type2 == pDoubleType)
+            || (p_type2 == p_float_type) && (p_type1 == pDoubleType)
+            || (p_type1 == pDoubleType) && (p_type2 == p_integer_type)
+            || (p_type2 == pDoubleType) && (p_type1 == p_integer_type)
+            || (p_type1 == pDoubleType) && (p_type2 == p_float_type)
+            || (p_type2 == pDoubleType) && (p_type1 == p_float_type);
 }

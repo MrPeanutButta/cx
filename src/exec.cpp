@@ -7,7 +7,7 @@
 #include <iostream>
 #include "exec.h"
 
-using namespace std;
+
 
 /*******************
  *                 *
@@ -45,7 +45,7 @@ cx_runtime_stack::cx_runtime_stack(void) {
  */
 cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
         cx_icode *p_icode) {
-    cx_frame_header *pHeader = (cx_frame_header *) p_frame_base;
+    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
     cx_stack_item *p_new_frame_base = tos + 1; /* point to item just above
                                           *  current top_of_stack item */
 
@@ -56,12 +56,12 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
 
         /*--Callee nested within caller:
          *--push address of caller's stack frame.*/
-        push(pHeader);
+        push(p_header);
     } else if (new_level == old_level) {
 
         /*--Callee at same level as caller:
           --push address of common parent's stack frame.*/
-        push(pHeader->static_link.addr__);
+        push(p_header->static_link.addr__);
     } else /* new_level < old_level */ {
 
         /*--Callee nested less deeply than caller:
@@ -69,9 +69,9 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
         int delta = old_level - new_level;
 
         while (delta-- >= 0) {
-            pHeader = (cx_frame_header *) pHeader->static_link.addr__;
+            p_header = (cx_frame_header *) p_header->static_link.addr__;
         }
-        push(pHeader);
+        push(p_header);
     }
 
     push(p_frame_base); // dynamic link
@@ -105,19 +105,19 @@ void cx_runtime_stack::activate_frame(cx_stack_item *p_new_frame_base,
  */
 void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
         cx_icode *&p_icode) {
-    cx_frame_header *pHeader = (cx_frame_header *) p_frame_base;
+    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
 
     // Don't do anything if it's the bottommost stack frame.
     if (p_frame_base != &stack[0]) {
 
         // Return to the caller's intermediate code.
-        p_icode = (cx_icode *) pHeader->return_address.icode.addr__;
-        p_icode->go_to(pHeader->return_address.location.int__);
+        p_icode = (cx_icode *) p_header->return_address.icode.addr__;
+        p_icode->go_to(p_header->return_address.location.int__);
 
         // Cut the stack back.  Leave a function value on top.
         tos = (cx_stack_item *) p_frame_base;
         if (p_function_id->defn.how != dc_function) --tos;
-        p_frame_base = (cx_stack_item *) pHeader->dynamic_link.addr__;
+        p_frame_base = (cx_stack_item *) p_header->dynamic_link.addr__;
     }
 }
 
@@ -128,20 +128,20 @@ void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
  * @param p_id : ptr to symbol table node of variable or parm
  */
 void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
-    cx_type *p_type = p_id->p_type->Base(); // ptr to type object of value
+    cx_type *p_type = p_id->p_type->base_type(); // ptr to type object of value
 
-    if ((p_type->form != fcArray) && (p_type->form != fcComplex)) {
-        if (p_type == pIntegerType) push(0);
-        else if (p_type == pFloatType) push(0.0f);
-        else if (p_type == pBooleanType) push(0);
-        else if (p_type == pCharType) push('\0');
-        else if (p_type->form == fcEnum) push(0);
+    if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
+        if (p_type == p_integer_type) push(0);
+        else if (p_type == p_float_type) push(0.0f);
+        else if (p_type == p_boolean_type) push(0);
+        else if (p_type == p_char_type) push('\0');
+        else if (p_type->form == fc_enum) push(0);
     } else {
 
         // Array or record
         void *addr = new char[p_type->size];
         push(addr);
-        p_id->p_type->array.start_address = addr;
+//        p_id->p_type->array.start_address = addr;
     }
 
     /* save runstack address.
@@ -157,10 +157,10 @@ void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
  * @param p_id : ptr to symbol table node of variable or parm
  */
 void cx_runtime_stack::deallocate_value(const cx_symtab_node *p_id) {
-    if ((!p_id->p_type->IsScalar()) && (p_id->defn.how != dc_reference)) {
-        cx_stack_item *pValue = p_id->runstack_item;
+    if ((!p_id->p_type->is_scalar_type()) && (p_id->defn.how != dc_reference)) {
+        cx_stack_item *p_value = p_id->runstack_item;
 
-        if (pValue->addr__ != nullptr) delete[] pValue->addr__;
+        if (p_value->addr__ != nullptr) delete[] p_value->addr__;
     }
 }
 
@@ -178,7 +178,7 @@ void cx_runtime_stack::deallocate_value(const cx_symtab_node *p_id) {
 cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
     bool functionFlag = p_id->defn.how == dc_function; // true if function
     //   else false
-    cx_frame_header *pHeader = (cx_frame_header *) p_frame_base;
+    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
 
     /*--Compute the difference between the current nesting level
      *--and the level of the variable or parameter.  Treat a function
@@ -189,10 +189,10 @@ cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
 
     // Chase static links delta times.
     while (delta-- > 0) {
-        pHeader = (cx_frame_header *) pHeader->static_link.addr__;
+        p_header = (cx_frame_header *) p_header->static_link.addr__;
     }
 
-    return functionFlag ? &pHeader->function_value
+    return functionFlag ? &p_header->function_value
             : p_id->runstack_item;
 }
 
@@ -207,9 +207,9 @@ cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
 
 void cx_executor::go(cx_symtab_node *p_program_id) {
     // Initialize standard input and output.
-    eof_flag = cin.eof();
-    cout.setf(ios::fixed, ios::floatfield);
-    cout << endl;
+    eof_flag = std::cin.eof();
+    std::cout.setf(std::ios::fixed, std::ios::floatfield);
+    std::cout << std::endl;
 
     // Execute the program.
     break_loop = false;
@@ -222,9 +222,9 @@ void cx_executor::go(cx_symtab_node *p_program_id) {
 
     if (cx_dev_debug_flag) {
         // print the executor's summary.
-        cout << endl;
-        cout << "Successful completion.  " << statement_count
-                << " statements executed." << endl;
+        std::cout << std::endl;
+        std::cout << "Successful completion.  " << statement_count
+                << " statements executed." << std::endl;
     }
 }
 
@@ -235,7 +235,7 @@ void cx_executor::go(cx_symtab_node *p_program_id) {
  */
 void cx_executor::range_check(const cx_type *p_target_type, int value) {
 
-    if ((p_target_type->form == fcSubrange)
+    if ((p_target_type->form == fc_subrange)
             && ((value < p_target_type->subrange.min)
             || (value > p_target_type->subrange.max))) {
         cx_runtime_error(rte_value_out_of_range);

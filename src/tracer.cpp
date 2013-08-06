@@ -5,7 +5,7 @@
 #include "buffer.h"
 #include "exec.h"
 
-using namespace std;
+
 
 /** trace_routine_entry   Trace the entry into a routine.
  * 
@@ -13,7 +13,7 @@ using namespace std;
  */
 void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
     if (trace_routine_flag) {
-        cout << ">> Entering routine " << p_function_id->string__() << endl;
+        std::cout << ">> Entering routine " << p_function_id->string__() << std::endl;
     }
 }
 
@@ -23,15 +23,15 @@ void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
  */
 void cx_executor::trace_routine_exit(const cx_symtab_node *p_function_id) {
     if (trace_routine_flag) {
-        cout << ">> Exiting routine " << p_function_id->string__() << endl;
+        std::cout << ">> Exiting routine " << p_function_id->string__() << std::endl;
     }
 }
 
 /** trace_statement      Trace the execution of a statement.
  */
 void cx_executor::trace_statement(void) {
-    if (trace_statement_flag) cout << ">>  At " << current_line_number
-            << endl;
+    if (trace_statement_flag) std::cout << ">>  At " << current_line_number
+            << std::endl;
 }
 
 /** trace_data_store      Trace the storing of data into a
@@ -45,12 +45,12 @@ void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
         const void *p_data_value,
         const cx_type *p_data_type) {
     if (trace_store_flag) {
-        TFormCode form = p_target_id->p_type->form;
+        cx_type_form_code form = p_target_id->p_type->form;
 
-        cout << ">>   " << p_target_id->string__();
-        if (form == fcArray) cout << "[*]";
-        else if (form == fcComplex) cout << ".*";
-        cout << " <== ";
+        std::cout << ">>   " << p_target_id->string__();
+        if (form == fc_array) std::cout << "[*]";
+        else if (form == fc_complex) std::cout << ".*";
+        std::cout << " <== ";
 
         trace_data_value(p_data_value, p_data_type);
     }
@@ -67,12 +67,12 @@ void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
         const void *p_data_value,
         const cx_type *p_data_type) {
     if (trace_fetch_flag) {
-        TFormCode form = p_id->p_type->form;
+        cx_type_form_code form = p_id->p_type->form;
 
-        cout << ">>   " << p_id->string__();
-        if (form == fcArray) cout << "[*]";
-        else if (form == fcComplex) cout << ".*";
-        cout << ": ";
+        std::cout << ">>   " << p_id->string__();
+        if (form == fc_array) std::cout << "[*]";
+        else if (form == fc_complex) std::cout << ".*";
+        std::cout << ": ";
 
         trace_data_value(p_data_value, p_data_type);
     }
@@ -86,30 +86,30 @@ void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
 void cx_executor::trace_data_value(const void *p_data_value,
         const cx_type *p_data_type) {
 
-    if (p_data_type->form == fcStream) return;
+    if (p_data_type->form == fc_stream) return;
 
     char text[max_input_buffer_size]; // text for value
 
-    if (p_data_type == pFloatType) {
+    if (p_data_type == p_float_type) {
         sprintf(text, "%0.6g", ((cx_stack_item *) p_data_value)->float__);
-    } else if (p_data_type == pCharType) {
+    } else if (p_data_type == p_char_type) {
         sprintf(text, "'%c'", ((cx_stack_item *) p_data_value)->char__);
-    } else if (p_data_type == pBooleanType) {
+    } else if (p_data_type == p_boolean_type) {
         strcpy(text, ((cx_stack_item *) p_data_value)->int__ == 0
                 ? "false" : "true");
-    } else if (p_data_type->form == fcArray) {
-        if (p_data_type->array.pElmtType == pCharType) {
-            int length = p_data_type->array.elmtCount;
+    } else if (p_data_type->form == fc_array) {
+        if (p_data_type->array.p_element_type == p_char_type) {
+            int length = p_data_type->array.element_count;
             memcpy(text + 1, p_data_value, length);
             text[0] = '\'';
             text[length + 1] = '\'';
             text[length + 2] = '\0';
         } else strcpy(text, "<array>");
-    } else if (p_data_type->form == fcComplex) {
+    } else if (p_data_type->form == fc_complex) {
         strcpy(text, "<complex>");
-    } else if (p_data_type->Base()->form == fcEnum) {
+    } else if (p_data_type->base_type()->form == fc_enum) {
         int count = ((cx_stack_item *) p_data_value)->int__;
-        cx_symtab_node *p_id = p_data_type->Base()->enumeration.pConstIds;
+        cx_symtab_node *p_id = p_data_type->base_type()->enumeration.p_const_ids;
         while (--count >= 0) p_id = p_id->next__;
         strcpy(text, p_id->string__());
     } else {
@@ -117,5 +117,5 @@ void cx_executor::trace_data_value(const void *p_data_value,
         sprintf(text, "%d", tmp->int__);
     }
 
-    cout << text << endl;
+    std::cout << text << std::endl;
 }

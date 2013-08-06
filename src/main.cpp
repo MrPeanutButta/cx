@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
     // Check the command line arguments.
     if (argc < 2) {
-        cerr << "usage: " << argv[0] << " <source file>" << endl;
+        std::cerr << "usage: " << argv[0] << " <source file>" << std::endl;
         abort_translation(abort_invalid_commandline_args);
     }
 
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 
     // Create the parser for the source file,
     // and then parse the file.
-    cx_parser *parser = new cx_parser(new cx_source_buffer(argv[1]));
+    cx_parser *p_parser = new cx_parser(new cx_source_buffer(argv[1]));
 
 
 #ifdef __CX_PROFILE_EXECUTION__
@@ -50,41 +50,41 @@ int main(int argc, char *argv[]) {
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 #endif
 
-    cx_symtab_node *p_program_id = parser->parse();
+    cx_symtab_node *p_program_id = p_parser->parse();
 
 #ifdef __CX_PROFILE_EXECUTION__
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
-    std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
+    std::std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::std::endl;
 #endif
 
-    delete parser;
+    delete p_parser;
 
     if (error_count == 0) {
         p_vector_symtabs = new cx_symtab *[symtab_count];
-        for (cx_symtab *pSt = p_symtab_list; pSt; pSt = pSt->next()) {
-            if (pSt != nullptr) {
-                if (pSt->root() != nullptr)pSt->convert(p_vector_symtabs);
+        for (cx_symtab *p_st = p_symtab_list; p_st; p_st = p_st->next()) {
+            if (p_st != nullptr) {
+                if (p_st->root() != nullptr)p_st->convert(p_vector_symtabs);
             }
         }
 
-        cx_backend *pBackend = new cx_executor;
+        cx_backend *p_backend = new cx_executor;
 
 #ifdef __CX_PROFILE_EXECUTION__
         std::cin.get();
         t1 = high_resolution_clock::now();
 #endif
 
-        pBackend->go(p_program_id);
+        p_backend->go(p_program_id);
 
 #ifdef __CX_PROFILE_EXECUTION__
         t2 = high_resolution_clock::now();
         time_span = duration_cast < duration<double >> (t2 - t1);
-        std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+        std::std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::std::endl;
 #endif
 
         delete[] p_vector_symtabs;
-        delete pBackend;
+        delete p_backend;
     }
 
     return 0;

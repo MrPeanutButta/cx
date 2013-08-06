@@ -10,27 +10,27 @@
  *                     procedure, or function identifier.
  */
 void cx_parser::parse_type_definitions(cx_symtab_node *p_function_id) {
-    cx_symtab_node *pLastId = nullptr;
+    cx_symtab_node *p_last_id = nullptr;
 
     while (token == tc_identifier) {
-        cx_symtab_node *pTypeId = enter_new_local(p_token->string__());
+        cx_symtab_node *p_type_id = enter_new_local(p_token->string__());
 
         if (!p_function_id->defn.routine.locals.p_type_ids) {
-            p_function_id->defn.routine.locals.p_type_ids = pTypeId;
+            p_function_id->defn.routine.locals.p_type_ids = p_type_id;
         } else {
-            pLastId->next__ = pTypeId;
+            p_last_id->next__ = p_type_id;
         }
 
-        pLastId = pTypeId;
+        p_last_id = p_type_id;
 
         get_token_append();
         conditional_get_token(tc_equal, err_missing_equal);
 
-        //        SetType(pTypeId->p_type, parse_type_spec());
-        pTypeId->defn.how = dc_type;
+        //        set_type(p_type_id->p_type, parse_type_spec());
+        p_type_id->defn.how = dc_type;
 
-        if (!pTypeId->p_type->pTypeId) {
-            pTypeId->p_type->pTypeId = pTypeId;
+        if (!p_type_id->p_type->p_type_id) {
+            p_type_id->p_type->p_type_id = p_type_id;
         }
 
         resync(tokenlist_declaration_follow, tokenlist_declaration_start, tokenlist_statement_start);
@@ -60,11 +60,11 @@ cx_type *cx_parser::parse_type_spec(cx_symtab_node *p_node) {
                 default:
                     cx_error(err_not_a_type_identifier);
                     get_token_append();
-                    return (pDummyType);
+                    return (p_dummy_type);
             }
         }
 
-        case tc_left_bracket: return ParseEnumerationType();
+        case tc_left_bracket: return parse_enumeration_type();
 
             /* found empty subscript.
              * array must have initializer */
@@ -78,7 +78,7 @@ cx_type *cx_parser::parse_type_spec(cx_symtab_node *p_node) {
 
         default:
             cx_error(err_invalid_type);
-            return (pDummyType);
+            return (p_dummy_type);
 
     }
 }
@@ -97,36 +97,36 @@ cx_type *cx_parser::parse_identifier_type(const cx_symtab_node *p_id2) {
     return p_id2->p_type;
 }
 
-/** ParseEnumerationType    parse a enumeration type
+/** parse_enumeration_type    parse a enumeration type
  *                          specification:
  *      enum <id> { <enum-list> };
  *  
  * @return  
  */
-cx_type *cx_parser::ParseEnumerationType(void) {
-    cx_type *p_type = new cx_type(fcEnum, sizeof (int), nullptr);
-    cx_symtab_node *pLastId = nullptr;
+cx_type *cx_parser::parse_enumeration_type(void) {
+    cx_type *p_type = new cx_type(fc_enum, sizeof (int), nullptr);
+    cx_symtab_node *p_last_id = nullptr;
 
-    int constValue = -1;
+    int const_value = -1;
 
     get_token_append();
     resync(tokenlist_enum_const_start);
 
     while (token == tc_identifier) {
         cx_symtab_node *p_const_id = enter_new_local(p_token->string__());
-        ++constValue;
+        ++const_value;
 
         if (p_const_id->defn.how == dc_undefined) {
             p_const_id->defn.how = dc_constant;
 
-            p_const_id->defn.constant.value.int__ = constValue;
-            SetType(p_const_id->p_type, p_type);
+            p_const_id->defn.constant.value.int__ = const_value;
+            set_type(p_const_id->p_type, p_type);
 
-            if (!pLastId) {
-                p_type->enumeration.pConstIds = pLastId = p_const_id;
+            if (!p_last_id) {
+                p_type->enumeration.p_const_ids = p_last_id = p_const_id;
             } else {
-                pLastId->next__ = p_const_id;
-                pLastId = p_const_id;
+                p_last_id->next__ = p_const_id;
+                p_last_id = p_const_id;
             }
         }
 
@@ -144,9 +144,9 @@ cx_type *cx_parser::ParseEnumerationType(void) {
         } else if (token == tc_identifier) cx_error(err_missing_comma);
     }
 
-    conditional_get_token(tc_right_bracket, err_missing_right_bracket);
+    conditional_get_token(tc_right_bracket, err_missing_right___bracket);
 
-    p_type->enumeration.max = constValue;
+    p_type->enumeration.max = const_value;
     return p_type;
 }
 
@@ -159,16 +159,16 @@ cx_type *cx_parser::ParseEnumerationType(void) {
  * @return 
  */
 cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
-    cx_type *p_type = new cx_type(fcSubrange, 0, nullptr);
+    cx_type *p_type = new cx_type(fc_subrange, 0, nullptr);
 
-    SetType(p_type->subrange.pBaseType, parse_subrange_limit(p_min_id, p_type->subrange.min));
+    set_type(p_type->subrange.p_base_type, parse_subrange_limit(p_min_id, p_type->subrange.min));
 
     resync(tokenlist_subrange_limit_follow, tokenlist_declaration_start);
     conditional_get_token(tc_dot_dot, errMissingDotDot);
 
     cx_type *pMaxType = parse_subrange_limit(nullptr, p_type->subrange.max);
 
-    if (pMaxType != p_type->subrange.pBaseType) {
+    if (pMaxType != p_type->subrange.p_base_type) {
         cx_error(err_incompatible_types);
         p_type->subrange.min = p_type->subrange.max = 0;
     } else if (p_type->subrange.min > p_type->subrange.max) {
@@ -179,7 +179,7 @@ cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
         p_type->subrange.max = temp;
     }
 
-    p_type->size = p_type->subrange.pBaseType->size;
+    p_type->size = p_type->subrange.p_base_type->size;
     return p_type;
 }
 
@@ -194,7 +194,7 @@ cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
  * @return 
  */
 cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit) {
-    cx_type *p_type = pDummyType;
+    cx_type *p_type = p_dummy_type;
     cx_token_code sign = tc_dummy;
 
     limit = 0;
@@ -211,7 +211,7 @@ cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit)
                         -p_token->value().int__ :
                         p_token->value().int__;
 
-                p_type = pIntegerType;
+                p_type = p_integer_type;
 
             } else cx_error(err_invalid_subrange_type);
             break;
@@ -220,22 +220,22 @@ cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit)
 
             if (p_limit_id->defn.how == dc_undefined) {
                 p_limit_id->defn.how = dc_constant;
-                p_type = SetType(p_limit_id->p_type, pDummyType);
+                p_type = set_type(p_limit_id->p_type, p_dummy_type);
                 break;
-            } else if ((p_limit_id->p_type == pFloatType) ||
-                    (p_limit_id->p_type == pDummyType) ||
-                    (p_limit_id->p_type->form == fcArray)) {
+            } else if ((p_limit_id->p_type == p_float_type) ||
+                    (p_limit_id->p_type == p_dummy_type) ||
+                    (p_limit_id->p_type->form == fc_array)) {
                 cx_error(err_invalid_subrange_type);
             } else if (p_limit_id->defn.how == dc_constant) {
 
-                if (p_limit_id->p_type == pIntegerType) {
+                if (p_limit_id->p_type == p_integer_type) {
                     limit = sign == tc_minus
                             ? -p_limit_id->defn.constant.value.int__
                             : p_limit_id->defn.constant.value.int__;
-                } else if (p_limit_id->p_type == pCharType) {
+                } else if (p_limit_id->p_type == p_char_type) {
                     if (sign != tc_dummy) cx_error(err_invalid_constant);
                     limit = p_limit_id->defn.constant.value.char__;
-                } else if (p_limit_id->p_type->form == fcEnum) {
+                } else if (p_limit_id->p_type->form == fc_enum) {
                     if (sign != tc_dummy) cx_error(err_invalid_constant);
                     limit = p_limit_id->defn.constant.value.int__;
                 }
@@ -253,7 +253,7 @@ cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit)
             }
 
             limit = p_token->string__()[1];
-            p_type = pCharType;
+            p_type = p_char_type;
             break;
 
         default:

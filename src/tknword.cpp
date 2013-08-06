@@ -110,7 +110,7 @@ void cx_word_token::check_for_reserved_word(void) {
     std::string __s(string);
     code__ = tc_identifier; // first assume it's an identifier
 
-    // Is it the right length?
+    // Is it the right__ length?
     if ((__s.length() >= minResWordLen) &&
             (__s.length() <= maxResWordLen)) {
         // Yes.  Use the word length to pick the appropriate list

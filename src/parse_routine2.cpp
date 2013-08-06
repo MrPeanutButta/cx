@@ -11,17 +11,17 @@
  */
 cx_symtab_node *cx_parser::parse_formal_parm_list(int &count, int &total_size) {
 
-    cx_symtab_node *pParmId; // ptrs to parm symtab nodes
-    cx_symtab_node *pFirstId, *pLastId;
-    cx_symtab_node *pPrevSublistLastId = nullptr;
-    cx_symtab_node *pParmList = nullptr; // ptr to list of parm nodes
-    cx_define_code parmDefn; // how a parm is defined
+    cx_symtab_node *p_parm_id; // ptrs to parm symtab nodes
+    cx_symtab_node *p_first_id, *p_last_id;
+    cx_symtab_node *p_prev_sublist_last_id = nullptr;
+    cx_symtab_node *p_parm_list = nullptr; // ptr to list of parm nodes
+    cx_define_code parm_defined_as; // how a parm is defined
 
     cx_symtab_node *p_node = nullptr;
     count = total_size = 0;
 
     // Loop to parse the comma-separated sublist of parameter ids.
-    cx_type *pParmType; // ptr to parm's type object
+    cx_type *p_parm_type; // ptr to parm's type object
     while (token == tc_identifier) {
 
 
@@ -33,29 +33,29 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(int &count, int &total_size) {
             cx_error(err_invalid_type);
         }
 
-        pParmType = p_node->p_type;
+        p_parm_type = p_node->p_type;
         // get param name
         get_token();
 
-        pFirstId = nullptr;
+        p_first_id = nullptr;
 
         // Reference or value parameter?
         if (token == tc_bit_AND) {
-            parmDefn = dc_reference;
+            parm_defined_as = dc_reference;
             get_token_append();
-        } else parmDefn = dc_value_parm;
+        } else parm_defined_as = dc_value_parm;
 
-        pParmId = enter_new_local(p_token->string__(), parmDefn);
-        icode.put(pParmId);
+        p_parm_id = enter_new_local(p_token->string__(), parm_defined_as);
+        icode.put(p_parm_id);
 
         ++count;
-        if (!pParmList) pParmList = pParmId;
+        if (!p_parm_list) p_parm_list = p_parm_id;
 
         // Link the parm id nodes together.
-        if (!pFirstId) pFirstId = pLastId = pParmId;
+        if (!p_first_id) p_first_id = p_last_id = p_parm_id;
         else {
-            pLastId->next__ = pParmId;
-            pLastId = pParmId;
+            p_last_id->next__ = p_parm_id;
+            p_last_id = p_parm_id;
         }
 
         //  ,
@@ -81,14 +81,14 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(int &count, int &total_size) {
 
         // Loop to assign the offset and type to each
         // parm id in the sublist.
-        for (pParmId = pFirstId; pParmId; pParmId = pParmId->next__) {
-            pParmId->defn.data.offset = total_size++;
-            SetType(pParmId->p_type, pParmType);
+        for (p_parm_id = p_first_id; p_parm_id; p_parm_id = p_parm_id->next__) {
+            p_parm_id->defn.data.offset = total_size++;
+            set_type(p_parm_id->p_type, p_parm_type);
         }
 
         // Link this sublist to the previous sublist.
-        if (pPrevSublistLastId) pPrevSublistLastId->next__ = pFirstId;
-        pPrevSublistLastId = pLastId;
+        if (p_prev_sublist_last_id) p_prev_sublist_last_id->next__ = p_first_id;
+        p_prev_sublist_last_id = p_last_id;
 
         //  ; or )
         // resync(tlFormalParmsFollow, tokenlist_declaration_follow);
@@ -102,7 +102,7 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(int &count, int &total_size) {
     //resync(tokenlist_sublist_follow, tokenlist_declaration_follow);
     //conditional_get_token(tc_colon, err_missing_colon);
 
-    return pParmList;
+    return p_parm_list;
 }
 
 /** parse_subroutine_call     parse a call to a declared or a
@@ -149,7 +149,7 @@ void cx_parser::parse_actual_parm_list(const cx_symtab_node *p_function_id,
         int parm_check_flag) {
     cx_symtab_node *p_formal_id = p_function_id ? p_function_id->defn.routine.
             locals.p_parms_ids
-            : NULL;
+            : nullptr;
 
     // If there are no actual parameters, there better not be
     // any formal parameters either.
@@ -206,28 +206,28 @@ void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
     //                         assignment type compatible with
     //                         the formal parameter.
     if (p_formal_id->defn.how == dc_value_parm) {
-        CheckAssignmentTypeCompatible(p_formal_id->p_type,
+        check_assignment_type_compatible(p_formal_id->p_type,
                 parse_expression(),
                 err_incompatible_types);
     }// Formal VAR parameter: The actual parameter must be a
         //                       variable of the same type as the
         //                       formal parameter.
     else if (token == tc_identifier) {
-        cx_symtab_node *pActualId = find(p_token->string__());
+        cx_symtab_node *p_actual_id = find(p_token->string__());
 
         // skip type declaration
-        if (pActualId->defn.how == ::dc_type) {
+        if (p_actual_id->defn.how == ::dc_type) {
             get_token();
 
             if (token == tc_bit_AND)get_token();
 
-            pActualId = find(p_token->string__());
+            p_actual_id = find(p_token->string__());
         }
 
-        icode.put(pActualId);
+        icode.put(p_actual_id);
 
         get_token_append();
-        if (p_formal_id->p_type != parse_variable(pActualId)) {
+        if (p_formal_id->p_type != parse_variable(p_actual_id)) {
             cx_error(err_incompatible_types);
         }
         resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
@@ -236,6 +236,4 @@ void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
         parse_expression();
         cx_error(err_invalid_reference);
     }
-
-
 }

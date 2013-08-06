@@ -7,7 +7,7 @@
 #include "exec.h"
 #include "common.h"
 
-using namespace std;
+
 
 /** execute_expression   Execute an expression (binary relational
  *                      operators = < > <> <= and >= ).
@@ -15,38 +15,38 @@ using namespace std;
  * @return: ptr to expression's type object
  */
 cx_type *cx_executor::execute_expression(void) {
-    cx_type *pOperand1Type; // ptr to first  operand's type
-    cx_type *pOperand2Type; // ptr to second operand's type
-    cx_type *pResultType; // ptr to result type
+    cx_type *p_operand1_type; // ptr to first  operand's type
+    cx_type *p_operand2_type; // ptr to second operand's type
+    cx_type *p_result_type; // ptr to result type
     cx_token_code op; // operator
 
     // Execute the first simple expression.
-    pResultType = execute_simple_expression();
+    p_result_type = execute_simple_expression();
 
     // If we now see a relational operator,
     // execute the second simple expression.
     if (token_in(token, tokenlist_relation_ops)) {
         op = token;
-        pOperand1Type = pResultType->Base();
-        pResultType = pBooleanType;
+        p_operand1_type = p_result_type->base_type();
+        p_result_type = p_boolean_type;
 
         get_token();
-        pOperand2Type = execute_simple_expression()->Base();
+        p_operand2_type = execute_simple_expression()->base_type();
 
         // Perform the operation, and push the resulting value
         // onto the stack.
-        if (((pOperand1Type == pIntegerType) &&
-                (pOperand2Type == pIntegerType))
-                || ((pOperand1Type == pCharType) &&
-                (pOperand2Type == pCharType))
-                || (pOperand1Type->form == fcEnum)) {
+        if (((p_operand1_type == p_integer_type) &&
+                (p_operand2_type == p_integer_type))
+                || ((p_operand1_type == p_char_type) &&
+                (p_operand2_type == p_char_type))
+                || (p_operand1_type->form == fc_enum)) {
 
             // integer <op> integer
             // boolean <op> boolean
             // char    <op> char
             // enum    <op> enum
             int value1, value2;
-            if (pOperand1Type == pCharType) {
+            if (p_operand1_type == p_char_type) {
                 value2 = pop()->char__;
                 value1 = pop()->char__;
             } else {
@@ -80,15 +80,15 @@ cx_type *cx_executor::execute_expression(void) {
                     push(value1 >= value2);
                     break;
             }
-        } else if ((pOperand1Type == pFloatType) ||
-                (pOperand2Type == pFloatType)) {
+        } else if ((p_operand1_type == p_float_type) ||
+                (p_operand2_type == p_float_type)) {
 
             // real    <op> real
             // real    <op> integer
             // integer <op> real
-            float value2 = pOperand2Type == pFloatType ? pop()->float__
+            float value2 = p_operand2_type == p_float_type ? pop()->float__
                     : pop()->int__;
-            float value1 = pOperand1Type == pFloatType ? pop()->float__
+            float value1 = p_operand1_type == p_float_type ? pop()->float__
                     : pop()->int__;
 
             switch (op) {
@@ -123,7 +123,7 @@ cx_type *cx_executor::execute_expression(void) {
             char *addr2 = (char *) pop()->addr__;
             char *addr1 = (char *) pop()->addr__;
 
-            int cmp = strncmp(addr1, addr2, pOperand1Type->size);
+            int cmp = strncmp(addr1, addr2, p_operand1_type->size);
 
             switch (op) {
                 case tc_equal_equal: push(cmp == 0);
@@ -142,7 +142,7 @@ cx_type *cx_executor::execute_expression(void) {
         }
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** execute_simple_expression    Execute a simple expression
@@ -154,23 +154,23 @@ cx_type *cx_executor::execute_expression(void) {
  */
 cx_type *cx_executor::execute_simple_expression(void) {
 
-    cx_type *pOperandType; // ptr to operand's type
-    cx_type *pResultType; // ptr to result type
+    cx_type *p_operand_type; // ptr to operand's type
+    cx_type *p_result_type; // ptr to result type
     cx_token_code op; // operator
-    cx_token_code unaryOp = tc_plus; // unary operator
+    cx_token_code unary_op = tc_plus; // unary operator
 
     // Unary + or -
     if (token_in(token, tokenlist_unary_ops)) {
-        unaryOp = token;
+        unary_op = token;
         get_token();
     }
 
     // Execute the first term.
-    pResultType = execute_term();
+    p_result_type = execute_term();
 
-    switch (unaryOp) {
+    switch (unary_op) {
         case tc_minus:
-            if (pResultType == pFloatType) push(-pop()->float__);
+            if (p_result_type == p_float_type) push(-pop()->float__);
             else push(-pop()->int__);
             break;
         case tc_bit_NOT:
@@ -181,17 +181,17 @@ cx_type *cx_executor::execute_simple_expression(void) {
     // Loop to execute subsequent additive operators and terms.
     while (token_in(token, tokenlist_add_ops)) {
         op = token;
-        pResultType = pResultType->Base();
+        p_result_type = p_result_type->base_type();
 
         get_token();
-        pOperandType = execute_term()->Base();
+        p_operand_type = execute_term()->base_type();
 
         switch (op) {
             case tc_plus:
             case tc_minus:
             {
-                if ((pResultType == pIntegerType) &&
-                        (pOperandType == pIntegerType)) {
+                if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_integer_type)) {
 
                     // integer +|- integer
                     int value2 = pop()->int__;
@@ -199,42 +199,42 @@ cx_type *cx_executor::execute_simple_expression(void) {
 
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
-                    pResultType = pIntegerType;
+                    p_result_type = p_integer_type;
                 } else {
 
                     // real    +|- real
                     // real    +|- integer
                     // integer +|- real
-                    float value2 = pOperandType == pFloatType ? pop()->float__
+                    float value2 = p_operand_type == p_float_type ? pop()->float__
                             : pop()->int__;
-                    float value1 = pResultType == pFloatType ? pop()->float__
+                    float value1 = p_result_type == p_float_type ? pop()->float__
                             : pop()->int__;
 
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
-                    pResultType = pFloatType;
+                    p_result_type = p_float_type;
                 }
 
             }
                 break;
             case tc_bit_leftshift:
             {
-                // bit left shift
+                // bit left__ shift
                 int value2 = pop()->int__;
                 int value1 = pop()->int__;
 
                 push(value1 << value2);
-                pResultType = pIntegerType;
+                p_result_type = p_integer_type;
             }
                 break;
             case tc_bit_rightshift:
             {
-                // bit right shift
+                // bit right__ shift
                 int value2 = pop()->int__;
                 int value1 = pop()->int__;
 
                 push(value1 >> value2);
-                pResultType = pIntegerType;
+                p_result_type = p_integer_type;
             }
                 break;
             case tc_bit_AND:
@@ -244,7 +244,7 @@ cx_type *cx_executor::execute_simple_expression(void) {
                 int value1 = pop()->int__;
 
                 push(value1 & value2);
-                pResultType = pIntegerType;
+                p_result_type = p_integer_type;
             }
                 break;
             case tc_bit_XOR:
@@ -254,7 +254,7 @@ cx_type *cx_executor::execute_simple_expression(void) {
                 int value1 = pop()->int__;
 
                 push(value1 ^ value2);
-                pResultType = pIntegerType;
+                p_result_type = p_integer_type;
             }
                 break;
             case tc_bit_OR:
@@ -264,7 +264,7 @@ cx_type *cx_executor::execute_simple_expression(void) {
                 int value1 = pop()->int__;
 
                 push(value1 | value2);
-                pResultType = pIntegerType;
+                p_result_type = p_integer_type;
             }
                 break;
             case tc_logic_OR:
@@ -274,13 +274,13 @@ cx_type *cx_executor::execute_simple_expression(void) {
                 int value1 = pop()->int__;
 
                 push(value1 || value2);
-                pResultType = pBooleanType;
+                p_result_type = p_boolean_type;
             }
                 break;
         }
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** execute_term         Execute a term (binary operators * /
@@ -289,48 +289,48 @@ cx_type *cx_executor::execute_simple_expression(void) {
  * @return: ptr to term's type object
  */
 cx_type *cx_executor::execute_term(void) {
-    cx_type *pOperandType; // ptr to operand's type
-    cx_type *pResultType; // ptr to result type
+    cx_type *p_operand_type; // ptr to operand's type
+    cx_type *p_result_type; // ptr to result type
     cx_token_code op; // operator
 
     // Execute the first factor.
-    pResultType = execute_factor();
+    p_result_type = execute_factor();
 
     // Loop to execute subsequent multiplicative operators and factors.
     while (token_in(token, tokenlist_mul_ops)) {
         op = token;
-        pResultType = pResultType->Base();
+        p_result_type = p_result_type->base_type();
 
         get_token();
-        pOperandType = execute_factor()->Base();
+        p_operand_type = execute_factor()->base_type();
 
-        bool divZeroFlag = false;
+        bool div_zero_flag = false;
 
         switch (op) {
             case tc_star:
-                if ((pResultType == pIntegerType) &&
-                        (pOperandType == pIntegerType)) {
+                if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_integer_type)) {
 
                     // integer * integer
                     int value2 = pop()->int__;
                     int value1 = pop()->int__;
 
                     push(value1 * value2);
-                    pResultType = pIntegerType;
+                    p_result_type = p_integer_type;
                 } else {
 
                     // real    * real
                     // real    * integer
                     // integer * real
-                    float value2 = pOperandType == pFloatType
+                    float value2 = p_operand_type == p_float_type
                             ? pop()->float__
                             : pop()->int__;
-                    float value1 = pResultType == pFloatType
+                    float value1 = p_result_type == p_float_type
                             ? pop()->float__
                             : pop()->int__;
 
                     push(value1 * value2);
-                    pResultType = pFloatType;
+                    p_result_type = p_float_type;
                 }
                 break;
             case tc_divide:
@@ -341,17 +341,17 @@ cx_type *cx_executor::execute_term(void) {
                 // integer / real
                 // integer / integer
 
-                float value2 = pOperandType == pFloatType
+                float value2 = p_operand_type == p_float_type
                         ? pop()->float__
                         : pop()->int__;
-                float value1 = pResultType == pFloatType
+                float value1 = p_result_type == p_float_type
                         ? pop()->float__
                         : pop()->int__;
 
                 if (value2 == 0.0f) cx_runtime_error(rte_division_by_zero);
 
                 push(value1 / value2);
-                pResultType = pFloatType;
+                p_result_type = p_float_type;
             }
                 break;
             case tc_modulas:
@@ -363,7 +363,7 @@ cx_type *cx_executor::execute_term(void) {
                 if (value2 == 0) cx_runtime_error(rte_division_by_zero);
 
                 push(value1 % value2);
-                pResultType = pIntegerType;
+                p_result_type = p_integer_type;
             }
                 break;
             case tc_logic_AND:
@@ -373,13 +373,13 @@ cx_type *cx_executor::execute_term(void) {
                 int value1 = pop()->int__;
 
                 push(value1 && value2);
-                pResultType = pBooleanType;
+                p_result_type = p_boolean_type;
             }
                 break;
         }
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** execute_factor       Execute a factor (identifier, number,
@@ -390,7 +390,7 @@ cx_type *cx_executor::execute_term(void) {
  * @return: ptr to factor's type object
  */
 cx_type *cx_executor::execute_factor(void) {
-    cx_type *pResultType = nullptr; // ptr to result type
+    cx_type *p_result_type = nullptr; // ptr to result type
     cx_symtab_node *p_id = nullptr;
 
     switch (token) {
@@ -399,14 +399,14 @@ cx_type *cx_executor::execute_factor(void) {
             switch (p_node->defn.how) {
 
                 case dc_function:
-                    pResultType = execute_subroutine_call(p_node);
+                    p_result_type = execute_subroutine_call(p_node);
                     break;
 
                 case dc_constant:
-                    pResultType = execute_constant(p_node);
+                    p_result_type = execute_constant(p_node);
                     break;
                 case dc_type:
-                    pResultType = p_node->p_type;
+                    p_result_type = p_node->p_type;
                     get_token();
                     break;
                 default:
@@ -415,9 +415,9 @@ cx_type *cx_executor::execute_factor(void) {
 
                     if (token_in(token, tokenlist_assign_ops)) {
                         execute_assignment(p_id);
-                        pResultType = execute_variable(p_id, false);
+                        p_result_type = execute_variable(p_id, false);
                     } else {
-                        pResultType = execute_variable(p_id, false);
+                        p_result_type = execute_variable(p_id, false);
                     }
 
                     break;
@@ -428,12 +428,12 @@ cx_type *cx_executor::execute_factor(void) {
         case tc_number:
         {
             // push the number's integer or real value onto the stack.
-            if (p_node->p_type == pIntegerType) {
+            if (p_node->p_type == p_integer_type) {
                 push(p_node->defn.constant.value.int__);
             } else {
                 push(p_node->defn.constant.value.float__);
             }
-            pResultType = p_node->p_type;
+            p_result_type = p_node->p_type;
             get_token();
         }
             break;
@@ -448,12 +448,12 @@ cx_type *cx_executor::execute_factor(void) {
 
                 // Character
                 push(p_node->defn.constant.value.char__);
-                pResultType = pCharType;
+                p_result_type = p_char_type;
             } else {
 
                 // string__ address
                 push(p_node->defn.constant.value.p_string);
-                pResultType = p_node->p_type;
+                p_result_type = p_node->p_type;
             }
 
             get_token();
@@ -465,7 +465,7 @@ cx_type *cx_executor::execute_factor(void) {
             execute_factor();
 
             push(1 - pop()->int__);
-            pResultType = pBooleanType;
+            p_result_type = p_boolean_type;
             break;
         case tc_left_paren:
         {
@@ -474,7 +474,7 @@ cx_type *cx_executor::execute_factor(void) {
             //                               recursively.
             get_token(); // first token after (
 
-            pResultType = execute_expression();
+            p_result_type = execute_expression();
 
             get_token(); // first token after )
         }
@@ -483,7 +483,7 @@ cx_type *cx_executor::execute_factor(void) {
             break;
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** execute_constant     push a constant onto the runtime stack.
@@ -496,9 +496,9 @@ cx_type *cx_executor::execute_constant(const cx_symtab_node *p_id) {
     cx_type *p_type = p_id->p_type;
     const cx_data_value *value = &p_id->defn.constant.value;
 
-    if (p_type == pFloatType) push(value->float__);
-    else if (p_type == pCharType) push(value->char__);
-    else if (p_type->form == fcArray) push(value->p_string);
+    if (p_type == p_float_type) push(value->float__);
+    else if (p_type == p_char_type) push(value->char__);
+    else if (p_type->form == fc_array) push(value->p_string);
     else push(value->int__);
 
     get_token();
@@ -519,16 +519,16 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
 
     cx_type *p_type = p_id->p_type;
 
-    if (p_type->form == fcStream) return p_type;
+    if (p_type->form == fc_stream) return p_type;
 
     // get the variable's runtime stack address.
-    cx_stack_item *pEntry = run_stack.get_value_address(p_id);
-    push((p_id->defn.how == dc_reference) || (!p_type->IsScalar())
-            ? pEntry->addr__ : pEntry);
+    cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
+    push((p_id->defn.how == dc_reference) || (!p_type->is_scalar_type())
+            ? p_entry_id->addr__ : p_entry_id);
 
     // Loop to execute any subscripts and field designators,
     // which will modify the data address at the top of the stack.
-    int doneFlag = false;
+    int done_flag = false;
     do {
         switch (token) {
 
@@ -542,19 +542,19 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
                 p_type = execute_field();
                 break;
 
-            default: doneFlag = true;
+            default: done_flag = true;
         }
-    } while (!doneFlag);
+    } while (!done_flag);
 
     //if (!token_in(token, tokenlist_assign_ops))get_token();
 
     // If address_flag is false, and the data is not an array
     // or a record, replace the address at the top of the stack
     // with the data value.
-    if ((!address_flag) && (p_type->IsScalar())) {
-        if (p_type == pFloatType) {
+    if ((!address_flag) && (p_type->is_scalar_type())) {
+        if (p_type == p_float_type) {
             push(((cx_stack_item *) pop()->addr__)->float__);
-        } else if (p_type->Base() == pCharType) {
+        } else if (p_type->base_type() == p_char_type) {
             push(((cx_stack_item *) pop()->addr__)->char__);
         } else {
             push(((cx_stack_item *) pop()->addr__)->int__);
@@ -562,7 +562,8 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     }
 
     if (!address_flag) {
-        void *p_data_value = p_type->IsScalar() ? top_of_stack() : top_of_stack()->addr__;
+        void *p_data_value = p_type->is_scalar_type() ? 
+            top_of_stack() : top_of_stack()->addr__;
 
         trace_data_fetch(p_id, p_data_value, p_type);
     }
@@ -595,19 +596,19 @@ cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
 
             // Modify the data address at the top of the stack.
             push(((char *) pop()->addr__) +
-                    p_type->array.pElmtType->size * (value - p_type->array.minIndex));
+                    p_type->array.p_element_type->size * (value - p_type->array.min_index));
 
             // Prepare for another subscript in this list.
-            if (token == tc_comma) p_type = p_type->array.pElmtType;
+            if (token == tc_comma) p_type = p_type->array.p_element_type;
 
         } while (token == tc_comma);
 
         // Prepare for another subscript list.
         get_token(); // ]
-        if (token == tc_left_subscript) p_type = p_type->array.pElmtType;
+        if (token == tc_left_subscript) p_type = p_type->array.p_element_type;
     }
 
-    return p_type->array.pElmtType;
+    return p_type->array.p_element_type;
 }
 
 /** execute_field         Execute a field designator to modify the
@@ -618,10 +619,10 @@ cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
  */
 cx_type *cx_executor::execute_field(void) {
     get_token();
-    cx_symtab_node *pFieldId = p_node;
+    cx_symtab_node *p_field_id = p_node;
 
-    push(((char *) (pop()->addr__)) + pFieldId->defn.data.offset);
+    push(((char *) (pop()->addr__)) + p_field_id->defn.data.offset);
 
     get_token();
-    return pFieldId->p_type;
+    return p_field_id->p_type;
 }
