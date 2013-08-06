@@ -193,17 +193,17 @@ extern const cx_token_code tokenlist_equal_equal[] = {tc_equal_equal, tc_dummy};
 extern const cx_token_code tokenlist_do[] = {tc_DO, tc_dummy};
 extern const cx_token_code tokenlist_left_bracket [] = {tc_left_bracket, tc_dummy};
 extern const cx_token_code tokenlist_colon[] = {tc_colon, tc_dummy};
-extern const cx_token_code tokenlist_right_bracket[] = {tc_right_bracket, tc_dummy};
+extern const cx_token_code tokenlist_right___bracket[] = {tc_right_bracket, tc_dummy};
 extern const cx_token_code tokenlist_semicolon[] = {tc_semicolon, tc_dummy};
-extern const cx_token_code tokenlist_right_paren[] = {tc_right_paren, tc_dummy};
+extern const cx_token_code tokenlist_right___paren[] = {tc_right_paren, tc_dummy};
 extern const cx_token_code tokenlist_left_paren[] = {tc_left_paren, tc_dummy};
 
-bool token_in(cx_token_code tc, const cx_token_code *pList) {
+bool token_in(cx_token_code tc, const cx_token_code *p_list) {
     const cx_token_code *p_code;
 
-    if (!pList) return false;
+    if (!p_list) return false;
 
-    for (p_code = pList; *p_code; ++p_code) {
+    for (p_code = p_list; *p_code; ++p_code) {
         if (*p_code == tc) return true;
     }
 

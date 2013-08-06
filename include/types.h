@@ -5,59 +5,56 @@
  * Created on June 24, 2013, 12:28 AM
  */
 
-#ifndef TYPES_H
-#define	TYPES_H
+#ifndef types_h
+#define	types_h
 
 #include <cstdio>
 #include "error.h"
 #include "symtable.h"
 
-using namespace std;
 
-extern cx_type *pIntegerType, *pFloatType, *pBooleanType, *pCharType,
-        *pDummyType, *p_complex_type, *pFileType;
 
-extern cx_symtab_node *pMain;
+extern cx_type *p_integer_type, *p_float_type, *p_boolean_type, *p_char_type,
+        *p_dummy_type, *p_complex_type, *p_file_type;
 
-enum TFormCode {
-    fcNone, fcScalar, fcEnum, fcSubrange, fcArray, fcComplex, fcStream
+extern cx_symtab_node *p_main_function_id;
+
+enum cx_type_form_code {
+    fc_none, fc_scalar, fc_enum, fc_subrange, fc_array, fc_complex, fc_stream
 };
 
-extern const char *formStrings[];
+extern const char *form_strings[];
 
 class cx_type {
-    int refCount;
+    int reference_count;
 public:
-    TFormCode form;
+    cx_type_form_code form;
     int size;
-    cx_symtab_node *pTypeId;
+    cx_symtab_node *p_type_id;
 
     union {
 
         struct {
-            cx_symtab_node *pConstIds;
+            cx_symtab_node *p_const_ids;
             int max;
         } enumeration;
 
         struct {
-            cx_type *pBaseType;
+            cx_type *p_base_type;
             int min, max;
         } subrange;
 
         struct {
-            cx_type *pIndexType;
-            cx_type *pElmtType;
-            // first address at intdex 0
-            void * start_address;
-            void * end_address;
-            int minIndex, maxIndex;
-            int elmtCount;
+            cx_type *p_index_type;
+            cx_type *p_element_type;
+            int min_index, maxIndex;
+            int element_count;
         } array;
 
         struct {
             /* used only for internal to class.
              * connects all scopes to a single table */
-            cx_symtab *pSymtabClassScope;
+            cx_symtab *p_class_scope_symtab;
 
             // seperate public, private and protected tables
             //cx_scoped_symtab MemberTable;
@@ -65,60 +62,60 @@ public:
 
         struct {
             // file stream
-            FILE *pFileStream;
+            FILE *p_file_stream;
         } stream;
     };
 
     //struct {
     /* used only for internal to class.
      * connects all scopes to a single table */
-    //cx_symtab *pSymtabClassScope;
+    //cx_symtab *p_class_scope_symtab;
 
     // seperate public, private and protected tables
     //cx_scoped_symtab MemberTable;
     //} complex;
 
-    cx_type(TFormCode fc, int s, cx_symtab_node *p_id);
+    cx_type(cx_type_form_code fc, int s, cx_symtab_node *p_id);
     cx_type(int length);
 
     ~cx_type();
 
-    bool IsScalar(void) const {
-        return (form != fcArray) &&
-                (form != fcComplex) &&
-                (form != fcStream);
+    bool is_scalar_type(void) const {
+        return (form != fc_array) &&
+                (form != fc_complex) &&
+                (form != fc_stream);
     }
 
-    cx_type *Base(void) const {
-        return form == fcSubrange ? subrange.pBaseType : (cx_type *) this;
+    cx_type *base_type(void) const {
+        return form == fc_subrange ? subrange.p_base_type : (cx_type *) this;
     }
 
-    enum TVerbosityCode {
-        vcVerbose, vcTerse
+    enum cx_verbosity_code {
+        vc_verbose, vc_terse
     };
 
-    void PrintTypeSpec(TVerbosityCode vc);
-    void PrintEnumType(TVerbosityCode vc) const;
-    void PrintSubrangeType(TVerbosityCode vc) const;
-    void PrintArrayType(TVerbosityCode vc) const;
-    void PrintRecordType(TVerbosityCode vc);
+    void print_type_spec(cx_verbosity_code vc);
+    void print_enum_type(cx_verbosity_code vc) const;
+    void print_subrange_type(cx_verbosity_code vc) const;
+    void print_array_type(cx_verbosity_code vc) const;
+    void print_record_type(cx_verbosity_code vc);
 
-    friend cx_type *SetType(cx_type *&p_target_type, cx_type *pSourceType);
-    friend void RemoveType(cx_type *&p_type);
+    friend cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type);
+    friend void remove_type(cx_type *&p_type);
 
-    friend void CheckRelOpOperands(const cx_type *pType1,
-            const cx_type *pType2);
-    friend void CheckIntegerOrReal(const cx_type *pType1,
-            const cx_type *Type2 = nullptr);
-    friend void CheckBoolean(const cx_type *pType1,
-            const cx_type *pType2 = nullptr);
-    friend void CheckAssignmentTypeCompatible(const cx_type *p_target_type,
-            const cx_type *pValueType,
+    friend void check_relational_op_operands(const cx_type *p_type1,
+            const cx_type *p_type2);
+    friend void check_integer_or_real(const cx_type *p_type1,
+            const cx_type *p_type2 = nullptr);
+    friend void check_boolean(const cx_type *p_type1,
+            const cx_type *p_type2 = nullptr);
+    friend void check_assignment_type_compatible(const cx_type *p_target_type,
+            const cx_type *p_value_type,
             cx_error_code ec);
-    friend bool IntegerOperands(const cx_type *pType1,
-            const cx_type *pType2);
-    friend bool RealOperands(const cx_type *pType1,
-            const cx_type *pType2);
+    friend bool integer_operands(const cx_type *p_type1,
+            const cx_type *p_type2);
+    friend bool real_operands(const cx_type *p_type1,
+            const cx_type *p_type2);
 };
 
 void initialize_builtin_types(cx_symtab *p_symtab);

@@ -10,11 +10,11 @@
  * @return ptr to array type object.
  */
 cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_node *p_array_node) {
-    cx_type *p_array_type = new cx_type(fcArray, 0, nullptr);
-    cx_type *pElmtType = p_array_type;
+    cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
+    cx_type *p_element_type = p_array_type;
 
     // Final element type.
-    SetType(pElmtType->array.pElmtType, p_array_node->p_type);
+    set_type(p_element_type->array.p_element_type, p_array_node->p_type);
 
     conditional_get_token_append(tc_left_subscript, err_missing_left_subscript);
 
@@ -25,22 +25,22 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     } else {
         int min_index = 0;
         int max_index = p_token->value().int__;
-        SetType(pElmtType->array.pIndexType, pIntegerType);
-        p_array_type->array.elmtCount = max_index;
-        p_array_type->array.minIndex = min_index;
+        set_type(p_element_type->array.p_index_type, p_integer_type);
+        p_array_type->array.element_count = max_index;
+        p_array_type->array.min_index = min_index;
         p_array_type->array.maxIndex = max_index - 1;
 
         parse_expression();
     }
 
-    if (p_array_type->form != fcNone) {
+    if (p_array_type->form != fc_none) {
         p_array_type->size = array_size(p_array_type);
     }
 
     conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
 
-    //p_array_type->array.pElmtType->size = array_size(p_array_type);
-    SetType(p_array_node->p_type, p_array_type);
+    //p_array_type->array.p_element_type->size = array_size(p_array_type);
+    set_type(p_array_node->p_type, p_array_type);
     p_array_node->defn.how = dc_variable;
 
     //add to routines variable list
@@ -57,8 +57,8 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
 
     // If the type object doesn't have a name yet,
     // point it to the type id.
-    if (!p_array_node->p_type->pTypeId) {
-        p_array_node->p_type->pTypeId = p_array_node;
+    if (!p_array_node->p_type->p_type_id) {
+        p_array_node->p_type->p_type_id = p_array_node;
     }
 
     return p_array_type;
@@ -72,11 +72,11 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
  * @return byte size.
  */
 int cx_parser::array_size(cx_type * p_array_type) {
-    if (p_array_type->array.pElmtType->size == 0) {
-        p_array_type->array.pElmtType->size = array_size(p_array_type->array.pElmtType);
+    if (p_array_type->array.p_element_type->size == 0) {
+        p_array_type->array.p_element_type->size = array_size(p_array_type->array.p_element_type);
     }
 
-    return (p_array_type->array.elmtCount * p_array_type->array.pElmtType->size);
+    return (p_array_type->array.element_count * p_array_type->array.p_element_type->size);
 }
 
 /** parse_complex_type
@@ -93,7 +93,7 @@ cx_type * cx_parser::parse_complex_type(cx_symtab_node *p_function_id, cx_symtab
     get_token();
 
     // <id>
-    cx_type *p_type = new cx_type(fcComplex, 0, nullptr);
+    cx_type *p_type = new cx_type(fc_complex, 0, nullptr);
 
     //cx_symtab_node *next_type = p_node;
 
@@ -109,15 +109,15 @@ cx_type * cx_parser::parse_complex_type(cx_symtab_node *p_function_id, cx_symtab
     if (!p_function_id->defn.routine.locals.p_type_ids) {
         p_function_id->defn.routine.locals.p_type_ids = p_id;
     } else {
-        cx_symtab_node *__var = p_function_id->defn.routine.locals.p_type_ids;
+        cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_type_ids;
 
-        while (__var->next__)
-            __var = __var->next__;
+        while (p_var_id->next__)
+            p_var_id = p_var_id->next__;
 
-        __var->next__ = p_id;
+        p_var_id->next__ = p_id;
     }
 
-    SetType(p_id->p_type, p_type);
+    set_type(p_id->p_type, p_type);
     p_id->defn.how = dc_type;
 
     parse_member_decls(p_function_id, p_id->p_type, 0);
@@ -159,8 +159,8 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
 
     cx_symtab_node *p_node = nullptr;
 
-    cx_symtab_node *pLastId = nullptr; // ptrs to symtab nodes
-    cx_symtab_node *pFirstId = nullptr; // ptr to last node of previous sublist
+    cx_symtab_node *p_last_id = nullptr; // ptrs to symtab nodes
+    cx_symtab_node *p_first_id = nullptr; // ptr to last node of previous sublist
 
     //    p_complex_type->complex.MemberTable.insert(pair<cx_token_code, cx_symtab *>(tc_PUBLIC, new cx_symtab));
     //   p_complex_type->complex.MemberTable.insert(pair<cx_token_code, cx_symtab *>(tc_PRIVATE, new cx_symtab));
@@ -177,12 +177,12 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                 scope = tc_PUBLIC;
                 get_token();
                 conditional_get_token(tc_colon, err_missing_colon);
-                ///pFirstId = p_complex_type->complex.MemberTable[scope]->root();
+                ///p_first_id = p_complex_type->complex.MemberTable[scope]->root();
 
                 offset = 0;
-                while (pFirstId) {
-                    offset += pFirstId->p_type->size;
-                    pFirstId = pFirstId->next__;
+                while (p_first_id) {
+                    offset += p_first_id->p_type->size;
+                    p_first_id = p_first_id->next__;
                 }
 
                 break;
@@ -190,12 +190,12 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                 scope = tc_PRIVATE;
                 get_token();
                 conditional_get_token(tc_colon, err_missing_colon);
-                //pFirstId = p_complex_type->complex.MemberTable[scope]->root();
+                //p_first_id = p_complex_type->complex.MemberTable[scope]->root();
 
                 offset = 0;
-                while (pFirstId) {
-                    offset += pFirstId->p_type->size;
-                    pFirstId = pFirstId->next__;
+                while (p_first_id) {
+                    offset += p_first_id->p_type->size;
+                    p_first_id = p_first_id->next__;
                 }
 
                 break;
@@ -203,12 +203,12 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                 scope = tc_PROTECTED;
                 get_token();
                 conditional_get_token(tc_colon, err_missing_colon);
-                // pFirstId = p_complex_type->complex.MemberTable[scope]->root();
+                // p_first_id = p_complex_type->complex.MemberTable[scope]->root();
 
                 offset = 0;
-                while (pFirstId) {
-                    offset += pFirstId->p_type->size;
-                    pFirstId = pFirstId->next__;
+                while (p_first_id) {
+                    offset += p_first_id->p_type->size;
+                    p_first_id = p_first_id->next__;
                 }
 
                 break;
@@ -220,10 +220,10 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
         p_node = find(p_token->string__());
 
         // if complex then this is an object
-        if (p_node->p_type->form == fcComplex) {
+        if (p_node->p_type->form == fc_complex) {
             parse_complex_type(p_function_id, p_node);
             // predefined type name found
-        } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fcComplex)) {
+        } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex)) {
             do {
                 get_token();
 
@@ -232,7 +232,7 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                 member->defn.how = dc_member;
 
                 // set type
-                SetType(member->p_type, p_node->p_type);
+                set_type(member->p_type, p_node->p_type);
 
                 // Record fields
                 member->defn.data.offset = offset;
@@ -249,14 +249,14 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                     parse_function_header(member);
                 } else if (token != tc_comma) {
                     // check for assignment
-                    //parse_assignment(pNewId);
+                    //parse_assignment(p_new_id);
                     member->defn.how = dc_variable;
                 }
 
-                if (!pFirstId) pFirstId = pLastId = member;
+                if (!p_first_id) p_first_id = p_last_id = member;
                 else {
-                    pLastId->next__ = member;
-                    pLastId = member;
+                    p_last_id->next__ = member;
+                    p_last_id = member;
                 }
 
             } while (token == tc_comma);
@@ -269,9 +269,9 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
     } while (token != tc_right_bracket);
 
     // connect all symtabs for use within the class
-    p_complex_type->complex.pSymtabClassScope = new cx_symtab;
-    // p_complex_type->complex.pSymtabClassScope->connect_tables(p_complex_type->complex.MemberTable);
+    p_complex_type->complex.p_class_scope_symtab = new cx_symtab;
+    // p_complex_type->complex.p_class_scope_symtab->connect_tables(p_complex_type->complex.MemberTable);
 
-    conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+    conditional_get_token_append(tc_right_bracket, err_missing_right___bracket);
     conditional_get_token_append(tc_semicolon, err_missing_semicolon);
 }

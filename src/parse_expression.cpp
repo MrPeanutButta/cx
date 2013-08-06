@@ -10,21 +10,21 @@
  */
 cx_type *cx_parser::parse_expression(void) {
 
-    cx_type *pResultType;
-    cx_type *pOperandType;
+    cx_type *p_result_type;
+    cx_type *p_operand_type;
 
-    pResultType = parse_simple_expression();
+    p_result_type = parse_simple_expression();
 
     if (token_in(token, tokenlist_relation_ops)) {
         get_token_append();
-        pOperandType = parse_simple_expression();
-        CheckRelOpOperands(pResultType, pOperandType);
-        pResultType = pBooleanType;
+        p_operand_type = parse_simple_expression();
+        check_relational_op_operands(p_result_type, p_operand_type);
+        p_result_type = p_boolean_type;
     }
 
     resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** parse_simple_expression       parse a simple expression
@@ -35,42 +35,42 @@ cx_type *cx_parser::parse_expression(void) {
  */
 cx_type *cx_parser::parse_simple_expression(void) {
 
-    cx_type *pResultType;
-    cx_type *pOperandType;
+    cx_type *p_result_type;
+    cx_type *p_operand_type;
     cx_token_code op;
-    bool unaryOpFlag = false;
+    bool unary_op_flag = false;
 
     if (token_in(token, tokenlist_unary_ops)) {
-        unaryOpFlag = true;
+        unary_op_flag = true;
         get_token_append();
     }
 
-    pResultType = parse_term();
+    p_result_type = parse_term();
 
-    if (unaryOpFlag) CheckIntegerOrReal(pResultType);
+    if (unary_op_flag) check_integer_or_real(p_result_type);
 
     while (token_in(token, tokenlist_add_ops)) {
         op = token;
         get_token_append();
-        pOperandType = parse_term();
+        p_operand_type = parse_term();
 
         switch (op) {
             case tc_plus:
             case tc_minus:
-                if (IntegerOperands(pResultType, pOperandType)) {
-                    pResultType = pIntegerType;
-                } else if (RealOperands(pResultType, pOperandType)) {
-                    pResultType = pFloatType;
+                if (integer_operands(p_result_type, p_operand_type)) {
+                    p_result_type = p_integer_type;
+                } else if (real_operands(p_result_type, p_operand_type)) {
+                    p_result_type = p_float_type;
                 } else cx_error(err_incompatible_types);
                 break;
             case tc_logic_OR:
-                CheckBoolean(pResultType, pOperandType);
-                pResultType = pBooleanType;
+                check_boolean(p_result_type, p_operand_type);
+                p_result_type = p_boolean_type;
                 break;
         }
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** parse_term           parse a term (binary operators * / 
@@ -80,45 +80,45 @@ cx_type *cx_parser::parse_simple_expression(void) {
  */
 cx_type *cx_parser::parse_term(void) {
 
-    cx_type *pResultType;
-    cx_type *pOperandType;
+    cx_type *p_result_type;
+    cx_type *p_operand_type;
     cx_token_code op;
 
-    pResultType = parse_factor();
+    p_result_type = parse_factor();
 
     while (token_in(token, tokenlist_mul_ops)) {
 
         op = token;
         get_token_append();
-        pOperandType = parse_factor();
+        p_operand_type = parse_factor();
 
         switch (op) {
             case tc_star:
-                if (IntegerOperands(pResultType, pOperandType)) {
-                    pResultType = pIntegerType;
-                } else if (RealOperands(pResultType, pOperandType)) {
-                    pResultType = pFloatType;
+                if (integer_operands(p_result_type, p_operand_type)) {
+                    p_result_type = p_integer_type;
+                } else if (real_operands(p_result_type, p_operand_type)) {
+                    p_result_type = p_float_type;
                 } else cx_error(err_incompatible_types);
                 break;
             case tc_divide:
-                if (IntegerOperands(pResultType, pOperandType) ||
-                        RealOperands(pResultType, pOperandType)) {
-                    pResultType = pIntegerType;
+                if (integer_operands(p_result_type, p_operand_type) ||
+                        real_operands(p_result_type, p_operand_type)) {
+                    p_result_type = p_integer_type;
                 } else cx_error(err_incompatible_types);
                 break;
             case tc_modulas:
-                if (IntegerOperands(pResultType, pOperandType)) {
-                    pResultType = pIntegerType;
+                if (integer_operands(p_result_type, p_operand_type)) {
+                    p_result_type = p_integer_type;
                 } else cx_error(err_incompatible_types);
                 break;
             case tc_logic_AND:
-                CheckBoolean(pResultType, pOperandType);
-                pResultType = pBooleanType;
+                check_boolean(p_result_type, p_operand_type);
+                p_result_type = p_boolean_type;
                 break;
         }
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** parse_factor         parse a factor (identifier, number,
@@ -129,7 +129,7 @@ cx_type *cx_parser::parse_term(void) {
  */
 cx_type *cx_parser::parse_factor(void) {
 
-    cx_type *pResultType;
+    cx_type *p_result_type;
 
     switch (token) {
         case tc_identifier:
@@ -145,28 +145,27 @@ cx_type *cx_parser::parse_factor(void) {
                 case dc_function:
                     get_token_append();
                     //conditional_get_token_append(tc_left_paren, ::err_missing_left_paren);
-                    pResultType = parse_subroutine_call(p_node, true);
+                    p_result_type = parse_subroutine_call(p_node, true);
                     break;
                 case dc_constant:
                     get_token_append();
-                    pResultType = p_node->p_type;
+                    p_result_type = p_node->p_type;
                     break;
 
                 case dc_type:
                     get_token_append();
-                    pResultType = p_node->p_type;
+                    p_result_type = p_node->p_type;
                     break;
                 case dc_variable:
                 case dc_value_parm:
                 case dc_reference:
                 case dc_member:
                     get_token_append();
-                    pResultType = parse_variable(p_node);
+                    p_result_type = parse_variable(p_node);
                     break;
                 default:
                     cx_error(err_undefined_identifier);
                     break;
-
             }
         }
             break;
@@ -178,15 +177,15 @@ cx_type *cx_parser::parse_factor(void) {
                 p_node = enter_local(p_token->string__());
 
                 if (p_token->type() == ty_integer) {
-                    p_node->p_type = pIntegerType;
+                    p_node->p_type = p_integer_type;
                     p_node->defn.constant.value.int__ = p_token->value().int__;
                 } else {
-                    p_node->p_type = pFloatType;
+                    p_node->p_type = p_float_type;
                     p_node->defn.constant.value.float__ = p_token->value().float__;
                 }
             }
 
-            pResultType = p_node->p_type;
+            p_result_type = p_node->p_type;
             icode.put(p_node);
         }
             get_token_append();
@@ -206,24 +205,24 @@ cx_type *cx_parser::parse_factor(void) {
                 //p_string = p_node->string__();
                 //int length = strlen(p_string) - 2;
                 int length = p_node->string_length = strlen(p_string) - 2;
-                //pResultType = length == 1 ?
-                // pCharType : new cx_type(length);
+                //p_result_type = length == 1 ?
+                // p_char_type : new cx_type(length);
 
-                SetType(p_node->p_type, pCharType);
+                set_type(p_node->p_type, p_char_type);
 
                 if (length == 1) {
                     p_node->defn.constant.value.char__ = p_string[1];
                 } else {
                     p_node->defn.constant.value.p_string = &p_string[1];
-                    p_node->p_type->form = fcArray;
-                    p_node->p_type->array.elmtCount = length;
-                    p_node->p_type->array.maxIndex = (p_node->p_type->array.elmtCount - 1);
-                    p_node->p_type->array.minIndex = 0;
-                    p_node->p_type->array.pElmtType = pCharType;
-                    p_node->p_type->array.pIndexType = pIntegerType;
+                    p_node->p_type->form = fc_array;
+                    p_node->p_type->array.element_count = length;
+                    p_node->p_type->array.maxIndex = (p_node->p_type->array.element_count - 1);
+                    p_node->p_type->array.min_index = 0;
+                    p_node->p_type->array.p_element_type = p_char_type;
+                    p_node->p_type->array.p_index_type = p_integer_type;
                 }
 
-                pResultType = p_node->p_type;
+                p_result_type = p_node->p_type;
             }
             icode.put(p_node);
 
@@ -233,26 +232,26 @@ cx_type *cx_parser::parse_factor(void) {
 
         case tc_left_paren:
             get_token_append();
-            pResultType = parse_expression();
+            p_result_type = parse_expression();
 
             conditional_get_token_append(tc_right_paren, err_missing_right_paren);
             break;
         case tc_logic_NOT:
             get_token_append();
-            CheckBoolean(parse_factor());
-            pResultType = pBooleanType;
+            check_boolean(parse_factor());
+            p_result_type = p_boolean_type;
 
             break;
         case tc_semicolon:
-            //pResultType = pDummyType;
+            //p_result_type = p_dummy_type;
             break;
         default:
             cx_error(err_invalid_expression);
-            pResultType = pDummyType;
+            p_result_type = p_dummy_type;
             break;
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** parse_variable       parse variable type, and assignment operators (= -- ++
@@ -263,7 +262,7 @@ cx_type *cx_parser::parse_factor(void) {
  * @return variables type object ptr.
  */
 cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
-    cx_type *pResultType = p_id->p_type;
+    cx_type *p_result_type = p_id->p_type;
 
     switch (p_id->defn.how) {
         case dc_variable:
@@ -275,31 +274,31 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             break;
 
         default:
-            pResultType = pDummyType;
+            p_result_type = p_dummy_type;
             cx_error(err_invalid_identifier_usage);
             break;
     }
 
     //  [ or . : Loop to parse any subscripts and fields.
-    int doneFlag = false;
+    int done_flag = false;
     do {
         switch (token) {
 
             case tc_left_subscript:
-                pResultType = parse_subscripts(pResultType);
+                p_result_type = parse_subscripts(p_result_type);
                 break;
 
             case tc_dot:
-                pResultType = parse_field(pResultType);
+                p_result_type = parse_field(p_result_type);
                 break;
 
-            default: doneFlag = true;
+            default: done_flag = true;
         }
-    } while (!doneFlag);
+    } while (!done_flag);
 
     if (token_in(token, tokenlist_assign_ops)) {
         cx_type *p_expr_type = nullptr;
-        cx_type *pExprTypeCastFollow = nullptr;
+        cx_type *p_expr_type_cast_follow = nullptr;
 
         switch (token) {
             case tc_equal:
@@ -310,17 +309,17 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 // if not semicolon, this may be an expression following a cast.
                 // Keep p_expr_type same type, but we need to parse the expr.
                 if (token != tc_semicolon) {
-                    pExprTypeCastFollow = parse_expression();
+                    p_expr_type_cast_follow = parse_expression();
 
                     // check if compatible
-                    if (pResultType->form != fcStream) {
-                        CheckAssignmentTypeCompatible(p_expr_type, pExprTypeCastFollow,
+                    if (p_result_type->form != fc_stream) {
+                        check_assignment_type_compatible(p_expr_type, p_expr_type_cast_follow,
                                 err_incompatible_assignment);
                     }
                 }
 
-                if (pResultType->form != fcStream) {
-                    CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                if (p_result_type->form != fc_stream) {
+                    check_assignment_type_compatible(p_result_type, p_expr_type,
                             err_incompatible_assignment);
                 }
             }
@@ -335,7 +334,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -343,7 +342,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -351,7 +350,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -359,7 +358,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -367,7 +366,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -375,7 +374,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -383,7 +382,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -391,7 +390,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -399,7 +398,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -407,7 +406,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             {
                 get_token_append();
                 p_expr_type = parse_expression();
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             }
                 break;
@@ -417,8 +416,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 break;
             case tc_identifier:
                 get_token_append();
-                p_expr_type = pResultType;
-                CheckAssignmentTypeCompatible(pResultType, p_expr_type,
+                p_expr_type = p_result_type;
+                check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
             default:
                 cx_error(err_invalid_assignment);
@@ -427,11 +426,11 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
     }
 
     while (token_in(token, tokenlist_subscript_or_field_start)) {
-        pResultType = token == tc_left_subscript ? parse_subscripts(pResultType)
-                : parse_field(pResultType);
+        p_result_type = token == tc_left_subscript ? parse_subscripts(p_result_type)
+                : parse_field(p_result_type);
     }
 
-    return pResultType;
+    return p_result_type;
 }
 
 /** parse_subscripts     parse a bracketed list of subscripts
@@ -446,12 +445,12 @@ cx_type *cx_parser::parse_subscripts(const cx_type* p_type) {
     do {
         get_token_append();
 
-        if (p_type->form == fcArray) {
-            CheckAssignmentTypeCompatible(p_type->array.pIndexType,
+        if (p_type->form == fc_array) {
+            check_assignment_type_compatible(p_type->array.p_index_type,
                     parse_expression(),
                     err_incompatible_types);
 
-            p_type = p_type->array.pElmtType;
+            p_type = p_type->array.p_element_type;
         } else {
             cx_error(err_too_many_subscripts);
             parse_expression();
@@ -475,21 +474,21 @@ cx_type *cx_parser::parse_subscripts(const cx_type* p_type) {
 cx_type *cx_parser::parse_field(const cx_type* p_type) {
     get_token_append();
 
-    if ((token == tc_identifier) && (p_type->form == fcComplex)) {
-        //  cx_symtab_node *pFieldId = p_type->complex.//->search(p_token->string__());
+    if ((token == tc_identifier) && (p_type->form == fc_complex)) {
+        //  cx_symtab_node *p_field_id = p_type->complex.//->search(p_token->string__());
 
-        // if (!pFieldId) cx_error(err_invalid_field);
+        // if (!p_field_id) cx_error(err_invalid_field);
 
-        //  icode.put(pFieldId);
+        //  icode.put(p_field_id);
 
         get_token_append();
 
-        // return pFieldId ? pFieldId->p_type : pDummyType;
+        // return p_field_id ? p_field_id->p_type : p_dummy_type;
     } else {
 
         cx_error(err_invalid_field);
         get_token_append();
-        return pDummyType;
+        return p_dummy_type;
 
     }
 }

@@ -18,8 +18,8 @@ bool error_arrow_flag = true; // true if print arrows under syntax
 int error_arrow_offset = 8; // offset for printing the error arrow
 
 ///  Abort messages      Keyed to enumeration type cx_abort_code.
-const char *abortMsg[] = {
-    NULL,
+const char *abort_message[] = {
+    nullptr,
     "Invalid command line arguments",
     "Failed to open source file",
     "Failed to open intermediate form file",
@@ -39,16 +39,14 @@ const char *abortMsg[] = {
  * @param ac : abort code
  */
 void abort_translation(cx_abort_code ac) {
-    cerr << "*** fatal translator error: " << abortMsg[-ac] << endl;
+    std::cerr << "*** fatal translator error: " << abort_message[-ac] << std::endl;
     exit(ac);
 }
-
-
 
 /* Syntax error messages       Keyed to enumeration type
  *                             cx_error_code.
  */
-const char *errorMessages[] = {
+const char *error_messages[] = {
     "No error",
     "Unrecognizable input",
     "Too many syntax errors",
@@ -118,27 +116,27 @@ const char *errorMessages[] = {
  * @param ec : error code
  */
 void cx_error(cx_error_code ec) {
-    const int maxSyntaxErrors = 0;
+    const int max_syntax_errors = 0;
 
-    int errorPosition = error_arrow_offset + input_position - 1;
+    int error_position = error_arrow_offset + input_position - 1;
 
     // print the arrow pointing to the token just scanned.
     if (error_arrow_flag) {
-        sprintf(list.text, "%*s^", errorPosition, " ");
+        sprintf(list.text, "%*s^", error_position, " ");
         list.put_line();
     }
 
     // print the error message.
-    sprintf(list.text, "*** error: %s", errorMessages[ec]);
+    sprintf(list.text, "*** error: %s", error_messages[ec]);
     list.put_line();
 
-    if (++error_count > maxSyntaxErrors) {
+    if (++error_count > max_syntax_errors) {
         list.put_line("Too many syntax errors.  Translation aborted.");
         abort_translation(abort_too_many_syntax_errors);
     }
 }
 
-const char *runtimeErrorMessages[] = {
+const char *runtime_error_messages[] = {
     "No runtime error",
     "Runtime stack overflow",
     "value out of range",
@@ -152,8 +150,8 @@ const char *runtimeErrorMessages[] = {
 void cx_runtime_error(cx_runtime_error_code ec) {
     extern int current_line_number;
 
-    cout << "\nruntime error in line <" << current_line_number << ">: "
-            << runtimeErrorMessages[ec] << endl;
+    std::cout << "\nruntime error in line <" << current_line_number << ">: "
+            << runtime_error_messages[ec] << std::endl;
 
     exit(abort_runtime_error);
 }

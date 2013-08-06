@@ -12,7 +12,7 @@
 #include <cstring>
 #include "misc.h"
 
-using namespace std;
+
 
 extern bool xreference_flag;
 extern int current_line_number;
@@ -28,7 +28,7 @@ class cx_type;
 extern union cx_stack_item;
 
 // for public, private and protected scopes
-typedef map<cx_token_code, cx_symtab *> cx_scoped_symtab;
+typedef std::map<cx_token_code, cx_symtab *> cx_scoped_symtab;
 
 enum cx_define_code {
     dc_undefined, dc_constant, dc_type, dc_variable, dc_member,
@@ -82,7 +82,7 @@ public:
 };
 
 class cx_symtab_node {
-    cx_symtab_node *left, *right;
+    cx_symtab_node *left__, *right__;
     char *p_string;
     short xsymtab;
     short xnode;
@@ -111,11 +111,11 @@ public:
     ~cx_symtab_node();
 
     cx_symtab_node *left_subtree(void) const {
-        return left;
+        return left__;
     }
 
-    cx_symtab_node *right_subtree(void) const {
-        return right;
+    cx_symtab_node *right___subtree(void) const {
+        return right__;
     }
 
     char *string__(void) const {
@@ -186,8 +186,8 @@ public:
     void connect_tables(cx_scoped_symtab &class_symtab) {
 
         /*root__ = class_symtab[tc_PUBLIC]->root__;
-        root__->left = class_symtab[tc_PROTECTED]->root__;
-        root__->right = class_symtab[tc_PRIVATE]->root__;*/
+        root__->left__ = class_symtab[tc_PROTECTED]->root__;
+        root__->right__ = class_symtab[tc_PRIVATE]->root__;*/
     }
 
     cx_symtab_node *get(short xnode) const {
