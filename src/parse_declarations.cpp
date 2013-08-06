@@ -1,4 +1,4 @@
-/** Parse Declarations
+/** parse Declarations
  * parse_declarations.cpp
  */
 
@@ -10,225 +10,225 @@
 // might not always be true in some cases.
 bool execFlag(true);
 
-TSymtabNode *pProgram_ptr = nullptr;
+cx_symtab_node *pProgram_ptr = nullptr;
 
-/** ParseDeclarationsOrAssignment       Parses new declarations or 
+/** parse_declarations_or_assignment       Parses new declarations or 
  *                                      assignment statements.
  * 
  * NOTE:
  *      This should be broken up a bit. Function, complex, and type declaraions
  *      should be seperated.
  * 
- * @param pRoutineId : ptr to the routine which owns the type being declared or
+ * @param p_function_id : ptr to the routine which owns the type being declared or
  *                     assigned a value.
  */
-void TParser::ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId) {
+void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) {
 
-    if (!pProgram_ptr->foundGlobalEnd) {
-        pProgram_ptr->globalFinishLocation = icode.CurrentLocation();
+    if (!pProgram_ptr->found_global_end) {
+        pProgram_ptr->global_finish_location = icode.current_location();
     }
 
-    TSymtabNode *pNode = Find(pToken->String());
+    cx_symtab_node *p_node = find(p_token->string__());
 
     // if complex then this is an object
-    if (pNode->pType->form == fcComplex) {
-        ParseComplexType(pRoutineId, pNode);
+    if (p_node->p_type->form == fcComplex) {
+        parse_complex_type(p_function_id, p_node);
         // predefined type name found
-    } else if ((pNode->defn.how == dcType) && (pNode->pType->form != fcComplex) &&
-            (pNode->defn.how != dcFunction) && (pNode->pType->form != fcArray)) {
+    } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fcComplex) &&
+            (p_node->defn.how != dc_function) && (p_node->p_type->form != fcArray)) {
 
-        GetToken();
+        get_token();
 
         do {
-            while (token == tcComma)GetTokenAppend();
+            while (token == tc_comma)get_token_append();
 
-            TSymtabNode *pNewId = nullptr;
+            cx_symtab_node *pNewId = nullptr;
 
-            pNewId = SearchLocal(pToken->String());
+            pNewId = search_local(p_token->string__());
 
             /* if not nullptr, it's already defined.
              * check if forwarded */
             if (pNewId != nullptr) {
-                if (pNewId->defn.how == dcFunction && pNewId->defn.routine.which == ::rcForward) {
-                    GetTokenAppend();
-                    ParseFunctionHeader(pNewId);
-                } else Error(errRedefinedIdentifier);
+                if (pNewId->defn.how == dc_function && pNewId->defn.routine.which == ::rc_forward) {
+                    get_token_append();
+                    parse_function_header(pNewId);
+                } else cx_error(err_redefined_identifier);
             } else {
-                pNewId = EnterNewLocal(pToken->String());
-                icode.Put(pNewId);
+                pNewId = enter_new_local(p_token->string__());
+                icode.put(pNewId);
             }
 
             // set type
-            SetType(pNewId->pType, pNode->pType);
+            SetType(pNewId->p_type, p_node->p_type);
 
-            GetTokenAppend();
+            get_token_append();
 
             // check for array type
-            if (token == tcLeftSubscript) {
-                ParseArrayType(pRoutineId, pNewId);
+            if (token == tc_left_subscript) {
+                parse_array_type(p_function_id, pNewId);
 
-            } else if (token == tcLParen) {
+            } else if (token == tc_left_paren) {
 
-                ParseFunctionHeader(pNewId);
-            } else if ((token != tcComma) && (token != tcEndOfFile)) {
+                parse_function_header(pNewId);
+            } else if ((token != tc_comma) && (token != tc_end_of_file)) {
 
                 // check for assignment
-                ParseAssignment(pNewId);
-                pNewId->defn.how = dcVariable;
+                parse_assignment(pNewId);
+                pNewId->defn.how = dc_variable;
             }
 
-            if (pNewId->defn.how == dcVariable) {
+            if (pNewId->defn.how == dc_variable) {
                 // add variable to variable list
-                if (pRoutineId) {
-                    TSymtabNode *__var = pRoutineId->defn.routine.locals.pVariableIds;
+                if (p_function_id) {
+                    cx_symtab_node *__var = p_function_id->defn.routine.locals.p_variable_ids;
                     if (!__var) {
-                        pRoutineId->defn.routine.locals.pVariableIds = pNewId;
-                        pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+                        p_function_id->defn.routine.locals.p_variable_ids = pNewId;
+                        p_function_id->defn.routine.total_local_size += pNewId->p_type->size;
                     } else {
-                        while (__var->next)__var = __var->next;
+                        while (__var->next__)__var = __var->next__;
 
-                        __var->next = pNewId;
-                        pRoutineId->defn.routine.totalLocalSize += pNewId->pType->size;
+                        __var->next__ = pNewId;
+                        p_function_id->defn.routine.total_local_size += pNewId->p_type->size;
                     }
                 }
                 // add function to routine list
-            } else if (pNewId->defn.how == dcFunction) {
-                if (pRoutineId) {
-                    TSymtabNode *__fun = pRoutineId->defn.routine.locals.pRoutineIds;
+            } else if (pNewId->defn.how == dc_function) {
+                if (p_function_id) {
+                    cx_symtab_node *__fun = p_function_id->defn.routine.locals.p_function_ids;
                     if (!__fun) {
-                        pRoutineId->defn.routine.locals.pRoutineIds = pNewId;
+                        p_function_id->defn.routine.locals.p_function_ids = pNewId;
                     } else {
-                        while (__fun->next)__fun = __fun->next;
+                        while (__fun->next__)__fun = __fun->next__;
 
-                        __fun->next = pNewId;
+                        __fun->next__ = pNewId;
                     }
                 }
             }
 
-        } while (token == tcComma);
-    } else if (pNode->defn.how == dcFunction) {
-        icode.Put(pNode);
+        } while (token == tc_comma);
+    } else if (p_node->defn.how == dc_function) {
+        icode.put(p_node);
 
-        GetTokenAppend();
+        get_token_append();
 
-        if (token == tcLParen) {
-            ParseSubroutineCall(pNode, true);
+        if (token == tc_left_paren) {
+            parse_subroutine_call(p_node, true);
         } else {
-            ParseAssignment(pNode);
+            parse_assignment(p_node);
         }
 
     } else {
-        icode.Put(pNode);
-        GetTokenAppend();
-        ParseAssignment(pNode);
+        icode.put(p_node);
+        get_token_append();
+        parse_assignment(p_node);
     }
 }
 
-/** ParseConstantDeclaration    'const' will only set it's qualifier as 
- *                              dcConstant all else is treated as a standard
+/** parse_constant_declaration    'const' will only set it's qualifier as 
+ *                              dc_constant all else is treated as a standard
  *                              declaration.
  *      const <type> <name>;
  *
- * @param pRoutineId    ptr to the routine which owns the type being declared or
+ * @param p_function_id    ptr to the routine which owns the type being declared or
  *                      assigned a constant value.
  */
-void TParser::ParseConstantDeclaration(TSymtabNode* pRoutineId) {
-    TSymtabNode *pLastId = nullptr;
-    TSymtabNode *pConstId = nullptr;
-    TSymtabNode *pTypeNode = Find(pToken->String());
+void cx_parser::parse_constant_declaration(cx_symtab_node* p_function_id) {
+    cx_symtab_node *pLastId = nullptr;
+    cx_symtab_node *p_const_id = nullptr;
+    cx_symtab_node *pTypeNode = find(p_token->string__());
 
-    GetTokenAppend();
+    get_token_append();
 
-    pConstId = EnterNewLocal(pToken->String());
+    p_const_id = enter_new_local(p_token->string__());
 
-    if (!pRoutineId->defn.routine.locals.pConstantIds) {
-        pRoutineId->defn.routine.locals.pConstantIds = pConstId;
+    if (!p_function_id->defn.routine.locals.p_constant_ids) {
+        p_function_id->defn.routine.locals.p_constant_ids = p_const_id;
     } else {
 
-        pLastId = pRoutineId->defn.routine.locals.pConstantIds;
+        pLastId = p_function_id->defn.routine.locals.p_constant_ids;
 
-        while (pLastId->next)
-            pLastId = pLastId->next;
+        while (pLastId->next__)
+            pLastId = pLastId->next__;
 
-        pLastId->next = pConstId;
+        pLastId->next__ = p_const_id;
 
     }
 
-    GetTokenAppend();
-    CondGetToken(tcEqual, errMissingEqual);
+    get_token_append();
+    conditional_get_token(tc_equal, err_missing_equal);
 
-    SetType(pConstId->pType, pTypeNode->pType);
-    ParseConstant(pConstId);
-    pConstId->defn.how = dcConstant;
+    SetType(p_const_id->p_type, pTypeNode->p_type);
+    parse_constant(p_const_id);
+    p_const_id->defn.how = dc_constant;
 
 
-    Resync(tlDeclarationFollow, tlDeclarationStart, tlStatementStart);
+    resync(tokenlist_declaration_follow, tokenlist_declaration_start, tokenlist_statement_start);
 
 }
 
-/** ParseConstant       Parse a constant.
+/** parse_constant       parse a constant.
  * 
- * @param pConstId : ptr to symbol table node of the identifier
+ * @param p_const_id : ptr to symbol table node of the identifier
  *                   being defined
  */
-void TParser::ParseConstant(TSymtabNode *pConstId) {
-    TTokenCode sign = tcDummy;
+void cx_parser::parse_constant(cx_symtab_node *p_const_id) {
+    cx_token_code sign = tc_dummy;
 
-    if (TokenIn(token, tlUnaryOps)) {
-        if (token == tcMinus) sign = tcMinus;
-        GetTokenAppend();
+    if (token_in(token, tokenlist_unary_ops)) {
+        if (token == tc_minus) sign = tc_minus;
+        get_token_append();
     }
 
     switch (token) {
-        case tcNumber:
-            if ((pToken->Type() == tyInteger) && (pConstId->pType == pIntegerType)) {
-                pConstId->defn.constant.value.__int = sign == tcMinus ?
-                        -pToken->Value().__int : pToken->Value().__int;
-            } else if ((pToken->Type() == tyReal) &&
-                    (((pConstId->pType == pFloatType)))) {
+        case tc_number:
+            if ((p_token->type() == ty_integer) && (p_const_id->p_type == pIntegerType)) {
+                p_const_id->defn.constant.value.int__ = sign == tc_minus ?
+                        -p_token->value().int__ : p_token->value().int__;
+            } else if ((p_token->type() == ty_real) &&
+                    (((p_const_id->p_type == pFloatType)))) {
 
-                if (pConstId->pType == pFloatType) {
-                    pConstId->defn.constant.value.__float = sign == tcMinus ?
-                            -pToken->Value().__float : pToken->Value().__float;
+                if (p_const_id->p_type == pFloatType) {
+                    p_const_id->defn.constant.value.float__ = sign == tc_minus ?
+                            -p_token->value().float__ : p_token->value().float__;
                 } else {
-                    pConstId->defn.constant.value.__double = sign == tcMinus ?
-                            -pToken->Value().__float : pToken->Value().__float;
+                    p_const_id->defn.constant.value.double__ = sign == tc_minus ?
+                            -p_token->value().float__ : p_token->value().float__;
                 }
             }
 
-            GetTokenAppend();
+            get_token_append();
             break;
 
-        case tcIdentifier:
-            ParseIdentifierConstant(pConstId, sign);
+        case tc_identifier:
+            parse_identifier_constant(p_const_id, sign);
             break;
-        case tcChar:
-        case tcString:
-            if (pConstId->pType == pCharType) {
-                int length = strlen(pToken->String()) - 2;
+        case tc_char:
+        case tc_string:
+            if (p_const_id->p_type == pCharType) {
+                int length = strlen(p_token->string__()) - 2;
 
-                if (sign != tcDummy) Error(errInvalidConstant);
+                if (sign != tc_dummy) cx_error(err_invalid_constant);
 
                 if (length == 1) {
-                    pConstId->defn.constant.value.__char = pToken->String()[1];
+                    p_const_id->defn.constant.value.char__ = p_token->string__()[1];
 
-                    //SetType(pConstId->pType, pCharType);
+                    //SetType(p_const_id->p_type, pCharType);
                 } else {
-                    char *pString = new char[length];
-                    CopyQuotedString(pString, pToken->String());
+                    char *p_string = new char[length];
+                    copy_quoted_string(p_string, p_token->string__());
 
-                    pConstId->defn.constant.value.pString = pString;
+                    p_const_id->defn.constant.value.p_string = p_string;
 
-                    //SetType(pConstId->pType, new TType(length));
+                    //SetType(p_const_id->p_type, new cx_type(length));
                 }
 
-                GetTokenAppend();
-            } else Error(errInvalidType);
+                get_token_append();
+            } else cx_error(err_invalid_type);
             break;
     }
 }
 
-/** ParseIdentifierConstant     In a constant definition of the
+/** parse_identifier_constant     In a constant definition of the
  *                              form
  *
  *                                      <id-1> = <id-2>
@@ -238,51 +238,51 @@ void TParser::ParseConstant(TSymtabNode *pConstId) {
  *                              enumeration, or string
  *                              (character array).
  * 
- * @param pId1 : ptr to symbol table node of <id-1>.
+ * @param p_id1 : ptr to symbol table node of <id-1>.
  * @param sign : unary + or - sign, or none.
  */
-void TParser::ParseIdentifierConstant(TSymtabNode* pId1, TTokenCode sign) {
-    TSymtabNode *pId2 = Find(pToken->String());
+void cx_parser::parse_identifier_constant(cx_symtab_node* p_id1, cx_token_code sign) {
+    cx_symtab_node *p_id2 = find(p_token->string__());
 
-    if (pId2->defn.how != dcConstant) {
-        Error(errNotAConstantIdentifier);
-        SetType(pId1->pType, pDummyType);
-        GetTokenAppend();
+    if (p_id2->defn.how != dc_constant) {
+        cx_error(err_not_a_constant_identifier);
+        SetType(p_id1->p_type, pDummyType);
+        get_token_append();
         return;
     }
 
-    if (pId2->pType == pIntegerType) {
-        pId2->defn.constant.value.__int = sign == tcMinus ?
-                -pId2->defn.constant.value.__int :
-                pId2->defn.constant.value.__int;
+    if (p_id2->p_type == pIntegerType) {
+        p_id2->defn.constant.value.int__ = sign == tc_minus ?
+                -p_id2->defn.constant.value.int__ :
+                p_id2->defn.constant.value.int__;
 
-        SetType(pId1->pType, pIntegerType);
-    } else if (pId2->pType == pFloatType) {
-        pId1->defn.constant.value.__float = sign == tcMinus ?
-                -pId2->defn.constant.value.__float :
-                pId2->defn.constant.value.__float;
-        SetType(pId1->pType, pFloatType);
-    } else if (pId2->pType == pCharType) {
-        if (sign != tcDummy) Error(errInvalidConstant);
+        SetType(p_id1->p_type, pIntegerType);
+    } else if (p_id2->p_type == pFloatType) {
+        p_id1->defn.constant.value.float__ = sign == tc_minus ?
+                -p_id2->defn.constant.value.float__ :
+                p_id2->defn.constant.value.float__;
+        SetType(p_id1->p_type, pFloatType);
+    } else if (p_id2->p_type == pCharType) {
+        if (sign != tc_dummy) cx_error(err_invalid_constant);
 
-        pId1->defn.constant.value.__char = pId2->defn.constant.value.__char;
+        p_id1->defn.constant.value.char__ = p_id2->defn.constant.value.char__;
 
-        SetType(pId1->pType, pCharType);
-    } else if (pId2->pType->form == fcEnum) {
-        if (sign != tcDummy)Error(errInvalidConstant);
+        SetType(p_id1->p_type, pCharType);
+    } else if (p_id2->p_type->form == fcEnum) {
+        if (sign != tc_dummy)cx_error(err_invalid_constant);
 
-        pId1->defn.constant.value.__int = pId2->defn.constant.value.__int;
+        p_id1->defn.constant.value.int__ = p_id2->defn.constant.value.int__;
 
-        SetType(pId1->pType, pId2->pType);
-    } else if (pId2->pType->form == fcArray) {
-        if ((sign != tcDummy) || (pId2->pType->array.pElmtType != pCharType)) {
-            Error(errInvalidConstant);
+        SetType(p_id1->p_type, p_id2->p_type);
+    } else if (p_id2->p_type->form == fcArray) {
+        if ((sign != tc_dummy) || (p_id2->p_type->array.pElmtType != pCharType)) {
+            cx_error(err_invalid_constant);
         }
 
-        pId1->defn.constant.value.pString = pId2->defn.constant.value.pString;
+        p_id1->defn.constant.value.p_string = p_id2->defn.constant.value.p_string;
 
-        SetType(pId1->pType, pId2->pType);
+        SetType(p_id1->p_type, p_id2->p_type);
     }
 
-    GetTokenAppend();
+    get_token_append();
 }

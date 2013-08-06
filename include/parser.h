@@ -1,19 +1,3 @@
-//fig 3-10
-//  *************************************************************
-//  *                                                           *
-//  *   P A R S E R   (Header)                                  *
-//  *                                                           *
-//  *   CLASSES: TParser                                        *
-//  *                                                           *
-//  *   FILE:    prog3-1/parser.h                               *
-//  *                                                           *
-//  *   MODULE:  Parser                                         *
-//  *                                                           *
-//  *   Copyright (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
-
 #ifndef parser_h
 #define parser_h
 
@@ -31,190 +15,185 @@
 
 using namespace std;
 
-//extern TIcode icode;
-extern TSymtab globalSymtab;
+//extern cx_icode icode;
+extern cx_symtab cx_global_symtab;
 
-//--------------------------------------------------------------
-//  TParser     Parser class.
-//--------------------------------------------------------------
+///  cx_parser     Parser class.
 
-class TParser {
-    TTextScanner * const pScanner; // ptr to the scanner
-    TToken *pToken; // ptr to the current token
-    TTokenCode token; // code of current token
-    TSymtabStack symtabStack;
-    TIcode icode;
+class cx_parser {
+    cx_text_scanner * const p_scanner; // ptr to the scanner
+    cx_token *p_token; // ptr to the current token
+    cx_token_code token; // code of current token
+    cx_symtab_stack symtab_stack;
+    cx_icode icode;
 
     const char *file_name;
-    //TRuntimeStack runStack;
-    //TCompactListBuffer * const pCompact; // compact list buffer
+    //cx_runtime_stack run_stack;
+    //cx_compact_list_buffer * const pCompact; // compact list buffer
 
-    //TSymtabNode *ParseSubroutine(void);
-    TSymtabNode *ParseFunctionHeader(TSymtabNode *pFunctionNode);
+    //cx_symtab_node *ParseSubroutine(void);
+    cx_symtab_node *parse_function_header(cx_symtab_node *p_function_id);
 
-    void ParseBlock(TSymtabNode *pRoutineId);
+    void parse_block(cx_symtab_node *p_function_id);
 
-    TSymtabNode *ParseFormalParmList(int &count, int &totalSize);
+    cx_symtab_node *parse_formal_parm_list(int &count, int &total_size);
 
-    TType *ParseSubroutineCall(const TSymtabNode *pRoutineId,
-            int parmCheckFlag);
-    TType *ParseDeclaredSubroutineCall(const TSymtabNode *pRoutineId,
-            int parmCheckFlag);
+    cx_type *parse_subroutine_call(const cx_symtab_node *p_function_id,
+            bool parm_check_flag);
+    cx_type *parse_declared_subroutine_call(const cx_symtab_node *p_function_id,
+            int parm_check_flag);
 
-    void ParseActualParmList(const TSymtabNode *pRoutineId,
-            int parmCheckFlag);
-    void ParseActualParm(const TSymtabNode *pFormalId,
-            int parmCheckFlag);
+    void parse_actual_parm_list(const cx_symtab_node *p_function_id,
+            int parm_check_flag);
+    void parse_actual_parm(const cx_symtab_node *p_formal_id,
+            int parm_check_flag);
 
     // declarations
-    TSymtabNode *AllocNewNode(TSymtabNode *pRoutineId);
-    void ParseDeclarationsOrAssignment(TSymtabNode *pRoutineId);
-    void ParseConstantDeclaration(TSymtabNode *pRoutineId);
-    void ParseConstant(TSymtabNode *pConstId);
-    void ParseIdentifierConstant(TSymtabNode *pId1, TTokenCode sign);
+    cx_symtab_node *allocate_new_node(cx_symtab_node *p_function_id);
+    void parse_declarations_or_assignment(cx_symtab_node *p_function_id);
+    void parse_constant_declaration(cx_symtab_node *p_function_id);
+    void parse_constant(cx_symtab_node *p_const_id);
+    void parse_identifier_constant(cx_symtab_node *p_id1, cx_token_code sign);
 
-    void ParseDefinitions(TSymtabNode *pRoutineId);
-    void ParseIntegerDeclaration(TSymtabNode *pRoutineId);
-    void ParseTypeDefinitions(TSymtabNode *pRoutineId);
-    TType *ParseTypeSpec(TSymtabNode *pNode);
+    void parse_definitions(cx_symtab_node *p_function_id);
+    //void ParseIntegerDeclaration(cx_symtab_node *p_function_id);
+    void parse_type_definitions(cx_symtab_node *p_function_id);
+    cx_type *parse_type_spec(cx_symtab_node *p_node);
 
-    TType *ParseIdentifierType(const TSymtabNode *pId2);
+    cx_type *parse_identifier_type(const cx_symtab_node *p_id2);
 
-    TType *ParseEnumHeader(TSymtabNode *pRoutineId);
-    TType *ParseEnumerationType(void);
+    cx_type *parse_enum_header(cx_symtab_node *p_function_id);
+    cx_type *ParseEnumerationType(void);
 
-    TType *ParseSubrangeType(TSymtabNode *pMinId);
-    TType *ParseSubrangeLimit(TSymtabNode *pLimitId, int &limit);
+    cx_type *parse_subrange_type(cx_symtab_node *p_min_id);
+    cx_type *parse_subrange_limit(cx_symtab_node *p_limit_id, int &limit);
 
-    TType *ParseArrayType(TSymtabNode *pRoutineId, TSymtabNode *pArrayNode);
-    void ParseIndexType(TSymtabNode *pArrayNode);
-    int ArraySize(TType *pArrayType);
-    TType *ParseComplexType(TSymtabNode *pRoutineId, TSymtabNode *pNode);
+    cx_type *parse_array_type(cx_symtab_node *p_function_id, cx_symtab_node *p_array_node);
+    void parse_index_type(cx_symtab_node *p_array_node);
+    int array_size(cx_type *p_array_type);
+    cx_type *parse_complex_type(cx_symtab_node *p_function_id, cx_symtab_node *p_node);
 
-    void ParseVariableDeclarations(TSymtabNode *pRoutineId);
-    void ParseMemberDecls(TSymtabNode *pRoutineId, TType *pComplexType, int offset);
-    void ParseVarOrFieldDecls(TSymtabNode *pRoutineId,
-            TType *pComplexType,
-            int offset);
-    TSymtabNode *ParseIdSublist(const TSymtabNode *pRoutineId,
-            const TType *pComplexType, TSymtabNode *&pLastId);
+    //void parse_variable_declarations(cx_symtab_node *p_function_id);
+    void parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_complex_type, int offset);
+    //void ParseVarOrFieldDecls(cx_symtab_node *p_function_id,
+    //cx_type *p_complex_type,
+    //int offset);
+    //cx_symtab_node *parse_id_sublist(const cx_symtab_node *p_function_id,
+    //const cx_type *p_complex_type, cx_symtab_node *&pLastId);
 
     // expressions
-    TType *ParseExpression(void);
-    TType *ParseSuffix(TSymtabNode *pNode);
+    cx_type *parse_expression(void);
+    //cx_type *ParseSuffix(cx_symtab_node *p_node);
     //void ParseSizeOf(void);
-    TType *ParseSimpleExpression(void);
-    TType *ParseTerm(void);
-    TType *ParseFactor(void);
-    TType *ParseVariable(const TSymtabNode *pId);
-    TType *ParseSubscripts(const TType *pType);
-    TType *ParseField(const TType *pType);
+    cx_type *parse_simple_expression(void);
+    cx_type *parse_term(void);
+    cx_type *parse_factor(void);
+    cx_type *parse_variable(const cx_symtab_node *p_id);
+    cx_type *parse_subscripts(const cx_type *p_type);
+    cx_type *parse_field(const cx_type *p_type);
 
     // statements
-    void ParseStatement(TSymtabNode* pRoutineId);
-    TType *ParseAssignment(const TSymtabNode* pTargetId);
-    void ParseStatementList(TSymtabNode* pRoutineId, TTokenCode terminator);
-    void ParseDO(TSymtabNode* pRoutineId);
-    void ParseWHILE(TSymtabNode* pRoutineId);
-    void ParseIF(TSymtabNode* pRoutineId);
-    void ParseFOR(TSymtabNode* pRoutineId);
-    void ParseSWITCH(TSymtabNode* pRoutineId);
-    void ParseCaseBranch(TSymtabNode* pRoutineId, const TType *pExprType);
-    void ParseCaseLabel(TSymtabNode* pRoutineId, const TType *pExprType);
-    void ParseCompound(TSymtabNode* pRoutineId);
-    void ParseRETURN(TSymtabNode* pRoutineId);
+    void parse_statement(cx_symtab_node* p_function_id);
+    cx_type *parse_assignment(const cx_symtab_node* p_target_id);
+    void parse_statement_list(cx_symtab_node* p_function_id, cx_token_code terminator);
+    void parse_DO(cx_symtab_node* p_function_id);
+    void parse_WHILE(cx_symtab_node* p_function_id);
+    void parse_IF(cx_symtab_node* p_function_id);
+    void parse_FOR(cx_symtab_node* p_function_id);
+    void parse_SWITCH(cx_symtab_node* p_function_id);
+    void parse_case_branch(cx_symtab_node* p_function_id, const cx_type *p_expr_type);
+    void parse_case_label(cx_symtab_node* p_function_id, const cx_type *p_expr_type);
+    void parse_compound(cx_symtab_node* p_function_id);
+    void parse_RETURN(cx_symtab_node* p_function_id);
 
-    void ParseDirective(TSymtabNode *pRoutineId);
+    void parse_execute_directive(cx_symtab_node *p_function_id);
 
-    void GetToken(void) {
-        pToken = pScanner->Get();
-        token = pToken->Code();
+    void get_token(void) {
+        p_token = p_scanner->get();
+        token = p_token->code();
     }
 
-    void GetTokenAppend(void) {
-        GetToken();
-        icode.Put(token);
+    void get_token_append(void) {
+        get_token();
+        icode.put(token);
     }
 
-    void InsertLineMarker(void) {
-        icode.InsertLineMarker();
+    void insert_line_marker(void) {
+        icode.insert_line_marker();
     }
 
-    int PutLocationMarker(void) {
-        return icode.PutLocationMarker();
+    int put_location_marker(void) {
+        return icode.put_location_marker();
     }
 
-    void FixupLocationMarker(int location) {
-        icode.FixupLocationMarker(location);
+    void fixup_location_marker(int location) {
+        icode.fixup_location_marker(location);
     }
 
-    TSymtabNode *SearchLocal(const char *pString) {
-        return symtabStack.SearchLocal(pString);
+    cx_symtab_node *search_local(const char *p_string) {
+        return symtab_stack.search_local(p_string);
     }
 
-    TSymtabNode *SearchAvailableScopes(const char *pString) const {
-        return symtabStack.SearchAvailableScopes(pString);
+    /* deprecated
+    cx_symtab_node *search_available_scopes(const char *p_string) const {
+        return symtab_stack.search_available_scopes(p_string);
+    }*/
+
+    cx_symtab_node *search_all(const char *p_string) const {
+        return symtab_stack.search_all(p_string);
     }
 
-    TSymtabNode *SearchAll(const char *pString) const {
-        return symtabStack.SearchAll(pString);
+    cx_symtab_node *find(const char *p_string) const {
+        return symtab_stack.find(p_string);
     }
 
-    TSymtabNode *Find(const char *pString) const {
-        return symtabStack.Find(pString);
+    void copy_quoted_string(char *p_string, const char *p_quoted_string) const {
+        int length = strlen(p_quoted_string) - 2;
+        strncpy(p_string, &p_quoted_string[1], length);
+        p_string[length] = '\0';
     }
 
-    void CopyQuotedString(char *pString, const char *pQuotedString) const {
-        int length = strlen(pQuotedString) - 2;
-        strncpy(pString, &pQuotedString[1], length);
-        pString[length] = '\0';
+    cx_symtab_node *enter_local(const char *p_string,
+            cx_define_code dc = dc_undefined) {
+        return symtab_stack.enter_local(p_string, dc);
     }
 
-    TSymtabNode *EnterLocal(const char *pString,
-            TDefnCode dc = dcUndefined) {
-        return symtabStack.EnterLocal(pString, dc);
+    cx_symtab_node *enter_new_local(const char *p_string,
+            cx_define_code dc = dc_undefined) {
+        return symtab_stack.enter_new_local(p_string, dc);
     }
 
-    TSymtabNode *EnterNewLocal(const char *pString,
-            TDefnCode dc = dcUndefined) {
-        return symtabStack.EnterNewLocal(pString, dc);
+    void conditional_get_token(cx_token_code tc, cx_error_code ec) {
+        if (tc == token)get_token();
+        else cx_error(ec);
     }
 
-    void CondGetToken(TTokenCode tc, TErrorCode ec) {
-        if (tc == token)GetTokenAppend();
-        else Error(ec);
+    void conditional_get_token_append(cx_token_code tc, cx_error_code ec) {
+        if (tc == token) get_token_append();
+        else cx_error(ec);
     }
 
-    void CondGetTokenAppend(TTokenCode tc, TErrorCode ec) {
-        if (tc == token) GetTokenAppend();
-        else Error(ec);
-    }
-
-    void Resync(const TTokenCode *pList1,
-            const TTokenCode *pList2 = nullptr,
-            const TTokenCode *pList3 = nullptr);
+    void resync(const cx_token_code *p_list1,
+            const cx_token_code *p_list2 = nullptr,
+            const cx_token_code *p_list3 = nullptr);
 
 public:
 
-    TParser(TTextInBuffer *pBuffer)
-    : pScanner(new TTextScanner(pBuffer)) {
+    cx_parser(cx_text_in_buffer *p_buffer)
+    : p_scanner(new cx_text_scanner(p_buffer)) {
 
-        file_name = pBuffer->FileName();
+        file_name = p_buffer->file_name();
 
-        EnterLocal("input");
-        EnterLocal("output");
-
-        InitializePredefinedTypes(&globalSymtab);
+        initialize_builtin_types(&cx_global_symtab);
 
     }
 
-    ~TParser(void) {
-        delete pScanner;
-        RemovePredefinedTypes();
+    ~cx_parser(void) {
+        delete p_scanner;
+        remove_builtin_types();
     }
 
-    TSymtabNode *Parse(void);
+    cx_symtab_node *parse(void);
 };
 
 #endif
-//endfig

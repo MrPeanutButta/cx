@@ -8,31 +8,31 @@ const char *formStrings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
-//--Pointers to predefined types.
-TSymtabNode *pMain = nullptr;
-TSymtabNode *pStdIn = nullptr;
-TSymtabNode *pStdOut = nullptr;
-TSymtabNode *pStdErr = nullptr;
+// Pointers to predefined types.
+cx_symtab_node *pMain = nullptr;
+cx_symtab_node *pStdIn = nullptr;
+cx_symtab_node *pStdOut = nullptr;
+cx_symtab_node *pStdErr = nullptr;
 
-TType *pIntegerType = nullptr;
-TType *pFloatType = nullptr;
-TType *pDoubleType = nullptr;
-TType *pBooleanType = nullptr;
-TType *pCharType = nullptr;
-TType *pClassType = nullptr;
-TType *pComplexType = nullptr;
-TType *pFileType = nullptr;
+cx_type *pIntegerType = nullptr;
+cx_type *pFloatType = nullptr;
+cx_type *pDoubleType = nullptr;
+cx_type *pBooleanType = nullptr;
+cx_type *pCharType = nullptr;
+cx_type *pClassType = nullptr;
+cx_type *p_complex_type = nullptr;
+cx_type *pFileType = nullptr;
 
-TType *pDummyType = nullptr;
+cx_type *pDummyType = nullptr;
 
 /** Constructors    General.
  * 
  * @param fc  : form code.
  * @param s   : byte size of type.
- * @param pId : ptr to symbol table node of type identifier.
+ * @param p_id : ptr to symbol table node of type identifier.
  */
-TType::TType(TFormCode fc, int s, TSymtabNode* pId)
-: form(fc), size(s), pTypeId(pId), refCount(0) {
+cx_type::cx_type(TFormCode fc, int s, cx_symtab_node* p_id)
+: form(fc), size(s), pTypeId(p_id), refCount(0) {
 
     switch (fc) {
         case fcSubrange:
@@ -46,13 +46,12 @@ TType::TType(TFormCode fc, int s, TSymtabNode* pId)
     }
 }
 
-
-TType::TType(int length)
+cx_type::cx_type(int length)
 : size(length), form(fcArray), refCount(0) {
     pTypeId = nullptr;
 
     array.pIndexType = array.pElmtType = nullptr;
-    SetType(array.pIndexType, new TType(fcSubrange, sizeof (int), nullptr));
+    SetType(array.pIndexType, new cx_type(fcSubrange, sizeof (int), nullptr));
     SetType(array.pElmtType, pCharType);
     array.elmtCount = length;
 
@@ -68,7 +67,7 @@ TType::TType(int length)
  *                  the symbol tables that contain their
  *                  identifiers. 
  */
-TType::~TType() {
+cx_type::~cx_type() {
     switch (form) {
         case fcSubrange:
             RemoveType(subrange.pBaseType);
@@ -86,21 +85,21 @@ TType::~TType() {
     }
 }
 
-/** PrintTypeSpec       Print information about a type
+/** PrintTypeSpec       print information about a type
  *                      specification for the cross-reference.
  * 
  * @param vc : vcVerbose or vcTerse to control the output.
  */
-void TType::PrintTypeSpec(TVerbosityCode vc) {
+void cx_type::PrintTypeSpec(TVerbosityCode vc) {
     sprintf(list.text, "%s, size %d bytes. type id: ", formStrings[form], size);
 
-    if (pTypeId) strcat(list.text, pTypeId->String());
+    if (pTypeId) strcat(list.text, pTypeId->string__());
     else {
         strcat(list.text, "<unnamed>");
         vc = vcVerbose;
     }
 
-    list.PutLine();
+    list.put_line();
 
     switch (form) {
         case fcEnum: PrintEnumType(vc);
@@ -114,224 +113,224 @@ void TType::PrintTypeSpec(TVerbosityCode vc) {
     }
 }
 
-/** PrintEnumType       Print information about an enumeration
+/** PrintEnumType       print information about an enumeration
  *                      type for the cross-reference.
  * 
  * @param vc : vcVerbose or vcTerse to control the output.
  */
-void TType::PrintEnumType(TVerbosityCode vc) const {
+void cx_type::PrintEnumType(TVerbosityCode vc) const {
     if (vc == vcTerse) return;
 
-    list.PutLine("---enum constant identifiers (value = name)---");
+    list.put_line("---enum constant identifiers (value = name)---");
 
-    for (TSymtabNode *pConstId = enumeration.pConstIds;
-            pConstId; pConstId = pConstId->next) {
+    for (cx_symtab_node *p_const_id = enumeration.pConstIds;
+            p_const_id; p_const_id = p_const_id->next__) {
         sprintf(list.text, "%d = %s",
-                pConstId->defn.constant.value.__int,
-                pConstId->String());
+                p_const_id->defn.constant.value.int__,
+                p_const_id->string__());
 
-        list.PutLine();
+        list.put_line();
     }
 }
 
-/** PrintSubrangeType   Print information about a subrange
+/** PrintSubrangeType   print information about a subrange
  *                      type for the cross-reference.
  * 
  * @param vc : vcVerbose or vcTerse to control the output.
  */
-void TType::PrintSubrangeType(TVerbosityCode vc) const {
+void cx_type::PrintSubrangeType(TVerbosityCode vc) const {
     if (vc == vcTerse) return;
 
     sprintf(list.text, "min value = %d, max value = %d",
             subrange.min, subrange.max);
 
-    list.PutLine();
+    list.put_line();
 
     if (subrange.pBaseType) {
-        list.PutLine("---base type---");
+        list.put_line("---base type---");
         subrange.pBaseType->PrintTypeSpec(vcTerse);
     }
 }
 
-/** PrintArrayType      Print information about an array
+/** PrintArrayType      print information about an array
  *                      type for the cross-reference.
  * 
  * @param vc : vcVerbose or vcTerse to control the output.
  */
-void TType::PrintArrayType(TVerbosityCode vc) const {
+void cx_type::PrintArrayType(TVerbosityCode vc) const {
     if (vc == vcTerse) return;
 
     sprintf(list.text, "%d elements", array.elmtCount);
-    list.PutLine();
+    list.put_line();
 
     if (array.pIndexType) {
-        list.PutLine("---index type---");
+        list.put_line("---index type---");
         array.pIndexType->PrintTypeSpec(vcTerse);
     }
 
     if (array.pElmtType) {
-        list.PutLine("---element type---");
+        list.put_line("---element type---");
         array.pElmtType->PrintTypeSpec(vcTerse);
     }
 }
 
-/** PrintRecordType     Print information about a record
+/** PrintRecordType     print information about a record
  *                      type for the cross-reference.
  * 
  * @param vc : vcVerbose or vcTerse to control the output.
  */
-void TType::PrintRecordType(TVerbosityCode vc) {
+void cx_type::PrintRecordType(TVerbosityCode vc) {
     if (vc == vcTerse) return;
 
-    list.PutLine("member identifiers (offset : name)---");
-    list.PutLine();
+    list.put_line("member identifiers (offset : name)---");
+    list.put_line();
 
     //    if (complex.MemberTable.empty()) {
-    //        list.PutLine("empty type");
+    //        list.put_line("empty type");
     //        return;
     //    }
 
-    //    for (TSymtabNode *pFieldId = complex.pSymtabClassScope->Root();
-    //            pFieldId; pFieldId = pFieldId->next) {
+    //    for (cx_symtab_node *pFieldId = complex.pSymtabClassScope->root();
+    //            pFieldId; pFieldId = pFieldId->next__) {
     //        sprintf(list.text, "\t%d : %s",
     //                pFieldId->defn.data.offset,
-    //                pFieldId->String());
-    //        list.PutLine();
-    //        pFieldId->PrintVarOrField();
+    //                pFieldId->string__());
+    //        list.put_line();
+    //        pFieldId->print_var_or_field();
     //    }
     //
-    //    list.PutLine("public:\n");
+    //    list.put_line("public:\n");
     //
-    //    for (TSymtabNode *pFieldId = complex.MemberTable[tcPublic]->Root();
-    //            pFieldId; pFieldId = pFieldId->next) {
+    //    for (cx_symtab_node *pFieldId = complex.MemberTable[tc_PUBLIC]->root();
+    //            pFieldId; pFieldId = pFieldId->next__) {
     //        sprintf(list.text, "\t%d : %s",
     //                pFieldId->defn.data.offset,
-    //                pFieldId->String());
-    //        list.PutLine();
-    //        pFieldId->PrintVarOrField();
+    //                pFieldId->string__());
+    //        list.put_line();
+    //        pFieldId->print_var_or_field();
     //    }
     //
-    //    list.PutLine();
-    //    list.PutLine("private:\n");
+    //    list.put_line();
+    //    list.put_line("private:\n");
     //
-    //    if (!complex.MemberTable[tcPrivate]) {
-    //        list.PutLine("empty scope");
+    //    if (!complex.MemberTable[tc_PRIVATE]) {
+    //        list.put_line("empty scope");
     //    } else {
     //
-    //        for (TSymtabNode *pFieldId = complex.MemberTable[tcPrivate]->Root();
-    //                pFieldId; pFieldId = pFieldId->next) {
+    //        for (cx_symtab_node *pFieldId = complex.MemberTable[tc_PRIVATE]->root();
+    //                pFieldId; pFieldId = pFieldId->next__) {
     //            sprintf(list.text, "\t%d : %s",
     //                    pFieldId->defn.data.offset,
-    //                    pFieldId->String());
-    //            list.PutLine();
-    //            pFieldId->PrintVarOrField();
+    //                    pFieldId->string__());
+    //            list.put_line();
+    //            pFieldId->print_var_or_field();
     //        }
     //    }
     //
-    //    list.PutLine();
-    //    list.PutLine("protected:\n");
+    //    list.put_line();
+    //    list.put_line("protected:\n");
     //
-    //    if (!complex.MemberTable[tcProtected]) {
-    //        list.PutLine("empty scope");
+    //    if (!complex.MemberTable[tc_PROTECTED]) {
+    //        list.put_line("empty scope");
     //    } else {
-    //        for (TSymtabNode *pFieldId = complex.MemberTable[tcProtected]->Root();
-    //                pFieldId; pFieldId = pFieldId->next) {
+    //        for (cx_symtab_node *pFieldId = complex.MemberTable[tc_PROTECTED]->root();
+    //                pFieldId; pFieldId = pFieldId->next__) {
     //            sprintf(list.text, "\t%d : %s",
     //                    pFieldId->defn.data.offset,
-    //                    pFieldId->String());
-    //            list.PutLine();
-    //            pFieldId->PrintVarOrField();
+    //                    pFieldId->string__());
+    //            list.put_line();
+    //            pFieldId->print_var_or_field();
     //        }
     //    }
 }
 
-/** InitializePredefinedTypes   Initialize the predefined
+/** initialize_builtin_types   Initialize the predefined
  *                              types by entering their
  *                              identifiers into the symbol
  *                              table.
  * 
- * @param pSymtab : ptr to symbol table.
+ * @param p_symtab : ptr to symbol table.
  */
-void InitializePredefinedTypes(TSymtab *pSymtab) {
+void initialize_builtin_types(cx_symtab *p_symtab) {
 
-    pMain = pSymtab->Enter("main", dcFunction);
-    pMain->defn.routine.which = rcForward;
+    pMain = p_symtab->enter("main", dc_function);
+    pMain->defn.routine.which = rc_forward;
 
-    TSymtabNode *pIntegerId = pSymtab->Enter("int", dcType);
-    TSymtabNode *pFloatId = pSymtab->Enter("float", dcType);
+    cx_symtab_node *pIntegerId = p_symtab->enter("int", dc_type);
+    cx_symtab_node *pFloatId = p_symtab->enter("float", dc_type);
 
-    TSymtabNode *pComplexId = pSymtab->Enter("class", dcType);
+    cx_symtab_node *pComplexId = p_symtab->enter("class", dc_type);
 
-    TSymtabNode *pBooleanId = pSymtab->Enter("bool", dcType);
-    TSymtabNode *pCharId = pSymtab->Enter("char", dcType);
-    TSymtabNode *pFalseId = pSymtab->Enter("false", dcConstant);
-    TSymtabNode *pTrueId = pSymtab->Enter("true", dcConstant);
-    
-    TSymtabNode *pFileId = pSymtab->Enter("file", dcType);
+    cx_symtab_node *pBooleanId = p_symtab->enter("bool", dc_type);
+    cx_symtab_node *pCharId = p_symtab->enter("char", dc_type);
+    cx_symtab_node *pFalseId = p_symtab->enter("false", dc_constant);
+    cx_symtab_node *pTrueId = p_symtab->enter("true", dc_constant);
+
+    cx_symtab_node *pFileId = p_symtab->enter("file", dc_type);
 
     if (!pIntegerType) {
-        SetType(pIntegerType, new TType(fcScalar, sizeof (int), pIntegerId));
+        SetType(pIntegerType, new cx_type(fcScalar, sizeof (int), pIntegerId));
     }
     if (!pFloatType) {
-        SetType(pFloatType, new TType(fcScalar, sizeof (float), pFloatId));
+        SetType(pFloatType, new cx_type(fcScalar, sizeof (float), pFloatId));
     }
 
     if (!pBooleanType) {
-        SetType(pBooleanType, new TType(fcEnum, sizeof (int), pBooleanId));
+        SetType(pBooleanType, new cx_type(fcEnum, sizeof (int), pBooleanId));
     }
     if (!pCharType) {
-        SetType(pCharType, new TType(fcScalar, sizeof (char), pCharId));
+        SetType(pCharType, new cx_type(fcScalar, sizeof (char), pCharId));
     }
-    if (!pComplexType) {
-        SetType(pComplexType, new TType(fcComplex, sizeof (TType), pComplexId));
-    }
-    
-    if(!pFileType){
-        SetType(pFileType, new TType(fcStream, sizeof(FILE), pFileId));
+    if (!p_complex_type) {
+        SetType(p_complex_type, new cx_type(fcComplex, sizeof (cx_type), pComplexId));
     }
 
-    SetType(pMain->pType, pIntegerType);
+    if (!pFileType) {
+        SetType(pFileType, new cx_type(fcStream, sizeof (FILE), pFileId));
+    }
+
+    SetType(pMain->p_type, pIntegerType);
 
     // link each predefined type id's node to it's type object
-    SetType(pIntegerId->pType, pIntegerType);
+    SetType(pIntegerId->p_type, pIntegerType);
 
-    SetType(pFloatId->pType, pFloatType);
+    SetType(pFloatId->p_type, pFloatType);
 
-    SetType(pBooleanId->pType, pBooleanType);
-    SetType(pCharId->pType, pCharType);
+    SetType(pBooleanId->p_type, pBooleanType);
+    SetType(pCharId->p_type, pCharType);
 
-    SetType(pComplexId->pType, pComplexType);
+    SetType(pComplexId->p_type, p_complex_type);
 
     pBooleanType->enumeration.max = 1;
     pBooleanType->enumeration.pConstIds = pFalseId;
 
-    pFalseId->defn.constant.value.__int = 0;
-    pTrueId->defn.constant.value.__int = 1;
+    pFalseId->defn.constant.value.int__ = 0;
+    pTrueId->defn.constant.value.int__ = 1;
 
-    SetType(pTrueId->pType, pBooleanType);
-    SetType(pFalseId->pType, pBooleanType);
+    SetType(pTrueId->p_type, pBooleanType);
+    SetType(pFalseId->p_type, pBooleanType);
 
-    pFalseId->next = pTrueId;
-    
-    pStdOut = pSymtab->Enter("__cx_stdout__", ::dcVariable);
-    SetType(pStdOut->pType, pFileType);
-    pStdOut->pType->stream.pFileStream = stdout;
+    pFalseId->next__ = pTrueId;
 
-    pStdIn = pSymtab->Enter("__cx_stdin__", ::dcVariable);
-    SetType(pStdIn->pType, pFileType);
-    pStdIn->pType->stream.pFileStream = stdin;
-    
-    pStdErr = pSymtab->Enter("__cx_stderr__", ::dcVariable);
-    SetType(pStdErr->pType, pFileType);
-    pStdErr->pType->stream.pFileStream = stderr;
-    
-    SetType(pDummyType, new TType(fcNone, 1, nullptr));
+    pStdOut = p_symtab->enter("__cx_stdout__", ::dc_variable);
+    SetType(pStdOut->p_type, pFileType);
+    pStdOut->p_type->stream.pFileStream = stdout;
+
+    pStdIn = p_symtab->enter("__cx_stdin__", ::dc_variable);
+    SetType(pStdIn->p_type, pFileType);
+    pStdIn->p_type->stream.pFileStream = stdin;
+
+    pStdErr = p_symtab->enter("__cx_stderr__", ::dc_variable);
+    SetType(pStdErr->p_type, pFileType);
+    pStdErr->p_type->stream.pFileStream = stderr;
+
+    SetType(pDummyType, new cx_type(fcNone, 1, nullptr));
 }
 
-/** RemovePredefinedTypes       Remove the predefined types.
+/** remove_builtin_types       Remove the predefined types.
  */
-void RemovePredefinedTypes(void) {
-    RemoveType(pComplexType);
+void remove_builtin_types(void) {
+    RemoveType(p_complex_type);
     RemoveType(pIntegerType);
     RemoveType(pFloatType);
     RemoveType(pBooleanType);
@@ -340,21 +339,21 @@ void RemovePredefinedTypes(void) {
     RemoveType(pFileType);
 }
 
-void RemoveType(TType *&pType);
+void RemoveType(cx_type *&p_type);
 
 /** SetType     Set the target type.  Increment the reference
  *              count of the source type.
  * 
- * @param pTargetType : ref to ptr to target type object.
+ * @param p_target_type : ref to ptr to target type object.
  * @param pSourceType : ptr to source type object.
  * @return ptr to source type object.
  */
-TType *SetType(TType *&pTargetType, TType *pSourceType) {
-    if (!pTargetType) RemoveType(pTargetType);
+cx_type *SetType(cx_type *&p_target_type, cx_type *pSourceType) {
+    if (!p_target_type) RemoveType(p_target_type);
 
     ++pSourceType->refCount;
 
-    pTargetType = pSourceType;
+    p_target_type = pSourceType;
 
     return pSourceType;
 }
@@ -363,20 +362,20 @@ TType *SetType(TType *&pTargetType, TType *pSourceType) {
  *              delete the object and set its pointer to NULL
  *              if the count becomes 0.
  * 
- * @param pType : ref to ptr to type object.
+ * @param p_type : ref to ptr to type object.
  */
-void RemoveType(TType *&pType) {
-    if (pType && (--pType->refCount == 0)) {
-        delete pType;
-        pType = nullptr;
+void RemoveType(cx_type *&p_type) {
+    if (p_type && (--p_type->refCount == 0)) {
+        delete p_type;
+        p_type = nullptr;
     }
 }
 
-             /************************
-              *                      *
-              *  Type Compatibility  *
-              *                      *
-              ************************/
+/************************
+ *                      *
+ *  type Compatibility  *
+ *                      *
+ ************************/
 
 /** CheckRelOpOperands  Check that the types of the two operands
  *                      of a relational operator are compatible.
@@ -385,7 +384,7 @@ void RemoveType(TType *&pType) {
  * @param pType1 : ptr to the first  operand's type object.
  * @param pType2 : ptr to the second operand's type object.
  */
-void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
+void CheckRelOpOperands(const cx_type *pType1, const cx_type *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
 
@@ -407,7 +406,7 @@ void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
         return;
     }
 
-    Error(errIncompatibleTypes);
+    cx_error(err_incompatible_types);
 }
 
 /** CheckIntegerOrReal  Check that the type of each operand is
@@ -417,18 +416,18 @@ void CheckRelOpOperands(const TType *pType1, const TType *pType2) {
  * @param pType1 : ptr to the first  operand's type object.
  * @param pType2 : ptr to the second operand's type object or NULL.
  */
-void CheckIntegerOrReal(const TType *pType1, const TType *pType2) {
+void CheckIntegerOrReal(const cx_type *pType1, const cx_type *pType2) {
     pType1 = pType1->Base();
 
     if ((pType1 != pIntegerType) && (pType1 != pFloatType)) {
-        Error(errIncompatibleTypes);
+        cx_error(err_incompatible_types);
     }
 
     if (pType2) {
         pType2 = pType2->Base();
 
         if ((pType2 != pIntegerType) && (pType2 != pFloatType)) {
-            Error(errIncompatibleTypes);
+            cx_error(err_incompatible_types);
         }
     }
 }
@@ -440,10 +439,10 @@ void CheckIntegerOrReal(const TType *pType1, const TType *pType2) {
  * @param pType1 : ptr to the first  operand's type object.
  * @param pType2 : ptr to the second operand's type object or NULL.
  */
-void CheckBoolean(const TType *pType1, const TType *pType2) {
+void CheckBoolean(const cx_type *pType1, const cx_type *pType2) {
     if ((pType1->Base() != pBooleanType)
             || (pType2 && (pType2->Base() != pBooleanType))) {
-        Error(errIncompatibleTypes);
+        cx_error(err_incompatible_types);
     }
 }
 
@@ -452,45 +451,45 @@ void CheckBoolean(const TType *pType1, const TType *pType2) {
  *                                  the target's type.  Flag an
  *                                  error if not.
  * 
- * @param pTargetType : ptr to the target's type object.
+ * @param p_target_type : ptr to the target's type object.
  * @param pValueType  : ptr to the value's  type object.
  * @param ec          : error code.
  */
-void CheckAssignmentTypeCompatible(const TType *pTargetType,
-        const TType *pValueType, TErrorCode ec) {
+void CheckAssignmentTypeCompatible(const cx_type *p_target_type,
+        const cx_type *pValueType, cx_error_code ec) {
 
-    pTargetType = pTargetType->Base();
+    p_target_type = p_target_type->Base();
     pValueType = pValueType->Base();
 
-    if (pTargetType == pValueType) return;
+    if (p_target_type == pValueType) return;
 
-    if ((pTargetType == pFloatType)
+    if ((p_target_type == pFloatType)
             && (pValueType == pIntegerType)) return;
 
-    if ((pTargetType == pFloatType)
+    if ((p_target_type == pFloatType)
             && (pValueType == pDoubleType)) return;
 
-    if ((pTargetType == pDoubleType)
+    if ((p_target_type == pDoubleType)
             && (pValueType == pIntegerType)) return;
 
-    if ((pTargetType == pDoubleType)
+    if ((p_target_type == pDoubleType)
             && (pValueType == pFloatType)) return;
 
-    if ((pTargetType == pIntegerType)
+    if ((p_target_type == pIntegerType)
             && (pValueType == pFloatType)) return;
 
-    if ((pTargetType == pIntegerType)
+    if ((p_target_type == pIntegerType)
             && (pValueType == pDoubleType)) return;
 
-    if ((pTargetType->form == fcArray)
+    if ((p_target_type->form == fcArray)
             && (pValueType->form == fcArray)
-            && (pTargetType->array.pElmtType == pCharType)
+            && (p_target_type->array.pElmtType == pCharType)
             && (pValueType->array.pElmtType == pCharType)) {
-        //&& (pTargetType->array.elmtCount == pValueType->array.elmtCount)) {
+        //&& (p_target_type->array.elmtCount == pValueType->array.elmtCount)) {
         return;
     }
 
-    Error(ec);
+    cx_error(ec);
 }
 
 /** IntegerOperands     Check that the types of both operands
@@ -500,7 +499,7 @@ void CheckAssignmentTypeCompatible(const TType *pTargetType,
  * @param pType2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool IntegerOperands(const TType *pType1, const TType *pType2) {
+bool IntegerOperands(const cx_type *pType1, const cx_type *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
 
@@ -515,7 +514,7 @@ bool IntegerOperands(const TType *pType1, const TType *pType2) {
  * @param pType2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool RealOperands(const TType *pType1, const TType *pType2) {
+bool RealOperands(const cx_type *pType1, const cx_type *pType2) {
     pType1 = pType1->Base();
     pType2 = pType2->Base();
 

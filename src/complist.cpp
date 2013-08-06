@@ -12,32 +12,32 @@
 
 using namespace std;
 
-void TCompactListBuffer::PutBlank(void) {
-    if (++textLength >= maxCompactTextLength - 1) PutLine();
-    else *pText++ = ' ';
+void cx_compact_list_buffer::put_blank(void) {
+    if (++text_length >= max_compact_text_length - 1) put_line();
+    else *p_text++ = ' ';
 }
 
-void TCompactListBuffer::Put(const char* pString) {
+void cx_compact_list_buffer::put(const char* p_string) {
 
-    int tokenLength(strlen(pString));
+    int tokenLength(strlen(p_string));
 
-    if (textLength + tokenLength >= maxCompactTextLength - 1) {
-        PutLine();
+    if (text_length + tokenLength >= max_compact_text_length - 1) {
+        put_line();
     }
 
-    strcpy(pText, pString);
-    pText += tokenLength;
-    textLength += tokenLength;
+    strcpy(p_text, p_string);
+    p_text += tokenLength;
+    text_length += tokenLength;
 
 }
 
-void TCompactListBuffer::PutLine(void) {
-    if (textLength > 0) {
-        *pText = '\0';
+void cx_compact_list_buffer::put_line(void) {
+    if (text_length > 0) {
+        *p_text = '\0';
         cout << text << endl;
 
-        pText = text;
-        textLength = 0;
+        p_text = text;
+        text_length = 0;
     }
 }
 

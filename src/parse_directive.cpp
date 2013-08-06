@@ -1,4 +1,4 @@
-/** Parse Directives
+/** parse Directives
  * parse_directive.cpp
  * 
  */
@@ -9,24 +9,24 @@
 #include "error.h"
 #include "parser.h"
 
-/** ParseDirective      Opens an external script module
+/** parse_execute_directive      Opens an external script module
  *                      for parsing.
  * 
  *      #include <identifier>
  * 
- * @param pRoutineId : ptr to the routine owning this directive call.
+ * @param p_function_id : ptr to the routine owning this directive call.
  */
-void TParser::ParseDirective(TSymtabNode *pRoutineId) {
+void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
 
     switch (token) {
-        case tcInclude:
+        case tc_INCLUDE:
         {
-            GetTokenAppend();
-            TParser *parser = new TParser(new TSourceBuffer(pToken->String()));
+            get_token_append();
+            cx_parser *parser = new cx_parser(new cx_source_buffer(p_token->string__()));
 
-            TSymtabNode *pModule = parser->Parse();
+            cx_symtab_node *pModule = parser->parse();
             delete parser;
-            GetTokenAppend();
+            get_token_append();
         }
             break;
     }

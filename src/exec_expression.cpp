@@ -9,134 +9,134 @@
 
 using namespace std;
 
-/** ExecuteExpression   Execute an expression (binary relational
+/** execute_expression   Execute an expression (binary relational
  *                      operators = < > <> <= and >= ).
  *
  * @return: ptr to expression's type object
  */
-TType *TExecutor::ExecuteExpression(void) {
-    TType *pOperand1Type; // ptr to first  operand's type
-    TType *pOperand2Type; // ptr to second operand's type
-    TType *pResultType; // ptr to result type
-    TTokenCode op; // operator
+cx_type *cx_executor::execute_expression(void) {
+    cx_type *pOperand1Type; // ptr to first  operand's type
+    cx_type *pOperand2Type; // ptr to second operand's type
+    cx_type *pResultType; // ptr to result type
+    cx_token_code op; // operator
 
-    //--Execute the first simple expression.
-    pResultType = ExecuteSimpleExpression();
+    // Execute the first simple expression.
+    pResultType = execute_simple_expression();
 
-    //--If we now see a relational operator,
-    //--execute the second simple expression.
-    if (TokenIn(token, tlRelOps)) {
+    // If we now see a relational operator,
+    // execute the second simple expression.
+    if (token_in(token, tokenlist_relation_ops)) {
         op = token;
         pOperand1Type = pResultType->Base();
         pResultType = pBooleanType;
 
-        GetToken();
-        pOperand2Type = ExecuteSimpleExpression()->Base();
+        get_token();
+        pOperand2Type = execute_simple_expression()->Base();
 
-        //--Perform the operation, and push the resulting value
-        //--onto the stack.
+        // Perform the operation, and push the resulting value
+        // onto the stack.
         if (((pOperand1Type == pIntegerType) &&
                 (pOperand2Type == pIntegerType))
                 || ((pOperand1Type == pCharType) &&
                 (pOperand2Type == pCharType))
                 || (pOperand1Type->form == fcEnum)) {
 
-            //--integer <op> integer
-            //--boolean <op> boolean
-            //--char    <op> char
-            //--enum    <op> enum
+            // integer <op> integer
+            // boolean <op> boolean
+            // char    <op> char
+            // enum    <op> enum
             int value1, value2;
             if (pOperand1Type == pCharType) {
-                value2 = Pop()->__char;
-                value1 = Pop()->__char;
+                value2 = pop()->char__;
+                value1 = pop()->char__;
             } else {
-                value2 = Pop()->__int;
-                value1 = Pop()->__int;
+                value2 = pop()->int__;
+                value1 = pop()->int__;
             }
 
             switch (op) {
 
-                case tcEqualEqual:
-                    Push(value1 == value2);
+                case tc_equal_equal:
+                    push(value1 == value2);
                     break;
 
-                case tcNe:
-                    Push(value1 != value2);
+                case tc_not_equal:
+                    push(value1 != value2);
                     break;
 
-                case tcLt:
-                    Push(value1 < value2);
+                case tc_lessthan:
+                    push(value1 < value2);
                     break;
 
-                case tcGt:
-                    Push(value1 > value2);
+                case tc_greaterthan:
+                    push(value1 > value2);
                     break;
 
-                case tcLe:
-                    Push(value1 <= value2);
+                case tc_lessthan_equal:
+                    push(value1 <= value2);
                     break;
 
-                case tcGe:
-                    Push(value1 >= value2);
+                case tc_greaterthan_equal:
+                    push(value1 >= value2);
                     break;
             }
         } else if ((pOperand1Type == pFloatType) ||
                 (pOperand2Type == pFloatType)) {
 
-            //--real    <op> real
-            //--real    <op> integer
-            //--integer <op> real
-            float value2 = pOperand2Type == pFloatType ? Pop()->__float
-                    : Pop()->__int;
-            float value1 = pOperand1Type == pFloatType ? Pop()->__float
-                    : Pop()->__int;
+            // real    <op> real
+            // real    <op> integer
+            // integer <op> real
+            float value2 = pOperand2Type == pFloatType ? pop()->float__
+                    : pop()->int__;
+            float value1 = pOperand1Type == pFloatType ? pop()->float__
+                    : pop()->int__;
 
             switch (op) {
 
-                case tcEqualEqual:
-                    Push(value1 == value2);
+                case tc_equal_equal:
+                    push(value1 == value2);
                     break;
 
-                case tcNe:
-                    Push(value1 != value2);
+                case tc_not_equal:
+                    push(value1 != value2);
                     break;
 
-                case tcLt:
-                    Push(value1 < value2);
+                case tc_lessthan:
+                    push(value1 < value2);
                     break;
 
-                case tcGt:
-                    Push(value1 > value2);
+                case tc_greaterthan:
+                    push(value1 > value2);
                     break;
 
-                case tcLe:
-                    Push(value1 <= value2);
+                case tc_lessthan_equal:
+                    push(value1 <= value2);
                     break;
 
-                case tcGe:
-                    Push(value1 >= value2);
+                case tc_greaterthan_equal:
+                    push(value1 >= value2);
                     break;
             }
         } else {
 
-            //--string <op> string
-            char *addr2 = (char *) Pop()->__addr;
-            char *addr1 = (char *) Pop()->__addr;
+            // string <op> string
+            char *addr2 = (char *) pop()->addr__;
+            char *addr1 = (char *) pop()->addr__;
 
             int cmp = strncmp(addr1, addr2, pOperand1Type->size);
 
             switch (op) {
-                case tcEqualEqual: Push(cmp == 0);
+                case tc_equal_equal: push(cmp == 0);
                     break;
-                case tcNe: Push(cmp != 0);
+                case tc_not_equal: push(cmp != 0);
                     break;
-                case tcLt: Push(cmp < 0);
+                case tc_lessthan: push(cmp < 0);
                     break;
-                case tcGt: Push(cmp > 0);
+                case tc_greaterthan: push(cmp > 0);
                     break;
-                case tcLe: Push(cmp <= 0);
+                case tc_lessthan_equal: push(cmp <= 0);
                     break;
-                case tcGe: Push(cmp >= 0);
+                case tc_greaterthan_equal: push(cmp >= 0);
                     break;
             }
         }
@@ -145,135 +145,135 @@ TType *TExecutor::ExecuteExpression(void) {
     return pResultType;
 }
 
-/** ExecuteSimpleExpression    Execute a simple expression
+/** execute_simple_expression    Execute a simple expression
  *                             (unary operators + or -
  *                             and binary operators + -
  *                             and OR).
  *
  * @return: ptr to expression's type object
  */
-TType *TExecutor::ExecuteSimpleExpression(void) {
+cx_type *cx_executor::execute_simple_expression(void) {
 
-    TType *pOperandType; // ptr to operand's type
-    TType *pResultType; // ptr to result type
-    TTokenCode op; // operator
-    TTokenCode unaryOp = tcPlus; // unary operator
+    cx_type *pOperandType; // ptr to operand's type
+    cx_type *pResultType; // ptr to result type
+    cx_token_code op; // operator
+    cx_token_code unaryOp = tc_plus; // unary operator
 
-    //--Unary + or -
-    if (TokenIn(token, tlUnaryOps)) {
+    // Unary + or -
+    if (token_in(token, tokenlist_unary_ops)) {
         unaryOp = token;
-        GetToken();
+        get_token();
     }
 
-    //--Execute the first term.
-    pResultType = ExecuteTerm();
+    // Execute the first term.
+    pResultType = execute_term();
 
     switch (unaryOp) {
-        case tcMinus:
-            if (pResultType == pFloatType) Push(-Pop()->__float);
-            else Push(-Pop()->__int);
+        case tc_minus:
+            if (pResultType == pFloatType) push(-pop()->float__);
+            else push(-pop()->int__);
             break;
-        case tcBitNOT:
-            Push(~(Pop()->__int));
+        case tc_bit_NOT:
+            push(~(pop()->int__));
             break;
     }
 
-    //--Loop to execute subsequent additive operators and terms.
-    while (TokenIn(token, tlAddOps)) {
+    // Loop to execute subsequent additive operators and terms.
+    while (token_in(token, tokenlist_add_ops)) {
         op = token;
         pResultType = pResultType->Base();
 
-        GetToken();
-        pOperandType = ExecuteTerm()->Base();
+        get_token();
+        pOperandType = execute_term()->Base();
 
         switch (op) {
-            case tcPlus:
-            case tcMinus:
+            case tc_plus:
+            case tc_minus:
             {
                 if ((pResultType == pIntegerType) &&
                         (pOperandType == pIntegerType)) {
 
-                    //--integer +|- integer
-                    int value2 = Pop()->__int;
-                    int value1 = Pop()->__int;
+                    // integer +|- integer
+                    int value2 = pop()->int__;
+                    int value1 = pop()->int__;
 
-                    Push(op == tcPlus ? value1 + value2
+                    push(op == tc_plus ? value1 + value2
                             : value1 - value2);
                     pResultType = pIntegerType;
                 } else {
 
-                    //--real    +|- real
-                    //--real    +|- integer
-                    //--integer +|- real
-                    float value2 = pOperandType == pFloatType ? Pop()->__float
-                            : Pop()->__int;
-                    float value1 = pResultType == pFloatType ? Pop()->__float
-                            : Pop()->__int;
+                    // real    +|- real
+                    // real    +|- integer
+                    // integer +|- real
+                    float value2 = pOperandType == pFloatType ? pop()->float__
+                            : pop()->int__;
+                    float value1 = pResultType == pFloatType ? pop()->float__
+                            : pop()->int__;
 
-                    Push(op == tcPlus ? value1 + value2
+                    push(op == tc_plus ? value1 + value2
                             : value1 - value2);
                     pResultType = pFloatType;
                 }
 
             }
                 break;
-            case tcBitLeftShift:
+            case tc_bit_leftshift:
             {
-                //--bit left shift
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // bit left shift
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 << value2);
+                push(value1 << value2);
                 pResultType = pIntegerType;
             }
                 break;
-            case tcBitRightShift:
+            case tc_bit_rightshift:
             {
-                //--bit right shift
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // bit right shift
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 >> value2);
+                push(value1 >> value2);
                 pResultType = pIntegerType;
             }
                 break;
-            case tcBitANDorAddrOf:
+            case tc_bit_AND:
             {
-                //--bit and
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // bit and
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 & value2);
+                push(value1 & value2);
                 pResultType = pIntegerType;
             }
                 break;
-            case tcBitXOR:
+            case tc_bit_XOR:
             {
-                //--bit XOR
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // bit XOR
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 ^ value2);
+                push(value1 ^ value2);
                 pResultType = pIntegerType;
             }
                 break;
-            case tcBitOR:
+            case tc_bit_OR:
             {
-                //--bit OR
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // bit OR
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 | value2);
+                push(value1 | value2);
                 pResultType = pIntegerType;
             }
                 break;
-            case tcLogicOr:
+            case tc_logic_OR:
             {
-                //--boolean OR boolean
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // boolean OR boolean
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 || value2);
+                push(value1 || value2);
                 pResultType = pBooleanType;
             }
                 break;
@@ -283,96 +283,96 @@ TType *TExecutor::ExecuteSimpleExpression(void) {
     return pResultType;
 }
 
-/** ExecuteTerm         Execute a term (binary operators * /
+/** execute_term         Execute a term (binary operators * /
  *                      % and &&).
  *
  * @return: ptr to term's type object
  */
-TType *TExecutor::ExecuteTerm(void) {
-    TType *pOperandType; // ptr to operand's type
-    TType *pResultType; // ptr to result type
-    TTokenCode op; // operator
+cx_type *cx_executor::execute_term(void) {
+    cx_type *pOperandType; // ptr to operand's type
+    cx_type *pResultType; // ptr to result type
+    cx_token_code op; // operator
 
-    //--Execute the first factor.
-    pResultType = ExecuteFactor();
+    // Execute the first factor.
+    pResultType = execute_factor();
 
-    //--Loop to execute subsequent multiplicative operators and factors.
-    while (TokenIn(token, tlMulOps)) {
+    // Loop to execute subsequent multiplicative operators and factors.
+    while (token_in(token, tokenlist_mul_ops)) {
         op = token;
         pResultType = pResultType->Base();
 
-        GetToken();
-        pOperandType = ExecuteFactor()->Base();
+        get_token();
+        pOperandType = execute_factor()->Base();
 
         bool divZeroFlag = false;
 
         switch (op) {
-            case tcStar:
+            case tc_star:
                 if ((pResultType == pIntegerType) &&
                         (pOperandType == pIntegerType)) {
 
-                    //--integer * integer
-                    int value2 = Pop()->__int;
-                    int value1 = Pop()->__int;
+                    // integer * integer
+                    int value2 = pop()->int__;
+                    int value1 = pop()->int__;
 
-                    Push(value1 * value2);
+                    push(value1 * value2);
                     pResultType = pIntegerType;
                 } else {
 
-                    //--real    * real
-                    //--real    * integer
-                    //--integer * real
+                    // real    * real
+                    // real    * integer
+                    // integer * real
                     float value2 = pOperandType == pFloatType
-                            ? Pop()->__float
-                            : Pop()->__int;
+                            ? pop()->float__
+                            : pop()->int__;
                     float value1 = pResultType == pFloatType
-                            ? Pop()->__float
-                            : Pop()->__int;
+                            ? pop()->float__
+                            : pop()->int__;
 
-                    Push(value1 * value2);
+                    push(value1 * value2);
                     pResultType = pFloatType;
                 }
                 break;
-            case tcForwardSlash:
+            case tc_divide:
             {
 
-                //--real    / real
-                //--real    / integer
-                //--integer / real
-                //--integer / integer
+                // real    / real
+                // real    / integer
+                // integer / real
+                // integer / integer
 
                 float value2 = pOperandType == pFloatType
-                        ? Pop()->__float
-                        : Pop()->__int;
+                        ? pop()->float__
+                        : pop()->int__;
                 float value1 = pResultType == pFloatType
-                        ? Pop()->__float
-                        : Pop()->__int;
+                        ? pop()->float__
+                        : pop()->int__;
 
-                if (value2 == 0.0f) RuntimeError(rteDivisionByZero);
+                if (value2 == 0.0f) cx_runtime_error(rte_division_by_zero);
 
-                Push(value1 / value2);
+                push(value1 / value2);
                 pResultType = pFloatType;
             }
                 break;
-            case tcMod:
+            case tc_modulas:
             {
-                //--integer MOD integer
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // integer MOD integer
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                if (value2 == 0) RuntimeError(rteDivisionByZero);
+                if (value2 == 0) cx_runtime_error(rte_division_by_zero);
 
-                Push(value1 % value2);
+                push(value1 % value2);
                 pResultType = pIntegerType;
             }
                 break;
-            case tcLogicAnd:
+            case tc_logic_AND:
             {
-                //--boolean AND boolean
-                int value2 = Pop()->__int;
-                int value1 = Pop()->__int;
+                // boolean AND boolean
+                int value2 = pop()->int__;
+                int value1 = pop()->int__;
 
-                Push(value1 && value2);
+                push(value1 && value2);
                 pResultType = pBooleanType;
             }
                 break;
@@ -382,42 +382,42 @@ TType *TExecutor::ExecuteTerm(void) {
     return pResultType;
 }
 
-/** ExecuteFactor       Execute a factor (identifier, number,
+/** execute_factor       Execute a factor (identifier, number,
  *                      string, NOT <factor>, or parenthesized
  *                      subexpression).  An identifier can be
  *                      a function, constant, or variable.
  *
  * @return: ptr to factor's type object
  */
-TType *TExecutor::ExecuteFactor(void) {
-    TType *pResultType = nullptr; // ptr to result type
-    TSymtabNode *pId = nullptr;
+cx_type *cx_executor::execute_factor(void) {
+    cx_type *pResultType = nullptr; // ptr to result type
+    cx_symtab_node *p_id = nullptr;
 
     switch (token) {
-        case tcIdentifier:
+        case tc_identifier:
         {
-            switch (pNode->defn.how) {
+            switch (p_node->defn.how) {
 
-                case dcFunction:
-                    pResultType = ExecuteSubroutineCall(pNode);
+                case dc_function:
+                    pResultType = execute_subroutine_call(p_node);
                     break;
 
-                case dcConstant:
-                    pResultType = ExecuteConstant(pNode);
+                case dc_constant:
+                    pResultType = execute_constant(p_node);
                     break;
-                case dcType:
-                    pResultType = pNode->pType;
-                    GetToken();
+                case dc_type:
+                    pResultType = p_node->p_type;
+                    get_token();
                     break;
                 default:
-                    pId = pNode;
-                    GetToken();
+                    p_id = p_node;
+                    get_token();
 
-                    if (TokenIn(token, tlAssignOps)) {
-                        ExecuteAssignment(pId);
-                        pResultType = ExecuteVariable(pId, false);
+                    if (token_in(token, tokenlist_assign_ops)) {
+                        execute_assignment(p_id);
+                        pResultType = execute_variable(p_id, false);
                     } else {
-                        pResultType = ExecuteVariable(pId, false);
+                        pResultType = execute_variable(p_id, false);
                     }
 
                     break;
@@ -425,203 +425,203 @@ TType *TExecutor::ExecuteFactor(void) {
         }
             break;
 
-        case tcNumber:
+        case tc_number:
         {
-            //--Push the number's integer or real value onto the stack.
-            if (pNode->pType == pIntegerType) {
-                Push(pNode->defn.constant.value.__int);
+            // push the number's integer or real value onto the stack.
+            if (p_node->p_type == pIntegerType) {
+                push(p_node->defn.constant.value.int__);
             } else {
-                Push(pNode->defn.constant.value.__float);
+                push(p_node->defn.constant.value.float__);
             }
-            pResultType = pNode->pType;
-            GetToken();
+            pResultType = p_node->p_type;
+            get_token();
         }
             break;
-        case tcChar:
-        case tcString:
+        case tc_char:
+        case tc_string:
         {
-            //GetToken();
-            //--Push either a character or a string address onto the
-            //--runtime stack, depending on the string length.
-            //int length = strlen(pNode->String()) - 2; // skip quotes
-            if (pNode->strLength == 1) {
+            //get_token();
+            // push either a character or a string address onto the
+            // runtime stack, depending on the string length.
+            //int length = strlen(p_node->string__()) - 2; // skip quotes
+            if (p_node->string_length == 1) {
 
-                //--Character
-                Push(pNode->defn.constant.value.__char);
+                // Character
+                push(p_node->defn.constant.value.char__);
                 pResultType = pCharType;
             } else {
 
-                //--String address
-                Push(pNode->defn.constant.value.pString);
-                pResultType = pNode->pType;
+                // string__ address
+                push(p_node->defn.constant.value.p_string);
+                pResultType = p_node->p_type;
             }
 
-            GetToken();
+            get_token();
         }
             break;
-        case tcLogicNOT:
-            //--Execute boolean factor and invert its value.
-            GetToken();
-            ExecuteFactor();
+        case tc_logic_NOT:
+            // Execute boolean factor and invert its value.
+            get_token();
+            execute_factor();
 
-            Push(1 - Pop()->__int);
+            push(1 - pop()->int__);
             pResultType = pBooleanType;
             break;
-        case tcLParen:
+        case tc_left_paren:
         {
 
-            //--Parenthesized subexpression:  Call ExecuteExpression
-            //--                              recursively.
-            GetToken(); // first token after (
+            // Parenthesized subexpression:  Call execute_expression
+            //                               recursively.
+            get_token(); // first token after (
 
-            pResultType = ExecuteExpression();
+            pResultType = execute_expression();
 
-            GetToken(); // first token after )
+            get_token(); // first token after )
         }
             break;
-        case tcSemicolon:
+        case tc_semicolon:
             break;
     }
 
     return pResultType;
 }
 
-/** ExecuteConstant     Push a constant onto the runtime stack.
+/** execute_constant     push a constant onto the runtime stack.
  *
- * @param pId : ptr to constant identifier's symbol table node
+ * @param p_id : ptr to constant identifier's symbol table node
  *
  * @return: ptr to constant's type object
  */
-TType *TExecutor::ExecuteConstant(const TSymtabNode *pId) {
-    TType *pType = pId->pType;
-    const TDataValue *value = &pId->defn.constant.value;
+cx_type *cx_executor::execute_constant(const cx_symtab_node *p_id) {
+    cx_type *p_type = p_id->p_type;
+    const cx_data_value *value = &p_id->defn.constant.value;
 
-    if (pType == pFloatType) Push(value->__float);
-    else if (pType == pCharType) Push(value->__char);
-    else if (pType->form == fcArray) Push(value->pString);
-    else Push(value->__int);
+    if (p_type == pFloatType) push(value->float__);
+    else if (p_type == pCharType) push(value->char__);
+    else if (p_type->form == fcArray) push(value->p_string);
+    else push(value->int__);
 
-    GetToken();
-    TraceDataFetch(pId, TOS(), pType);
-    return pType;
+    get_token();
+    trace_data_fetch(p_id, top_of_stack(), p_type);
+    return p_type;
 }
 
-/**  ExecuteVariable     Push a variable's value or address onto
+/**  execute_variable     push a variable's value or address onto
  *                        the runtime stack.
  *
- * @param pId         : ptr to variable's symbol table node
- * @param addressFlag : true to push address, false to push value
+ * @param p_id         : ptr to variable's symbol table node
+ * @param address_flag : true to push address, false to push value
  *
  * @return: ptr to variable's type object
  */
-TType *TExecutor::ExecuteVariable(const TSymtabNode *pId,
-        int addressFlag) {
-    
-    TType *pType = pId->pType;
+cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
+        bool address_flag) {
 
-    if(pType->form == fcStream) return pType;
-    
-    //--Get the variable's runtime stack address.
-    TStackItem *pEntry = runStack.GetValueAddress(pId);
-    Push((pId->defn.how == dcReference) || (!pType->IsScalar())
-            ? pEntry->__addr : pEntry);
+    cx_type *p_type = p_id->p_type;
 
-    //--Loop to execute any subscripts and field designators,
-    //--which will modify the data address at the top of the stack.
+    if (p_type->form == fcStream) return p_type;
+
+    // get the variable's runtime stack address.
+    cx_stack_item *pEntry = run_stack.get_value_address(p_id);
+    push((p_id->defn.how == dc_reference) || (!p_type->IsScalar())
+            ? pEntry->addr__ : pEntry);
+
+    // Loop to execute any subscripts and field designators,
+    // which will modify the data address at the top of the stack.
     int doneFlag = false;
     do {
         switch (token) {
 
-            case tcLeftSubscript:
+            case tc_left_subscript:
 
-                pType = ExecuteSubscripts(pType);
+                p_type = execute_subscripts(p_type);
 
                 break;
 
-            case tcDot:
-                pType = ExecuteField();
+            case tc_dot:
+                p_type = execute_field();
                 break;
 
             default: doneFlag = true;
         }
     } while (!doneFlag);
 
-    //if (!TokenIn(token, tlAssignOps))GetToken();
+    //if (!token_in(token, tokenlist_assign_ops))get_token();
 
-    //--If addressFlag is false, and the data is not an array
-    //--or a record, replace the address at the top of the stack
-    //--with the data value.
-    if ((!addressFlag) && (pType->IsScalar())) {
-        if (pType == pFloatType) {
-            Push(((TStackItem *) Pop()->__addr)->__float);
-        } else if (pType->Base() == pCharType) {
-            Push(((TStackItem *) Pop()->__addr)->__char);
+    // If address_flag is false, and the data is not an array
+    // or a record, replace the address at the top of the stack
+    // with the data value.
+    if ((!address_flag) && (p_type->IsScalar())) {
+        if (p_type == pFloatType) {
+            push(((cx_stack_item *) pop()->addr__)->float__);
+        } else if (p_type->Base() == pCharType) {
+            push(((cx_stack_item *) pop()->addr__)->char__);
         } else {
-            Push(((TStackItem *) Pop()->__addr)->__int);
+            push(((cx_stack_item *) pop()->addr__)->int__);
         }
     }
 
-    if (!addressFlag) {
-        void *pDataValue = pType->IsScalar() ? TOS() : TOS()->__addr;
+    if (!address_flag) {
+        void *p_data_value = p_type->IsScalar() ? top_of_stack() : top_of_stack()->addr__;
 
-        TraceDataFetch(pId, pDataValue, pType);
+        trace_data_fetch(p_id, p_data_value, p_type);
     }
 
-    return pType;
+    return p_type;
 }
 
-/**  ExecuteSubscripts   Execute each subscript expression to
+/**  execute_subscripts   Execute each subscript expression to
  *                      modify the data address at the top of
  *                      the runtime stack.
  *
- * @param pType : ptr to array type object
+ * @param p_type : ptr to array type object
  *
  * @return: ptr to subscripted variable's type object
  */
-TType *TExecutor::ExecuteSubscripts(const TType *pType) {
-    //--Loop to executed subscript lists enclosed in brackets.
-    while (token == tcLeftSubscript) {
+cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
+    // Loop to executed subscript lists enclosed in brackets.
+    while (token == tc_left_subscript) {
 
-        //--Loop to execute comma-separated subscript expressions
-        //--within a subscript list.
+        // Loop to execute comma-separated subscript expressions
+        // within a subscript list.
         do {
-            GetToken(); // index
-            ExecuteExpression();
+            get_token(); // index
+            execute_expression();
 
-            //--Evaluate and range check the subscript.
-            int value = Pop()->__int;
-            RangeCheck(pType, value);
+            // Evaluate and range check the subscript.
+            int value = pop()->int__;
+            range_check(p_type, value);
 
 
-            //--Modify the data address at the top of the stack.
-            Push(((char *) Pop()->__addr) +
-                    pType->array.pElmtType->size * (value - pType->array.minIndex));
+            // Modify the data address at the top of the stack.
+            push(((char *) pop()->addr__) +
+                    p_type->array.pElmtType->size * (value - p_type->array.minIndex));
 
-            //--Prepare for another subscript in this list.
-            if (token == tcComma) pType = pType->array.pElmtType;
+            // Prepare for another subscript in this list.
+            if (token == tc_comma) p_type = p_type->array.pElmtType;
 
-        } while (token == tcComma);
+        } while (token == tc_comma);
 
-        //--Prepare for another subscript list.
-        GetToken(); // ]
-        if (token == tcLeftSubscript) pType = pType->array.pElmtType;
+        // Prepare for another subscript list.
+        get_token(); // ]
+        if (token == tc_left_subscript) p_type = p_type->array.pElmtType;
     }
 
-    return pType->array.pElmtType;
+    return p_type->array.pElmtType;
 }
 
-/** ExecuteField         Execute a field designator to modify the
+/** execute_field         Execute a field designator to modify the
  *                       data address at the top of the runtime
  *                       stack
  *
  * @return: ptr to record field's type object
  */
-TType *TExecutor::ExecuteField(void) {
-    GetToken();
-    TSymtabNode *pFieldId = pNode;
+cx_type *cx_executor::execute_field(void) {
+    get_token();
+    cx_symtab_node *pFieldId = p_node;
 
-    Push(((char *) (Pop()->__addr)) + pFieldId->defn.data.offset);
+    push(((char *) (pop()->addr__)) + pFieldId->defn.data.offset);
 
-    GetToken();
-    return pFieldId->pType;
+    get_token();
+    return pFieldId->p_type;
 }

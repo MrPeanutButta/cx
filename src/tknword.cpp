@@ -4,133 +4,133 @@
 #include "misc.h"
 #include "token.h"
 
-             /*************************
-              *                       *
-              *  Reserved Word Table  *
-              *                       *
-              *************************/
+/*************************
+ *                       *
+ *  Reserved Word Table  *
+ *                       *
+ *************************/
 
 const int minResWordLen = 2; // min and max reserved
 const int maxResWordLen = 12; //   word lengths
 
 ///  Reserved word lists
-std::pair<std::string, TTokenCode> map_data[] = {
-    std::make_pair("if", tcIf),
-    std::make_pair("return", tcReturn),
-    std::make_pair("continue", tcContinue),
-    std::make_pair("friend", tcFriend),
-    std::make_pair("goto", tcGoto),
-    std::make_pair("try", tcTry),
-    std::make_pair("delete", tcDelete),
-    std::make_pair("short", tcShort),
-    std::make_pair("typeid", tcTypeId),
-    std::make_pair("do", tcDo),
-    std::make_pair("signed", tcSigned),
-    std::make_pair("typename", tcTypeName),
-    std::make_pair("break", tcBreak),
-    std::make_pair("long", tcLong),
-    std::make_pair("sizeof", tcSizeOf),
-    std::make_pair("union", tcUnion),
-    std::make_pair("case", tcCase),
-    std::make_pair("static", tcStatic),
-    std::make_pair("unsigned", tcUnsigned),
-    std::make_pair("catch", tcCatch),
-    std::make_pair("else", tcElse),
-    std::make_pair("namespace", tcNameSpace),
-    std::make_pair("using", tcUsing),
-    std::make_pair("enum", tcEnum),
-    std::make_pair("new", tcNew),
-    std::make_pair("virtual", tcVirtual),
-    std::make_pair("char16_t", tcChar16_t),
-    std::make_pair("explicit", tcExplicit),
-    std::make_pair("noexcept", tcNoExcept),
-    std::make_pair("char32_t", tcChar32_t),
-    std::make_pair("export", tcExport),
-    std::make_pair("nullptr", tcNullptr),
-    std::make_pair("switch", tcSwitch),
-    std::make_pair("struct", tcStruct),
-    std::make_pair("void", tcVoid),
-    std::make_pair("extern", tcExtern),
-    std::make_pair("operator", tcOperator),
-    std::make_pair("template", tcTemplate),
-    std::make_pair("const", tcConst),
-    std::make_pair("private", tcPrivate),
-    std::make_pair("this", tcThis),
-    std::make_pair("while", tcWhile),
-    std::make_pair("protected", tcProtected),
-    std::make_pair("thread_local", tcThreadLocal),
-    std::make_pair("for", tcFor),
-    std::make_pair("public", tcPublic),
-    std::make_pair("throw", tcThrow),
-    std::make_pair("default", tcDefault),
-    std::make_pair("typedef", tcTypeDef),
-    std::make_pair("mutable", tcMutable),
-    std::make_pair("include", tcInclude),
+std::pair<std::string, cx_token_code> map_data[] = {
+    std::make_pair("if", tc_IF),
+    std::make_pair("return", tc_RETURN),
+    std::make_pair("continue", tc_CONTINUE),
+    std::make_pair("friend", tc_FRIEND),
+    std::make_pair("go_to", tc_GOTO),
+    std::make_pair("try", tc_TRY),
+    std::make_pair("delete", tc_DELETE),
+    //    std::make_pair("short", tcShort),
+    std::make_pair("typeid", tc_TYPEID),
+    std::make_pair("do", tc_DO),
+    std::make_pair("signed", tc_SIGNED),
+    std::make_pair("typename", tc_TYPENAME),
+    std::make_pair("break", tc_BREAK),
+    //    std::make_pair("long", tcLong),
+    std::make_pair("sizeof", tc_SIZEOF),
+    //    std::make_pair("union", tcUnion),
+    std::make_pair("case", tc_CASE),
+    std::make_pair("static", tc_STATIC),
+    std::make_pair("unsigned", tc_UNSIGNED),
+    std::make_pair("catch", tc_CATCH),
+    std::make_pair("else", tc_ELSE),
+    std::make_pair("namespace", tc_NAMESPACE),
+    std::make_pair("using", tc_USING),
+    //   std::make_pair("enum", tcEnum),
+    std::make_pair("new", tc_NEW),
+    std::make_pair("virtual", tc_VIRTUAL),
+    //    std::make_pair("char16_t", tcChar16_t),
+    std::make_pair("explicit", tc_EXPLICIT),
+    std::make_pair("noexcept", tc_NOEXCEPT),
+    //    std::make_pair("char32_t", tcChar32_t),
+    std::make_pair("export", tc_EXPORT),
+    std::make_pair("nullptr", tc_NULLPTR),
+    std::make_pair("switch", tc_SWITCH),
+    //    std::make_pair("struct", tcStruct),
+    //    std::make_pair("void", tcVoid),
+    std::make_pair("extern", tc_EXTERN),
+    std::make_pair("operator", tc_OPERATOR),
+    std::make_pair("template", tc_TEMPLATE),
+    std::make_pair("const", tc_CONST),
+    std::make_pair("private", tc_PRIVATE),
+    std::make_pair("this", tc_THIS),
+    std::make_pair("while", tc_WHILE),
+    std::make_pair("protected", tc_PROTECTED),
+    std::make_pair("thread_local", tc_THREADLOCAL),
+    std::make_pair("for", tc_FOR),
+    std::make_pair("public", tc_PUBLIC),
+    std::make_pair("throw", tc_THROW),
+    std::make_pair("default", tc_DEFAULT),
+    std::make_pair("typedef", tc_TYPEDEF),
+    std::make_pair("mutable", tc_MUTABLE),
+    std::make_pair("include", tc_INCLUDE),
 };
 
 
 token_map TResWord(map_data,
         map_data + sizeof map_data / sizeof map_data[0]);
 
-             /*****************
-              *               *
-              *  Word Tokens  *
-              *               *
-              *****************/
+/*****************
+ *               *
+ *  Word Tokens  *
+ *               *
+ *****************/
 
-/** Get     Extract a word token from the source and downshift
+/** get     Extract a word token from the source and downshift
  *          its characters.  Check if it's a reserved word.
  * 
  * @param buffer : ptr to text input buffer.
  */
-void TWordToken::Get(TTextInBuffer &buffer) {
-    extern char_code_map charCodeMap;
+void cx_word_token::get(cx_text_in_buffer &buffer) {
+    extern cx_char_code_map char_code_map;
 
-    char ch = buffer.Char(); // char fetched from input
+    char ch = buffer.current_char(); // char fetched from input
     char *ps = string;
 
-    //--Get the word.
+    // get the word.
     do {
         *ps++ = ch;
-        ch = buffer.GetChar();
-    } while ((charCodeMap[ch] == ccLetter)
-            || (charCodeMap[ch] == ccDigit));
+        ch = buffer.get_char();
+    } while ((char_code_map[ch] == cc_letter)
+            || (char_code_map[ch] == cc_digit));
 
     *ps = '\0';
 
-    CheckForReservedWord();
+    check_for_reserved_word();
 }
 
-/** CheckForReservedWord    Is the word token a reserved word?
+/** check_for_reserved_word    Is the word token a reserved word?
  *                          If yes, set the its token code to
  *                          the appropriate code.  If not, set
- *                          the token code to tcIdentifier.
+ *                          the token code to tc_identifier.
  */
-void TWordToken::CheckForReservedWord(void) {
+void cx_word_token::check_for_reserved_word(void) {
     std::string __s(string);
-    code = tcIdentifier; // first assume it's an identifier
+    code__ = tc_identifier; // first assume it's an identifier
 
-    //--Is it the right length?
+    // Is it the right length?
     if ((__s.length() >= minResWordLen) &&
             (__s.length() <= maxResWordLen)) {
-        //--Yes.  Use the word length to pick the appropriate list
-        //--from the reserved word table and check to see if the word
-        //--is in there.
-        TTokenCode __c = TResWord[__s];
-        if (__c > 0) code = __c;
+        // Yes.  Use the word length to pick the appropriate list
+        // from the reserved word table and check to see if the word
+        // is in there.
+        cx_token_code __c = TResWord[__s];
+        if (__c > 0) code__ = __c;
 
     }
 
 }
 
-/** Print       Print the token to the list file.
+/** print       print the token to the list file.
  */
-void TWordToken::Print(void) const {
-    if (code == tcIdentifier) {
+void cx_word_token::print(void) const {
+    if (code__ == tc_identifier) {
         sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
     } else {
         sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
     }
 
-    list.PutLine();
+    list.put_line();
 }
