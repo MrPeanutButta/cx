@@ -198,6 +198,24 @@ cx_type *cx_executor::execute_simple_expression(void) {
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
                     p_result_type = p_integer_type;
+                } else if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_char_type)) {
+
+                    int value2 = pop()->int__;
+                    char value1 = pop()->char__;
+
+                    push(op == tc_plus ? value1 + value2
+                            : value1 - value2);
+                    p_result_type = p_integer_type;
+                }else if ((p_result_type == p_char_type) &&
+                        (p_operand_type == p_integer_type)) {
+
+                    char value2 = pop()->char__;
+                    int value1 = pop()->int__;
+
+                    push(op == tc_plus ? value1 + value2
+                            : value1 - value2);
+                    p_result_type = p_char_type;
                 } else {
 
                     // real    +|- real
@@ -560,8 +578,8 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     }
 
     if (!address_flag) {
-        void *p_data_value = p_type->is_scalar_type() ? 
-            top_of_stack() : top_of_stack()->addr__;
+        void *p_data_value = p_type->is_scalar_type() ?
+                top_of_stack() : top_of_stack()->addr__;
 
         trace_data_fetch(p_id, p_data_value, p_type);
     }

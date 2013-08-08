@@ -1,3 +1,18 @@
+/* Cx - standard library
+ *
+ * file     : cctype
+ * author   : <aaron.hebert@gmail.com>
+ * desc     : Character handling functions
+ * 
+ * This header declares a set of functions to classify and transform 
+ * individual characters.
+ * 
+ * Missing:
+ *      iscntrl
+ *      isgraph
+ *      isprint
+ *      ispunct
+ */
 
 /* isdigit - Check if character is decimal digit
  * Checks whether c is a decimal digit character.
@@ -7,6 +22,7 @@
  *
  * @param c : char to test if digit.
  * @return true if digit, false if anything else. */
+
 bool isdigit(char c){
     return ((c >= '0') && (c <= '9'));
 }
@@ -20,6 +36,7 @@ bool isdigit(char c){
  *
  * @param c : char to test if hex digit.
  * @return true if hex digit, false if not hex digit. */
+
 bool isxdigit(char c){
     return  ((c == 'a') || (c == 'A') ||
             (c == 'b') || (c == 'B') ||
@@ -39,6 +56,7 @@ bool isxdigit(char c){
  *
  * @param c : char to test if lowercase.
  * @return true if lowercase, false if anything else (including digits). */
+
 bool islower(char c){
     return ((c >= 'a') && (c <= 'z'));
 }
@@ -52,6 +70,7 @@ bool islower(char c){
  *
  * @param c : char to test if uppercase.
  * @return true if uppercase, false if anything else (including digits). */
+
 bool isupper(char c){
     return ((c >= 'A') && (c <= 'Z'));
 }
@@ -66,6 +85,7 @@ bool isupper(char c){
  *
  * @param c : char to test if alphabetic.
  * @return true if alphabetic, false if anything else. */
+
 bool isalpha(char c){
     return (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')));
 }
@@ -80,6 +100,79 @@ bool isalpha(char c){
  *
  * @param c : char to test if alphanumeric.
  * @return true if alphanumeric, false if anything else. */
+
 bool isalnum(char c){
     return (isdigit(c) || isalpha(c));
 }
+
+/* isspace - Check if character is a white-space
+ * Checks whether c is a white-space character.
+ *
+ * For the "C" locale, white-space characters are any of:
+ * ' '	(0x20)	space (SPC)
+ * '\t'	(0x09)	horizontal tab (TAB)
+ * '\n'	(0x0a)	newline (LF)
+ * '\v'	(0x0b)	vertical tab (VT)
+ * '\f'	(0x0c)	feed (FF)
+ * '\r'	(0x0d)	carriage return (CR)
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if whitespace.
+ * @return true if whitespace, false if anything else. */
+
+bool isspace(char c){
+    return ((c == ' ') || (c == '\t') ||
+            (c == '\n')|| (c == '\v') ||
+            (c == '\f')|| (c == '\r'));
+}
+
+/* isblank - Check if character is blank
+ * Checks whether c is a blank character.
+ * A blank character is a space character used to separate 
+ * words within a line of text.
+ *
+ * The standard "C" locale considers blank characters the 
+ * tab character ('\t') and the space character (' ').
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if blank.
+ * @return true if blank, false if anything else. */
+
+bool isblank(char c){
+    return ((c == ' ') || (c == '\t'));
+}
+
+/* toupper - Convert lowercase letter to uppercase
+ * Converts c to its uppercase equivalent if c is a lowercase 
+ * letter and has an uppercase equivalent. If no such conversion 
+ * is possible, the value returned is c unchanged.
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to uppercase.
+ * @return uppercase if possible, c unchanged if anything else. */
+
+char toupper(char c){
+    if(islower(c)) return (c - 32);
+
+    return c;
+}
+
+/* tolower - Convert uppercase letter to lowercase
+ * Converts c to its lowercase equivalent if c is an uppercase 
+ * letter and has a lowercase equivalent. If no such conversion 
+ * is possible, the value returned is c unchanged.
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to lowercase.
+ * @return lowercase if possible, c unchanged if anything else. */
+
+char tolower(char c){
+    if(isupper(c)) return (c + 32);
+
+    return c;
+}
+
