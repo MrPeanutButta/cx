@@ -19,7 +19,7 @@ const char *cx_symbol_strings[] = {
     "typename", "break", "sizeof",
     "case", "static", "unsigned", "catch", "else", "namespace",
     "using", "new", "virtual", "explicit",
-    "noexcept", "export", "nullptr", "switch",
+    "noexcept", "export", "switch",
     "extern", "operator", "template", "const",
     "private", "this", "while", "protected", "threadlocal",
     "for", "public", "throw", "default", "typedef", "mutable", "include"

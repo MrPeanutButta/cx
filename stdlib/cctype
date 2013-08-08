@@ -1,0 +1,32 @@
+
+
+/* isxdigit - Check if character is hexadecimal digit
+ * Checks whether c is a hexdecimal digit character.
+ * Hexadecimal digits are any of: 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if hex digit.
+ * @return true if hex digit, false if not hex digit. */
+bool isxdigit(char c){
+    return  ((c == 'a') || (c == 'A') ||
+            (c == 'b') || (c == 'B') ||
+            (c == 'c') || (c == 'C') ||
+            (c == 'd') || (c == 'D') ||
+            (c == 'e') || (c == 'E') ||
+            (c == 'f') || (c == 'F') ||
+            ((c >= '0') && (c <= '9')));
+}
+
+/* islower - Check if character is lowercase letter
+ * Checks whether c is a lowercase letter.
+ * A lowercase letter is any of: 
+ * a b c d e f g h i j k l m n o p q r s t u v w x y z
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if lowercase.
+ * @return true if lowercase, false if anything else (including digits). */
+bool islower(char c){
+    return ((c >= 'a') && (c <= 'z'));
+}

@@ -107,7 +107,8 @@ const char *error_messages[] = {
     "code segment overflow",
     "Unimplemented feature",
     "Missing (",
-    "Missing '"
+    "Missing '",
+    "Invalid escape character"
 };
 
 /** cx_error       print an arrow under the error and then

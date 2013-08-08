@@ -46,6 +46,7 @@ public:
         return string;
     }
 
+    char get_escape_char(const char &c);
     virtual void get(cx_text_in_buffer &buffer) = 0;
     virtual int is_delimiter(void) const = 0;
     virtual void print(void) const = 0;
@@ -118,7 +119,7 @@ public:
     cx_char_token() {
         code__ = tc_char;
     }
-
+    
     virtual void get(cx_text_in_buffer &buffer);
 
     virtual int is_delimiter(void) const {

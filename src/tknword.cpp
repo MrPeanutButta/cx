@@ -10,8 +10,8 @@
  *                       *
  *************************/
 
-const int minResWordLen = 2; // min and max reserved
-const int maxResWordLen = 12; //   word lengths
+//const int minResWordLen = 2; // min and max reserved
+//const int maxResWordLen = 12; //   word lengths
 
 ///  Reserved word lists
 std::pair<std::string, cx_token_code> map_data[] = {
@@ -46,7 +46,7 @@ std::pair<std::string, cx_token_code> map_data[] = {
     std::make_pair("noexcept", tc_NOEXCEPT),
     //    std::make_pair("char32_t", tcChar32_t),
     std::make_pair("export", tc_EXPORT),
-    std::make_pair("nullptr", tc_NULLPTR),
+    //    std::make_pair("nullptr", tc_NULLPTR),
     std::make_pair("switch", tc_SWITCH),
     //    std::make_pair("struct", tcStruct),
     //    std::make_pair("void", tcVoid),
@@ -107,19 +107,13 @@ void cx_word_token::get(cx_text_in_buffer &buffer) {
  *                          the token code to tc_identifier.
  */
 void cx_word_token::check_for_reserved_word(void) {
-    std::string __s(string);
+
     code__ = tc_identifier; // first assume it's an identifier
 
-    // Is it the right__ length?
-    if ((__s.length() >= minResWordLen) &&
-            (__s.length() <= maxResWordLen)) {
-        // Yes.  Use the word length to pick the appropriate list
-        // from the reserved word table and check to see if the word
-        // is in there.
-        cx_token_code __c = TResWord[__s];
-        if (__c > 0) code__ = __c;
-
-    }
+    /* from the reserved word table, check to see if the word
+     * is in there. */
+    cx_token_code c__ = TResWord[this->string__()];
+    if (c__ > 0) code__ = c__;
 
 }
 
