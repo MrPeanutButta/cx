@@ -61,7 +61,6 @@ public:
 
         struct {
             cx_routine_code which;
-            int return_marker;
             int parm_count;
             int total_parm_size;
             int total_local_size;

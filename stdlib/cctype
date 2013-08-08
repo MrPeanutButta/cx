@@ -1,4 +1,15 @@
 
+/* isdigit - Check if character is decimal digit
+ * Checks whether c is a decimal digit character.
+ * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if digit.
+ * @return true if digit, false if anything else. */
+bool isdigit(char c){
+    return ((c >= '0') && (c <= '9'));
+}
 
 /* isxdigit - Check if character is hexadecimal digit
  * Checks whether c is a hexdecimal digit character.
@@ -16,7 +27,7 @@ bool isxdigit(char c){
             (c == 'd') || (c == 'D') ||
             (c == 'e') || (c == 'E') ||
             (c == 'f') || (c == 'F') ||
-            ((c >= '0') && (c <= '9')));
+            (isdigit(c)));
 }
 
 /* islower - Check if character is lowercase letter
@@ -57,18 +68,6 @@ bool isupper(char c){
  * @return true if alphabetic, false if anything else. */
 bool isalpha(char c){
     return (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')));
-}
-
-/* isdigit - Check if character is decimal digit
- * Checks whether c is a decimal digit character.
- * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
- * Note:
- *      param 'char c' should be 'const char &c'.
- *
- * @param c : char to test if digit.
- * @return true if digit, false if anything else. */
-bool isdigit(char c){
-    return ((c >= '0') && (c <= '9'));
 }
 
 /* isalnum - Check if character is alphanumeric

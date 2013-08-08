@@ -185,9 +185,6 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
  * @param p_function_id : ptr to the subroutine name's symtab node
  */
 void cx_executor::execute_RETURN(cx_symtab_node *p_function_id) {
-
     execute_assignment(p_function_id);
-    go_to(p_function_id->defn.routine.return_marker);
-
-    get_token();
+    token = tc_dummy;
 }
