@@ -88,7 +88,7 @@ enum cx_token_code {
     tc_BREAK, tc_SIZEOF, tc_CASE, tc_STATIC,
     tc_UNSIGNED, tc_CATCH, tc_ELSE, tc_NAMESPACE, tc_USING,
     tc_NEW, tc_VIRTUAL, tc_EXPLICIT, tc_NOEXCEPT,
-    tc_EXPORT, tc_NULLPTR, tc_SWITCH,
+    tc_EXPORT, tc_SWITCH,
     tc_EXTERN, tc_OPERATOR, tc_TEMPLATE, tc_CONST,
     tc_PRIVATE, tc_THIS, tc_WHILE, tc_PROTECTED, tc_THREADLOCAL,
     tc_FOR, tc_PUBLIC, tc_THROW, tc_DEFAULT, tc_TYPEDEF, tc_MUTABLE, tc_INCLUDE

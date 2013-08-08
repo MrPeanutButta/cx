@@ -7,8 +7,6 @@
 #include "exec.h"
 #include "common.h"
 
-
-
 /** execute_expression   Execute an expression (binary relational
  *                      operators = < > <> <= and >= ).
  *
@@ -441,10 +439,10 @@ cx_type *cx_executor::execute_factor(void) {
         case tc_string:
         {
             //get_token();
-            // push either a character or a string address onto the
-            // runtime stack, depending on the string length.
-            //int length = strlen(p_node->string__()) - 2; // skip quotes
-            if (p_node->string_length == 1) {
+            /* push either a character or a string address onto the
+             * runtime stack, depending on the string length. */
+            int length = strlen(p_node->string__()) - 2; // skip quotes
+            if (length == 1) {
 
                 // Character
                 push(p_node->defn.constant.value.char__);

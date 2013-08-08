@@ -1,9 +1,20 @@
-
 /* Cx standard math functions.
  *
  */
 
-int isqrt(int &num) {
+// Euclidean Greatest Common Divisor (GCD) algorithm
+int igcd(int x,  int y){
+	if(x == y){
+		return x;
+	}else if(x < y){
+		return igcd(x, y - x);
+	}else{
+		return igcd(x - y, y);
+	}
+}
+
+// Binary numeral system (base 2) square root (integer)
+int isqrt(int num) {
     int res = 0;
     int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
 
@@ -25,7 +36,7 @@ int isqrt(int &num) {
     return res;
 }
 
-int sqrt_approx(int &val_int){
+int isqrt_approx(int val_int){
     /*
      * To justify the following code, prove that
      *
