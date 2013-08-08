@@ -58,14 +58,12 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
             icode.put(tc_semicolon);
             icode.put(tc_right_bracket);
             
-
             // Set the program's icode.
             p_program_ptr_id->defn.routine.p_icode = new cx_icode(icode);
         }
 
         p_function_id->defn.routine.which = rc_declared;
         parse_block(p_function_id);
-        p_function_id->defn.routine.return_marker = put_location_marker();
     }
 
     p_function_id->defn.routine.p_symtab = symtab_stack.exit_scope();
