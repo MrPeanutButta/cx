@@ -18,6 +18,12 @@
 //int int_sqrt(int num);
 //int inc_var(int &num);
 
+bool isspace(char c){
+    return ((c == ' ') || (c == '\t') ||
+            (c == '\n')|| (c == '\v') ||
+            (c == '\f')|| (c == '\r'));
+}
+
 bool isalpha(char c){
     return (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')));
 }
@@ -28,6 +34,18 @@ bool islower(char c){
 
 bool isupper(char c){
     return ((c >= 'A') && (c <= 'Z'));
+}
+
+char toupper(char c){
+    if(islower(c)) return (c - 32);
+
+    return c;
+}
+
+char tolower(char c){
+    if(isupper(c)) return (c + 32);
+
+    return c;
 }
 
 bool isdigit(char c){
@@ -47,6 +65,7 @@ bool isxdigit(char c){
 bool isalnum(char c){
     return (isdigit(c) || isalpha(c));
 }
+
 
 
 /* Cx standard math functions.
@@ -92,7 +111,7 @@ int inc_var(int &num){
 }
 
 int main(){
-    int i = 0;
+    /*int i = 0;
     int root = 4096;
     int c_gcd = 0;
     int array[10];
@@ -124,11 +143,11 @@ int main(){
     __cx_stdout__ = 'r';
     __cx_stdout__ = 'l';
     __cx_stdout__ = 'd';
-    __cx_stdout__ = '!';
+    __cx_stdout__ = '!';*/
 
     char c = 'd';
-    
-    bool test_bool = islower(c);
+    /*
+    test_bool = islower(c);
     test_bool = isxdigit(c);
 
     c = 'L';
@@ -166,5 +185,25 @@ int main(){
     c = '7';
     test_bool = isalnum(c);
 
+    c = ' ';
+    test_bool = isspace(c);
+
+    c = '0';
+    test_bool = isspace(c);
+
+    c = '\n';
+    test_bool = isspace(c);
+
+    c = '\f';
+    test_bool = isspace(c);
+
+    c = '\r';
+    test_bool = isspace(c);*/
+
+    char a = 'a';
+
+    c = toupper(a);
+
+    c = tolower(c);
     return 0;
 }

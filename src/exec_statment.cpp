@@ -126,35 +126,46 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             } else if (((p_target_type->base_type() == p_integer_type) &&
                     (p_target_type->base_type()->form != fc_array)) ||
                     (p_target_type->base_type()->form == fc_enum)) {
-                int value(0);
+
+                int int_value(0);
 
                 if (!p_expr2_type) {
-                    value = ((p_expr_type->base_type() == p_integer_type) ||
-                            (p_expr_type->base_type() == p_boolean_type))
-                            ? pop()->int__ // real := integer
-                            : pop()->float__; // real := real
+
+                    if ((p_expr_type->base_type() == p_integer_type) ||
+                            (p_expr_type->base_type() == p_boolean_type)) {
+                        int_value = pop()->int__;
+                    } else if (p_expr_type->base_type() == p_float_type) {
+                        int_value = pop()->float__;
+                    } else if (p_expr_type->base_type() == p_char_type) {
+                        int_value = (int) pop()->char__;
+                    }
+
                 } else {
-                    value = ((p_expr2_type->base_type() == p_integer_type) ||
+                    int_value = ((p_expr2_type->base_type() == p_integer_type) ||
                             (p_expr2_type->base_type() == p_boolean_type))
                             ? pop()->int__ // real := integer
                             : pop()->float__; // real := real
                 }
 
-                range_check(p_target_type, value);
+                range_check(p_target_type, int_value);
 
                 // integer     := integer
                 // enumeration := enumeration
-
-
-                p_target->int__ = value;
-
+                p_target->int__ = int_value;
 
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
-                range_check(p_target_type, value);
+                char char_value('\0');
+                
+                if(p_expr_type->base_type() == p_integer_type){
+                    char_value = (char) pop()->int__;
+                } else if((p_expr_type->base_type() == p_char_type)){
+                    char_value = pop()->char__;
+                }
+
+                range_check(p_target_type, char_value);
 
                 // character := character
-                p_target->char__ = value;
+                p_target->char__ = char_value;
             } else if (p_target_type->base_type() == p_file_type) {
 
                 if (p_expr_type == p_integer_type) {
@@ -168,7 +179,7 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                     fprintf(p_target_id->p_type->stream.p_file_stream, "%c", char__);
                 } else {
                     void *p_source = pop()->addr__;
-                    fprintf(p_target_id->p_type->stream.p_file_stream, "%s", (char *)p_source);
+                    fprintf(p_target_id->p_type->stream.p_file_stream, "%s", (char *) p_source);
                 }
             } else {
                 void *p_source = pop()->addr__;
