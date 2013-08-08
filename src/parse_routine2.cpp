@@ -151,15 +151,15 @@ void cx_parser::parse_actual_parm_list(const cx_symtab_node *p_function_id,
             locals.p_parms_ids
             : nullptr;
 
-    // If there are no actual parameters, there better not be
-    // any formal parameters either.
+    /* If there are no actual parameters, there better not be
+     * any formal parameters either. */
     if (token != tc_left_paren) {
         if (parm_check_flag && p_formal_id) cx_error(err_wrong_number_of_parms);
         return;
     }
 
-    // Loop to parse actual parameter expressions
-    // separated by commas.
+    /* Loop to parse actual parameter expressions
+     * separated by commas. */
     do {
         //  ( or ,
         get_token_append();
@@ -184,34 +184,34 @@ void cx_parser::parse_actual_parm_list(const cx_symtab_node *p_function_id,
  */
 void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
         int parm_check_flag) {
-    // If we're not checking the actual parameters against
-    // the corresponding formal parameters (as during error
-    // recovery), just parse the actual parameter.
+    /* If we're not checking the actual parameters against
+     * the corresponding formal parameters (as during error
+     * recovery), just parse the actual parameter. */
     if (!parm_check_flag) {
         parse_expression();
         return;
     }
 
-    // If we've already run out of formal parameter,
-    // we have an error.  Go into error recovery mode and
-    // parse the actual parameter anyway.
+    /* If we've already run out of formal parameter,
+     * we have an error.  Go into error recovery mode and
+     * parse the actual parameter anyway. */
     if (!p_formal_id) {
         cx_error(err_wrong_number_of_parms);
         parse_expression();
         return;
     }
 
-    // Formal value parameter: The actual parameter can be an
-    //                         arbitrary expression that is
-    //                         assignment type compatible with
-    //                         the formal parameter.
+    /* Formal value parameter: The actual parameter can be an
+     *                         arbitrary expression that is
+     *                         assignment type compatible with
+     *                         the formal parameter. */
     if (p_formal_id->defn.how == dc_value_parm) {
         check_assignment_type_compatible(p_formal_id->p_type,
                 parse_expression(),
                 err_incompatible_types);
-    }// Formal VAR parameter: The actual parameter must be a
-        //                       variable of the same type as the
-        //                       formal parameter.
+    }   /* Formal VAR parameter: The actual parameter must be a
+         *                       variable of the same type as the
+         *                       formal parameter. */
     else if (token == tc_identifier) {
         cx_symtab_node *p_actual_id = find(p_token->string__());
 
