@@ -470,6 +470,12 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
     if ((p_target_type == p_float_type)
             && (p_value_type == p_integer_type)) return;
 
+    if ((p_target_type == p_integer_type)
+            && (p_value_type == p_char_type)) return;
+
+    if ((p_target_type == p_char_type)
+            && (p_value_type == p_integer_type)) return;
+
     if ((p_target_type == p_float_type)
             && (p_value_type == pDoubleType)) return;
 
@@ -507,7 +513,10 @@ bool integer_operands(const cx_type *p_type1, const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
     p_type2 = p_type2->base_type();
 
-    return (p_type1 == p_integer_type) && (p_type2 == p_integer_type);
+    return ((p_type1 == p_integer_type) && (p_type2 == p_integer_type) ||
+            (p_type1 == p_char_type) && (p_type2 == p_integer_type) ||
+            (p_type1 == p_integer_type) && (p_type2 == p_char_type) ||
+            (p_type1 == p_char_type) && (p_type2 == p_char_type));
 }
 
 /** real_operands        Check that the types of both operands

@@ -61,6 +61,7 @@ public:
 
         struct {
             cx_routine_code which;
+            int return_marker;              // used for globals return location
             int parm_count;
             int total_parm_size;
             int total_local_size;
