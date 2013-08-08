@@ -85,7 +85,8 @@ enum cx_error_code {
     err_code_segment_overflow,
     err_unimplemented_feature,
     err_missing_left_paren,
-    err_missing_single_quote
+    err_missing_single_quote,
+    err_invalid_escape_char
 };
 
 void cx_error(cx_error_code ec);

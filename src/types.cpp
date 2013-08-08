@@ -367,7 +367,7 @@ cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
 void remove_type(cx_type *&p_type) {
     if (p_type == nullptr) return;
 
-    if (p_type && (--p_type->reference_count == 0)) {
+    if (--p_type->reference_count == 0) {
 
         delete p_type;
         p_type = nullptr;

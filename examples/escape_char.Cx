@@ -1,0 +1,29 @@
+
+
+int main(){
+    
+    __cx_stdout__ = '\n';
+    __cx_stdout__ = 'h';
+    __cx_stdout__ = '\r';
+    __cx_stdout__ = 'e';
+    __cx_stdout__ = '\'';
+    __cx_stdout__ = '\"';
+    __cx_stdout__ = '\?';
+    __cx_stdout__ = '\\';
+    __cx_stdout__ = '\a';
+    __cx_stdout__ = '\b';
+    __cx_stdout__ = '\f';
+    __cx_stdout__ = '\t';
+    __cx_stdout__ = '\v';
+    __cx_stdout__ = '\n';
+    __cx_stdout__ = '\n';
+    __cx_stdout__ = '\n';
+    __cx_stdout__ = '\n';
+    __cx_stdout__ = '1';
+
+    __cx_stdout__ = "\n\'Hello, Wor\tld\'\n\n";
+
+    float f = 5.5;
+
+    return 0;
+}

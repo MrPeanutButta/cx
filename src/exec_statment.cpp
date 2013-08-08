@@ -8,8 +8,6 @@
 #include "exec.h"
 #include "common.h"
 
-
-
 /** execute_statement   	Execute a Cx statement
  *
  * @param p_function_id : ptr to the routine symtab node
@@ -168,9 +166,10 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 } else if (p_expr_type == p_char_type) {
                     char char__ = pop()->char__;
                     fprintf(p_target_id->p_type->stream.p_file_stream, "%c", char__);
+                } else {
+                    void *p_source = pop()->addr__;
+                    fprintf(p_target_id->p_type->stream.p_file_stream, "%s", (char *)p_source);
                 }
-
-
             } else {
                 void *p_source = pop()->addr__;
 

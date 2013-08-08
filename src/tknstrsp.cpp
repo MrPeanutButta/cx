@@ -1,9 +1,42 @@
 #include <cstdio>
 #include "token.h"
 
+/** get_escape_char             Return escape char
+ * 
+ * simple-escape-sequence: one of       \’ \" \? \\
+ *                                      \a \b \f \n \r \t \v
+ * octal-escape-sequence:       \ octal-digit
+ *                              \ octal-digit octal-digit
+ *                              \ octal-digit octal-digit octal-digit 
+ * hexadecimal-escape-sequence: \x hexadecimal-digit
+ *                              hexadecimal-escape-sequence hexadecimal-digit
+ * 
+ * @param c : char following a \.
+ * @return the escape char.
+ */
+char cx_token::get_escape_char(const char& c) {
+    switch (c) {
+        case '\'': return '\'';
+        case '\"': return '\"';
+        case '\?': return '\?';
+        case '\\': return '\\';
+        case 'a': return '\a';
+        case 'b': return '\b';
+        case 'f': return '\f';
+        case 'n': return '\n';
+        case 'r': return '\r';
+        case 't': return '\t';
+        case 'v': return '\v';
+        default:
+            cx_error(err_invalid_escape_char);
+    }
+
+    return '\0';
+}
+
 /*******************
  *                 *
- *  string__ Tokens  *
+ *  string__ Tokens*
  *                 *
  *******************/
 
@@ -22,17 +55,22 @@ void cx_string_token::get(cx_text_in_buffer &buffer) {
     while (ch != eof_char) {
         if (ch == '\"') { // look for another quote
 
-            // Fetched a quote.  Now check for an adjacent quote,
-            // since two consecutive quotes represent a single
-            // quote in the string.
+            /* Fetched a quote.  Now check for an adjacent quote,
+             * since two consecutive quotes represent a single
+             * quote in the string. */
             ch = buffer.get_char();
-            if (ch != '\"') break; // not another quote, so previous
-            //   quote ended the string
+            if (ch != '\"') break; /* not another quote, so previous
+                                    * quote ended the string */
         }// Replace the end of line character with a blank.
         else if (ch == '\0') ch = ' ';
 
-        // Append current char to string, then get the next__ char.
-        *ps++ = ch;
+        if (ch == '\\') {
+            *ps++ = get_escape_char(buffer.get_char());
+        } else {
+            // Append current char to string, then get the next__ char.
+            *ps++ = ch;
+        }
+
         ch = buffer.get_char();
     }
 
@@ -53,7 +91,13 @@ void cx_char_token::get(cx_text_in_buffer &buffer) {
     *ps++ = '\''; // opening quote
     // get the string.
     ch = buffer.get_char(); // first char after opening quote
-    *ps++ = ch;
+
+    if (ch == '\\') {
+        *ps++ = get_escape_char(buffer.get_char());
+    } else {
+        *ps++ = ch;
+    }
+
     // Append current char to string, then get the next__ char.
     ch = buffer.get_char();
 
