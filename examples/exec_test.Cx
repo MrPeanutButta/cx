@@ -111,7 +111,7 @@ int inc_var(int &num){
 }
 
 int main(){
-    /*int i = 0;
+    int i = 0;
     int root = 4096;
     int c_gcd = 0;
     int array[10];
@@ -143,10 +143,10 @@ int main(){
     __cx_stdout__ = 'r';
     __cx_stdout__ = 'l';
     __cx_stdout__ = 'd';
-    __cx_stdout__ = '!';*/
+    __cx_stdout__ = '!';
 
     char c = 'd';
-    /*
+
     test_bool = islower(c);
     test_bool = isxdigit(c);
 
@@ -198,7 +198,7 @@ int main(){
     test_bool = isspace(c);
 
     c = '\r';
-    test_bool = isspace(c);*/
+    test_bool = isspace(c);
 
     char a = 'a';
 
