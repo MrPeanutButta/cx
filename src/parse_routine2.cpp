@@ -11,8 +11,8 @@
  */
 cx_symtab_node *cx_parser::parse_formal_parm_list(int &count, int &total_size) {
 
-    cx_symtab_node *p_parm_id; // ptrs to parm symtab nodes
-    cx_symtab_node *p_first_id, *p_last_id;
+    cx_symtab_node *p_parm_id = nullptr; // ptrs to parm symtab nodes
+    cx_symtab_node *p_first_id, *p_last_id = nullptr;
     cx_symtab_node *p_prev_sublist_last_id = nullptr;
     cx_symtab_node *p_parm_list = nullptr; // ptr to list of parm nodes
     cx_define_code parm_defined_as; // how a parm is defined

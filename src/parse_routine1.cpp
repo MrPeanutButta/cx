@@ -57,6 +57,7 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
             icode.put(__MAIN_ENTRY__);
             icode.put(tc_semicolon);
             icode.put(tc_right_bracket);
+            
 
             // Set the program's icode.
             p_program_ptr_id->defn.routine.p_icode = new cx_icode(icode);

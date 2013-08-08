@@ -2,7 +2,8 @@
 
 /* isxdigit - Check if character is hexadecimal digit
  * Checks whether c is a hexdecimal digit character.
- * Hexadecimal digits are any of: 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+ * Hexadecimal digits are any of: 
+ * 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
  * Note:
  *      param 'char c' should be 'const char &c'.
  *
@@ -29,4 +30,57 @@ bool isxdigit(char c){
  * @return true if lowercase, false if anything else (including digits). */
 bool islower(char c){
     return ((c >= 'a') && (c <= 'z'));
+}
+
+/* isupper - Check if character is uppercase letter
+ * Checks whether c is a uppercase letter.
+ * A uppercase letter is any of: 
+ * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if uppercase.
+ * @return true if uppercase, false if anything else (including digits). */
+bool isupper(char c){
+    return ((c >= 'A') && (c <= 'Z'));
+}
+
+/* isalpha - Check if character is alphabetic
+ * Checks whether c is an alphabetic letter.
+ * A letter is any of: 
+ * a b c d e f g h i j k l m n o p q r s t u v w x y z
+ * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if alphabetic.
+ * @return true if alphabetic, false if anything else. */
+bool isalpha(char c){
+    return (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z')));
+}
+
+/* isdigit - Check if character is decimal digit
+ * Checks whether c is a decimal digit character.
+ * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if digit.
+ * @return true if digit, false if anything else. */
+bool isdigit(char c){
+    return ((c >= '0') && (c <= '9'));
+}
+
+/* isalnum - Check if character is alphanumeric
+ * Checks whether c is either a decimal digit or an 
+ * uppercase or lowercase letter.
+ * The result is true if either isalpha or isdigit 
+ * would also return true.
+ * Note:
+ *      param 'char c' should be 'const char &c'.
+ *
+ * @param c : char to test if alphanumeric.
+ * @return true if alphanumeric, false if anything else. */
+bool isalnum(char c){
+    return (isdigit(c) || isalpha(c));
 }
