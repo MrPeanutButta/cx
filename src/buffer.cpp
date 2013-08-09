@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cerrno>
 #include <iostream>
 #include <ctime>
 #include "common.h"
@@ -41,7 +42,10 @@ cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name, cx_abort_cod
 
     // Open the input file.  Abort if failed.
     file.open(p_file_name, std::ios::in);
-    if (!file.good()) abort_translation(ac);
+    if (!file.good()) {
+        std::cout << p_file_name << ": " <<std::strerror(errno) << std::endl;
+        abort_translation(ac);
+    }
 }
 
 /** get_char        Fetch and return the next__ character from the

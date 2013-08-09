@@ -42,7 +42,7 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
         case tc_RETURN: parse_RETURN(p_function_id);
             break;
         case tc_pound:
-            get_token_append();
+            get_token();
             parse_execute_directive(p_function_id);
             break;
     }

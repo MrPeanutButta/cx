@@ -312,15 +312,15 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     pFalseId->next__ = pTrueId;
 
-    pStdOut = p_symtab->enter("__cx_stdout__", ::dc_variable);
+    pStdOut = p_symtab->enter("stdout", ::dc_variable);
     set_type(pStdOut->p_type, p_file_type);
     pStdOut->p_type->stream.p_file_stream = stdout;
 
-    pStdIn = p_symtab->enter("__cx_stdin__", ::dc_variable);
+    pStdIn = p_symtab->enter("stdin", ::dc_variable);
     set_type(pStdIn->p_type, p_file_type);
     pStdIn->p_type->stream.p_file_stream = stdin;
 
-    pStdErr = p_symtab->enter("__cx_stderr__", ::dc_variable);
+    pStdErr = p_symtab->enter("stderr", ::dc_variable);
     set_type(pStdErr->p_type, p_file_type);
     pStdErr->p_type->stream.p_file_stream = stderr;
 

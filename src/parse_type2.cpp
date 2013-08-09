@@ -20,16 +20,19 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
 
 
     if (token == tc_right_subscript) {
+        //get_token_append();
         // xxx fixme, need a way to get out of assignment
-        parse_assignment(p_array_node);
-    } else {
-        int min_index = 0;
-        int max_index = p_token->value().int__;
-        set_type(p_element_type->array.p_index_type, p_integer_type);
-        p_array_type->array.element_count = max_index;
-        p_array_type->array.min_index = min_index;
-        p_array_type->array.maxIndex = max_index - 1;
+        
+    }
 
+    int min_index = 0;
+    int max_index = p_token->value().int__;
+    set_type(p_element_type->array.p_index_type, p_integer_type);
+    p_array_type->array.element_count = max_index;
+    p_array_type->array.min_index = min_index;
+    p_array_type->array.maxIndex = max_index - 1;
+
+    if ((token != tc_right_paren) && (token != tc_right_subscript)) {
         parse_expression();
     }
 
@@ -38,20 +41,24 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     }
 
     conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
+    
+    if (token_in(token, tokenlist_assign_ops))parse_assignment(p_array_node);
 
-    //p_array_type->array.p_element_type->size = array_size(p_array_type);
     set_type(p_array_node->p_type, p_array_type);
-    p_array_node->defn.how = dc_variable;
+    
+    if(p_array_node->defn.how == ::dc_undefined){
+        p_array_node->defn.how = dc_variable;
+    }
 
     //add to routines variable list
-    if (p_function_id) {
-        cx_symtab_node *__array = p_function_id->defn.routine.locals.p_type_ids;
-        if (!__array) {
+    if (p_function_id != nullptr) {
+        cx_symtab_node *array = p_function_id->defn.routine.locals.p_type_ids;
+        if (!array) {
             p_function_id->defn.routine.locals.p_type_ids = p_array_node;
         } else {
-            while (__array->next__)__array = __array->next__;
+            while (array->next__)array = array->next__;
 
-            __array->next__ = p_array_node;
+            array->next__ = p_array_node;
         }
     }
 

@@ -36,6 +36,9 @@ public:
         if (p_code != nullptr) delete[] p_code;
     }
 
+    // aappend to already existing icode
+    void append(const cx_icode &icode);
+    
     void put(cx_token_code tc);
     void put(const cx_symtab_node *p_node);
     void insert_line_marker(void);

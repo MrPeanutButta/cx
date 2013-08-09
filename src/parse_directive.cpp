@@ -4,6 +4,8 @@
  */
 
 #include <cstdio>
+#include <cstdlib>
+#include <string>
 #include "common.h"
 #include "buffer.h"
 #include "error.h"
@@ -18,13 +20,24 @@
  */
 void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
 
+    extern cx_symtab_node *p_program_ptr_id;
+
     switch (token) {
         case tc_INCLUDE:
         {
-            get_token_append();
-            cx_parser *parser = new cx_parser(new cx_source_buffer(p_token->string__()));
+            std::string lib_path;
+            lib_path = getenv(__CX_STDLIB__);
+            lib_path += "/";
+
+            get_token();
+
+            lib_path += p_token->string__();
+
+            cx_parser *parser = new cx_parser
+                    (new cx_source_buffer(lib_path.c_str()));
 
             cx_symtab_node *p_module = parser->parse();
+
             delete parser;
             get_token_append();
         }

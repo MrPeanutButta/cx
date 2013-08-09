@@ -38,6 +38,12 @@ cx_icode::cx_icode(const cx_icode &icode) {
     memcpy(p_code, icode.p_code, length);
 }
 
+//cx_icode::append(const cx_icode& icode){
+//    int total_length = int(cursor - p_code) + int(icode.cursor - icode.p_code);
+//    
+//    int cur_loc = current_location();
+//}
+
 /** check_bounds         Guard against code segment overflow.
  * 
  * @param size : number of bytes to append.

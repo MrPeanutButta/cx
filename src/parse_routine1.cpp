@@ -30,7 +30,7 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
     int parm_count; // count of formal parms
     int total_parm_size; // total byte size of all parms
 
-    cx_symtab_node *p_parm_list = parse_formal_parm_list(parm_count,
+    cx_symtab_node *p_parm_list = parse_formal_parm_list(p_function_id, parm_count,
             total_parm_size);
 
     p_function_id->defn.routine.parm_count = parm_count;
@@ -57,9 +57,10 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
             icode.put(__MAIN_ENTRY__);
             icode.put(tc_semicolon);
             icode.put(tc_right_bracket);
-            
+
             // Set the program's icode.
             p_program_ptr_id->defn.routine.p_icode = new cx_icode(icode);
+
         }
 
         p_function_id->defn.routine.which = rc_declared;
