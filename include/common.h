@@ -80,6 +80,8 @@ bool token_in(cx_token_code tc, const cx_token_code *p_list);
 // mains scope level on the symtab stack
 #define __MAIN_ENTRY__ symtab_stack.find("main")
 
+// env variable that holds the path to stdlib
+#define __CX_STDLIB__   "CX_STDLIB"
 #endif
 //endfig
 

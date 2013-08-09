@@ -36,7 +36,8 @@ class cx_parser {
 
     void parse_block(cx_symtab_node *p_function_id);
 
-    cx_symtab_node *parse_formal_parm_list(int &count, int &total_size);
+    cx_symtab_node *parse_formal_parm_list(cx_symtab_node *p_function_id, 
+                                                int &count, int &total_size);
 
     cx_type *parse_subroutine_call(const cx_symtab_node *p_function_id,
             bool parm_check_flag);

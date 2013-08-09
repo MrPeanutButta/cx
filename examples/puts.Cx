@@ -1,0 +1,31 @@
+
+int putc(char c){
+    stdout = c;
+
+    return c;
+}
+
+int puts(char str[]){
+    int i = 0;
+
+    do{
+        putc(str[i]);
+    }while(str[i++] != '\0');
+
+    putc('\n');
+
+    return i;
+}
+
+int main(){
+
+    puts("\nH\te\tl\tl\to, W\to\tr\tl\td\t!");
+
+    puts("this is just another string to stdout test");
+
+    puts("herpty derpty sat on a wall");
+
+    puts("this is how you print text to the screen!!!");
+
+ return 0;
+}

@@ -49,7 +49,7 @@ cx_symtab_node *cx_parser::parse(void) {
 
     resync(tokenlist_program_end);
     conditional_get_token_append(tc_end_of_file, err_missing_right___bracket);
-
+    
     if (cx_dev_debug_flag) {
         list.put_line();
         sprintf(list.text, "%20d source lines.", current_line_number);

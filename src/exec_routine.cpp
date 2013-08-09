@@ -159,10 +159,14 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 p_formal_id->runstack_item = top_of_stack();
             } else if (!p_formal_type->is_scalar_type()) {
 
-                // Formal parameter is an array or a record:
-                // Make a copy of the actual parameter's value.
-                void *addr = new char[p_formal_type->size];
-                memcpy(addr, pop()->addr__, p_formal_type->size);
+                /* Formal parameter is an array or a record:
+                 * Make a copy of the actual parameter's value. */
+                void *addr = new char[p_actual_type->size];
+                void *p_source = pop()->addr__;
+                
+                memcpy(addr, p_source, p_actual_type->size);
+                
+                char *t = (char*) addr;
                 push(addr);
                 p_formal_id->runstack_item = top_of_stack();
             } else {
