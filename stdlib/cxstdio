@@ -1,0 +1,38 @@
+/* Cx library to perform Input/Output operations
+ *
+ * file     : cxstdio
+ * author   : <aaron.hebert@gmail.com>
+ * desc     : Input/Output operations
+ *
+ * This library uses what are called streams to operate with physical devices 
+ * such as keyboards, printers, terminals or with any other type of files 
+ * supported by the system. Streams are an abstraction to interact with these 
+ * in an uniform way; All streams have similar properties independently of the 
+ * individual characteristics of the physical media they are associated with.
+ *
+ * Streams are handled in the (C++) cstdio library as pointers to FILE objects. 
+ * A pointer to a FILE object uniquely identifies a stream, and is used as a 
+ * parameter in the operations involving that stream.
+ *
+ * There also exist three standard streams: stdin, stdout and 
+ * stderr, which are automatically created and opened for all programs 
+ * using the library.
+ */
+
+int putc(char c){
+    stdout = c;
+
+    return c;
+}
+
+int puts(char str[]){
+    int i = 0;
+
+    do{
+        putc(str[i]);
+    }while(str[i++] != '\0');
+
+    putc('\n');
+
+    return i;
+}

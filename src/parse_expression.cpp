@@ -198,18 +198,23 @@ cx_type *cx_parser::parse_factor(void) {
             char *p_string = p_token->string__();
             cx_symtab_node *p_node = search_all(p_token->string__());
             int length = strlen(p_string) - 2;
-
-            p_result_type = length == 1 ?
+                                                // '\0' == -1
+            p_result_type = ((length == 1) || (length == -1)) ?
                     p_char_type : new cx_type(length);
 
             if (!p_node) {
                 p_node = enter_local(p_token->string__());
                 set_type(p_node->p_type, p_result_type);
 
-                if (length == 1) {
+                if (length <= 1) {
                     p_node->defn.constant.value.char__ = p_string[1];
                 } else {
-                    p_node->defn.constant.value.p_string = &p_string[1];
+                    p_node->defn.constant.value.p_string = new char[length];
+                    
+                    memcpy(p_node->defn.constant.value.p_string, 
+                            &p_string[1], length);
+                    
+                    //p_node->defn.constant.value.p_string = &p_string[1];
                     p_node->defn.constant.value.p_string[length] = '\0';
                     p_node->p_type->form = fc_array;
                     p_node->p_type->array.element_count = length;
@@ -217,6 +222,7 @@ cx_type *cx_parser::parse_factor(void) {
                     p_node->p_type->array.min_index = 0;
                     p_node->p_type->array.p_element_type = p_char_type;
                     p_node->p_type->array.p_index_type = p_integer_type;
+                    //p_node->p_type->size = length;
                 }
             }
             icode.put(p_node);

@@ -466,7 +466,7 @@ cx_type *cx_executor::execute_factor(void) {
                 push(p_node->defn.constant.value.char__);
                 p_result_type = p_char_type;
             } else {
-
+               
                 // string__ address
                 push(p_node->defn.constant.value.p_string);
                 p_result_type = p_node->p_type;

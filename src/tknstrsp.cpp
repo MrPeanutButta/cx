@@ -27,6 +27,7 @@ char cx_token::get_escape_char(const char& c) {
         case 'r': return '\r';
         case 't': return '\t';
         case 'v': return '\v';
+        case '0': return '\0';
         default:
             cx_error(err_invalid_escape_char);
     }
