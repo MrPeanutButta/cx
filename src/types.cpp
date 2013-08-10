@@ -403,6 +403,12 @@ void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2
             || ((p_type2 == p_integer_type) && (p_type2 == p_float_type))) {
         return;
     }
+    
+    if((p_type1 == p_char_type) && (p_type2 == p_integer_type) && 
+            (p_type1->form == fc_scalar)) return;
+    
+    if((p_type1 == p_integer_type) && (p_type2 == p_char_type) && 
+            (p_type2->form == fc_scalar)) return;
 
     if ((p_type1->form == fc_array)
             && (p_type2->form == fc_array)

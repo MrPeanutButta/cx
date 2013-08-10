@@ -16,18 +16,27 @@
 
 #include cxstdio
 #include cxctype
+// global starts here
 
-char g_char = 'c';
+char g_char = '.';
 
+// global ends here
 int main(){
-
+/*
     puts("this is a test from stdio!");
     putc(toupper(g_char), stdout);
     putchar('\n');
     putchar(g_char + 21);
-    putchar('\n');
+    putchar(178);
 
     putchar(toupper(putc(g_char, stdout)));
+
+    //float check = 0.011;
+*/
+    iscntrl(g_char);
+    isprint(g_char);
+    isgraph(g_char);
+    ispunct(g_char);
 
     return 0;
 }

@@ -5,14 +5,7 @@
  * desc     : Character handling functions
  * 
  * This header declares a set of functions to classify and transform 
- * individual characters.
- * 
- * Missing:
- *      iscntrl
- *      isgraph
- *      isprint
- *      ispunct
- */
+ * individual characters. */
 
 /* isdigit - Check if character is decimal digit
  * Checks whether c is a decimal digit character.
@@ -156,3 +149,63 @@ char tolower(char c){
     return c;
 }
 
+/* iscntrl - Check if character is a control character
+ * Checks whether c is a control character.
+ *
+ * A control character is a character that does not occupy a printing position 
+ * on a display (this is the opposite of a printable character, checked with 
+ * isprint).
+ * 
+ * For the standard ASCII character set (used by the "C" locale), control 
+ * characters are those between ASCII codes 0x00 (NUL) and 0x1f (US), 
+ * plus 0x7f (DEL).
+ *
+ * @param : character to be checked.
+ * @return true if control character, false if not. */
+
+bool iscntrl(char c){
+    return (((c >= 0) && (c <= 31)) || (c == 127));
+}
+
+/* isprint - Check if character is printable
+ * Checks whether c is a printable character.
+ * 
+ * A printable character is a character that occupies a printing position on a 
+ * display (this is the opposite of a control character, checked with iscntrl).
+ * 
+ * For the standard ASCII character set (used by the "C" locale), printing 
+ * characters are all with an ASCII code greater than 0x1f (US), except 
+ * 0x7f (DEL).
+ *
+ * @param : character to be checked.
+ * @return true if printable character, false if not. */
+
+bool isprint(char c){
+    return (!iscntrl(c));
+}
+
+/* isgraph - Check if character has graphical representation
+ * Checks whether c is a character with graphical representation.
+ *  
+ * The characters with graphical representation are all those characters that 
+ * can be printed (as determined by isprint) except the space character (' ').
+ *
+ * @param : character to be checked.
+ * @return true if graphical character, false if not. */
+
+bool isgraph(char c){
+    return ((isprint(c)) && (!isspace(c)));
+}
+
+/* ispunct - Check if character is a punctuation character
+ * Checks whether c is a punctuation character.
+ * 
+ * The standard "C" locale considers punctuation characters all graphic 
+ * characters (as in isgraph) that are not alphanumeric (as in isalnum).
+ *
+ * @param : character to be checked.
+ * @return true if punctuation character, false if not. */
+
+bool ispunct(char c){
+    return ((isgraph(c)) && (!isalnum(c)));
+}

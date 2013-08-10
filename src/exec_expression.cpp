@@ -37,6 +37,10 @@ cx_type *cx_executor::execute_expression(void) {
                 (p_operand2_type == p_integer_type))
                 || ((p_operand1_type == p_char_type) &&
                 (p_operand2_type == p_char_type))
+                || ((p_operand1_type == p_integer_type) &&
+                (p_operand2_type == p_char_type)) ||
+                ((p_operand1_type == p_char_type) &&
+                (p_operand2_type == p_integer_type)) 
                 || (p_operand1_type->form == fc_enum)) {
 
             // integer <op> integer
