@@ -300,6 +300,8 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(pCharId->p_type, p_char_type);
 
     set_type(pComplexId->p_type, p_complex_type);
+    
+    set_type(pFileId->p_type, p_file_type);
 
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = pFalseId;

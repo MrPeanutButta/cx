@@ -15,8 +15,19 @@
  */
 
 #include cxstdio
+#include cxctype
+
+char g_char = 'c';
 
 int main(){
+
+    puts("this is a test from stdio!");
+    putc(toupper(g_char), stdout);
+    putchar('\n');
+    putchar(g_char + 21);
+    putchar('\n');
+
+    putchar(toupper(putc(g_char, stdout)));
 
     return 0;
 }

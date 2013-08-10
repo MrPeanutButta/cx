@@ -19,20 +19,57 @@
  * using the library.
  */
 
-int putc(char c){
-    stdout = c;
+/* putc - Write character to stream
+ * Writes a character to the stream and advances the position indicator.
+ *
+ * The character is written at the position indicated by the internal 
+ * position indicator of the stream, which is then automatically 
+ * advanced by one.
+ *
+ * @param c      : character to write as 'char' type.
+ * @param stream : reference to a FILE object that identifies an output stream.
+ * @return ASCII code of character written. */
+
+int putc(char c, file &stream){
+    stream = c;
 
     return c;
 }
+
+/* puts - Write string to stdout
+ * Writes the copied C string 'str' to the standard output (stdout) and appends 
+ * a newline character ('\n').
+ *
+ * The function calls 'putc' from the address specified (str[]) until it reaches
+ * the terminating null character ('\0'). This terminating null-character is not 
+ * copied to the stream. 
+ *
+ * @param : copied char array to write to stdout.
+ * @return the number of characters written.
+ */
 
 int puts(char str[]){
     int i = 0;
 
     do{
-        putc(str[i]);
+        putc(str[i], stdout);
     }while(str[i++] != '\0');
 
-    putc('\n');
+    putc('\n', stdout);
 
     return i;
+}
+
+/* putchar - Write character to stdout
+ * Writes a character to the standard output (stdout).
+ * 
+ * It is equivalent to calling putc with stdout as second argument.
+ *
+ * @param : character to write to stdout.
+ * @return ASCII code of character written.*/
+
+int putchar(char c){
+    putc(c, stdout);
+
+    return c;
 }

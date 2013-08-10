@@ -23,6 +23,8 @@ bool cx_dev_debug_flag = true;
 bool cx_dev_debug_flag = false;
 #endif 
 
+void set_options(int argc, char **argv);
+
 /** main        main entry point
  * 
  * @param argc
@@ -37,6 +39,8 @@ int main(int argc, char *argv[]) {
         abort_translation(abort_invalid_commandline_args);
     }
 
+    set_options(argc, argv);
+    
     list_flag = cx_dev_debug_flag;
     error_arrow_flag = cx_dev_debug_flag;
 
@@ -88,4 +92,10 @@ int main(int argc, char *argv[]) {
     }
 
     return 0;
+}
+
+void set_options(int argc, char **argv){
+    for( int i = 1; i < argc; i++){
+        if(!strcmp("-ddev", argv[i])) cx_dev_debug_flag = true;
+    }
 }

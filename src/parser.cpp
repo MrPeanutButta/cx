@@ -12,52 +12,61 @@ extern cx_symtab_node *p_program_ptr_id;
  * 
  * @return ptr to '__cx_global__' program Id.
  */
-cx_symtab_node *cx_parser::parse(void) {
+cx_symtab_node *cx_parser::parse(bool std_lib_module) {
 
     extern bool cx_dev_debug_flag;
+    cx_symtab_node *p_program_id = nullptr;
 
-    cx_symtab_node *p_program_id = new cx_symtab_node("__cx_global__", dc_program);
-    p_program_id->defn.routine.which = rc_declared;
-    p_program_id->defn.routine.parm_count = 0;
-    p_program_id->defn.routine.total_parm_size = 0;
-    p_program_id->defn.routine.total_local_size = 0;
-    p_program_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_program_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_program_id->defn.routine.locals.p_type_ids = nullptr;
-    p_program_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_program_id->defn.routine.locals.p_function_ids = nullptr;
-    p_program_id->defn.routine.p_symtab = nullptr;
-    p_program_id->defn.routine.p_icode = nullptr;
-    set_type(p_program_id->p_type, p_integer_type);
+    if (!std_lib_module) {
+        p_program_id = new cx_symtab_node("__cx_global__", dc_program);
+        p_program_id->defn.routine.which = rc_declared;
+        p_program_id->defn.routine.parm_count = 0;
+        p_program_id->defn.routine.total_parm_size = 0;
+        p_program_id->defn.routine.total_local_size = 0;
+        p_program_id->defn.routine.locals.p_parms_ids = nullptr;
+        p_program_id->defn.routine.locals.p_constant_ids = nullptr;
+        p_program_id->defn.routine.locals.p_type_ids = nullptr;
+        p_program_id->defn.routine.locals.p_variable_ids = nullptr;
+        p_program_id->defn.routine.locals.p_function_ids = nullptr;
+        p_program_id->defn.routine.p_symtab = nullptr;
+        p_program_id->defn.routine.p_icode = nullptr;
+        set_type(p_program_id->p_type, p_integer_type);
 
-    p_program_ptr_id = p_program_id;
+        p_program_ptr_id = p_program_id;
+    }
+
     icode.reset();
 
     current_nesting_level = 0;
-    // enter the nesting level 1 and open a new scope for the program.
+    // enter the nesting level 0 and open a new scope for the program.
     symtab_stack.set_current_symtab(&cx_global_symtab);
-    icode.put(tc_left_bracket);
+
+    if (!std_lib_module) icode.put(tc_left_bracket);
     get_token_append();
 
     parse_statement_list(p_program_id, tc_end_of_file);
-    fixup_location_marker(p_program_id->global_finish_location);
-    p_program_id->defn.routine.return_marker = put_location_marker();
+
+    if (!std_lib_module) {
+        fixup_location_marker(p_program_id->global_finish_location);
+        p_program_id->defn.routine.return_marker = put_location_marker();
+    }
 
     get_token_append();
 
-    p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
+    if (!std_lib_module) {
+        p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
 
-    resync(tokenlist_program_end);
-    conditional_get_token_append(tc_end_of_file, err_missing_right___bracket);
-    
-    if (cx_dev_debug_flag) {
-        list.put_line();
-        sprintf(list.text, "%20d source lines.", current_line_number);
-        list.put_line();
-        sprintf(list.text, "%20d syntax errors.", error_count);
-        list.put_line();
+        resync(tokenlist_program_end);
+        conditional_get_token_append(tc_end_of_file, err_missing_right___bracket);
+
+        if (cx_dev_debug_flag) {
+            list.put_line();
+            sprintf(list.text, "%20d source lines.", current_line_number);
+            list.put_line();
+            sprintf(list.text, "%20d syntax errors.", error_count);
+            list.put_line();
+        }
     }
-
     return p_program_id;
 
 }
