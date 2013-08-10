@@ -194,7 +194,7 @@ public:
         remove_builtin_types();
     }
 
-    cx_symtab_node *parse(void);
+    cx_symtab_node *parse(bool std_lib_module = false);
 };
 
 #endif

@@ -32,16 +32,22 @@ void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
             get_token();
 
             lib_path += p_token->string__();
-
+            p_program_ptr_id->found_global_end = true;
+            
             cx_parser *parser = new cx_parser
                     (new cx_source_buffer(lib_path.c_str()));
-
-            cx_symtab_node *p_module = parser->parse();
+            
+            /* true : stdlib module
+             * returns nullptr */
+            parser->parse(true);
 
             delete parser;
+                        
+            icode.reset();
+            icode.put(tc_left_bracket);
+            p_program_ptr_id->found_global_end = false;
             get_token_append();
         }
             break;
     }
-
 }
