@@ -22,7 +22,7 @@ cx_runtime_stack::cx_runtime_stack(void) {
     memset(&stack, 0, sizeof (stack));
 
     tos = &stack[-1]; // point to just below bottom of stack
-    p_frame_base = &stack[ 0]; // point to bottom of stack
+    p_frame_base = &stack[0]; // point to bottom of stack
 
     // Initialize the program's stack frame at the bottom.
     push(0); // function return value
@@ -30,6 +30,8 @@ cx_runtime_stack::cx_runtime_stack(void) {
     push(0); // dynamic link
     push(0); // return address icode pointer
     push(0); // return address icode location
+
+    //p_frame_base = stack[0]; // point to bottom of stack
 }
 
 /** push_frame_header     push the callee subroutine's stack frame
@@ -44,12 +46,17 @@ cx_runtime_stack::cx_runtime_stack(void) {
  * @return: ptr to the base of the callee's stack frame
  */
 cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
-        cx_icode *p_icode) {
+        cx_icode *p_icode, size_t return_size) {
+
     cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
     cx_stack_item *p_new_frame_base = tos + 1; /* point to item just above
-                                          *  current top_of_stack item */
+                                                //*  current top_of_stack item */
+
+    /*push((void *) new cx_stack_item(0));
+    cx_stack_item *p_new_frame_base = tos;*/
 
     push(0); // function return value (placeholder)
+    // cx_stack_item *p_new_frame_base = tos;
 
     // Compute the static link.
     if (new_level == old_level + 1) {
@@ -74,10 +81,10 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
         push(p_header);
     }
 
-    push(p_frame_base); // dynamic link
+    push(p_frame_base); // dynamic link    
     push(p_icode); // return address icode pointer
     push(0); // return address icode location (placeholder)
-
+    
     return p_new_frame_base;
 }
 
@@ -105,16 +112,17 @@ void cx_runtime_stack::activate_frame(cx_stack_item *p_new_frame_base,
  */
 void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
         cx_icode *&p_icode) {
+
     cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
 
     // Don't do anything if it's the bottommost stack frame.
     if (p_frame_base != &stack[0]) {
-
+        
         // Return to the caller's intermediate code.
         p_icode = (cx_icode *) p_header->return_address.icode.addr__;
         p_icode->go_to(p_header->return_address.location.int__);
 
-        // Cut the stack back.  Leave a function value on top.
+        // Leave a function value on top.
         tos = (cx_stack_item *) p_frame_base;
         if (p_function_id->defn.how != dc_function) --tos;
         p_frame_base = (cx_stack_item *) p_header->dynamic_link.addr__;
@@ -128,7 +136,7 @@ void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
  * @param p_id : ptr to symbol table node of variable or parm
  */
 void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
-    cx_type *p_type = p_id->p_type->base_type(); // ptr to type object of value
+    cx_type *p_type = p_id->p_type; // ptr to type object of value
 
     if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
         if (p_type == p_integer_type) push(0);
@@ -141,7 +149,6 @@ void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
         // Array or record
         void *addr = new char[p_type->size];
         push(addr);
-//        p_id->p_type->array.start_address = addr;
     }
 
     /* save runstack address.
@@ -160,10 +167,12 @@ void cx_runtime_stack::deallocate_value(const cx_symtab_node *p_id) {
     if ((!p_id->p_type->is_scalar_type()) && (p_id->defn.how != dc_reference)) {
         cx_stack_item *p_value = p_id->runstack_item;
 
-        if (p_value->addr__ != nullptr) delete[] p_value->addr__;
+        if (p_value->addr__ != nullptr) {
+            delete[] p_value->addr__;
+            p_value->addr__ = nullptr;
+        }
     }
 }
-
 /** get_value_address     get the address of the runtime stack
  *                      item that contains the value of a formal
  *                      parameter or a local variable.  If
@@ -209,13 +218,11 @@ void cx_executor::go(cx_symtab_node *p_program_id) {
     // Initialize standard input and output.
     eof_flag = std::cin.eof();
     std::cout.setf(std::ios::fixed, std::ios::floatfield);
-    std::cout << std::endl;
 
     // Execute the program.
     break_loop = false;
 
     initialize_global(p_program_id);
-    //execute_routine(p_program_id);
     exit_routine(p_program_id);
 
     extern bool cx_dev_debug_flag;
@@ -235,9 +242,9 @@ void cx_executor::go(cx_symtab_node *p_program_id) {
  */
 void cx_executor::range_check(const cx_type *p_target_type, int value) {
 
-    if ((p_target_type->form == fc_subrange)
-            && ((value < p_target_type->subrange.min)
-            || (value > p_target_type->subrange.max))) {
+    if ((p_target_type->form == fc_array)
+            && ((value < p_target_type->array.min_index)
+            || (value > p_target_type->array.maxIndex))) {
         cx_runtime_error(rte_value_out_of_range);
     }
 }

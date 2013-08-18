@@ -10,15 +10,16 @@ const char *form_strings[] = {
 
 // Pointers to predefined types.
 cx_symtab_node *p_main_function_id = nullptr;
-cx_symtab_node *pStdIn = nullptr;
-cx_symtab_node *pStdOut = nullptr;
-cx_symtab_node *pStdErr = nullptr;
+cx_symtab_node *p_stdin = nullptr;
+cx_symtab_node *p_stdout = nullptr;
+cx_symtab_node *p_stderr = nullptr;
 
 cx_type *p_integer_type = nullptr;
 cx_type *p_float_type = nullptr;
 cx_type *pDoubleType = nullptr;
 cx_type *p_boolean_type = nullptr;
 cx_type *p_char_type = nullptr;
+cx_type *p_string_type = nullptr;
 cx_type *pClassType = nullptr;
 cx_type *p_complex_type = nullptr;
 cx_type *p_file_type = nullptr;
@@ -35,9 +36,9 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
 : form(fc), size(s), p_type_id(p_id), reference_count(0) {
 
     switch (fc) {
-        case fc_subrange:
+ /*       case fc_subrange:
             subrange.p_base_type = nullptr;
-            break;
+            break;*/
         case fc_array:
             array.p_index_type = array.p_element_type = nullptr;
             break;
@@ -46,18 +47,18 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
     }
 }
 
-cx_type::cx_type(int length)
-: size(length), form(fc_array), reference_count(0) {
+cx_type::cx_type(int length, bool constant)
+: size(length), form(fc_array), reference_count(0), is_constant__(constant) {
     p_type_id = nullptr;
 
     array.p_index_type = array.p_element_type = nullptr;
-    set_type(array.p_index_type, new cx_type(fc_subrange, sizeof (int), nullptr));
+    set_type(array.p_index_type, p_integer_type);
     set_type(array.p_element_type, p_char_type);
     array.element_count = length;
 
-    set_type(array.p_index_type->subrange.p_base_type, p_integer_type);
+    /*set_type(array.p_index_type->subrange.p_base_type, p_integer_type);
     array.p_index_type->subrange.min = 1;
-    array.p_index_type->subrange.max = length;
+    array.p_index_type->subrange.max = length;*/
 }
 
 /** Destructor      Delete the allocated objects according to
@@ -69,9 +70,9 @@ cx_type::cx_type(int length)
  */
 cx_type::~cx_type() {
     switch (form) {
-        case fc_subrange:
+      /*  case fc_subrange:
             remove_type(subrange.p_base_type);
-            break;
+            break;*/
         case fc_array:
             remove_type(array.p_index_type);
             remove_type(array.p_element_type);
@@ -140,7 +141,7 @@ void cx_type::print_enum_type(cx_verbosity_code vc) const {
  */
 void cx_type::print_subrange_type(cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
-
+/*
     sprintf(list.text, "min value = %d, max value = %d",
             subrange.min, subrange.max);
 
@@ -149,7 +150,7 @@ void cx_type::print_subrange_type(cx_verbosity_code vc) const {
     if (subrange.p_base_type) {
         list.put_line("---base type---");
         subrange.p_base_type->print_type_spec(vc_terse);
-    }
+    }*/
 }
 
 /** print_array_type      print information about an array
@@ -265,6 +266,7 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     cx_symtab_node *pCharId = p_symtab->enter("char", dc_type);
     cx_symtab_node *pFalseId = p_symtab->enter("false", dc_constant);
     cx_symtab_node *pTrueId = p_symtab->enter("true", dc_constant);
+    cx_symtab_node *p_string_id = p_symtab->enter("string", dc_type);
 
     cx_symtab_node *pFileId = p_symtab->enter("file", dc_type);
 
@@ -281,6 +283,16 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     if (!p_char_type) {
         set_type(p_char_type, new cx_type(fc_scalar, sizeof (char), pCharId));
     }
+   
+    if(!p_string_type){
+        set_type(p_string_type, new cx_type(fc_array, 0, p_string_id));
+        set_type(p_string_type->array.p_element_type, p_char_type);
+        p_string_type->array.min_index = 0;
+        p_string_type->array.maxIndex = 0;
+        p_string_type->array.element_count = 0;
+        set_type(p_string_type->array.p_index_type, p_integer_type);
+    }
+    
     if (!p_complex_type) {
         set_type(p_complex_type, new cx_type(fc_complex, sizeof (cx_type), pComplexId));
     }
@@ -302,6 +314,8 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(pComplexId->p_type, p_complex_type);
     
     set_type(pFileId->p_type, p_file_type);
+    
+    set_type(p_string_id->p_type, p_string_type);
 
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = pFalseId;
@@ -314,17 +328,17 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     pFalseId->next__ = pTrueId;
 
-    pStdOut = p_symtab->enter("stdout", ::dc_variable);
-    set_type(pStdOut->p_type, p_file_type);
-    pStdOut->p_type->stream.p_file_stream = stdout;
+    p_stdout = p_symtab->enter("stdout", ::dc_variable);
+    set_type(p_stdout->p_type, p_file_type);
+    p_stdout->p_type->stream.p_file_stream = stdout;
 
-    pStdIn = p_symtab->enter("stdin", ::dc_variable);
-    set_type(pStdIn->p_type, p_file_type);
-    pStdIn->p_type->stream.p_file_stream = stdin;
+    p_stdin = p_symtab->enter("stdin", ::dc_variable);
+    set_type(p_stdin->p_type, p_file_type);
+    p_stdin->p_type->stream.p_file_stream = stdin;
 
-    pStdErr = p_symtab->enter("stderr", ::dc_variable);
-    set_type(pStdErr->p_type, p_file_type);
-    pStdErr->p_type->stream.p_file_stream = stderr;
+    p_stderr = p_symtab->enter("stderr", ::dc_variable);
+    set_type(p_stderr->p_type, p_file_type);
+    p_stderr->p_type->stream.p_file_stream = stderr;
 
     set_type(p_dummy_type, new cx_type(fc_none, 1, nullptr));
 }
@@ -337,6 +351,7 @@ void remove_builtin_types(void) {
     remove_type(p_float_type);
     remove_type(p_boolean_type);
     remove_type(p_char_type);
+    remove_type(p_string_type);
     remove_type(p_dummy_type);
     remove_type(p_file_type);
 }
@@ -473,6 +488,9 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
     p_target_type = p_target_type->base_type();
     p_value_type = p_value_type->base_type();
 
+    if((p_target_type == p_file_type) || 
+            (p_value_type == p_file_type)) return;
+    
     if (p_target_type == p_value_type) return;
 
     if ((p_target_type == p_float_type)
@@ -503,7 +521,6 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
             && (p_value_type->form == fc_array)
             && (p_target_type->array.p_element_type == p_char_type)
             && (p_value_type->array.p_element_type == p_char_type)) {
-        //&& (p_target_type->array.element_count == p_value_type->array.element_count)) {
         return;
     }
 

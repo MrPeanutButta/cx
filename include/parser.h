@@ -36,8 +36,8 @@ class cx_parser {
 
     void parse_block(cx_symtab_node *p_function_id);
 
-    cx_symtab_node *parse_formal_parm_list(cx_symtab_node *p_function_id, 
-                                                int &count, int &total_size);
+    cx_symtab_node *parse_formal_parm_list(cx_symtab_node *p_function_id,
+            int &count, int &total_size);
 
     cx_type *parse_subroutine_call(const cx_symtab_node *p_function_id,
             bool parm_check_flag);
@@ -69,7 +69,11 @@ class cx_parser {
     cx_type *parse_subrange_type(cx_symtab_node *p_min_id);
     cx_type *parse_subrange_limit(cx_symtab_node *p_limit_id, int &limit);
 
-    cx_type *parse_array_type(cx_symtab_node *p_function_id, cx_symtab_node *p_array_node);
+    cx_type *parse_string_type(cx_symtab_node* p_function_id,
+            cx_symtab_node* p_string_node);
+    cx_type *parse_array_type(cx_symtab_node *p_function_id,
+            cx_symtab_node *p_array_node);
+    
     void parse_index_type(cx_symtab_node *p_array_node);
     int array_size(cx_type *p_array_type);
     cx_type *parse_complex_type(cx_symtab_node *p_function_id, cx_symtab_node *p_node);

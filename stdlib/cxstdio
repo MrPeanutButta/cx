@@ -32,7 +32,6 @@
 
 int putc(char c, file &stream){
     stream = c;
-
     return c;
 }
 
@@ -69,7 +68,70 @@ int puts(char str[]){
  * @return ASCII code of character written.*/
 
 int putchar(char c){
-    putc(c, stdout);
+    return putc(c, stdout);;
+}
 
+/* getc - Get character from stdin
+ * Returns the character read from stdin. The character is returned regardless
+ * of '\n' or enter key being pressed. 
+ *
+ * @return character read from stdin. */
+
+char getc(){
+    char c = stdin;
     return c;
+}
+
+/* fgetc - Get character from stream
+ * Returns the character currently pointed by the internal file position 
+ * indicator of the specified stream. The internal file position indicator is 
+ * then advanced to the next character.
+ *
+ * If the stream is at the end-of-file when called, the function returns EOF 
+ * and sets the end-of-file indicator for the stream (feof).
+ *
+ * @param : reference to a FILE object that identifies an input stream.
+ * @return character read from stream. */
+
+char fgetc(file &stream){
+    char c = stream;
+    return c;
+}
+
+/* getchar - Get character from stdin
+ * Returns the next character from the standard input (stdin) and echo's the
+ * character to the screen.
+ * 
+ * It is equivalent to calling getc, but getc will not echo the character.
+ *
+ * @return character read from stdin. */
+
+char getchar(){
+    char c = putchar(getc());
+    return c;
+}
+
+/* gets - Get string from stdin
+ * Reads characters from the standard input (stdin) and stores them as a Cx 
+ * string into str until a newline character or the end-of-file is reached.
+ * 
+ * The newline character, if found, is not copied into str.
+ * 
+ * A terminating null character is automatically appended after the characters 
+ * copied to str.
+ * 
+ * @return string of characters read from stdin. */
+
+string gets(){
+    string str;
+    char c;
+
+    do{
+        c = getchar();
+        str += c;
+    }while(c != '\n');
+    
+    /* string returned is allocated
+     * and null terminated */
+    return str;
 }

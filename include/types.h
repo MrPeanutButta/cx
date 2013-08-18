@@ -27,6 +27,8 @@ extern const char *form_strings[];
 
 class cx_type {
     int reference_count;
+    bool is_constant__;
+    
 public:
     cx_type_form_code form;
     int size;
@@ -40,11 +42,6 @@ public:
         } enumeration;
 
         struct {
-            cx_type *p_base_type;
-            int min, max;
-        } subrange;
-
-        struct {
             cx_type *p_index_type;
             cx_type *p_element_type;
             int min_index, maxIndex;
@@ -55,12 +52,14 @@ public:
             /* used only for internal to class.
              * connects all scopes to a single table */
             cx_symtab *p_class_scope_symtab;
-
-            // seperate public, private and protected tables
-            //cx_scoped_symtab MemberTable;
         } complex;
 
         struct {
+            // file name
+            char *p_file_name;
+            /* open mode(s) in the form of "wrb"
+             * read, write, binary */
+            char *p_file_mode;
             // file stream
             FILE *p_file_stream;
         } stream;
@@ -76,7 +75,7 @@ public:
     //} complex;
 
     cx_type(cx_type_form_code fc, int s, cx_symtab_node *p_id);
-    cx_type(int length);
+    cx_type(int length, bool constant = false);
 
     ~cx_type();
 
@@ -86,8 +85,16 @@ public:
                 (form != fc_stream);
     }
 
+    bool is_constant(void) const {
+        return is_constant__;
+    }
+    
+    bool is_string(void) const{
+        return (!is_scalar_type() && array.p_element_type == p_char_type);
+    }
+    
     cx_type *base_type(void) const {
-        return form == fc_subrange ? subrange.p_base_type : (cx_type *) this;
+        return form == fc_array ? array.p_element_type : (cx_type *) this;
     }
 
     enum cx_verbosity_code {

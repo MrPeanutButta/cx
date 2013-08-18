@@ -166,7 +166,6 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 
                 memcpy(addr, p_source, p_actual_type->size);
                 
-                char *t = (char*) addr;
                 push(addr);
                 p_formal_id->runstack_item = top_of_stack();
             } else {
@@ -178,6 +177,8 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
             }
         }
     }
+    
+    if(token == tc_left_paren) get_token();
 }
 
 /** execute_RETURN	Assign a return value to the functions StackItem and
