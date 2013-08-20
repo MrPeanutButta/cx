@@ -30,8 +30,6 @@ cx_runtime_stack::cx_runtime_stack(void) {
     push(0); // dynamic link
     push(0); // return address icode pointer
     push(0); // return address icode location
-
-    //p_frame_base = stack[0]; // point to bottom of stack
 }
 
 /** push_frame_header     push the callee subroutine's stack frame
@@ -46,17 +44,13 @@ cx_runtime_stack::cx_runtime_stack(void) {
  * @return: ptr to the base of the callee's stack frame
  */
 cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
-        cx_icode *p_icode, size_t return_size) {
+        cx_icode *p_icode) {
 
     cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
     cx_stack_item *p_new_frame_base = tos + 1; /* point to item just above
-                                                //*  current top_of_stack item */
+                                                *  current top_of_stack item */
 
-    /*push((void *) new cx_stack_item(0));
-    cx_stack_item *p_new_frame_base = tos;*/
-
-    push(0); // function return value (placeholder)
-    // cx_stack_item *p_new_frame_base = tos;
+    push(1); // function return value (placeholder)
 
     // Compute the static link.
     if (new_level == old_level + 1) {
@@ -81,10 +75,11 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
         push(p_header);
     }
 
-    push(p_frame_base); // dynamic link    
-    push(p_icode); // return address icode pointer
+    push(p_frame_base); // dynamic link   
+
+    push(p_icode); // return address icode pointer    
     push(0); // return address icode location (placeholder)
-    
+
     return p_new_frame_base;
 }
 
@@ -99,6 +94,7 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
 void cx_runtime_stack::activate_frame(cx_stack_item *p_new_frame_base,
         int location) {
     p_frame_base = p_new_frame_base;
+
     ((cx_frame_header *) p_frame_base)->return_address
             .location.int__ = location;
 }
@@ -117,13 +113,18 @@ void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
 
     // Don't do anything if it's the bottommost stack frame.
     if (p_frame_base != &stack[0]) {
-        
         // Return to the caller's intermediate code.
         p_icode = (cx_icode *) p_header->return_address.icode.addr__;
         p_icode->go_to(p_header->return_address.location.int__);
 
         // Leave a function value on top.
-        tos = (cx_stack_item *) p_frame_base;
+        if (p_function_id->p_type->is_string()) {
+            tos->addr__ = (cx_stack_item *) p_frame_base;
+        } else {
+            tos = (cx_stack_item *) p_frame_base;
+        }
+        //push(p_frame_base);
+
         if (p_function_id->defn.how != dc_function) --tos;
         p_frame_base = (cx_stack_item *) p_header->dynamic_link.addr__;
     }
@@ -173,6 +174,7 @@ void cx_runtime_stack::deallocate_value(const cx_symtab_node *p_id) {
         }
     }
 }
+
 /** get_value_address     get the address of the runtime stack
  *                      item that contains the value of a formal
  *                      parameter or a local variable.  If

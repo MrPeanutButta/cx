@@ -76,19 +76,14 @@ void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token
  *                    on the stack.
  */
 void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
+    
     cx_stack_item *p_target = nullptr; // runtime stack address of target
     cx_type *p_target_type = nullptr; // ptr to target type object
     cx_type *p_expr_type = nullptr; // ptr to expression type object
-    //cx_type *p_expr2_type = nullptr; // reserved for casting
 
     if (p_target_id->defn.how == dc_function) {
         p_target_type = p_target_id->p_type;
         p_target = run_stack.get_value_address(p_target_id);
-
-        //if (p_target_type->is_string()) {
-          //  p_target->addr__ = new char[255];
-           // p_target = (cx_stack_item *)p_target->addr__;
-        //}
     }/* Assignment to variable or formal parameter.
       * execute_variable leaves the target address on
       * top of the runtime stack. */
@@ -96,9 +91,7 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         if (!token_in(token, tokenlist_assign_ops))get_token();
         p_target_type = execute_variable(p_target_id, true);
 
-        /*if (p_target_type->is_string()) {
-            p_target = pop();
-        } else*/ if (p_target_type->form != fc_stream) {
+        if (p_target_type->form != fc_stream) {
             p_target = (cx_stack_item *) pop()->addr__;
         }
     }
@@ -174,13 +167,8 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 void *p_source = pop()->addr__;
                 int length = p_expr_type->size;
 
-                //if (p_target_id->defn.how == dc_function) {
-                //   memcpy(p_target->addr__, p_source, length);
-                //} else {
                 memcpy(p_target, p_source, length);
-                //}
 
-                //p_target->addr__ = p_source;
                 // array  := array
                 // record := record
                 p_target_id->p_type->array.element_count = length;

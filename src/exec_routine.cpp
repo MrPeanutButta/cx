@@ -99,7 +99,7 @@ cx_type *cx_executor::execute_declared_subroutine_call
     // Set up a new stack frame for the callee.
     cx_stack_item *p_new_frame_base = run_stack.push_frame_header
             (old_level, new_level, p_icode);
-
+    
     // push actual parameter values onto the stack.
     get_token();
 
@@ -110,10 +110,10 @@ cx_type *cx_executor::execute_declared_subroutine_call
     //  )
     get_token();
 
-    // Activate the new stack frame ...
+            // Activate the new stack frame ...
     current_nesting_level = new_level;
     run_stack.activate_frame(p_new_frame_base, current_location() - 1);
-
+    
     // ... and execute the callee.
     execute_routine(p_function_id);
 

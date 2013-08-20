@@ -47,7 +47,7 @@ int putc(char c, file &stream){
  * @return the number of characters written.
  */
 
-int puts(char str[]){
+int puts(string str){
     int i = 0;
 
     do{
@@ -128,7 +128,9 @@ string gets(){
 
     do{
         c = getchar();
-        str += c;
+        
+        if(c != '\n') str += c;
+
     }while(c != '\n');
     
     /* string returned is allocated

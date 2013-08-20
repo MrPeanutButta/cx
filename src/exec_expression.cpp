@@ -325,7 +325,7 @@ cx_type *cx_executor::execute_term(void) {
         get_token();
         p_operand_type = execute_factor()->base_type();
 
-        bool div_zero_flag = false;
+//        bool div_zero_flag = false;
 
         switch (op) {
             case tc_star:

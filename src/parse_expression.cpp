@@ -475,4 +475,6 @@ cx_type *cx_parser::parse_field(const cx_type* p_type) {
         return p_dummy_type;
 
     }
+    
+    return p_dummy_type;
 }

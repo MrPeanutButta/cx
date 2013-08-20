@@ -9,50 +9,38 @@
 #include "backend.h"
 
 ///  cx_stack_item          Item pushed onto the runtime stack.
-
-//struct cx_stack_frame {
-
 union cx_stack_item {
-    /*cx_stack_item(int i) : int__(i) {}
-    cx_stack_item(float f) : float__(f) {}
-    cx_stack_item(char c) : char__(c) {}
-    cx_stack_item(void *a) : addr__(a) {}*/
-    
     int int__;
     float float__;
     char char__;
     void *addr__;
+    char buffer[512];
 };
-
-//typedef std::vector<cx_stack_item *> cx_vector_stack;
-//typedef cx_vector_stack::iterator stack_pointer;
 
 ///  cx_runtime_stack       Runtime stack class.
 
 class cx_runtime_stack {
 
     enum {
-        stack_size = 4098,
-        //frame_header_size = 5,
+        stack_size = 128,
+        frame_header_size = 5,
     };
 
     // Stack frame header
+
     struct cx_frame_header {
         cx_stack_item function_value;
         cx_stack_item static_link;
         cx_stack_item dynamic_link;
 
         struct {
-            cx_stack_item location;
             cx_stack_item icode;
+            cx_stack_item location;
         } return_address;
     };
 
     cx_stack_item stack[stack_size]; // stack items
     cx_stack_item *tos; // ptr to the top of the stack
-    //cx_vector_stack stack;
-    //stack_pointer tos;
-
     cx_stack_item *p_frame_base; // ptr to current stack frame base
 
 public:
@@ -61,41 +49,30 @@ public:
     void push(int value) {
         if (tos < &stack[stack_size - 1]) (++tos)->int__ = value;
         else cx_runtime_error(rte_stack_overflow);
-        /*stack.push_back(new cx_stack_item(value));
-        tos = stack.back();*/
     }
 
     void push(float value) {
         if (tos < &stack[stack_size - 1]) (++tos)->float__ = value;
         else cx_runtime_error(rte_stack_overflow);
-        /*stack.push_back(new cx_stack_item(value));
-        tos = stack.back();*/
     }
 
     void push(char value) {
         if (tos < &stack[stack_size - 1]) (++tos)->char__ = value;
         else cx_runtime_error(rte_stack_overflow);
-        /*stack.push_back(new cx_stack_item(value));
-        tos = stack.back();*/
     }
 
     void push(void *addr) {
         if (tos < &stack[stack_size - 1]) (++tos)->addr__ = addr;
         else cx_runtime_error(rte_stack_overflow);
-        /*stack.push_back(new cx_stack_item(addr));
-        tos = stack.back();*/
     }
 
     cx_stack_item *push_frame_header(int old_level, int new_level,
-            cx_icode *p_icode, size_t return_size = 0);
+            cx_icode *p_icode);
     void activate_frame(cx_stack_item *p_new_frame_base, int location);
     void pop_frame(const cx_symtab_node *p_function_id, cx_icode *&p_icode);
 
     cx_stack_item *pop(void) {
-        cx_stack_item *t = tos;
-        --tos;
-        
-        return t;
+        return tos--;
     }
 
     cx_stack_item *top_of_stack(void) const {
