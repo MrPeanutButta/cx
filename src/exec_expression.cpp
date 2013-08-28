@@ -6,6 +6,7 @@
 #include <iostream>
 #include "exec.h"
 #include "common.h"
+#include "rlutil.h"
 
 /** execute_expression   Execute an expression (binary relational
  *                      operators = < > <> <= and >= ).
@@ -37,6 +38,10 @@ cx_type *cx_executor::execute_expression(void) {
                 (p_operand2_type == p_integer_type))
                 || ((p_operand1_type == p_char_type) &&
                 (p_operand2_type == p_char_type))
+                || ((p_operand1_type == p_integer_type) &&
+                (p_operand2_type == p_char_type)) ||
+                ((p_operand1_type == p_char_type) &&
+                (p_operand2_type == p_integer_type)) 
                 || (p_operand1_type->form == fc_enum)) {
 
             // integer <op> integer
@@ -320,7 +325,7 @@ cx_type *cx_executor::execute_term(void) {
         get_token();
         p_operand_type = execute_factor()->base_type();
 
-        bool div_zero_flag = false;
+//        bool div_zero_flag = false;
 
         switch (op) {
             case tc_star:
@@ -415,7 +420,7 @@ cx_type *cx_executor::execute_factor(void) {
             switch (p_node->defn.how) {
 
                 case dc_function:
-                    p_result_type = execute_subroutine_call(p_node);
+                    p_result_type = execute_subroutine_call(p_node);                    
                     break;
 
                 case dc_constant:
@@ -426,14 +431,27 @@ cx_type *cx_executor::execute_factor(void) {
                     get_token();
                     break;
                 default:
-                    p_id = p_node;
-                    get_token();
-
-                    if (token_in(token, tokenlist_assign_ops)) {
-                        execute_assignment(p_id);
-                        p_result_type = execute_variable(p_id, false);
+                    if (p_node->p_type->form != fc_stream) {
+                        p_id = p_node;
+                        get_token();
+                        if (token_in(token, tokenlist_assign_ops)) {
+                            execute_assignment(p_id);
+                            p_result_type = execute_variable(p_id, false);
+                        } else {
+                            p_result_type = execute_variable(p_id, false);
+                        }
                     } else {
-                        p_result_type = execute_variable(p_id, false);
+
+                        p_result_type = p_char_type;
+
+                        if (p_node == p_stdin) {
+                            // getch from rlutil
+                            push((char)cx_getch());
+                        } else {
+                            push(fgetc(p_node->p_type->stream.p_file_stream));
+                        }
+                        
+                        get_token();
                     }
 
                     break;
@@ -466,8 +484,7 @@ cx_type *cx_executor::execute_factor(void) {
                 push(p_node->defn.constant.value.char__);
                 p_result_type = p_char_type;
             } else {
-               
-                // string__ address
+                
                 push(p_node->defn.constant.value.p_string);
                 p_result_type = p_node->p_type;
             }
@@ -578,7 +595,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     }
 
     if (!address_flag) {
-        void *p_data_value = p_type->is_scalar_type() ?
+        void *p_data_value = (p_type->is_scalar_type()) ?
                 top_of_stack() : top_of_stack()->addr__;
 
         trace_data_fetch(p_id, p_data_value, p_type);
@@ -612,7 +629,7 @@ cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
 
             // Modify the data address at the top of the stack.
             push(((char *) pop()->addr__) +
-                    p_type->array.p_element_type->size * (value - p_type->array.min_index));
+                    p_type->array.p_element_type->size * value);
 
             // Prepare for another subscript in this list.
             if (token == tc_comma) p_type = p_type->array.p_element_type;

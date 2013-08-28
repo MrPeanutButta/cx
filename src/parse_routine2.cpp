@@ -169,7 +169,12 @@ void cx_parser::parse_actual_parm_list(const cx_symtab_node *p_function_id,
     do {
         //  ( or ,
         get_token_append();
-
+        
+        if(token == tc_right_paren && p_function_id->defn.routine.parm_count == 0){
+            get_token_append();
+            return;
+        }
+        
         parse_actual_parm(p_formal_id, parm_check_flag);
         if (p_formal_id) p_formal_id = p_formal_id->next__;
     } while (token == tc_comma);

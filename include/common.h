@@ -1,16 +1,3 @@
-//fig 2-7
-//  *************************************************************
-//  *                                                           *
-//  *   C O M M O N   (Header)                                  *
-//  *                                                           *
-//  *   FILE:    prog2-1/common.h                               *
-//  *                                                           *
-//  *   MODULE:  Common                                         *
-//  *                                                           *
-//  *   Copyright__ (c) 1996 by Ronald Mak                        *
-//  *   For instructional purposes only.  No warranties.        *
-//  *                                                           *
-//  *************************************************************
 
 #ifndef common_h
 #define common_h
@@ -25,6 +12,24 @@ extern cx_symtab cx_global_symtab;
 extern int symtab_count;
 extern cx_symtab *p_symtab_list;
 extern cx_symtab **p_vector_symtabs;
+
+// Pointers to predefined types.
+extern cx_symtab_node *p_main_function_id;
+extern cx_symtab_node *p_stdin;
+extern cx_symtab_node *p_stdout;
+extern cx_symtab_node *p_stderr;
+
+extern cx_type *p_integer_type;
+extern cx_type *p_float_type;
+//extern cx_type *pDoubleType;
+extern cx_type *p_boolean_type;
+extern cx_type *p_char_type;
+extern cx_type *p_string_type;
+extern cx_type *pClassType;
+extern cx_type *p_complex_type;
+extern cx_type *p_file_type;
+
+extern cx_type *p_dummy_type;
 
 extern cx_symtab cx_global_symtab;
 

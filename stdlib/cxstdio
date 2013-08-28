@@ -32,32 +32,7 @@
 
 int putc(char c, file &stream){
     stream = c;
-
     return c;
-}
-
-/* puts - Write string to stdout
- * Writes the copied C string 'str' to the standard output (stdout) and appends 
- * a newline character ('\n').
- *
- * The function calls 'putc' from the address specified (str[]) until it reaches
- * the terminating null character ('\0'). This terminating null-character is not 
- * copied to the stream. 
- *
- * @param : copied char array to write to stdout.
- * @return the number of characters written.
- */
-
-int puts(char str[]){
-    int i = 0;
-
-    do{
-        putc(str[i], stdout);
-    }while(str[i++] != '\0');
-
-    putc('\n', stdout);
-
-    return i;
 }
 
 /* putchar - Write character to stdout
@@ -65,11 +40,96 @@ int puts(char str[]){
  * 
  * It is equivalent to calling putc with stdout as second argument.
  *
- * @param : character to write to stdout.
- * @return ASCII code of character written.*/
+ * @param c : character to write to stdout.
+ * @return ASCII code of character written. */
 
 int putchar(char c){
-    putc(c, stdout);
+    return putc(c, stdout);;
+}
 
+/* puts - Write string to stdout
+ * Writes the copied Cx string 'str' to the standard output (stdout)
+ *
+ * The function calls 'putchar' from the address specified (str[]) until it reaches
+ * the terminating null character ('\0'). This terminating null-character is not 
+ * copied to the stream. 
+ *
+ * @param str : copied char array to write to stdout.
+ * @return the string length of str. */
+
+int puts(string str){
+    int i = 0;
+
+    while(str[i] != '\0'){
+        putchar(str[i]);
+        i++;
+    }
+
+    return i;
+}
+
+/* getc - Get character from stdin
+ * Returns the character read from stdin. The character is returned regardless
+ * of '\n' or enter key being pressed. 
+ *
+ * @return character read from stdin. */
+
+char getc(){
+    char c = stdin;
     return c;
+}
+
+/* fgetc - Get character from stream
+ * Returns the character currently pointed by the internal file position 
+ * indicator of the specified stream. The internal file position indicator is 
+ * then advanced to the next character.
+ *
+ * If the stream is at the end-of-file when called, the function returns EOF 
+ * and sets the end-of-file indicator for the stream (feof).
+ *
+ * @param stream : reference to a FILE object that identifies an input stream.
+ * @return character read from stream. */
+
+char fgetc(file &stream){
+    char c = stream;
+    return c;
+}
+
+/* getchar - Get character from stdin
+ * Returns the next character from the standard input (stdin) and echo's the
+ * character to the screen.
+ * 
+ * It is equivalent to calling getc, but getc will not echo the character.
+ *
+ * @return character read from stdin. */
+
+char getchar(){
+    return putchar(getc());
+}
+
+/* gets - Get string from stdin
+ * Reads characters from the standard input (stdin) and stores them as a Cx 
+ * string into str until a newline character or the end-of-file is reached.
+ * 
+ * The newline character, if found, is not copied into str.
+ * 
+ * A terminating null character is automatically appended after the characters 
+ * copied to str.
+ * 
+ * @return string of characters read from stdin. */
+
+string gets(){
+    string str;
+    char c;
+
+    do{
+        c = getchar();
+        
+        if(c != '\n') str += c;
+
+    }while(c != '\n');
+    
+    str += '\0';
+
+    return str;
 }
