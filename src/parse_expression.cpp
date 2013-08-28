@@ -198,7 +198,7 @@ cx_type *cx_parser::parse_factor(void) {
             char *p_string = p_token->string__();
             cx_symtab_node *p_node = search_all(p_token->string__());
             int length = strlen(p_string) - 2;
-                                                // '\0' == -1
+            // '\0' == -1
             p_result_type = ((length == 1) || (length == -1)) ?
                     p_char_type : new cx_type(length);
 
@@ -210,19 +210,17 @@ cx_type *cx_parser::parse_factor(void) {
                     p_node->defn.constant.value.char__ = p_string[1];
                 } else {
                     p_node->defn.constant.value.p_string = new char[length];
-                    
-                    memcpy(p_node->defn.constant.value.p_string, 
-                            &p_string[1], length);
-                    
-                    //p_node->defn.constant.value.p_string = &p_string[1];
+
+                    strcpy(p_node->defn.constant.value.p_string,
+                            &p_string[1]);
+
                     p_node->defn.constant.value.p_string[length] = '\0';
                     p_node->p_type->form = fc_array;
                     p_node->p_type->array.element_count = length;
-                    p_node->p_type->array.maxIndex = (p_node->p_type->array.element_count - 1);
+                    p_node->p_type->array.maxIndex = length;
                     p_node->p_type->array.min_index = 0;
                     p_node->p_type->array.p_element_type = p_char_type;
                     p_node->p_type->array.p_index_type = p_integer_type;
-                    //p_node->p_type->size = length;
                 }
             }
             icode.put(p_node);
@@ -299,7 +297,6 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
 
     if (token_in(token, tokenlist_assign_ops)) {
         cx_type *p_expr_type = nullptr;
-        cx_type *p_expr_type_cast_follow = nullptr;
 
         switch (token) {
             case tc_equal:
@@ -307,22 +304,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
 
-                // if not semicolon, this may be an expression following a cast.
-                // Keep p_expr_type same type, but we need to parse the expr.
-                if (token != tc_semicolon) {
-                    p_expr_type_cast_follow = parse_expression();
-
-                    // check if compatible
-                    if (p_result_type->form != fc_stream) {
-                        check_assignment_type_compatible(p_expr_type, p_expr_type_cast_follow,
-                                err_incompatible_assignment);
-                    }
-                }
-
-                if (p_result_type->form != fc_stream) {
-                    check_assignment_type_compatible(p_result_type, p_expr_type,
-                            err_incompatible_assignment);
-                }
+                check_assignment_type_compatible(p_result_type, p_expr_type,
+                        err_incompatible_assignment);
             }
                 break;
             case tc_minus_minus:
@@ -492,4 +475,6 @@ cx_type *cx_parser::parse_field(const cx_type* p_type) {
         return p_dummy_type;
 
     }
+    
+    return p_dummy_type;
 }

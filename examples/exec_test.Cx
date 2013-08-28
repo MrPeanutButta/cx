@@ -16,18 +16,22 @@
 
 #include cxstdio
 #include cxctype
+#include cxstring
+// global starts here
 
-char g_char = 'c';
+// global ends here
+string test(){
+    return "this\vis\tjust\na\vloooooooooong\tstring\ttest";
+}
 
 int main(){
 
-    puts("this is a test from stdio!");
-    putc(toupper(g_char), stdout);
-    putchar('\n');
-    putchar(g_char + 21);
-    putchar('\n');
+    puts("please enter your name: ");
+    string d = gets();
 
-    putchar(toupper(putc(g_char, stdout)));
+    puts("hello "); 
+    puts(d += '\n');
+    puts(test());
 
     return 0;
 }

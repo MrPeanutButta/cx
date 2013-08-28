@@ -86,6 +86,62 @@ int cx_parser::array_size(cx_type * p_array_type) {
     return (p_array_type->array.element_count * p_array_type->array.p_element_type->size);
 }
 
+/** parse_string_type      parse an string type specification.
+ * 
+ *      <type-id> <id> [ <const-index-size> ]; 
+ * 
+ * @param p_function_id : ptr to fuction which owns this array.
+ * @param p_array_node : ptr to string symtab node.
+ * @return ptr to array type object.
+ */
+cx_type *cx_parser::parse_string_type(cx_symtab_node* p_function_id,
+        cx_symtab_node* p_string_node) {
+
+    cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
+    cx_type *p_element_type = p_array_type;
+
+    // Final element type.
+    set_type(p_element_type->array.p_element_type, p_char_type);
+
+    int min_index = 0;
+    int max_index = 0;
+
+    //set_type(p_element_type->array.p_index_type, p_integer_type);
+    p_array_type->array.element_count = max_index;
+    p_array_type->array.min_index = min_index;
+    p_array_type->array.maxIndex = max_index - 1;
+
+    set_type(p_string_node->p_type, p_array_type);
+
+    get_token_append();
+
+    if (token_in(token, tokenlist_assign_ops))parse_assignment(p_string_node);
+
+    p_string_node->defn.how = dc_variable;
+
+    //add to routines variable list
+    /*if (p_function_id != nullptr) {
+        cx_symtab_node *array = p_function_id->defn.routine.locals.p_type_ids;
+        if (!array) {
+            p_function_id->defn.routine.locals.p_type_ids = p_string_node;
+        } else {
+            while (array->next__)array = array->next__;
+
+            array->next__ = p_string_node;
+        }
+    }*/
+
+    // If the type object doesn't have a name yet,
+    // point it to the type id.
+    if (!p_string_node->p_type->p_type_id) {
+        p_string_node->p_type->p_type_id = p_string_node;
+    }
+
+    return p_array_type;
+
+}
+
+
 /** parse_complex_type
  * 
  * NOTE: 

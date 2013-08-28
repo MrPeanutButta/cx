@@ -1,7 +1,7 @@
 #ifndef exec_h
 #define exec_h
 
-#include <stack>
+#include <vector>
 #include "error.h"
 #include "symtable.h"
 #include "types.h"
@@ -9,23 +9,20 @@
 #include "backend.h"
 
 ///  cx_stack_item          Item pushed onto the runtime stack.
-
 union cx_stack_item {
     int int__;
     float float__;
-    double double__;
     char char__;
     void *addr__;
+    char buffer[512];
 };
-
-
 
 ///  cx_runtime_stack       Runtime stack class.
 
 class cx_runtime_stack {
 
     enum {
-        stack_size = 31250,
+        stack_size = 4096,
         frame_header_size = 5,
     };
 
@@ -42,7 +39,6 @@ class cx_runtime_stack {
         } return_address;
     };
 
-    //stack<cx_stack_item *> rstack;
     cx_stack_item stack[stack_size]; // stack items
     cx_stack_item *tos; // ptr to the top of the stack
     cx_stack_item *p_frame_base; // ptr to current stack frame base
@@ -84,7 +80,7 @@ public:
     }
 
     void allocate_value(cx_symtab_node *p_id);
-    void deallocate_value(const cx_symtab_node *p_id);
+    void deallocate_value(cx_symtab_node *p_id);
 
     cx_stack_item *get_value_address(const cx_symtab_node *p_id);
 };
