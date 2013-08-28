@@ -50,7 +50,7 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
     cx_stack_item *p_new_frame_base = tos + 1; /* point to item just above
                                                 *  current top_of_stack item */
 
-    push(1); // function return value (placeholder)
+    push(0); // function return value (placeholder)
 
     // Compute the static link.
     if (new_level == old_level + 1) {
@@ -119,6 +119,7 @@ void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
 
         // Leave a function value on top.
         if (p_function_id->p_type->is_string()) {
+            //tos = (cx_stack_item *) p_frame_base;
             tos->addr__ = (cx_stack_item *) p_frame_base;
         } else {
             tos = (cx_stack_item *) p_frame_base;
@@ -164,15 +165,20 @@ void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
  *
  * @param p_id : ptr to symbol table node of variable or parm
  */
-void cx_runtime_stack::deallocate_value(const cx_symtab_node *p_id) {
+void cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
     if ((!p_id->p_type->is_scalar_type()) && (p_id->defn.how != dc_reference)) {
         cx_stack_item *p_value = p_id->runstack_item;
 
         if (p_value->addr__ != nullptr) {
-            delete[] p_value->addr__;
-            p_value->addr__ = nullptr;
+            char *pchar = (char *)p_value->addr__;
+            const int length = strlen(pchar);
+            memset(pchar, 0, length);
+            delete[] pchar;
         }
     }
+    
+    memset(p_id->runstack_item, 0, sizeof(cx_stack_item));
+    p_id->runstack_item = nullptr;
 }
 
 /** get_value_address     get the address of the runtime stack

@@ -629,7 +629,7 @@ cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
 
             // Modify the data address at the top of the stack.
             push(((char *) pop()->addr__) +
-                    p_type->array.p_element_type->size * (value - p_type->array.min_index));
+                    p_type->array.p_element_type->size * value);
 
             // Prepare for another subscript in this list.
             if (token == tc_comma) p_type = p_type->array.p_element_type;

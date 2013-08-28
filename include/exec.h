@@ -22,7 +22,7 @@ union cx_stack_item {
 class cx_runtime_stack {
 
     enum {
-        stack_size = 128,
+        stack_size = 4096,
         frame_header_size = 5,
     };
 
@@ -80,7 +80,7 @@ public:
     }
 
     void allocate_value(cx_symtab_node *p_id);
-    void deallocate_value(const cx_symtab_node *p_id);
+    void deallocate_value(cx_symtab_node *p_id);
 
     cx_stack_item *get_value_address(const cx_symtab_node *p_id);
 };

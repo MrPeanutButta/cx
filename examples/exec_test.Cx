@@ -20,21 +20,18 @@
 // global starts here
 
 // global ends here
+string test(){
+    return "this\vis\tjust\na\vloooooooooong\tstring\ttest";
+}
+
 int main(){
 
+    puts("please enter your name: ");
     string d = gets();
 
-    puts(d);
-
-    int i = 0;
-    int len = strlen(d);
-
-    while(i < len){
-        d[i] = toupper(d[i]);
-        i++;
-    }
-
-    puts(d);
+    puts("hello "); 
+    puts(d += '\n');
+    puts(test());
 
     return 0;
 }

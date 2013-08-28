@@ -76,14 +76,14 @@ void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token
  *                    on the stack.
  */
 void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
-    
+
     cx_stack_item *p_target = nullptr; // runtime stack address of target
     cx_type *p_target_type = nullptr; // ptr to target type object
     cx_type *p_expr_type = nullptr; // ptr to expression type object
 
     if (p_target_id->defn.how == dc_function) {
         p_target_type = p_target_id->p_type;
-        p_target = run_stack.get_value_address(p_target_id);
+        p_target = (cx_stack_item *)run_stack.get_value_address(p_target_id);
     }/* Assignment to variable or formal parameter.
       * execute_variable leaves the target address on
       * top of the runtime stack. */
@@ -165,14 +165,14 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             } else if (p_target_id->p_type->is_string()) {
 
                 void *p_source = pop()->addr__;
-                int length = p_expr_type->size;
+                const int length = strlen((char *) p_source);
 
-                memcpy(p_target, p_source, length);
+                memcpy(p_target, p_source, length + 1);
 
                 // array  := array
                 // record := record
                 p_target_id->p_type->array.element_count = length;
-                p_target_id->p_type->array.maxIndex = length - 1;
+                p_target_id->p_type->array.maxIndex = length;
                 p_target_id->p_type->size = length;
 
             }
@@ -244,8 +244,8 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 if (p_expr_type->is_string()) {
                     void *p_source = pop()->addr__;
 
-                    int length = strlen((char *) p_source);
-                    char buffer[length + 1];
+                    const int length = p_expr_type->size;
+                    char *buffer = new char[length + 1];
 
                     memset(&buffer, 0, sizeof (buffer));
                     memcpy(&buffer, p_source, length);
@@ -262,25 +262,16 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 } else if (p_expr_type == p_char_type) {
 
                     char source = pop()->char__;
-                    int length = strlen((char *) p_target); //
-                    bool empty = (length == 0);
+                    const int length = strlen((char *)p_target);
 
-                    char buffer[length + 1];
+                    char *t = (char *)p_target;
+                    memcpy(&t[length], &source, 1);
 
-                    memset(buffer, 0, sizeof (buffer));
-
-                    if (!empty) {
-                        memcpy(&buffer, p_target, length);
-                    }
-
-                    buffer[length] = source;
-
-                    memcpy(p_target,
-                            &buffer, sizeof (buffer));
-
-                    p_target_id->p_type->array.element_count++;
-                    p_target_id->p_type->array.maxIndex++;
-                    p_target_type->size++;
+                    // array  := array
+                    // record := record
+                    p_target_id->p_type->array.element_count = length + 1;
+                    p_target_id->p_type->array.maxIndex = length + 1;
+                    p_target_id->p_type->size = length + 1;
                 }
             }
 

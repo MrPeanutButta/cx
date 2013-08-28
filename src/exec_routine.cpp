@@ -99,7 +99,7 @@ cx_type *cx_executor::execute_declared_subroutine_call
     // Set up a new stack frame for the callee.
     cx_stack_item *p_new_frame_base = run_stack.push_frame_header
             (old_level, new_level, p_icode);
-    
+
     // push actual parameter values onto the stack.
     get_token();
 
@@ -110,10 +110,10 @@ cx_type *cx_executor::execute_declared_subroutine_call
     //  )
     get_token();
 
-            // Activate the new stack frame ...
+    // Activate the new stack frame ...
     current_nesting_level = new_level;
     run_stack.activate_frame(p_new_frame_base, current_location() - 1);
-    
+
     // ... and execute the callee.
     execute_routine(p_function_id);
 
@@ -161,12 +161,19 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
 
                 /* Formal parameter is an array or a record:
                  * Make a copy of the actual parameter's value. */
-                void *addr = new char[p_actual_type->size];
+                
                 void *p_source = pop()->addr__;
+                const int length = strlen((char *)p_source);
+                void *addr = new char[length];
                 
-                memcpy(addr, p_source, p_actual_type->size);
-                
+                memcpy(addr, p_source, length);
+
                 push(addr);
+                
+                p_formal_type->size = length;
+                p_formal_type->array.element_count = length;
+                p_formal_type->array.maxIndex = length;
+                        
                 p_formal_id->runstack_item = top_of_stack();
             } else {
 
@@ -177,8 +184,8 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
             }
         }
     }
-    
-    if(token == tc_left_paren) get_token();
+
+    if (token == tc_left_paren) get_token();
 }
 
 /** execute_RETURN	Assign a return value to the functions StackItem and

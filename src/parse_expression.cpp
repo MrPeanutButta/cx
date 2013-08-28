@@ -212,12 +212,12 @@ cx_type *cx_parser::parse_factor(void) {
                     p_node->defn.constant.value.p_string = new char[length];
 
                     strcpy(p_node->defn.constant.value.p_string,
-                            &p_string[1]); //, length);
+                            &p_string[1]);
 
                     p_node->defn.constant.value.p_string[length] = '\0';
                     p_node->p_type->form = fc_array;
                     p_node->p_type->array.element_count = length;
-                    p_node->p_type->array.maxIndex = length - 1;
+                    p_node->p_type->array.maxIndex = length;
                     p_node->p_type->array.min_index = 0;
                     p_node->p_type->array.p_element_type = p_char_type;
                     p_node->p_type->array.p_index_type = p_integer_type;

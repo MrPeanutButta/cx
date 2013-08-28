@@ -285,11 +285,11 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     }
    
     if(!p_string_type){
-        set_type(p_string_type, new cx_type(fc_array, 1, p_string_id));
+        set_type(p_string_type, new cx_type(fc_array, 255, p_string_id));
         set_type(p_string_type->array.p_element_type, p_char_type);
         p_string_type->array.min_index = 0;
-        p_string_type->array.maxIndex = 0;
-        p_string_type->array.element_count = 1;
+        p_string_type->array.maxIndex = 255;
+        p_string_type->array.element_count = 256;
         set_type(p_string_type->array.p_index_type, p_integer_type);
     }
     
