@@ -26,8 +26,12 @@ void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
         case tc_INCLUDE:
         {
             std::string lib_path;
-            lib_path = getenv(__CX_STDLIB__);
-            lib_path += "/";
+			char *env_path = getenv(__CX_STDLIB__);
+            
+			if(env_path != nullptr) {
+				lib_path = env_path;
+				lib_path += "/";
+			}
 
             get_token();
 

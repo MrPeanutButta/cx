@@ -55,7 +55,7 @@
 	#include <windows.h>  // for WinAPI and Sleep()
 	#define _NO_OLDNAMES  // for MinGW compatibility
 	#include <conio.h>    // for getch() and kbhit()
-	#define getch _getch
+	#define cx_getch _getch
 	#define kbhit _kbhit
 #else
 	#ifdef __cplusplus

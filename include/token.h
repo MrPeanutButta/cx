@@ -1,6 +1,7 @@
 #ifndef token_h
 #define token_h
 
+#include <cstdint>
 #include "misc.h"
 #include "error.h"
 #include "buffer.h"

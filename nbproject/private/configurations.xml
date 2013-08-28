@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="88">
+<configurationDescriptor version="89">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -79,8 +79,8 @@
     </conf>
     <conf name="Mac_-_debug" type="1">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
-        <platform>4</platform>
+        <developmentServer>aaron@10.12.125.231:22</developmentServer>
+        <platform>2</platform>
       </toolsSet>
       <dbx_gdbdebugger version="1">
         <gdb_pathmaps>
