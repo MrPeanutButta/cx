@@ -116,7 +116,7 @@ public:
         return left__;
     }
 
-    cx_symtab_node *right___subtree(void) const {
+    cx_symtab_node *right_subtree(void) const {
         return right__;
     }
 

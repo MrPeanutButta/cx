@@ -22,7 +22,7 @@ union cx_stack_item {
 class cx_runtime_stack {
 
     enum {
-        stack_size = 4096,
+        stack_size = 32768,
         frame_header_size = 5,
     };
 

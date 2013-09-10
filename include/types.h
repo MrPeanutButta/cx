@@ -12,8 +12,6 @@
 #include "error.h"
 #include "symtable.h"
 
-
-
 extern cx_type *p_integer_type, *p_float_type, *p_boolean_type, *p_char_type,
         *p_dummy_type, *p_complex_type, *p_file_type;
 
@@ -44,7 +42,7 @@ public:
         struct {
             cx_type *p_index_type;
             cx_type *p_element_type;
-            int min_index, maxIndex;
+            int min_index, max_index;
             int element_count;
         } array;
 

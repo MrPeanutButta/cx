@@ -44,7 +44,7 @@ int putc(char c, file &stream){
  * @return ASCII code of character written. */
 
 int putchar(char c){
-    return putc(c, stdout);;
+    return putc(c, stdout);
 }
 
 /* puts - Write string to stdout
@@ -125,11 +125,11 @@ string gets(){
     do{
         c = getchar();
         
-        if(c != '\n') str += c;
+        if(c != '\n'){
+            str += c;
+        }
 
     }while(c != '\n');
     
-    str += '\0';
-
-    return str;
+    return (str += '\0');
 }

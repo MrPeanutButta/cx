@@ -17,6 +17,7 @@
 #include cxstdio
 #include cxctype
 #include cxstring
+#include cxmath
 // global starts here
 
 // global ends here
@@ -31,7 +32,8 @@ int main(){
 
     puts("hello "); 
     puts(d += '\n');
-    puts(test());
+    
+    int gcd = igcd(4096, 40960);
 
-    return 0;
+    return strlen(d);;
 }

@@ -16,11 +16,11 @@ cx_symtab_node *p_stderr = nullptr;
 
 cx_type *p_integer_type = nullptr;
 cx_type *p_float_type = nullptr;
-cx_type *pDoubleType = nullptr;
+cx_type *p_double_type = nullptr;
 cx_type *p_boolean_type = nullptr;
 cx_type *p_char_type = nullptr;
 cx_type *p_string_type = nullptr;
-cx_type *pClassType = nullptr;
+cx_type *p_class_type = nullptr;
 cx_type *p_complex_type = nullptr;
 cx_type *p_file_type = nullptr;
 
@@ -257,76 +257,76 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = rc_forward;
 
-    cx_symtab_node *pIntegerId = p_symtab->enter("int", dc_type);
-    cx_symtab_node *pFloatId = p_symtab->enter("float", dc_type);
+    cx_symtab_node *p_integer_id = p_symtab->enter("int", dc_type);
+    cx_symtab_node *p_float_id = p_symtab->enter("float", dc_type);
 
-    cx_symtab_node *pComplexId = p_symtab->enter("class", dc_type);
+    cx_symtab_node *p_complex_id = p_symtab->enter("class", dc_type);
 
-    cx_symtab_node *pBooleanId = p_symtab->enter("bool", dc_type);
-    cx_symtab_node *pCharId = p_symtab->enter("char", dc_type);
-    cx_symtab_node *pFalseId = p_symtab->enter("false", dc_constant);
-    cx_symtab_node *pTrueId = p_symtab->enter("true", dc_constant);
+    cx_symtab_node *p_boolean_id = p_symtab->enter("bool", dc_type);
+    cx_symtab_node *p_char_id = p_symtab->enter("char", dc_type);
+    cx_symtab_node *p_false_id = p_symtab->enter("false", dc_constant);
+    cx_symtab_node *p_true_id = p_symtab->enter("true", dc_constant);
     cx_symtab_node *p_string_id = p_symtab->enter("string", dc_type);
 
-    cx_symtab_node *pFileId = p_symtab->enter("file", dc_type);
+    cx_symtab_node *p_fileId = p_symtab->enter("file", dc_type);
 
     if (!p_integer_type) {
-        set_type(p_integer_type, new cx_type(fc_scalar, sizeof (int), pIntegerId));
+        set_type(p_integer_type, new cx_type(fc_scalar, sizeof (int), p_integer_id));
     }
     if (!p_float_type) {
-        set_type(p_float_type, new cx_type(fc_scalar, sizeof (float), pFloatId));
+        set_type(p_float_type, new cx_type(fc_scalar, sizeof (float), p_float_id));
     }
 
     if (!p_boolean_type) {
-        set_type(p_boolean_type, new cx_type(fc_enum, sizeof (int), pBooleanId));
+        set_type(p_boolean_type, new cx_type(fc_enum, sizeof (int), p_boolean_id));
     }
     if (!p_char_type) {
-        set_type(p_char_type, new cx_type(fc_scalar, sizeof (char), pCharId));
+        set_type(p_char_type, new cx_type(fc_scalar, sizeof (char), p_char_id));
     }
    
     if(!p_string_type){
         set_type(p_string_type, new cx_type(fc_array, 255, p_string_id));
         set_type(p_string_type->array.p_element_type, p_char_type);
         p_string_type->array.min_index = 0;
-        p_string_type->array.maxIndex = 255;
+        p_string_type->array.max_index = 255;
         p_string_type->array.element_count = 256;
         set_type(p_string_type->array.p_index_type, p_integer_type);
     }
     
     if (!p_complex_type) {
-        set_type(p_complex_type, new cx_type(fc_complex, sizeof (cx_type), pComplexId));
+        set_type(p_complex_type, new cx_type(fc_complex, sizeof (cx_type), p_complex_id));
     }
 
     if (!p_file_type) {
-        set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), pFileId));
+        set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), p_fileId));
     }
 
     set_type(p_main_function_id->p_type, p_integer_type);
 
     // link each predefined type id's node to it's type object
-    set_type(pIntegerId->p_type, p_integer_type);
+    set_type(p_integer_id->p_type, p_integer_type);
 
-    set_type(pFloatId->p_type, p_float_type);
+    set_type(p_float_id->p_type, p_float_type);
 
-    set_type(pBooleanId->p_type, p_boolean_type);
-    set_type(pCharId->p_type, p_char_type);
+    set_type(p_boolean_id->p_type, p_boolean_type);
+    set_type(p_char_id->p_type, p_char_type);
 
-    set_type(pComplexId->p_type, p_complex_type);
+    set_type(p_complex_id->p_type, p_complex_type);
     
-    set_type(pFileId->p_type, p_file_type);
+    set_type(p_fileId->p_type, p_file_type);
     
     set_type(p_string_id->p_type, p_string_type);
 
     p_boolean_type->enumeration.max = 1;
-    p_boolean_type->enumeration.p_const_ids = pFalseId;
+    p_boolean_type->enumeration.p_const_ids = p_false_id;
 
-    pFalseId->defn.constant.value.int__ = 0;
-    pTrueId->defn.constant.value.int__ = 1;
+    p_false_id->defn.constant.value.int__ = 0;
+    p_true_id->defn.constant.value.int__ = 1;
 
-    set_type(pTrueId->p_type, p_boolean_type);
-    set_type(pFalseId->p_type, p_boolean_type);
+    set_type(p_true_id->p_type, p_boolean_type);
+    set_type(p_false_id->p_type, p_boolean_type);
 
-    pFalseId->next__ = pTrueId;
+    p_false_id->next__ = p_true_id;
 
     p_stdout = p_symtab->enter("stdout", ::dc_variable);
     set_type(p_stdout->p_type, p_file_type);
@@ -503,19 +503,19 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
             && (p_value_type == p_integer_type)) return;
 
     if ((p_target_type == p_float_type)
-            && (p_value_type == pDoubleType)) return;
+            && (p_value_type == p_double_type)) return;
 
-    if ((p_target_type == pDoubleType)
+    if ((p_target_type == p_double_type)
             && (p_value_type == p_integer_type)) return;
 
-    if ((p_target_type == pDoubleType)
+    if ((p_target_type == p_double_type)
             && (p_value_type == p_float_type)) return;
 
     if ((p_target_type == p_integer_type)
             && (p_value_type == p_float_type)) return;
 
     if ((p_target_type == p_integer_type)
-            && (p_value_type == pDoubleType)) return;
+            && (p_value_type == p_double_type)) return;
 
     if ((p_target_type->form == fc_array)
             && (p_value_type->form == fc_array)
@@ -559,10 +559,10 @@ bool real_operands(const cx_type *p_type1, const cx_type *p_type2) {
     return (p_type1 == p_float_type) && (p_type2 == p_float_type)
             || ((p_type1 == p_float_type) && (p_type2 == p_integer_type))
             || ((p_type2 == p_float_type) && (p_type1 == p_integer_type))
-            || ((p_type1 == p_float_type) && (p_type2 == pDoubleType))
-            || ((p_type2 == p_float_type) && (p_type1 == pDoubleType))
-            || ((p_type1 == pDoubleType) && (p_type2 == p_integer_type))
-            || ((p_type2 == pDoubleType) && (p_type1 == p_integer_type))
-            || ((p_type1 == pDoubleType) && (p_type2 == p_float_type))
-            || ((p_type2 == pDoubleType) && (p_type1 == p_float_type));
+            || ((p_type1 == p_float_type) && (p_type2 == p_double_type))
+            || ((p_type2 == p_float_type) && (p_type1 == p_double_type))
+            || ((p_type1 == p_double_type) && (p_type2 == p_integer_type))
+            || ((p_type2 == p_double_type) && (p_type1 == p_integer_type))
+            || ((p_type1 == p_double_type) && (p_type2 == p_float_type))
+            || ((p_type2 == p_double_type) && (p_type1 == p_float_type));
 }

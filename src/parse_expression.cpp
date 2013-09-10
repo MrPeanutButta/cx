@@ -217,7 +217,7 @@ cx_type *cx_parser::parse_factor(void) {
                     p_node->defn.constant.value.p_string[length] = '\0';
                     p_node->p_type->form = fc_array;
                     p_node->p_type->array.element_count = length;
-                    p_node->p_type->array.maxIndex = length;
+                    p_node->p_type->array.max_index = length;
                     p_node->p_type->array.min_index = 0;
                     p_node->p_type->array.p_element_type = p_char_type;
                     p_node->p_type->array.p_index_type = p_integer_type;

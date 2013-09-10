@@ -164,15 +164,15 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 
                 void *p_source = pop()->addr__;
                 const int length = strlen((char *)p_source);
-                void *addr = new char[length];
+                void *addr = new char[length + 1];
                 
                 memcpy(addr, p_source, length);
 
                 push(addr);
                 
-                p_formal_type->size = length;
-                p_formal_type->array.element_count = length;
-                p_formal_type->array.maxIndex = length;
+                p_formal_type->size = length + 1;
+                p_formal_type->array.element_count = length + 1;
+                p_formal_type->array.max_index = length + 1;
                         
                 p_formal_id->runstack_item = top_of_stack();
             } else {

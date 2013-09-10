@@ -1,0 +1,22 @@
+Integral Types
+--------------------------------------
+byte - 1 byte signed integer
+char - 1 byte signed char/(int ascii)
+short - 2 byte signed integer
+int - 4 byte signed integer
+long - 8 byte signed integer
+
+Fractional Types
+--------------------------------------
+float - 4 byte fractional value
+double - 8 byte fractional value
+
+Logical Types
+--------------------------------------
+bool - 1 bit values representing true or false
+
+Type Qualifiers
+--------------------------------------
+const - The followed type is declared as constant.
+unsigned - The followed type is declared as unsigned (positive) only.
+signed - The followed type is declared as signed (positive or negative).

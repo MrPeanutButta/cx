@@ -21,11 +21,11 @@ extern cx_symtab_node *p_stderr;
 
 extern cx_type *p_integer_type;
 extern cx_type *p_float_type;
-//extern cx_type *pDoubleType;
+//extern cx_type *p_double_type;
 extern cx_type *p_boolean_type;
 extern cx_type *p_char_type;
 extern cx_type *p_string_type;
-extern cx_type *pClassType;
+extern cx_type *p_class_type;
 extern cx_type *p_complex_type;
 extern cx_type *p_file_type;
 

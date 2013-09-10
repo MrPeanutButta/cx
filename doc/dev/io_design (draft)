@@ -1,178 +1,22 @@
 Cx standard I/O design document
 
 [07-27-2013] Ideas for basic I/O design
-Initial design for I/O in Cx includes the use of 2 symbol table nodes
-pointed to by pInputNode, and pOutputNode. These nodes serve the purpose of 
+Initial design for I/O in Cx includes the use of 3 symbol table nodes
+pointed to by p_stdin, p_stdout, and p_stderr. These nodes serve the purpose of 
 basic I/O.
 
 Largely focusing on output until final draft, at which point input will be drafted.
 
---proposal #1:
-
-// C++ design of cx_output
-class cx_output : TSymtabNode {
-
-public:
-    // executes expressions and buffers values until tcSemicolon.
-    // on tcSemicolon Flush() is called to perform the actual output.
-    ExecuteOutput(void);
-    
-    // overloaded for each type
-    AppendBuffer(all types){
-        ss << type value;
-    }
-
-private:
-    // used to buffer values until Flush() is called.
-    // buffering to stringstream will help buffer all types
-    // as string output.
-    stringstream ss;
-
-    Flush(void){
-        std:cout << ss.str();
-    }
-
-};
-
-The above class will allow Cx to use a named output variable that is used
-and can be assigned expression results without much change to expression parsing
-or executing.
-
-in void TExecutor::ExecuteAssignment(const TSymtabNode *pTargetId),
-
-we can test for output/input on entry like:
-    if(pTargetId == pOutputNode){
-        pTargetId->ExecuteOutput();
-        return;
-    }else if(pTargetId == pInputNode){
-        pTargetId->ExecuteInput();
-        return;
-    }
-
-If pTargetId points to pOutputNode when there is an assignment cx_output::ExecuteOutput
-is called to parse the expression(s) that may be separated by some operator. 
-cx_output::ExecuteOutput will execute expressions and buffer the results until 
-token tcSemicolon is reached; at which point Flush() is called to display output.
-
-The above design allows Cx to implement it's own I/O functions. Below is an 
-example of how this would be implemented in the Cx stdlib.
-
-// Cx implementation - just an example
-/*
- * if the output variable were named 'print'
- * we can use the following 
- */
-      // some expression      <<                      <<    <<    << std::ends;
-print (some_var + (x/y << 2)) + " some const string " + 'c' + '\n'; // flush on ;
-
-The above example might require a small change to expression parsing.
-Where before calculated values are pushed to the stack, calculated values are 
-buffered to pOutputNode->AppendBuffer(). If values are of incompatible types
-or both operands are of char, char[], or const char[] the concatenation happens
-by appending both values to the stringstream.
-
-'print' is just an example. This could easily be 'cout' with the operator '<<';
-
-Pros:
-    Easy to implement.
-Cons: 
-    This design may have draw backs with reuse of these nodes for file i/o.
-
---end proposal #1
-
---proposal #2
-
-note: keeping the class cx_ouput design of item #1
-
-Instead of using I/O nodes as fully dedicated I/O executors, a more ideal design
-would be to treat these nodes as regular variables that will perform some task 
-and not just store values.
-
-This means the nodes may act as software pseudo registers like with x86 
-instructions. Anything assigned to the address space of the TStackItem of 
-pOutputNode will be printed, and pInputNode will simply take input for the value
-being assigned to it.
-
-Just as one would assign a COM port value to register DX and call:
-    out [dx], eax   ; where eax stores the value to be written to
-                    ; the COM port # stored in DX
-
-The output nodes would be similar to the COM I/O port in this case. With 
-anything being written to it getting printed.
-
-Pros:
-    more flexible 'stream' like output.
-    Cx may implement it's own I/O library.
-Cons:
-    Requires more research.
-    Implementation requirements unknown.
-
---end proposal #2
-
---proposal #3
-
-Perhaps an easier alternative to #2 would be to associate I/O nodes
-with a standard FILE *filestream. This would require the use of 3 nodes.
-One node for each respective operation. The I/O class will have a FILE *
-which may point to stdin, stdout or stderr.
-
-This design will require single expression I/O, eliminating the need
-to buffer.
-
-I find this design may have the best flexibility with reuse. Nodes of this
-design might be reusable for file I/O streams.
-
-/*
- * example class
- */
-class cx_basic_io : TSymtabNode {
-private:
-	FILE *cx_io_stream;
-public:
-
-	// TType * points to the expression type.
-	// TStackItem * points to the expression result. 
-	void write_from_item(TType *pType, TStackItem *pItem){
-	
-		if(pType == pIntergerType){
-			// write int to cx_io_stream
-		}else if(pType == pFloatType){
-			// write float to cx_io_stream
-		} // etc...
-	
-	}
-	
-	// TType * points to the expression type.
-	// TStackItem * points to the expression result pulled off of the stack.
-	void write_from_stack(TType *pType){
-		TStackItem *t = Pop();
-		
-		if(pType == pIntergerType){
-			// write int(t) to cx_io_stream
-		}else if(pType == pFloatType){
-			// write float(t) to cx_io_stream
-		} // etc...
-	}
- };
-
---end proposal #3
-
---proposal #4
-
-Yet a better design might be to edit the TSymtabNode class itself, where there
-would exist a pointer to some file stream. Creating a 'file' as a type, and it's
-form code to fcStream.
-
 configuration:
 type name = 'file'
-TDefnCode = dcType;
-TFormCode = fcStream;
+cx_defn_code = dc_type;
+cx_form_code = fc_stream;
 
 read and write operations would be baked into the interpretor and stdin, stderr,
 and stdout would be predefined types of 'file'
 
 Open files would be tracked by adding an additional linked list of I/O objects to
-TSymtabNode::TLocalIds::TSymtabNode *pInOutId;
+
 
 Cx implementation example:
 

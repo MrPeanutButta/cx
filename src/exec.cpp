@@ -177,7 +177,7 @@ void cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
         }
     }
     
-    memset(p_id->runstack_item, 0, sizeof(cx_stack_item));
+   // memset(p_id->runstack_item, 0, sizeof(cx_stack_item));
     p_id->runstack_item = nullptr;
 }
 
@@ -252,7 +252,7 @@ void cx_executor::range_check(const cx_type *p_target_type, int value) {
 
     if ((p_target_type->form == fc_array)
             && ((value < p_target_type->array.min_index)
-            || (value > p_target_type->array.maxIndex))) {
+            || (value > p_target_type->array.max_index))) {
         cx_runtime_error(rte_value_out_of_range);
     }
 }

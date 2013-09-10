@@ -30,7 +30,7 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     set_type(p_element_type->array.p_index_type, p_integer_type);
     p_array_type->array.element_count = max_index;
     p_array_type->array.min_index = min_index;
-    p_array_type->array.maxIndex = max_index - 1;
+    p_array_type->array.max_index = max_index - 1;
 
     if ((token != tc_right_paren) && (token != tc_right_subscript)) {
         parse_expression();
@@ -109,7 +109,7 @@ cx_type *cx_parser::parse_string_type(cx_symtab_node* p_function_id,
     //set_type(p_element_type->array.p_index_type, p_integer_type);
     p_array_type->array.element_count = max_index;
     p_array_type->array.min_index = min_index;
-    p_array_type->array.maxIndex = max_index - 1;
+    p_array_type->array.max_index = max_index - 1;
 
     set_type(p_string_node->p_type, p_array_type);
 
