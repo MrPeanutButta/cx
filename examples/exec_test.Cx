@@ -20,6 +20,7 @@
 #include cxmath
 // global starts here
 
+
 // global ends here
 string test(){
     return "this\vis\tjust\na\vloooooooooong\tstring\ttest";
@@ -30,7 +31,7 @@ int main(){
     puts("please enter your name: ");
     string d = gets();
 
-    puts("hello "); 
+    puts("hello ");
     puts(d += '\n');
     
     int gcd = igcd(4096, 40960);

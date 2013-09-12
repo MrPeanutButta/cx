@@ -166,6 +166,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 const int length = strlen((char *)p_source);
                 void *addr = new char[length + 1];
                 
+				memset(addr, '\0', sizeof(addr));
                 memcpy(addr, p_source, length);
 
                 push(addr);

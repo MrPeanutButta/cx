@@ -19,15 +19,13 @@ extern int current_line_number;
 extern int current_nesting_level;
 extern int asm_label_index;
 
-extern union cx_stack_item;
+union cx_stack_item;
 
 class cx_symtab;
 class cx_symtab_node;
 class cx_line_num_list;
 class cx_icode;
 class cx_type;
-
-//extern union cx_stack_item;
 
 // for public, private and protected scopes
 ///typedef std::map<cx_token_code, cx_symtab *> cx_scoped_symtab;

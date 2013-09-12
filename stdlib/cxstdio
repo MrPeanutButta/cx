@@ -60,10 +60,11 @@ int putchar(char c){
 int puts(string str){
     int i = 0;
 
-    while(str[i] != '\0'){
-        putchar(str[i]);
-        i++;
-    }
+	if(str[i] == '\0') return 0;
+	
+	do
+	    putchar(str[i]);
+	while(str[i++] != '\0');
 
     return i;
 }

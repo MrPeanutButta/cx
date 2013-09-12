@@ -5,7 +5,7 @@
 
 /** parse_expression     parse an expression (binary relational
  *                      operators = < > <> <= and >= ).
- * 
+ *
  * @return ptr to the expression's type object.
  */
 cx_type *cx_parser::parse_expression(void) {
@@ -30,7 +30,7 @@ cx_type *cx_parser::parse_expression(void) {
 /** parse_simple_expression       parse a simple expression
  *                              (unary operators + or - , and
  *                              binary operators + - and ||).
- * 
+ *
  * @return ptr to the simple expression's type object.
  */
 cx_type *cx_parser::parse_simple_expression(void) {
@@ -73,9 +73,9 @@ cx_type *cx_parser::parse_simple_expression(void) {
     return p_result_type;
 }
 
-/** parse_term           parse a term (binary operators * / 
+/** parse_term           parse a term (binary operators * /
  *                      % and &&).
- * 
+ *
  * @return ptr to the term's type object.
  */
 cx_type *cx_parser::parse_term(void) {
@@ -124,7 +124,7 @@ cx_type *cx_parser::parse_term(void) {
 /** parse_factor         parse a factor (identifier, number,
  *                      string, ! <factor>, or parenthesized
  *                      subexpression).
- * 
+ *
  * @return ptr to the factor's type object.
  */
 cx_type *cx_parser::parse_factor(void) {
@@ -144,7 +144,6 @@ cx_type *cx_parser::parse_factor(void) {
             switch (p_node->defn.how) {
                 case dc_function:
                     get_token_append();
-                    //conditional_get_token_append(tc_left_paren, ::err_missing_left_paren);
                     p_result_type = parse_subroutine_call(p_node, true);
                     break;
                 case dc_constant:
@@ -211,8 +210,8 @@ cx_type *cx_parser::parse_factor(void) {
                 } else {
                     p_node->defn.constant.value.p_string = new char[length];
 
-                    strcpy(p_node->defn.constant.value.p_string,
-                            &p_string[1]);
+                    memcpy(p_node->defn.constant.value.p_string,
+                            &p_string[1], length);
 
                     p_node->defn.constant.value.p_string[length] = '\0';
                     p_node->p_type->form = fc_array;
@@ -242,7 +241,6 @@ cx_type *cx_parser::parse_factor(void) {
 
             break;
         case tc_semicolon:
-            //p_result_type = p_dummy_type;
             break;
         default:
             cx_error(err_invalid_expression);
@@ -256,7 +254,7 @@ cx_type *cx_parser::parse_factor(void) {
 /** parse_variable       parse variable type, and assignment operators (= -- ++
  *                      += -= *= /= %= <<= >>= &= ^= |=).
  *                      Also parsed ([] and .).
- * 
+ *
  * @param p_id : variable node id.
  * @return variables type object ptr.
  */
@@ -421,7 +419,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
  *                      following an array variable:
  *
  *                          [ <expr> ]
- * 
+ *
  * @param p_type : ptr to the array's type object.
  * @return ptr to the array element's type object.
  */
@@ -451,7 +449,7 @@ cx_type *cx_parser::parse_subscripts(const cx_type* p_type) {
  *                      variable:
  *
  *                          . <id>
- * 
+ *
  * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
@@ -475,6 +473,6 @@ cx_type *cx_parser::parse_field(const cx_type* p_type) {
         return p_dummy_type;
 
     }
-    
+
     return p_dummy_type;
 }
