@@ -16,7 +16,8 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
     cx_symtab_node *p_prev_sublist_last_id = nullptr;
     cx_symtab_node *p_parm_list = nullptr; // ptr to list of parm nodes
     cx_define_code parm_defined_as; // how a parm is defined
-
+    bool is_array = false;
+    
     cx_symtab_node *p_node = nullptr;
     count = total_size = 0;
 
@@ -37,7 +38,7 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
         get_token();
 
         p_first_id = nullptr;
-
+        
         // Reference or value parameter?
         if (token == tc_bit_AND) {
             parm_defined_as = dc_reference;
@@ -58,7 +59,7 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
             p_last_id = p_parm_id;
         }
 
-        //  , or [
+        //  , or )
         get_token_append();
         set_type(p_parm_id->p_type, p_parm_type);
         

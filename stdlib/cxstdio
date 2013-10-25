@@ -57,14 +57,14 @@ int putchar(char c){
  * @param str : copied char array to write to stdout.
  * @return the string length of str. */
 
-int puts(string str){
+int puts(char str[]){
     int i = 0;
 
 	if(str[i] == '\0') return 0;
 	
-	do
+	do{
 	    putchar(str[i]);
-	while(str[i++] != '\0');
+	}while(str[i++] != '\0');
 
     return i;
 }
@@ -119,8 +119,8 @@ char getchar(){
  * 
  * @return string of characters read from stdin. */
 
-string gets(){
-    string str;
+char *gets(){
+    char str[];
     char c;
 
     do{

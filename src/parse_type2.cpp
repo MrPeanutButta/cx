@@ -16,24 +16,37 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     // Final element type.
     set_type(p_element_type->array.p_element_type, p_array_node->p_type);
 
-    conditional_get_token_append(tc_left_subscript, err_missing_left_subscript);
+    bool is_function = false;
+    
+    if(token != tc_left_paren) get_token_append();
+    else is_function = true;
+    
+    int min_index = 0;
+    int max_index = 0;
 
-
-    if (token == tc_right_subscript) {
+    if ((token == tc_right_subscript) || (token == tc_left_paren)) {
         //get_token_append();
         // xxx fixme, need a way to get out of assignment
-        
+        max_index = 0;
+
+    } else {
+        max_index = p_token->value().int__;
     }
 
-    int min_index = 0;
-    int max_index = p_token->value().int__;
     set_type(p_element_type->array.p_index_type, p_integer_type);
     p_array_type->array.element_count = max_index;
     p_array_type->array.min_index = min_index;
-    p_array_type->array.max_index = max_index - 1;
+    p_array_type->array.max_index = max_index;
 
-    if ((token != tc_right_paren) && (token != tc_right_subscript)) {
+
+    if ((token != tc_right_paren) && (token != tc_right_subscript)
+            && (!is_function)) {
         parse_expression();
+
+        // function returning array
+    } else if (is_function) {
+        parse_function_header(p_array_node);
+        return p_array_type;
     }
 
     if (p_array_type->form != fc_none) {
@@ -41,17 +54,17 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     }
 
     conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
-    
+
     if (token_in(token, tokenlist_assign_ops))parse_assignment(p_array_node);
 
     set_type(p_array_node->p_type, p_array_type);
-    
-    if(p_array_node->defn.how == ::dc_undefined){
+
+    if (p_array_node->defn.how == ::dc_undefined) {
         p_array_node->defn.how = dc_variable;
     }
 
     //add to routines variable list
-    if (p_function_id != nullptr) {
+    /*if (p_function_id != nullptr) {
         cx_symtab_node *array = p_function_id->defn.routine.locals.p_type_ids;
         if (!array) {
             p_function_id->defn.routine.locals.p_type_ids = p_array_node;
@@ -60,7 +73,7 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
 
             array->next__ = p_array_node;
         }
-    }
+    }*/
 
     // If the type object doesn't have a name yet,
     // point it to the type id.
@@ -140,7 +153,6 @@ cx_type *cx_parser::parse_string_type(cx_symtab_node* p_function_id,
     return p_array_type;
 
 }
-
 
 /** parse_complex_type
  * 

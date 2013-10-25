@@ -22,19 +22,21 @@
 
 
 // global ends here
-string test(){
+char *test(){
     return "this\vis\tjust\na\vloooooooooong\tstring\ttest";
 }
 
 int main(){
 
     puts("please enter your name: ");
-    string d = gets();
+    char d[] = gets();
+
+    char t[] = "test\n";
 
     puts("hello ");
     puts(d += '\n');
     
     int gcd = igcd(4096, 40960);
 
-    return strlen(d);;
+    return strlen(t);
 }

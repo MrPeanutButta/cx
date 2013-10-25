@@ -28,6 +28,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
         p_program_ptr_id->global_finish_location = icode.current_location();
     }
 
+    bool is_array = false;
     cx_symtab_node *p_node = find(p_token->string__());
 
     // if complex then this is an object
@@ -35,10 +36,15 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
         parse_complex_type(p_function_id, p_node);
         // predefined type name found
     } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex) &&
-            (p_node->defn.how != dc_function)){// && (p_node->p_type->form != fc_array)) {
+            (p_node->defn.how != dc_function)){
 
         get_token();
 
+        if(token == tc_star){
+            get_token();
+            is_array = true;
+        }
+        
         do {
             while (token == tc_comma)get_token_append();
 
@@ -64,7 +70,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
             get_token_append();
 
             // check for array type
-            if (token == tc_left_subscript) {
+            if ((token == tc_left_subscript) || is_array) {
                 parse_array_type(p_function_id, p_new_id);
 
             } else if (token == tc_left_paren) {
