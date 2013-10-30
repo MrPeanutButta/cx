@@ -14,29 +14,34 @@
  *
  */
 
-#include cxstdio
-#include cxctype
-#include cxstring
+//#include cxstdio
+//#include cxctype
+//#include cxstring
 #include cxmath
 // global starts here
 
+int deeper_we_go(int a, int b){
 
-// global ends here
-char *test(){
-    return "this\vis\tjust\na\vloooooooooong\tstring\ttest";
+    // recursive calls
+    int c = isqrt(igcd(a, b));
+
+    return (b - (c + a));
+}
+
+int new_stack_test(int ref){
+
+    int i = (23 * ref);
+    int j = i * (i + 1);
+
+    return deeper_we_go(i, j);
 }
 
 int main(){
 
-    puts("please enter your name: ");
-    char d[] = gets();
+    int i = 20;
+    int j = 1;//(i * 3) - ((i + 40) / 2);
 
-    char t[] = "test\n";
+    int t = new_stack_test(j);
 
-    puts("hello ");
-    puts(d += '\n');
-    
-    int gcd = igcd(4096, 40960);
-
-    return strlen(t);
+    return t;
 }

@@ -13,7 +13,8 @@
  *
  * @return: ptr to expression's type object
  */
-cx_type *cx_executor::execute_expression(void) {
+cx_type *
+cx_executor::execute_expression(void) {
     cx_type *p_operand1_type; // ptr to first  operand's type
     cx_type *p_operand2_type; // ptr to second operand's type
     cx_type *p_result_type; // ptr to result type
@@ -41,7 +42,7 @@ cx_type *cx_executor::execute_expression(void) {
                 || ((p_operand1_type == p_integer_type) &&
                 (p_operand2_type == p_char_type)) ||
                 ((p_operand1_type == p_char_type) &&
-                (p_operand2_type == p_integer_type)) 
+                (p_operand2_type == p_integer_type))
                 || (p_operand1_type->form == fc_enum)) {
 
             // integer <op> integer
@@ -50,11 +51,15 @@ cx_type *cx_executor::execute_expression(void) {
             // enum    <op> enum
             int value1, value2;
             if (p_operand1_type == p_char_type) {
-                value2 = pop()->char__;
-                value1 = pop()->char__;
+                value2 = top()->basic_types.char__;
+                pop();
+                value1 = top()->basic_types.char__;
+                pop();
             } else {
-                value2 = pop()->int__;
-                value1 = pop()->int__;
+                value2 = top()->basic_types.int__;
+                pop();
+                value1 = top()->basic_types.int__;
+                pop();
             }
 
             switch (op) {
@@ -82,6 +87,9 @@ cx_type *cx_executor::execute_expression(void) {
                 case tc_greaterthan_equal:
                     push(value1 >= value2);
                     break;
+                default:
+                    break;
+
             }
         } else if ((p_operand1_type == p_float_type) ||
                 (p_operand2_type == p_float_type)) {
@@ -89,10 +97,15 @@ cx_type *cx_executor::execute_expression(void) {
             // real    <op> real
             // real    <op> integer
             // integer <op> real
-            float value2 = p_operand2_type == p_float_type ? pop()->float__
-                    : pop()->int__;
-            float value1 = p_operand1_type == p_float_type ? pop()->float__
-                    : pop()->int__;
+            float value2 = p_operand2_type == p_float_type ? top()->basic_types.float__
+                    : top()->basic_types.int__;
+
+            pop();
+
+            float value1 = p_operand1_type == p_float_type ? top()->basic_types.float__
+                    : top()->basic_types.int__;
+
+            pop();
 
             switch (op) {
 
@@ -119,12 +132,17 @@ cx_type *cx_executor::execute_expression(void) {
                 case tc_greaterthan_equal:
                     push(value1 >= value2);
                     break;
+                default:
+                    break;
             }
         } else {
 
             // string <op> string
-            char *addr2 = (char *) pop()->addr__;
-            char *addr1 = (char *) pop()->addr__;
+            char *addr2 = (char *) top()->addr__;
+            pop();
+
+            char *addr1 = (char *) top()->addr__;
+            pop();
 
             int cmp = strncmp(addr1, addr2, p_operand1_type->size);
 
@@ -141,6 +159,8 @@ cx_type *cx_executor::execute_expression(void) {
                     break;
                 case tc_greaterthan_equal: push(cmp >= 0);
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -155,7 +175,8 @@ cx_type *cx_executor::execute_expression(void) {
  *
  * @return: ptr to expression's type object
  */
-cx_type *cx_executor::execute_simple_expression(void) {
+cx_type *
+cx_executor::execute_simple_expression(void) {
 
     cx_type *p_operand_type; // ptr to operand's type
     cx_type *p_result_type; // ptr to result type
@@ -173,11 +194,29 @@ cx_type *cx_executor::execute_simple_expression(void) {
 
     switch (unary_op) {
         case tc_minus:
-            if (p_result_type == p_float_type) push(-pop()->float__);
-            else push(-pop()->int__);
+        {
+            if (p_result_type == p_float_type) {
+                float f = top()->basic_types.float__;
+                pop();
+
+                push(-f);
+            } else {
+                int i = top()->basic_types.int__;
+                pop();
+
+                push(-i);
+            }
+        }
             break;
         case tc_bit_NOT:
-            push(~(pop()->int__));
+        {
+            int i = top()->basic_types.int__;
+            pop();
+
+            push(~(i));
+        }
+            break;
+        default:
             break;
     }
 
@@ -197,8 +236,10 @@ cx_type *cx_executor::execute_simple_expression(void) {
                         (p_operand_type == p_integer_type)) {
 
                     // integer +|- integer
-                    int value2 = pop()->int__;
-                    int value1 = pop()->int__;
+                    int value2 = top()->basic_types.int__;
+                    pop();
+                    int value1 = top()->basic_types.int__;
+                    pop();
 
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
@@ -206,17 +247,21 @@ cx_type *cx_executor::execute_simple_expression(void) {
                 } else if ((p_result_type == p_integer_type) &&
                         (p_operand_type == p_char_type)) {
 
-                    int value2 = pop()->int__;
-                    char value1 = pop()->char__;
+                    int value2 = top()->basic_types.int__;
+                    pop();
+                    char value1 = top()->basic_types.char__;
+                    pop();
 
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
                     p_result_type = p_integer_type;
-                }else if ((p_result_type == p_char_type) &&
+                } else if ((p_result_type == p_char_type) &&
                         (p_operand_type == p_integer_type)) {
 
-                    char value2 = pop()->char__;
-                    int value1 = pop()->int__;
+                    char value2 = top()->basic_types.char__;
+                    pop();
+                    int value1 = top()->basic_types.int__;
+                    pop();
 
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
@@ -226,10 +271,15 @@ cx_type *cx_executor::execute_simple_expression(void) {
                     // real    +|- real
                     // real    +|- integer
                     // integer +|- real
-                    float value2 = p_operand_type == p_float_type ? pop()->float__
-                            : pop()->int__;
-                    float value1 = p_result_type == p_float_type ? pop()->float__
-                            : pop()->int__;
+                    float value2 = p_operand_type == p_float_type ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    float value1 = p_result_type == p_float_type ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
 
                     push(op == tc_plus ? value1 + value2
                             : value1 - value2);
@@ -241,8 +291,10 @@ cx_type *cx_executor::execute_simple_expression(void) {
             case tc_bit_leftshift:
             {
                 // bit left__ shift
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 << value2);
                 p_result_type = p_integer_type;
@@ -251,8 +303,10 @@ cx_type *cx_executor::execute_simple_expression(void) {
             case tc_bit_rightshift:
             {
                 // bit right__ shift
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 >> value2);
                 p_result_type = p_integer_type;
@@ -261,8 +315,10 @@ cx_type *cx_executor::execute_simple_expression(void) {
             case tc_bit_AND:
             {
                 // bit and
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 & value2);
                 p_result_type = p_integer_type;
@@ -271,8 +327,10 @@ cx_type *cx_executor::execute_simple_expression(void) {
             case tc_bit_XOR:
             {
                 // bit XOR
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 ^ value2);
                 p_result_type = p_integer_type;
@@ -281,8 +339,10 @@ cx_type *cx_executor::execute_simple_expression(void) {
             case tc_bit_OR:
             {
                 // bit OR
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 | value2);
                 p_result_type = p_integer_type;
@@ -291,12 +351,16 @@ cx_type *cx_executor::execute_simple_expression(void) {
             case tc_logic_OR:
             {
                 // boolean OR boolean
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 || value2);
                 p_result_type = p_boolean_type;
             }
+                break;
+            default:
                 break;
         }
     }
@@ -309,7 +373,8 @@ cx_type *cx_executor::execute_simple_expression(void) {
  *
  * @return: ptr to term's type object
  */
-cx_type *cx_executor::execute_term(void) {
+cx_type *
+cx_executor::execute_term(void) {
     cx_type *p_operand_type; // ptr to operand's type
     cx_type *p_result_type; // ptr to result type
     cx_token_code op; // operator
@@ -325,7 +390,7 @@ cx_type *cx_executor::execute_term(void) {
         get_token();
         p_operand_type = execute_factor()->base_type();
 
-//        bool div_zero_flag = false;
+        //        bool div_zero_flag = false;
 
         switch (op) {
             case tc_star:
@@ -333,8 +398,10 @@ cx_type *cx_executor::execute_term(void) {
                         (p_operand_type == p_integer_type)) {
 
                     // integer * integer
-                    int value2 = pop()->int__;
-                    int value1 = pop()->int__;
+                    int value2 = top()->basic_types.int__;
+                    pop();
+                    int value1 = top()->basic_types.int__;
+                    pop();
 
                     push(value1 * value2);
                     p_result_type = p_integer_type;
@@ -344,11 +411,16 @@ cx_type *cx_executor::execute_term(void) {
                     // real    * integer
                     // integer * real
                     float value2 = p_operand_type == p_float_type
-                            ? pop()->float__
-                            : pop()->int__;
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
                     float value1 = p_result_type == p_float_type
-                            ? pop()->float__
-                            : pop()->int__;
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
 
                     push(value1 * value2);
                     p_result_type = p_float_type;
@@ -357,29 +429,54 @@ cx_type *cx_executor::execute_term(void) {
             case tc_divide:
             {
 
-                // real    / real
-                // real    / integer
-                // integer / real
-                // integer / integer
+                if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_integer_type)) {
 
-                float value2 = p_operand_type == p_float_type
-                        ? pop()->float__
-                        : pop()->int__;
-                float value1 = p_result_type == p_float_type
-                        ? pop()->float__
-                        : pop()->int__;
+                    int value2 = p_operand_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
 
-                if (value2 == 0.0f) cx_runtime_error(rte_division_by_zero);
+                    pop();
 
-                push(value1 / value2);
-                p_result_type = p_float_type;
+                    int value1 = p_result_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    if (value2 == 0) cx_runtime_error(rte_division_by_zero);
+
+                    push(int(value1 / value2));
+                    p_result_type = p_integer_type;
+
+                } else {
+                    float value2 = p_operand_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    float value1 = p_result_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    if (value2 == 0.0f) cx_runtime_error(rte_division_by_zero);
+
+                    push(float(value1 / value2));
+                    p_result_type = p_float_type;
+                }
             }
                 break;
             case tc_modulas:
             {
                 // integer MOD integer
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 if (value2 == 0) cx_runtime_error(rte_division_by_zero);
 
@@ -390,12 +487,16 @@ cx_type *cx_executor::execute_term(void) {
             case tc_logic_AND:
             {
                 // boolean AND boolean
-                int value2 = pop()->int__;
-                int value1 = pop()->int__;
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
                 push(value1 && value2);
                 p_result_type = p_boolean_type;
             }
+                break;
+            default:
                 break;
         }
     }
@@ -410,7 +511,8 @@ cx_type *cx_executor::execute_term(void) {
  *
  * @return: ptr to factor's type object
  */
-cx_type *cx_executor::execute_factor(void) {
+cx_type *
+cx_executor::execute_factor(void) {
     cx_type *p_result_type = nullptr; // ptr to result type
     cx_symtab_node *p_id = nullptr;
 
@@ -420,7 +522,7 @@ cx_type *cx_executor::execute_factor(void) {
             switch (p_node->defn.how) {
 
                 case dc_function:
-                    p_result_type = execute_subroutine_call(p_node);                    
+                    p_result_type = execute_subroutine_call(p_node);
                     break;
 
                 case dc_constant:
@@ -446,11 +548,11 @@ cx_type *cx_executor::execute_factor(void) {
 
                         if (p_node == p_stdin) {
                             // getch from rlutil
-                            push((char)cx_getch());
+                            push((char) cx_getch());
                         } else {
                             push(fgetc(p_node->p_type->stream.p_file_stream));
                         }
-                        
+
                         get_token();
                     }
 
@@ -484,7 +586,7 @@ cx_type *cx_executor::execute_factor(void) {
                 push(p_node->defn.constant.value.char__);
                 p_result_type = p_char_type;
             } else {
-                
+
                 push(p_node->defn.constant.value.p_string);
                 p_result_type = p_node->p_type;
             }
@@ -493,12 +595,17 @@ cx_type *cx_executor::execute_factor(void) {
         }
             break;
         case tc_logic_NOT:
+        {
             // Execute boolean factor and invert its value.
             get_token();
             execute_factor();
 
-            push(1 - pop()->int__);
+            int i = !top()->basic_types.int__;
+            pop();
+
+            push(i);
             p_result_type = p_boolean_type;
+        }
             break;
         case tc_left_paren:
         {
@@ -514,6 +621,8 @@ cx_type *cx_executor::execute_factor(void) {
             break;
         case tc_semicolon:
             break;
+        default:
+            break;
     }
 
     return p_result_type;
@@ -525,7 +634,8 @@ cx_type *cx_executor::execute_factor(void) {
  *
  * @return: ptr to constant's type object
  */
-cx_type *cx_executor::execute_constant(const cx_symtab_node *p_id) {
+cx_type *
+cx_executor::execute_constant(const cx_symtab_node *p_id) {
     cx_type *p_type = p_id->p_type;
     const cx_data_value *value = &p_id->defn.constant.value;
 
@@ -535,7 +645,7 @@ cx_type *cx_executor::execute_constant(const cx_symtab_node *p_id) {
     else push(value->int__);
 
     get_token();
-    trace_data_fetch(p_id, top_of_stack(), p_type);
+    trace_data_fetch(p_id, top(), p_type);
     return p_type;
 }
 
@@ -547,7 +657,8 @@ cx_type *cx_executor::execute_constant(const cx_symtab_node *p_id) {
  *
  * @return: ptr to variable's type object
  */
-cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
+cx_type *
+cx_executor::execute_variable(const cx_symtab_node *p_id,
         bool address_flag) {
 
     cx_type *p_type = p_id->p_type;
@@ -557,7 +668,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     // get the variable's runtime stack address.
     cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
     push((p_id->defn.how == dc_reference) || (!p_type->is_scalar_type())
-            ? p_entry_id->addr__ : p_entry_id);
+            ? p_entry_id->basic_types.addr__ : p_entry_id);
 
     // Loop to execute any subscripts and field designators,
     // which will modify the data address at the top of the stack.
@@ -586,17 +697,28 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     // with the data value.
     if ((!address_flag) && (p_type->is_scalar_type())) {
         if (p_type == p_float_type) {
-            push(((cx_stack_item *) pop()->addr__)->float__);
+
+            cx_stack_item *t = (cx_stack_item *) top()->addr__;
+            pop();
+
+            push(t->basic_types.float__);
+
         } else if (p_type->base_type() == p_char_type) {
-            push(((cx_stack_item *) pop()->addr__)->char__);
+            cx_stack_item *t = (cx_stack_item *) top()->addr__;
+            pop();
+
+            push(t->basic_types.char__);
         } else {
-            push(((cx_stack_item *) pop()->addr__)->int__);
+            cx_stack_item *t = (cx_stack_item *) top()->addr__;
+            pop();
+
+            push(t->basic_types.int__);
         }
     }
 
     if (!address_flag) {
         void *p_data_value = (p_type->is_scalar_type()) ?
-                top_of_stack() : top_of_stack()->addr__;
+                top() : top()->addr__;
 
         trace_data_fetch(p_id, p_data_value, p_type);
     }
@@ -612,7 +734,8 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
  *
  * @return: ptr to subscripted variable's type object
  */
-cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
+cx_type *
+cx_executor::execute_subscripts(const cx_type *p_type) {
     // Loop to executed subscript lists enclosed in brackets.
     while (token == tc_left_subscript) {
 
@@ -623,13 +746,17 @@ cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
             execute_expression();
 
             // Evaluate and range check the subscript.
-            int value = pop()->int__;
+            int value = top()->basic_types.int__;
+            pop();
+
             range_check(p_type, value);
 
-
             // Modify the data address at the top of the stack.
-            push(((char *) pop()->addr__) +
-                    p_type->array.p_element_type->size * value);
+
+            char *t = (char *) top()->addr__;
+            pop();
+
+            push(t + (p_type->array.p_element_type->size * value));
 
             // Prepare for another subscript in this list.
             if (token == tc_comma) p_type = p_type->array.p_element_type;
@@ -650,11 +777,12 @@ cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
  *
  * @return: ptr to record field's type object
  */
-cx_type *cx_executor::execute_field(void) {
+cx_type *
+cx_executor::execute_field(void) {
     get_token();
     cx_symtab_node *p_field_id = p_node;
 
-    push(((char *) (pop()->addr__)) + p_field_id->defn.data.offset);
+    //push(((char *) (top()->addr__)) + p_field_id->defn.data.offset);
 
     get_token();
     return p_field_id->p_type;

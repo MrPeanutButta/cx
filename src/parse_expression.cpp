@@ -67,6 +67,8 @@ cx_type *cx_parser::parse_simple_expression(void) {
                 check_boolean(p_result_type, p_operand_type);
                 p_result_type = p_boolean_type;
                 break;
+            default:
+                break;
         }
     }
 
@@ -114,6 +116,8 @@ cx_type *cx_parser::parse_term(void) {
             case tc_logic_AND:
                 check_boolean(p_result_type, p_operand_type);
                 p_result_type = p_boolean_type;
+                break;
+            default:
                 break;
         }
     }

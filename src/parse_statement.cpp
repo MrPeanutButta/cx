@@ -3,7 +3,7 @@
 #include "common.h"
 
 /** parse_statement          parse a statement.
- * 
+ *
  * @param p_function_id : function in which this statement is executed.
  */
 void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
@@ -45,6 +45,8 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
             get_token();
             parse_execute_directive(p_function_id);
             break;
+        default:
+            break;
     }
 
     if (token != tc_end_of_file) {
@@ -54,7 +56,7 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
 
 /** parse_statement_list      parse a statement list until the
  *                          terminator token.
- * 
+ *
  * @param p_function_id : function in which these statements are executed.
  * @param terminator : the token that terminates the list.
  */
@@ -67,11 +69,11 @@ void cx_parser::parse_statement_list(cx_symtab_node* p_function_id, cx_token_cod
 }
 
 /** parse_assignment         parse an assignment statement.
- * 
+ *
  * NOTE:
- *      Just calls parse_variable; This is because expressions are fully 
+ *      Just calls parse_variable; This is because expressions are fully
  *      recursive.
- * 
+ *
  * @param p_target_id : ptr to target id's symbol table node
  * @return ptr to the p_target_id type object.
  */
@@ -83,12 +85,12 @@ cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
 }
 
 /** parse_DO     parse do/while statement.
- * 
+ *
  *      do
  *        <statement>;
  *      while(<expression>);
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
 
@@ -109,11 +111,11 @@ void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
 }
 
 /** parse_WHILE          parse while statement.
- * 
+ *
  *      while(<expression>)
  *            <statement>;
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
 
@@ -132,15 +134,15 @@ void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
 }
 
 /** parse_IF             parse if/else statements.
- * 
+ *
  *      if(<expression>)
  *         <statement>;
  *      else if (<expression>)
  *         <statement>;
- *      else 
+ *      else
  *         <statement>;
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
 
@@ -175,11 +177,11 @@ void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
 }
 
 /** parse_FOR            parse for statements.
- * 
+ *
  *      for(<statement>; <expression>; <expression>)
  *              <statement>;
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
 
@@ -220,16 +222,16 @@ void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
 }
 
 /** parse_SWITCH         parse switch statements.
- * 
+ *
  *      switch(<expression>){
  *              case <const-expression>:
  *              default:
  *      }
- * 
+ *
  * NOTE:
  *      Broken/not implemented yet.
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_SWITCH(cx_symtab_node* p_function_id) {
 
@@ -284,6 +286,9 @@ void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p
             if (sign_flag || (strlen(p_token->string__()) != 3)) {
                 cx_error(err_invalid_constant);
             }
+            break;
+        default:
+            break;
     }
 
     conditional_get_token_append(tc_colon, err_missing_colon);
@@ -292,12 +297,12 @@ void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p
 }
 
 /** parse_compound       parse compounded statements.
- * 
+ *
  *      {
  *         <statements>;
  *      }
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
     get_token_append();
@@ -309,12 +314,12 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
 }
 
 /** parse_RETURN         parse return statements.
- * 
+ *
  *      return;
  *      or
  *      return <expression>;
- * 
- * @param p_function_id : ptr to this statements function Id. 
+ *
+ * @param p_function_id : ptr to this statements function Id.
  */
 void cx_parser::parse_RETURN(cx_symtab_node* p_function_id) {
     get_token_append();

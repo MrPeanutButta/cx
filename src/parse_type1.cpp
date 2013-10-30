@@ -181,7 +181,7 @@ cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
 
     p_type->size = p_type->subrange.p_base_type->size;
     return p_type;*/
-	return nullptr;
+    return nullptr;
 }
 
 /** parse_subrange_limit      parse a mininum or maximum limit

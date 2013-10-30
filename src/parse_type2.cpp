@@ -2,58 +2,48 @@
 #include "parser.h"
 
 /** parse_array_type      parse an array type specification.
- * 
- *      <type-id> <id> [ <const-index-size> ]; 
- * 
+ *
+ *      <type-id> <id> [ <const-index-size> ];
+ *
  * @param p_function_id : ptr to fuction which owns this array.
  * @param p_array_node : ptr to array symtab node.
  * @return ptr to array type object.
  */
-cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_node *p_array_node) {
+cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id,
+        cx_symtab_node *p_array_node) {
+
     cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
     cx_type *p_element_type = p_array_type;
 
     // Final element type.
     set_type(p_element_type->array.p_element_type, p_array_node->p_type);
 
-    bool is_function = false;
-    
-    if(token != tc_left_paren) get_token_append();
-    else is_function = true;
-    
+    conditional_get_token(tc_left_subscript, err_missing_left_subscript);
+
     int min_index = 0;
     int max_index = 0;
 
-    if ((token == tc_right_subscript) || (token == tc_left_paren)) {
-        //get_token_append();
-        // xxx fixme, need a way to get out of assignment
-        max_index = 0;
+    if (token == tc_number) {
+        max_index = p_token->value().int__;
+        get_token();
+
+        set_type(p_element_type->array.p_index_type, p_integer_type);
 
     } else {
-        max_index = p_token->value().int__;
+        cx_type *p_index_type = parse_expression();
+
+        check_assignment_type_compatible(p_integer_type, p_index_type,
+                err_invalid_index_type);
+
+        set_type(p_element_type->array.p_index_type, p_index_type);
     }
 
-    set_type(p_element_type->array.p_index_type, p_integer_type);
     p_array_type->array.element_count = max_index;
     p_array_type->array.min_index = min_index;
     p_array_type->array.max_index = max_index;
+    p_array_type->size = min_index * p_array_type->array.p_element_type->size;
 
-
-    if ((token != tc_right_paren) && (token != tc_right_subscript)
-            && (!is_function)) {
-        parse_expression();
-
-        // function returning array
-    } else if (is_function) {
-        parse_function_header(p_array_node);
-        return p_array_type;
-    }
-
-    if (p_array_type->form != fc_none) {
-        p_array_type->size = array_size(p_array_type);
-    }
-
-    conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
+    conditional_get_token(tc_right_subscript, err_missing_right_subscript);
 
     if (token_in(token, tokenlist_assign_ops))parse_assignment(p_array_node);
 
@@ -62,18 +52,6 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     if (p_array_node->defn.how == ::dc_undefined) {
         p_array_node->defn.how = dc_variable;
     }
-
-    //add to routines variable list
-    /*if (p_function_id != nullptr) {
-        cx_symtab_node *array = p_function_id->defn.routine.locals.p_type_ids;
-        if (!array) {
-            p_function_id->defn.routine.locals.p_type_ids = p_array_node;
-        } else {
-            while (array->next__)array = array->next__;
-
-            array->next__ = p_array_node;
-        }
-    }*/
 
     // If the type object doesn't have a name yet,
     // point it to the type id.
@@ -84,25 +62,89 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id, cx_symtab_no
     return p_array_type;
 }
 
+/** parse_unksize_array_type      parse an array type specification
+ *                                of unknown size.
+ *
+ *      <type-id> *<id>;
+ *
+ * @param p_function_id : ptr to fuction which owns this array.
+ * @param p_array_node : ptr to array symtab node.
+ * @return ptr to array type object.
+ */
+cx_type *cx_parser::parse_unksize_array_type(cx_symtab_node* p_function_id,
+        cx_symtab_node* p_array_node) {
+
+    cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
+
+    cx_type *p_element_type = p_array_type;
+    cx_type *p_expr_type = nullptr;
+
+    // Final element type.
+    set_type(p_element_type->array.p_element_type, p_array_node->p_type);
+
+    bool is_function = false;
+
+    if (token != tc_left_paren) get_token_append();
+    else is_function = true;
+
+    int min_index = 0;
+    int max_index = 0;
+
+    if (token == tc_left_paren) {
+        //get_token_append();
+        // xxx fixme, need a way to get out of assignment
+        max_index = 0;
+
+    }
+
+    set_type(p_element_type->array.p_index_type, p_integer_type);
+    p_array_type->array.element_count = max_index;
+    p_array_type->array.min_index = min_index;
+    p_array_type->array.max_index = max_index;
+
+    if (is_function) {
+        parse_function_header(p_array_node);
+        return p_array_type;
+    }
+
+    if (token_in(token, tokenlist_assign_ops))parse_assignment(p_array_node);
+
+    set_type(p_array_node->p_type, p_array_type);
+
+    if (p_array_node->defn.how == ::dc_undefined) {
+        p_array_node->defn.how = dc_variable;
+    }
+
+    /* If the type object doesn't have a name yet,
+     * point it to the type id. */
+    if (!p_array_node->p_type->p_type_id) {
+        p_array_node->p_type->p_type_id = p_array_node;
+    }
+
+    return p_array_type;
+}
+
 /** array_size           Calculate the total byte size of an
  *                      array type by recursively calculating
  *                      the size of each dimension.
- * 
+ *
  * @param p_array_type : ptr to array type object.
  * @return byte size.
  */
 int cx_parser::array_size(cx_type * p_array_type) {
     if (p_array_type->array.p_element_type->size == 0) {
-        p_array_type->array.p_element_type->size = array_size(p_array_type->array.p_element_type);
+        p_array_type->array.p_element_type->size = array_size
+                (p_array_type->array.p_element_type);
     }
 
-    return (p_array_type->array.element_count * p_array_type->array.p_element_type->size);
+    return (p_array_type->array.element_count *
+            p_array_type->array.p_element_type->size);
 }
 
 /** parse_string_type      parse an string type specification.
- * 
- *      <type-id> <id> [ <const-index-size> ]; 
- * 
+ *
+ *      <type-id> <id> [ <const-index-size> ];
+ *
  * @param p_function_id : ptr to fuction which owns this array.
  * @param p_array_node : ptr to string symtab node.
  * @return ptr to array type object.
@@ -155,13 +197,13 @@ cx_type *cx_parser::parse_string_type(cx_symtab_node* p_function_id,
 }
 
 /** parse_complex_type
- * 
- * NOTE: 
+ *
+ * NOTE:
  *      Not implemented.
- * 
+ *
  * @param p_function_id
  * @param p_node
- * @return 
+ * @return
  */
 cx_type * cx_parser::parse_complex_type(cx_symtab_node *p_function_id, cx_symtab_node * p_node) {
 
@@ -201,10 +243,10 @@ cx_type * cx_parser::parse_complex_type(cx_symtab_node *p_function_id, cx_symtab
 }
 
 /** parse_member_decls
- * 
- * NOTE: 
+ *
+ * NOTE:
  *      Not implemented.
- * 
+ *
  * @param p_function_id
  * @param p_complex_type
  * @param offset
@@ -286,6 +328,8 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                     p_first_id = p_first_id->next__;
                 }
 
+                break;
+            default:
                 break;
         }
 

@@ -7,6 +7,9 @@
 #include "icode.h"
 
 //
+extern cx_type *p_integer_type;
+extern cx_type *p_float_type;
+extern cx_type *p_char_type;
 
 int asm_label_index = 0; // assembly label index
 bool xreference_flag = false; // true = cross-referencing on, false = off
@@ -22,7 +25,7 @@ bool xreference_flag = false; // true = cross-referencing on, false = off
  *                  Note that the parameter and local identifier
  *                  chains are deleted along with the local
  *                  symbol table.
- * 
+ *
  */
 cx_define::~cx_define(void) {
     switch (how) {
@@ -49,7 +52,7 @@ cx_define::~cx_define(void) {
 /** Constructor     Construct a symbol table node by initial-
  *                  izing its subtree pointers and the pointer
  *                  to its symbol string.
- * 
+ *
  * @param p_str : ptr to the symbol string.
  * @param dc    : definition code.
  */
@@ -73,7 +76,7 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
 }
 
 /** Destructor      Deallocate a symbol table node.
- * 
+ *
  */
 cx_symtab_node::~cx_symtab_node(void) {
     void remove_type(cx_type *&p_type);
@@ -92,7 +95,7 @@ cx_symtab_node::~cx_symtab_node(void) {
  *              First print the node's left__ subtree, then the
  *              node itself, and finally the node's right__
  *              subtree.  For the node itself, first print its
- *              symbol string, and then its line numbers. 
+ *              symbol string, and then its line numbers.
  */
 void cx_symtab_node::print(void) const {
     const int max_name_print_width = 16;
@@ -115,7 +118,7 @@ void cx_symtab_node::print(void) const {
 
 /** print_identifier        print information about an
  *                          identifier's definition and type.
- * 
+ *
  */
 void cx_symtab_node::print_identifier(void) const {
     switch (defn.how) {
@@ -127,12 +130,14 @@ void cx_symtab_node::print_identifier(void) const {
         case dc_variable:
         case dc_member: print_var_or_field();
             break;
+        default:
+            break;
     }
 }
 
 /** print_constant       print information about a constant
  *                      identifier for the cross-reference.
- * 
+ *
  */
 void cx_symtab_node::print_constant(void) const {
     extern cx_list_buffer list;
@@ -165,7 +170,7 @@ void cx_symtab_node::print_constant(void) const {
 /** print_var_or_field         print information about a variable
  *                          or record field identifier for the
  *                          cross-reference.
- * 
+ *
  */
 void cx_symtab_node::print_var_or_field(void) const {
     extern cx_list_buffer list;
@@ -181,7 +186,7 @@ void cx_symtab_node::print_var_or_field(void) const {
 
 /** print_type           print information about a type
  *                      identifier for the cross-reference.
- * 
+ *
  */
 void cx_symtab_node::print_type(void) const {
     list.put_line();
@@ -193,7 +198,7 @@ void cx_symtab_node::print_type(void) const {
 
 /** convert     convert the symbol table node into a form
  *		suitable for the back end.
- * 
+ *
  * @param p_vector_nodes : vector of node ptrs.
  */
 void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
@@ -215,7 +220,7 @@ void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
 
 /** search      search the symbol table for the node with a
  *              given name string.
- * 
+ *
  * @param p_string : ptr to the name string to search for.
  * @return ptr to the node if found, else nullptr.
  */
@@ -243,7 +248,7 @@ cx_symtab_node *cx_symtab::search(const char *p_string) const {
  *              a pointer to it.  Else if not found, enter a new
  *              node with the name string, and return a pointer
  *              to the new node.
- * 
+ *
  * @param p_string : ptr to the name string to enter.
  * @param dc      : definition code.
  * @return ptr to the node, whether existing or newly-entered.
@@ -273,7 +278,7 @@ cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
  *              string.  If the name is not already in there,
  *              enter it.  Otherwise, flag the redefined
  *              identifier error.
- * 
+ *
  * @param p_string : ptr to name string to enter.
  * @param dc      : definition code.
  * @return ptr to symbol table node.
@@ -289,7 +294,7 @@ cx_symtab_node *cx_symtab::enter_new(const char *p_string, cx_define_code dc) {
 
 /** convert     convert the symbol table into a form suitable
  *		for the back end.
- * 
+ *
  * @param p_vector_symtabs : vector of symbol table pointers.
  */
 void cx_symtab::convert(cx_symtab *p_vector_symtabs[]) {
@@ -311,7 +316,7 @@ void cx_symtab::convert(cx_symtab *p_vector_symtabs[]) {
 
 /** Constructor	    Initialize the global (level 0) symbol
  *		    table, and set the others to nullptr.
- * 
+ *
  */
 cx_symtab_stack::cx_symtab_stack(void) {
     extern cx_symtab cx_global_symtab;
@@ -329,7 +334,7 @@ cx_symtab_stack::cx_symtab_stack(void) {
 }
 
 /** Destructor	    Remove the predefined types.
- * 
+ *
  */
 cx_symtab_stack::~cx_symtab_stack(void) {
     remove_builtin_types();
@@ -337,7 +342,7 @@ cx_symtab_stack::~cx_symtab_stack(void) {
 
 /** search_all   search the symbol table stack for the given
  *              name string.
- * 
+ *
  * @param p_string : ptr to name string to find.
  * @return ptr to symbol table node if found, else nullptr.
  */
@@ -355,7 +360,7 @@ cx_symtab_node *cx_symtab_stack::search_all(const char *p_string) const {
  *              there, flag the undefined identifier error,
  *		and then enter the name into the local symbol
  *		table.
- * 
+ *
  * @param p_string : ptr to name string to find.
  * @return ptr to symbol table node.
  */
@@ -373,7 +378,7 @@ cx_symtab_node *cx_symtab_stack::find(const char *p_string) const {
 /** enter_scope	enter a new nested scope.  Increment the nesting
  *		level.  push new scope's symbol table onto the
  *		stack.
- * 
+ *
  */
 void cx_symtab_stack::enter_scope(void) {
 
@@ -392,7 +397,7 @@ void cx_symtab_stack::enter_scope(void) {
  *		enclosing scope.  Decrement the nesting level.
  *		pop the closed scope's symbol table off the
  *		stack and return a pointer to it.
- * 
+ *
  * @return ptr to closed scope's symbol table.
  */
 cx_symtab *cx_symtab_stack::exit_scope(void) {
@@ -406,7 +411,7 @@ cx_symtab *cx_symtab_stack::exit_scope(void) {
  **********************/
 
 /** Destructor      Deallocate a line number list.
- * 
+ *
  */
 cx_line_num_list::~cx_line_num_list(void) {
     // Loop to delete each node in the list.
@@ -420,7 +425,7 @@ cx_line_num_list::~cx_line_num_list(void) {
 /** update      update the list by appending a new line number
  *              node if the line number isn't already in the
  *              list.
- * 
+ *
  */
 void cx_line_num_list::update(void) {
     // If the line number is already there, it'll be at the tail.
@@ -433,7 +438,7 @@ void cx_line_num_list::update(void) {
 
 /** print       print the line number list.  Use more than one
  *              line if necessary; indent subsequent lines.
- * 
+ *
  * @param new_line_flag : if true, start a new line immediately.
  * @param indent      : amount to indent subsequent lines.
  */

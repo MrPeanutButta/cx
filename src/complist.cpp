@@ -10,8 +10,6 @@
 #include <iostream>
 #include "complist.h"
 
-
-
 void cx_compact_list_buffer::put_blank(void) {
     if (++text_length >= max_compact_text_length - 1) put_line();
     else *p_text++ = ' ';

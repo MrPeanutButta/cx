@@ -5,8 +5,6 @@
 #include "buffer.h"
 #include "exec.h"
 
-
-
 /** trace_routine_entry   Trace the entry into a routine.
  * 
  * @param p_function_id : ptr to the routine name's symbol table node.
@@ -91,11 +89,11 @@ void cx_executor::trace_data_value(const void *p_data_value,
     char text[max_input_buffer_size]; // text for value
 
     if (p_data_type == p_float_type) {
-        sprintf(text, "%0.6g", ((cx_stack_item *) p_data_value)->float__);
+        sprintf(text, "%0.6g", ((cx_stack_item *) p_data_value)->basic_types.float__);
     } else if (p_data_type == p_char_type) {
-        sprintf(text, "'%c'", ((cx_stack_item *) p_data_value)->char__);
+        sprintf(text, "'%c'", ((cx_stack_item *) p_data_value)->basic_types.char__);
     } else if (p_data_type == p_boolean_type) {
-        strcpy(text, ((cx_stack_item *) p_data_value)->int__ == 0
+        strcpy(text, ((cx_stack_item *) p_data_value)->basic_types.int__ == 0
                 ? "false" : "true");
     } else if (p_data_type->form == fc_array) {
         if (p_data_type->array.p_element_type == p_char_type) {
@@ -108,13 +106,13 @@ void cx_executor::trace_data_value(const void *p_data_value,
     } else if (p_data_type->form == fc_complex) {
         strcpy(text, "<complex>");
     } else if (p_data_type->base_type()->form == fc_enum) {
-        int count = ((cx_stack_item *) p_data_value)->int__;
+        int count = ((cx_stack_item *) p_data_value)->basic_types.int__;
         cx_symtab_node *p_id = p_data_type->base_type()->enumeration.p_const_ids;
         while (--count >= 0) p_id = p_id->next__;
         strcpy(text, p_id->string__());
     } else {
         cx_stack_item *tmp = (cx_stack_item *) p_data_value;
-        sprintf(text, "%d", tmp->int__);
+        sprintf(text, "%d", tmp->basic_types.int__);
     }
 
     std::cout << text << std::endl;

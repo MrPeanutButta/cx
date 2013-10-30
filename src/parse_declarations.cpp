@@ -12,13 +12,13 @@ bool exec_flag(true);
 
 cx_symtab_node *p_program_ptr_id = nullptr;
 
-/** parse_declarations_or_assignment       Parses new declarations or 
+/** parse_declarations_or_assignment       Parses new declarations or
  *                                      assignment statements.
- * 
+ *
  * NOTE:
  *      This should be broken up a bit. Function, complex, and type declaraions
  *      should be seperated.
- * 
+ *
  * @param p_function_id : ptr to the routine which owns the type being declared or
  *                     assigned a value.
  */
@@ -28,7 +28,8 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
         p_program_ptr_id->global_finish_location = icode.current_location();
     }
 
-    bool is_array = false;
+    // track if we seen '*'
+    bool is_unk_array_size = false;
     cx_symtab_node *p_node = find(p_token->string__());
 
     // if complex then this is an object
@@ -36,15 +37,15 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
         parse_complex_type(p_function_id, p_node);
         // predefined type name found
     } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex) &&
-            (p_node->defn.how != dc_function)){
+            (p_node->defn.how != dc_function)) {
 
         get_token();
 
-        if(token == tc_star){
+        if (token == tc_star) {
             get_token();
-            is_array = true;
+            is_unk_array_size = true;
         }
-        
+
         do {
             while (token == tc_comma)get_token_append();
 
@@ -70,9 +71,11 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
             get_token_append();
 
             // check for array type
-            if ((token == tc_left_subscript) || is_array) {
+            if (token == tc_left_subscript) {
                 parse_array_type(p_function_id, p_new_id);
-
+            } else if (is_unk_array_size) {
+                // TODO parse unkown array size
+                parse_unksize_array_type(p_function_id, p_new_id);
             } else if (token == tc_left_paren) {
 
                 parse_function_header(p_new_id);
@@ -130,7 +133,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
     }
 }
 
-/** parse_constant_declaration    'const' will only set it's qualifier as 
+/** parse_constant_declaration    'const' will only set it's qualifier as
  *                              dc_constant all else is treated as a standard
  *                              declaration.
  *      const <type> <name>;
@@ -172,7 +175,7 @@ void cx_parser::parse_constant_declaration(cx_symtab_node* p_function_id) {
 }
 
 /** parse_constant       parse a constant.
- * 
+ *
  * @param p_const_id : ptr to symbol table node of the identifier
  *                   being defined
  */
@@ -230,6 +233,8 @@ void cx_parser::parse_constant(cx_symtab_node *p_const_id) {
                 get_token_append();
             } else cx_error(err_invalid_type);
             break;
+        default:
+            break;
     }
 }
 
@@ -242,7 +247,7 @@ void cx_parser::parse_constant(cx_symtab_node *p_const_id) {
  *                              integer, real, character,
  *                              enumeration, or string
  *                              (character array).
- * 
+ *
  * @param p_id1 : ptr to symbol table node of <id-1>.
  * @param sign : unary + or - sign, or none.
  */

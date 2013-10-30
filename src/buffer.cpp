@@ -35,7 +35,8 @@ int list_flag = true;
  * @param p_input_file_name : ptr to the name of the input file
  * @param ac             : abort code to use if open failed
  */
-cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name, cx_abort_code ac)
+cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name,
+        cx_abort_code ac)
 : p_file_name(new char[strlen(p_input_file_name) + 1]) {
     // Copy the input file name.
     strcpy(p_file_name, p_input_file_name);
@@ -43,7 +44,7 @@ cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name, cx_abort_cod
     // Open the input file.  Abort if failed.
     file.open(p_file_name, std::ios::in);
     if (!file.good()) {
-        std::cout << p_file_name << ": " <<std::strerror(errno) << std::endl;
+        std::cout << p_file_name << ": " << std::strerror(errno) << std::endl;
         abort_translation(ac);
     }
 }

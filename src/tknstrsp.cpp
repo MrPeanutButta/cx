@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdint>
 #include "token.h"
 
 /** get_escape_char             Return escape char

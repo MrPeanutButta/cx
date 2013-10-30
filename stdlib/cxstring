@@ -18,7 +18,7 @@
  * @param str : value copy of the string.
  * @return length of the string. */
 
-int strlen(char str[]){
+int strlen(char *str){
     int length = 0;
 
     while(str[length] != '\0')length++;

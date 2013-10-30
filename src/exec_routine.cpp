@@ -61,6 +61,7 @@ void cx_executor::exit_routine(cx_symtab_node *p_function_id) {
     for (p_id = p_function_id->defn.routine.locals.p_parms_ids;
             p_id;
             p_id = p_id->next__) run_stack.deallocate_value(p_id);
+
     for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
             p_id;
             p_id = p_id->next__) run_stack.deallocate_value(p_id);
@@ -97,7 +98,7 @@ cx_type *cx_executor::execute_declared_subroutine_call
     int new_level = p_function_id->level + 1; // level of callee's locals
 
     // Set up a new stack frame for the callee.
-    cx_stack_item *p_new_frame_base = run_stack.push_frame_header
+    cx_frame_header *p_new_frame_base = run_stack.push_frame_header
             (old_level, new_level, p_icode);
 
     // push actual parameter values onto the stack.
@@ -144,7 +145,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
          * parameter's address on top of the stack. */
         if (p_formal_id->defn.how == dc_reference) {
             execute_variable(p_node, true);
-            p_formal_id->runstack_item = top_of_stack();
+            p_formal_id->runstack_item = top();
             get_token();
         }// value parameter
         else {
@@ -155,33 +156,38 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
 
                 // real formal := integer actual:
                 // convert integer value to real.
-                push(float(pop()->int__));
-                p_formal_id->runstack_item = top_of_stack();
+                push(float(top()->basic_types.int__));
+                p_formal_id->runstack_item = top();
+
+                pop();
             } else if (!p_formal_type->is_scalar_type()) {
 
                 /* Formal parameter is an array or a record:
                  * Make a copy of the actual parameter's value. */
-                
-                void *p_source = pop()->addr__;
-                const int length = strlen((char *)p_source);
+
+                void *p_source = top()->addr__;
+
+                pop();
+
+                const int length = strlen((char *) p_source);
                 void *addr = new char[length + 1];
-                
-				memset(addr, '\0', sizeof(addr));
+
+                memset(addr, '\0', sizeof (addr));
                 memcpy(addr, p_source, length);
 
                 push(addr);
-                
+
                 p_formal_type->size = length + 1;
                 p_formal_type->array.element_count = length + 1;
                 p_formal_type->array.max_index = length + 1;
-                        
-                p_formal_id->runstack_item = top_of_stack();
+
+                p_formal_id->runstack_item = top();
             } else {
 
                 // Range check an integer or enumeration
                 // formal parameter.
-                range_check(p_formal_type, top_of_stack()->int__);
-                p_formal_id->runstack_item = top_of_stack();
+                range_check(p_formal_type, top()->basic_types.int__);
+                p_formal_id->runstack_item = top();
             }
         }
     }
@@ -191,10 +197,10 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
 
 /** execute_RETURN	Assign a return value to the functions StackItem and
  *                      set current location to the return line of the caller.
- *      
+ *
  *      return;
  *      return <expression>;
- * 
+ *
  * @param p_function_id : ptr to the subroutine name's symtab node
  */
 void cx_executor::execute_RETURN(cx_symtab_node *p_function_id) {

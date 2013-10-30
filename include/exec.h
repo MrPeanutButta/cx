@@ -1,82 +1,189 @@
 #ifndef exec_h
 #define exec_h
 
+//#include <stack>
 #include <vector>
+#include <algorithm>
+//#include <iterator>
+#include <cstdint>
+#include <iostream>
 #include "error.h"
 #include "symtable.h"
 #include "types.h"
 #include "icode.h"
 #include "backend.h"
 
+class cx_type;
+
 ///  cx_stack_item          Item pushed onto the runtime stack.
-union cx_stack_item {
-    int int__;
-    float float__;
-    char char__;
+
+struct cx_stack_item {
+
+    cx_stack_item() {
+    }
+
+    ~cx_stack_item() {
+        std::clog << "variable destroyed\n";
+    }
+
+    /* overloaded ctors makes it easier
+     * to perform a push */
+    cx_stack_item(const uint8_t &value) {
+        basic_types.byte__ = value;
+        std::clog << "new byte = " << basic_types.byte__ << std::endl;
+    }
+
+    cx_stack_item(const int &value) {
+        basic_types.int__ = value;
+
+        if (value == -1) {
+            std::clog << "* return value place holder\n";
+        } else {
+            std::clog << "new int = " << basic_types.int__ << std::endl;
+        }
+
+    }
+
+    cx_stack_item(const float &value) {
+        basic_types.float__ = value;
+        std::clog << "new float = " << basic_types.float__ << std::endl;
+    }
+
+    cx_stack_item(const char &value) {
+        basic_types.char__ = value;
+        std::clog << "new char = " << basic_types.char__ << std::endl;
+    }
+
+    cx_stack_item(void *address) {
+        addr__ = address;
+        std::clog << "new ptr = " << basic_types.addr__ << std::endl;
+    }
+
+    union {
+        // basic types
+        uint8_t byte__;
+        int int__;
+        float float__;
+        char char__;
+
+        // pointer or reference
+        void *addr__;
+    } basic_types;
+
+    // arrays and or pointer to members
     void *addr__;
-    char buffer[512];
+};
+
+typedef std::vector<cx_stack_item *> cx_stack;
+typedef cx_stack::iterator cx_stack_iterator;
+
+// Stack frame header
+
+struct cx_frame_header : public cx_stack_item {
+
+    cx_frame_header(const cx_frame_header *orig) {
+
+        function_value = orig->function_value;
+        static_link = orig->static_link;
+        dynamic_link = orig->dynamic_link;
+
+        return_address.icode = orig->return_address.icode;
+        return_address.location = orig->return_address.location;
+
+        std::clog << "* new (copy) stack frame element :" << this << std::endl;
+    }
+
+    cx_frame_header(void) {
+
+        function_value = nullptr;
+        static_link = new cx_stack_item;
+        dynamic_link = new cx_stack_item;
+
+        return_address.icode = new cx_stack_item;
+        return_address.location = new cx_stack_item;
+
+        std::clog << "* new (empty) stack frame element:"  << this  << std::endl;
+    }
+
+    cx_stack_item *function_value;
+    cx_stack_item *static_link;
+    cx_stack_item *dynamic_link;
+
+    struct {
+        cx_stack_item *icode;
+        cx_stack_item *location;
+        cx_stack_iterator previous_header;
+    } return_address;
+
+    // index of frame header
+    int frame_header_index;
 };
 
 ///  cx_runtime_stack       Runtime stack class.
 
 class cx_runtime_stack {
+    cx_stack cx_runstack;
 
-    enum {
-        stack_size = 32768,
-        frame_header_size = 5,
-    };
+    const cx_frame_header *p_stackbase;
+    cx_frame_header *p_frame_base; // ptr to current stack frame base
 
-    // Stack frame header
-
-    struct cx_frame_header {
-        cx_stack_item function_value;
-        cx_stack_item static_link;
-        cx_stack_item dynamic_link;
-
-        struct {
-            cx_stack_item icode;
-            cx_stack_item location;
-        } return_address;
-    };
-
-    cx_stack_item stack[stack_size]; // stack items
-    cx_stack_item *tos; // ptr to the top of the stack
-    cx_stack_item *p_frame_base; // ptr to current stack frame base
+    cx_stack_iterator it_frame_base; // iterator to frame base
 
 public:
     cx_runtime_stack(void);
 
-    void push(int value) {
-        if (tos < &stack[stack_size - 1]) (++tos)->int__ = value;
-        else cx_runtime_error(rte_stack_overflow);
+    void push(const int &value) {
+        cx_runstack.push_back(new cx_stack_item(value));
     }
 
-    void push(float value) {
-        if (tos < &stack[stack_size - 1]) (++tos)->float__ = value;
-        else cx_runtime_error(rte_stack_overflow);
+    void push(const float &value) {
+        cx_runstack.push_back(new cx_stack_item(value));
     }
 
-    void push(char value) {
-        if (tos < &stack[stack_size - 1]) (++tos)->char__ = value;
-        else cx_runtime_error(rte_stack_overflow);
+    void push(const char &value) {
+        cx_runstack.push_back(new cx_stack_item(value));
     }
 
     void push(void *addr) {
-        if (tos < &stack[stack_size - 1]) (++tos)->addr__ = addr;
-        else cx_runtime_error(rte_stack_overflow);
+        cx_runstack.push_back(new cx_stack_item(addr));
     }
 
-    cx_stack_item *push_frame_header(int old_level, int new_level,
+    void push_frame(void) {
+        cx_runstack.push_back(new cx_frame_header);
+
+        cx_frame_header *prev = (cx_frame_header *) top();
+
+        prev->return_address.previous_header = it_frame_base;
+        it_frame_base = iterator_top();
+    }
+
+    cx_frame_header *push_frame_header(int old_level, int new_level,
             cx_icode *p_icode);
-    void activate_frame(cx_stack_item *p_new_frame_base, int location);
+    void activate_frame(cx_frame_header *p_new_frame_base, const int &location);
     void pop_frame(const cx_symtab_node *p_function_id, cx_icode *&p_icode);
 
-    cx_stack_item *pop(void) {
-        return tos--;
+    void pop(void) {
+        cx_runstack.pop_back();
     }
 
-    cx_stack_item *top_of_stack(void) const {
-        return tos;
+    void pop(const cx_stack_iterator &item) {
+
+        if (std::find(it_frame_base,
+                cx_runstack.end(),
+                *item) != cx_runstack.end()) {
+
+            cx_runstack.erase(item);
+        } else {
+            std::clog << "item not found on the stack\n";
+        }
+    }
+
+    cx_stack_item *top(void) const {
+        return cx_runstack.back();
+    }
+
+    const cx_stack_iterator iterator_top(void) {
+        return (cx_runstack.end() - 1);
     }
 
     void allocate_value(cx_symtab_node *p_id);
@@ -96,10 +203,10 @@ class cx_executor : public cx_backend {
     bool break_loop; // if true, breaks current loop
 
     // Trace flags
-    int trace_routine_flag; // true to trace routine entry/exit
-    int trace_statement_flag; // true to trace statements
-    int trace_store_flag; // true to trace data stores
-    int trace_fetch_flag; // true to trace data fetches
+    bool trace_routine_flag; // true to trace routine entry/exit
+    bool trace_statement_flag; // true to trace statements
+    bool trace_store_flag; // true to trace data stores
+    bool trace_fetch_flag; // true to trace data fetches
 
     // Routines
     void initialize_global(cx_symtab_node *p_program_id);
@@ -150,15 +257,19 @@ class cx_executor : public cx_backend {
 
     void range_check(const cx_type *p_target_type, int value);
 
-    void push(int value) {
+    void push(const uint8_t &value) {
         run_stack.push(value);
     }
 
-    void push(float value) {
+    void push(const int &value) {
         run_stack.push(value);
     }
 
-    void push(char value) {
+    void push(const float value) {
+        run_stack.push(value);
+    }
+
+    void push(const char &value) {
         run_stack.push(value);
     }
 
@@ -166,12 +277,16 @@ class cx_executor : public cx_backend {
         run_stack.push(addr);
     }
 
-    cx_stack_item *pop(void) {
-        return run_stack.pop();
+    void pop(void) {
+        run_stack.pop();
     }
 
-    cx_stack_item *top_of_stack(void) const {
-        return run_stack.top_of_stack();
+    cx_stack_item *top(void) const {
+        return run_stack.top();
+    }
+
+    const cx_stack_iterator iterator_top(void) {
+        return run_stack.iterator_top();
     }
 
 public:

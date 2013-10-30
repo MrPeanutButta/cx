@@ -41,7 +41,7 @@ const char *abort_message[] = {
 void abort_translation(cx_abort_code ac) {
     std::cerr << "*** fatal translator error: " << abort_message[-ac] << std::endl;
 
-		std::cin.get();
+    std::cin.get();
 
     exit(ac);
 }

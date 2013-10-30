@@ -7,7 +7,10 @@
 #include <iostream>
 #include "exec.h"
 
-
+extern cx_type *p_integer_type;
+extern cx_type *p_float_type;
+extern cx_type *p_boolean_type;
+extern cx_type *p_char_type;
 
 /*******************
  *                 *
@@ -19,17 +22,12 @@
 
 cx_runtime_stack::cx_runtime_stack(void) {
 
-    memset(&stack, 0, sizeof (stack));
-
-    tos = &stack[-1]; // point to just below bottom of stack
-    p_frame_base = &stack[0]; // point to bottom of stack
-
     // Initialize the program's stack frame at the bottom.
-    push(0); // function return value
-    push(0); // static  link
-    push(0); // dynamic link
-    push(0); // return address icode pointer
-    push(0); // return address icode location
+
+    push_frame(); // function return value
+    p_frame_base = (cx_frame_header *) top(); // point to bottom of stack
+    p_stackbase = (cx_frame_header *) top();
+
 }
 
 /** push_frame_header     push the callee subroutine's stack frame
@@ -43,42 +41,23 @@ cx_runtime_stack::cx_runtime_stack(void) {
  *
  * @return: ptr to the base of the callee's stack frame
  */
-cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
+cx_frame_header *
+cx_runtime_stack::push_frame_header(int old_level, int new_level,
         cx_icode *p_icode) {
 
-    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
-    cx_stack_item *p_new_frame_base = tos + 1; /* point to item just above
-                                                *  current top_of_stack item */
+    push(-1); // function return value (placeholder)
+    cx_stack_item *return_value = (cx_stack_item *) top();
 
-    push(0); // function return value (placeholder)
+    // push new frame header just above the return value
+    push_frame();
+    cx_frame_header *p_new_frame_base = (cx_frame_header *) top();
+    p_new_frame_base->frame_header_index = cx_runstack.size() - 1;
 
-    // Compute the static link.
-    if (new_level == old_level + 1) {
+    p_new_frame_base->function_value = return_value;
 
-        /*--Callee nested within caller:
-         *--push address of caller's stack frame.*/
-        push(p_header);
-    } else if (new_level == old_level) {
-
-        /*--Callee at same level as caller:
-          --push address of common parent's stack frame.*/
-        push(p_header->static_link.addr__);
-    } else /* new_level < old_level */ {
-
-        /*--Callee nested less deeply than caller:
-          --push address of nearest common ancestor's stack frame.*/
-        int delta = old_level - new_level;
-
-        while (delta-- >= 0) {
-            p_header = (cx_frame_header *) p_header->static_link.addr__;
-        }
-        push(p_header);
-    }
-
-    push(p_frame_base); // dynamic link   
-
-    push(p_icode); // return address icode pointer    
-    push(0); // return address icode location (placeholder)
+    // link back to original frame base
+    p_new_frame_base->dynamic_link->addr__ = p_frame_base;
+    p_new_frame_base->return_address.icode->addr__ = p_icode;
 
     return p_new_frame_base;
 }
@@ -91,12 +70,13 @@ cx_stack_item *cx_runtime_stack::push_frame_header(int old_level, int new_level,
  * @param location      : return address location
  */
 
-void cx_runtime_stack::activate_frame(cx_stack_item *p_new_frame_base,
-        int location) {
-    p_frame_base = p_new_frame_base;
+void
+cx_runtime_stack::activate_frame(cx_frame_header *p_new_frame_base,
+        const int &location) {
 
-    ((cx_frame_header *) p_frame_base)->return_address
-            .location.int__ = location;
+    p_frame_base = p_new_frame_base;
+    p_frame_base->return_address.location->basic_types.int__ = location;
+
 }
 
 /** pop_frame    pop the current frame from the runtime stack.
@@ -106,28 +86,28 @@ void cx_runtime_stack::activate_frame(cx_stack_item *p_new_frame_base,
  * @param p_function_id : ptr to subroutine name's symbol table node
  * @param p_icode     : ref to ptr to caller's intermediate code
  */
-void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
+void
+cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
         cx_icode *&p_icode) {
 
-    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
+    cx_frame_header *p_header = p_frame_base;
 
     // Don't do anything if it's the bottommost stack frame.
-    if (p_frame_base != &stack[0]) {
+    if (p_frame_base != p_stackbase) {
         // Return to the caller's intermediate code.
-        p_icode = (cx_icode *) p_header->return_address.icode.addr__;
-        p_icode->go_to(p_header->return_address.location.int__);
+        p_icode = (cx_icode *) p_header->return_address.icode->addr__;
+        p_icode->go_to(p_header->return_address.location->basic_types.int__);
 
-        // Leave a function value on top.
-        if (p_function_id->p_type->is_string()) {
-            //tos = (cx_stack_item *) p_frame_base;
-            tos->addr__ = (cx_stack_item *) p_frame_base;
-        } else {
-            tos = (cx_stack_item *) p_frame_base;
-        }
-        //push(p_frame_base);
+        it_frame_base = p_header->return_address.previous_header;
 
-        if (p_function_id->defn.how != dc_function) --tos;
-        p_frame_base = (cx_stack_item *) p_header->dynamic_link.addr__;
+        int start = p_header->frame_header_index;
+
+        // cut the stack back and leave frame header on TOS
+        cx_runstack.erase(cx_runstack.begin() + start, cx_runstack.end());
+
+        if (p_function_id->defn.how != dc_function) pop();
+
+        p_frame_base = (cx_frame_header *) p_header->dynamic_link->addr__;
     }
 }
 
@@ -137,7 +117,8 @@ void cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
  *
  * @param p_id : ptr to symbol table node of variable or parm
  */
-void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
+void
+cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
     cx_type *p_type = p_id->p_type; // ptr to type object of value
 
     if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
@@ -148,15 +129,19 @@ void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
         else if (p_type->form == fc_enum) push(0);
     } else {
 
-        // Array or record
-        void *addr = new char[p_type->size];
-        push(addr);
+        if (p_type->size > 0) {
+            // Array or record
+            void *addr = new char[p_type->size];
+            push(addr);
+        } else {
+            push((void *) nullptr);
+        }
     }
 
     /* save runstack address.
      * this negates the need to calculate the
      * variables offset. */
-    p_id->runstack_item = top_of_stack();
+    p_id->runstack_item = top();
 }
 
 /** deallocate_value    Deallocate the data area of an array or
@@ -165,19 +150,20 @@ void cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
  *
  * @param p_id : ptr to symbol table node of variable or parm
  */
-void cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
+void
+cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
     if ((!p_id->p_type->is_scalar_type()) && (p_id->defn.how != dc_reference)) {
+
         cx_stack_item *p_value = p_id->runstack_item;
 
         if (p_value->addr__ != nullptr) {
-            char *pchar = (char *)p_value->addr__;
+            char *pchar = (char *) p_value->addr__;
             const int length = strlen(pchar);
             memset(pchar, 0, length);
             delete[] pchar;
         }
     }
-    
-   // memset(p_id->runstack_item, 0, sizeof(cx_stack_item));
+
     p_id->runstack_item = nullptr;
 }
 
@@ -192,7 +178,8 @@ void cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
  * @return    : ptr to the runtime stack item containing the
  *                 variable, parameter, or function return value
  */
-cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
+cx_stack_item *
+cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
     bool functionFlag = p_id->defn.how == dc_function; // true if function
     //   else false
     cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
@@ -201,15 +188,15 @@ cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
      *--and the level of the variable or parameter.  Treat a function
      *--value as if it were a local variable of the function.  (Local
      *--variables are one level higher than the function name.)*/
-    int delta = current_nesting_level - p_id->level;
-    if (functionFlag) --delta;
+    //    int delta = current_nesting_level - p_id->level;
+    //    if (functionFlag) --delta;
+    //
+    //    // Chase static links delta times.
+    //    while (delta-- > 0) {
+    //        p_header = (cx_frame_header *) p_header->static_link->addr__;
+    //    }
 
-    // Chase static links delta times.
-    while (delta-- > 0) {
-        p_header = (cx_frame_header *) p_header->static_link.addr__;
-    }
-
-    return functionFlag ? &p_header->function_value
+    return functionFlag ? p_header->function_value
             : p_id->runstack_item;
 }
 
@@ -222,7 +209,8 @@ cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
 
 ///  go                  Start the executor.
 
-void cx_executor::go(cx_symtab_node *p_program_id) {
+void
+cx_executor::go(cx_symtab_node *p_program_id) {
     // Initialize standard input and output.
     eof_flag = std::cin.eof();
     std::cout.setf(std::ios::fixed, std::ios::floatfield);
@@ -248,7 +236,8 @@ void cx_executor::go(cx_symtab_node *p_program_id) {
  * @param p_target_type : ptr to target type object
  * @param value       : integer value to assign
  */
-void cx_executor::range_check(const cx_type *p_target_type, int value) {
+void
+cx_executor::range_check(const cx_type *p_target_type, int value) {
 
     if ((p_target_type->form == fc_array)
             && ((value < p_target_type->array.min_index)
@@ -262,10 +251,11 @@ void cx_executor::range_check(const cx_type *p_target_type, int value) {
  *
  * @param p_program_id
  */
-void cx_executor::initialize_global(cx_symtab_node* p_program_id) {
+void
+cx_executor::initialize_global(cx_symtab_node* p_program_id) {
 
     // Set up a new stack frame for the callee.
-    cx_stack_item *p_new_frame_base = run_stack.push_frame_header
+    cx_frame_header *p_new_frame_base = run_stack.push_frame_header
             (0, 0, p_program_id->defn.routine.p_icode);
 
     // Activate the new stack frame ...

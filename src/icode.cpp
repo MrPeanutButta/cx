@@ -165,7 +165,7 @@ cx_token *cx_icode::get(void) {
         default:
 
             p_node = nullptr;
-            strcpy(p_token->string, cx_symbol_strings[(int)code]);
+            strcpy(p_token->string, cx_symbol_strings[(int) code]);
             break;
     }
 

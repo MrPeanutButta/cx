@@ -49,6 +49,8 @@ void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
             break;
         case tc_RETURN: execute_RETURN(p_function_id);
             break;
+        default:
+            break;
     }
 }
 
@@ -71,7 +73,7 @@ void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token
  *
  *      p_target_id =, +=, -=, ++, --, /=, *=, %=, ^=
  *                >>=, <<=, &=, |= <expression>;
- * 
+ *
  * @param p_target_id : ptr to the symtab node being assigned some value
  *                    on the stack.
  */
@@ -83,7 +85,7 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
 
     if (p_target_id->defn.how == dc_function) {
         p_target_type = p_target_id->p_type;
-        p_target = (cx_stack_item *) run_stack.get_value_address(p_target_id);
+        p_target = run_stack.get_value_address(p_target_id);
     }/* Assignment to variable or formal parameter.
       * execute_variable leaves the target address on
       * top of the runtime stack. */
@@ -92,7 +94,8 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         p_target_type = execute_variable(p_target_id, true);
 
         if (p_target_type->form != fc_stream) {
-            p_target = (cx_stack_item *) pop()->addr__;
+            p_target = (cx_stack_item *) top()->addr__;
+            pop();
         }
     }
 
@@ -106,25 +109,28 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             // Do the assignment.
             if (p_target_type == p_float_type) {
 
-                p_target->float__ =
+                p_target->basic_types.float__ =
                         (p_expr_type->base_type() == p_integer_type)
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
 
-
+                pop();
             } else if (((p_target_type->base_type() == p_integer_type) &&
                     (p_target_type->base_type()->form != fc_array)) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int int_value(0);
+                int int_value = 0;
 
                 if ((p_expr_type->base_type() == p_integer_type) ||
                         (p_expr_type->base_type() == p_boolean_type)) {
-                    int_value = pop()->int__;
+                    int_value = top()->basic_types.int__;
+                    pop();
                 } else if (p_expr_type->base_type() == p_float_type) {
-                    int_value = pop()->float__;
+                    int_value = top()->basic_types.float__;
+                    pop();
                 } else if (p_expr_type->base_type() == p_char_type) {
-                    int_value = (int) pop()->char__;
+                    int_value = (int) top()->basic_types.char__;
+                    pop();
                 }
 
 
@@ -132,39 +138,46 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ = int_value;
+                p_target->basic_types.int__ = int_value;
 
             } else if (p_target_type == p_char_type) {
                 char char_value('\0');
 
                 if (p_expr_type == p_integer_type) {
-                    char_value = (char) pop()->int__;
+                    char_value = (char) top()->basic_types.int__;
+                    pop();
                 } else if ((p_expr_type->base_type() == p_char_type)) {
-                    char_value = pop()->char__;
+                    char_value = top()->basic_types.char__;
+                    pop();
                 }
 
                 range_check(p_target_type, char_value);
 
                 // character := character
-                p_target->char__ = char_value;
+                p_target->basic_types.char__ = char_value;
             } else if (p_target_type == p_file_type) {
 
                 if (p_expr_type == p_integer_type) {
-                    int int__ = pop()->int__;
+                    int int__ = top()->basic_types.int__;
+                    pop();
                     fprintf(p_target_id->p_type->stream.p_file_stream, "%i", int__);
                 } else if (p_expr_type == p_float_type) {
-                    float float__ = pop()->float__;
+                    float float__ = top()->basic_types.float__;
+                    pop();
                     fprintf(p_target_id->p_type->stream.p_file_stream, "%f", float__);
                 } else if (p_expr_type == p_char_type) {
-                    char char__ = pop()->char__;
+                    char char__ = top()->basic_types.char__;
+                    pop();
                     fprintf(p_target_id->p_type->stream.p_file_stream, "%c", char__);
                 } else {
-                    void *p_source = pop()->addr__;
+                    void *p_source = top()->addr__;
+                    pop();
                     fprintf(p_target_id->p_type->stream.p_file_stream, "%s", (char *) p_source);
                 }
             } else if (p_target_id->p_type->is_string()) {
 
-                void *p_source = pop()->addr__;
+                void *p_source = top()->addr__;
+                pop();
                 const int length = strlen((char *) p_source);
 
                 memcpy(p_target, p_source, length);
@@ -184,12 +197,12 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             get_token();
             // Do the assignment.
             if (p_target_type == p_float_type) {
-                p_target->float__++;
+                p_target->basic_types.float__++;
             } else if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
-                p_target->int__++;
+                p_target->basic_types.int__++;
             } else if (p_target_type->base_type() == p_char_type) {
-                p_target->char__++;
+                p_target->basic_types.char__++;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -200,12 +213,12 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             get_token();
             // Do the assignment.
             if (p_target_type == p_float_type) {
-                p_target->float__--;
+                p_target->basic_types.float__--;
             } else if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
-                p_target->int__--;
+                p_target->basic_types.int__--;
             } else if (p_target_type->base_type() == p_char_type) {
-                p_target->char__--;
+                p_target->basic_types.char__--;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -217,31 +230,36 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             p_expr_type = execute_expression();
             // Do the assignment.
             if (p_target_type == p_float_type) {
-                p_target->float__ += p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                p_target->basic_types.float__ += p_expr_type->base_type() == p_integer_type
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
+
+                pop();
             } else if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
                 int value = p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
 
+                pop();
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ += value;
+                p_target->basic_types.int__ += value;
             } else if (p_target_type == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
+                pop();
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ += value;
+                p_target->basic_types.char__ += value;
             } else if (p_target_id->p_type->is_string()) {
 
                 if (p_expr_type->is_string()) {
-                    void *p_source = pop()->addr__;
+                    void *p_source = top()->addr__;
+                    pop();
 
                     const int length = strlen((char *) p_source);
                     char *buffer = new char[length + 1];
@@ -260,7 +278,9 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
 
                 } else if (p_expr_type == p_char_type) {
 
-                    char source = pop()->char__;
+                    char source = top()->basic_types.char__;
+                    pop();
+
                     const int length = strlen((char *) p_target);
 
                     char *t = (char *) p_target;
@@ -283,27 +303,32 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             p_expr_type = execute_expression();
             // Do the assignment.
             if (p_target_type == p_float_type) {
-                p_target->float__ -= p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                p_target->basic_types.float__ -= p_expr_type->base_type() == p_integer_type
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
+
+                pop();
             } else if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
                 int value = p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
 
+                pop();
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ -= value;
+                p_target->basic_types.int__ -= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
+                pop();
+
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ -= value;
+                p_target->basic_types.char__ -= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -319,27 +344,33 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
 
             // Do the assignment.
             if (p_target_type == p_float_type) {
-                p_target->float__ *= p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                p_target->basic_types.float__ *= p_expr_type->base_type() == p_integer_type
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
+
+                pop();
             } else if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
                 int value = p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
+
+                pop();
 
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ *= value;
+                p_target->basic_types.int__ *= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
+                pop();
+
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ -= value;
+                p_target->basic_types.char__ -= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -351,27 +382,30 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             p_expr_type = execute_expression();
             // Do the assignment.
             if (p_target_type == p_float_type) {
-                p_target->float__ /= p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                p_target->basic_types.float__ /= p_expr_type->base_type() == p_integer_type
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
+
+                pop();
             } else if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
                 int value = p_expr_type->base_type() == p_integer_type
-                        ? pop()->int__ // real := integer
-                        : pop()->float__; // real := real
+                        ? top()->basic_types.int__ // real := integer
+                        : top()->basic_types.float__; // real := real
 
+                pop();
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ /= value;
+                p_target->basic_types.int__ /= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ /= value;
+                p_target->basic_types.char__ /= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -385,19 +419,20 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = pop()->int__; // real := integer
+                int value = top()->basic_types.int__; // real := integer
+                pop();
 
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ %= value;
+                p_target->basic_types.int__ %= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ %= value;
+                p_target->basic_types.char__ %= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -411,19 +446,21 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = pop()->int__; // real := integer
+                int value = top()->basic_types.int__; // real := integer
+
+                pop();
 
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ <<= value;
+                p_target->basic_types.int__ <<= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ <<= value;
+                p_target->basic_types.char__ <<= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -437,19 +474,20 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = pop()->int__; // real := integer
+                int value = top()->basic_types.int__; // real := integer
 
+                pop();
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ >>= value;
+                p_target->basic_types.int__ >>= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ >>= value;
+                p_target->basic_types.char__ >>= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -463,19 +501,21 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = pop()->int__; // real := integer
+                int value = top()->basic_types.int__; // real := integer
+
+                pop();
 
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ &= value;
+                p_target->basic_types.int__ &= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ &= value;
+                p_target->basic_types.char__ &= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -489,19 +529,21 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = pop()->int__; // real := integer
+                int value = top()->basic_types.int__; // real := integer
+
+                pop();
 
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ ^= value;
+                p_target->basic_types.int__ ^= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ ^= value;
+                p_target->basic_types.char__ ^= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
@@ -515,34 +557,39 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
             if ((p_target_type->base_type() == p_integer_type) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = pop()->int__; // real := integer
+                int value = top()->basic_types.int__; // real := integer
+
+                pop();
 
                 range_check(p_target_type, value);
 
                 // integer     := integer
                 // enumeration := enumeration
-                p_target->int__ |= value;
+                p_target->basic_types.int__ |= value;
             } else if (p_target_type->base_type() == p_char_type) {
-                char value = pop()->char__;
+                char value = top()->basic_types.char__;
+                pop();
                 range_check(p_target_type, value);
 
                 // character := character
-                p_target->char__ |= value;
+                p_target->basic_types.char__ |= value;
             }
 
             trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
+        default:
+            break;
     }
 }
 
 /** execute_DO   Executes do/while statement while <expression> is true.
- * 
+ *
  *      do
  *      <staement>;
  *      while(<expression>);
- * 
- * @param p_function_id : routine ID this statement is apart of. 
+ *
+ * @param p_function_id : routine ID this statement is apart of.
  */
 void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 
@@ -566,7 +613,7 @@ void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 
         get_token(); //while
         execute_expression(); // (condition)
-        condition = pop()->int__;
+        condition = top()->basic_types.int__;
 
         if (condition != 0) this->go_to(at_loop_start);
     } while (current_location() == at_loop_start);
@@ -577,11 +624,11 @@ void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 }
 
 /** execute_WHILE        Executes while statement while <expression> is true.
- * 
+ *
  *      while(<expression>)
  *            <statement>;
- * 
- * @param p_function_id : routine ID this statement is apart of. 
+ *
+ * @param p_function_id : routine ID this statement is apart of.
  */
 void cx_executor::execute_WHILE(cx_symtab_node * p_function_id) {
 
@@ -597,7 +644,8 @@ void cx_executor::execute_WHILE(cx_symtab_node * p_function_id) {
 
         get_token(); //  (
         execute_expression();
-        condition = pop()->int__;
+        condition = top()->basic_types.int__;
+        pop();
         get_token(); //  )
         if (condition != 0) {
             execute_statement(p_function_id);
@@ -620,12 +668,12 @@ void cx_executor::execute_WHILE(cx_symtab_node * p_function_id) {
 }
 
 /** execute_compound     Execute statement block.
- * 
+ *
  *      {       // begin
  *              <statements>;
  *      }       // end
- * 
- * @param p_function_id : routine ID this statement is apart of. 
+ *
+ * @param p_function_id : routine ID this statement is apart of.
  */
 void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
 
@@ -637,15 +685,15 @@ void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
 }
 
 /** execute_IF   Executes if statements.
- * 
+ *
  *      if(<boolean expression>)
  *              <statement>;
  *      else if (<boolean expression>)
  *              <statement>;
- *      else 
+ *      else
  *              <statement>;
- * 
- * @param p_function_id : routine ID this statement is apart of. 
+ *
+ * @param p_function_id : routine ID this statement is apart of.
  */
 void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
     //  if
@@ -659,7 +707,7 @@ void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
     get_token();
 
     execute_expression();
-    int condition = pop()->int__;
+    int condition = top()->basic_types.int__;
 
     // )
     get_token();
@@ -700,7 +748,7 @@ void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
  *          initialize   condition     increment
  *      for(<statement>; <expression>; <expression>)
  *              <statement>;
- * 
+ *
  * @param p_function_id
  */
 void cx_executor::execute_FOR(cx_symtab_node * p_function_id) {
@@ -737,7 +785,8 @@ void cx_executor::execute_FOR(cx_symtab_node * p_function_id) {
             get_token(); //  ;
         } else get_token();
 
-        condition = pop()->int__;
+        condition = top()->basic_types.int__;
+        pop();
         if (condition != 0) {
             go_to(statement_location);
             get_token();

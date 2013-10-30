@@ -12,10 +12,13 @@
 #include "error.h"
 #include "symtable.h"
 
-extern cx_type *p_integer_type, *p_float_type, *p_boolean_type, *p_char_type,
-        *p_dummy_type, *p_complex_type, *p_file_type;
+class cx_type;
+class cx_symtab_node;
+class cx_symtab;
 
-extern cx_symtab_node *p_main_function_id;
+extern cx_type *p_char_type;
+
+//cx_symtab_node *p_main_function_id;
 
 enum cx_type_form_code {
     fc_none, fc_scalar, fc_enum, fc_subrange, fc_array, fc_complex, fc_stream
@@ -26,7 +29,7 @@ extern const char *form_strings[];
 class cx_type {
     int reference_count;
     bool is_constant__;
-    
+
 public:
     cx_type_form_code form;
     int size;
@@ -86,11 +89,11 @@ public:
     bool is_constant(void) const {
         return is_constant__;
     }
-    
-    bool is_string(void) const{
+
+    bool is_string(void) const {
         return (!is_scalar_type() && array.p_element_type == p_char_type);
     }
-    
+
     cx_type *base_type(void) const {
         return form == fc_array ? array.p_element_type : (cx_type *) this;
     }

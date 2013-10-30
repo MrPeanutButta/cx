@@ -73,7 +73,9 @@ class cx_parser {
             cx_symtab_node* p_string_node);
     cx_type *parse_array_type(cx_symtab_node *p_function_id,
             cx_symtab_node *p_array_node);
-    
+    cx_type *parse_unksize_array_type(cx_symtab_node *p_function_id,
+            cx_symtab_node *p_array_node);
+
     void parse_index_type(cx_symtab_node *p_array_node);
     int array_size(cx_type *p_array_type);
     cx_type *parse_complex_type(cx_symtab_node *p_function_id, cx_symtab_node *p_node);

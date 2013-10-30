@@ -11,15 +11,19 @@
 #include <map>
 #include <cstring>
 #include "misc.h"
+#include "exec.h"
 
+struct cx_stack_item;
 
+typedef std::vector<cx_stack_item*> cx_stack;
+typedef cx_stack::iterator cx_stack_iterator;
 
 extern bool xreference_flag;
 extern int current_line_number;
 extern int current_nesting_level;
 extern int asm_label_index;
 
-union cx_stack_item;
+struct cx_stack_item;
 
 class cx_symtab;
 class cx_symtab_node;
@@ -61,7 +65,7 @@ public:
 
         struct {
             cx_routine_code which;
-            int return_marker;              // used for globals return location
+            int return_marker; // used for globals return location
             int parm_count;
             int total_parm_size;
             int total_local_size;
@@ -183,7 +187,7 @@ public:
         return root__;
     }
 
-/*    void connect_tables(cx_scoped_symtab &class_symtab) {
+    /*    void connect_tables(cx_scoped_symtab &class_symtab) {
 
         root__ = class_symtab[tc_PUBLIC]->root__;
         root__->left__ = class_symtab[tc_PROTECTED]->root__;
