@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Cx Language Reference"
+title: "Cx-language reference"
 date: 2013-11-02 16:07
 comments: true
 sharing: true

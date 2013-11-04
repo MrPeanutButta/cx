@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "cx-expr"
+title: "Cx-expressions"
 date: 2013-11-02 16:18
 comments: true
 sharing: true
