@@ -7,15 +7,15 @@ extern cx_symtab_node *p_program_ptr_id;
 /** parse_function_header         parse a function header:
  *
  *                              <type-id> <id> (<parm-list>);
- * 
+ *
  *                          or:
  *
  *                              <type-id> <id> (<parm-list>){}
- * 
+ *
  * NOTE:
  *      If scope == 0 and p_program_ptr_id->found_global_end == false;
  *      Set main's location in icode only when function body is found.
- * 
+ *
  * @param p_function_id : ptr to the function id's symbol table node.
  * @return ptr to function id's symbol table node.
  */
@@ -36,7 +36,7 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
     p_function_id->defn.routine.parm_count = parm_count;
     p_function_id->defn.routine.total_parm_size = total_parm_size;
     p_function_id->defn.routine.locals.p_parms_ids = p_parm_list;
-    p_function_id->defn.how = ::dc_function;
+    p_function_id->defn.how = dc_function;
 
     // Not forwarded.
     p_function_id->defn.routine.locals.p_constant_ids = nullptr;
@@ -73,11 +73,11 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
 }
 
 /** parse_block      parse a function's block:
- *                      
+ *
  *                      {
  *                              <compound-statement>
  *                      }
- * 
+ *
  * @param p_function_id : ptr to symbol table node of function's id.
  */
 void cx_parser::parse_block(cx_symtab_node *p_function_id) {

@@ -69,7 +69,7 @@ enum cx_error_code {
     err_incompatible_assignment,
     errMinGtMax, // deprecated
     err_missing_left_bracket,
-    err_missing_right___bracket,
+    err_missing_right_bracket,
     err_invalid_index_type,
     errMissingBEGIN, // deprecated
     err_missing_return,

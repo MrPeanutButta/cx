@@ -5,7 +5,7 @@
  *                          separated by commas:
  *
  *                              <type> <id>, ... ;
- * 
+ *
  * @param p_function_id : ptr to symbol table node of program,
  *                     procedure, or function identifier.
  */
@@ -44,7 +44,7 @@ void cx_parser::parse_type_definitions(cx_symtab_node *p_function_id) {
 }
 
 /** parse_type_spec       parse a type specification.
- * 
+ *
  * @param p_node : ptr to object node.
  * @return ptr to type object.
  */
@@ -88,7 +88,7 @@ cx_type *cx_parser::parse_type_spec(cx_symtab_node *p_node) {
  *                               <id-1> = <id-2>
  *
  *                          parse <id-2>.
- * 
+ *
  * @param p_id2 : ptr to symbol table node of <id-2>.
  * @return ptr to type object of <id-2>.
  */
@@ -100,8 +100,8 @@ cx_type *cx_parser::parse_identifier_type(const cx_symtab_node *p_id2) {
 /** parse_enumeration_type    parse a enumeration type
  *                          specification:
  *      enum <id> { <enum-list> };
- *  
- * @return  
+ *
+ * @return
  */
 cx_type *cx_parser::parse_enumeration_type(void) {
     cx_type *p_type = new cx_type(fc_enum, sizeof (int), nullptr);
@@ -144,19 +144,19 @@ cx_type *cx_parser::parse_enumeration_type(void) {
         } else if (token == tc_identifier) cx_error(err_missing_comma);
     }
 
-    conditional_get_token(tc_right_bracket, err_missing_right___bracket);
+    conditional_get_token(tc_right_bracket, err_missing_right_bracket);
 
     p_type->enumeration.max = const_value;
     return p_type;
 }
 
 /** parse_subrange_type       parse a subrange type specification.
- * 
+ *
  * NOTE:
  *      Not implemented.
- * 
+ *
  * @param p_min_id
- * @return 
+ * @return
  */
 cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
     /*cx_type *p_type = new cx_type(fc_subrange, 0, nullptr);
@@ -186,13 +186,13 @@ cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
 
 /** parse_subrange_limit      parse a mininum or maximum limit
  *                          constant of a subrange type.
- * 
+ *
  * NOTE:
  *      Not implemented.
- * 
+ *
  * @param p_limit_id
  * @param limit
- * @return 
+ * @return
  */
 cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit) {
     cx_type *p_type = p_dummy_type;

@@ -10,9 +10,6 @@
  *                       *
  *************************/
 
-//const int minResWordLen = 2; // min and max reserved
-//const int maxResWordLen = 12; //   word lengths
-
 ///  Reserved word lists
 std::pair<std::string, cx_token_code> map_data[] = {
     std::make_pair("if", tc_IF),
@@ -22,15 +19,12 @@ std::pair<std::string, cx_token_code> map_data[] = {
     std::make_pair("go_to", tc_GOTO),
     std::make_pair("try", tc_TRY),
     std::make_pair("delete", tc_DELETE),
-    //    std::make_pair("short", tcShort),
     std::make_pair("typeid", tc_TYPEID),
     std::make_pair("do", tc_DO),
     std::make_pair("signed", tc_SIGNED),
     std::make_pair("typename", tc_TYPENAME),
     std::make_pair("break", tc_BREAK),
-    //    std::make_pair("long", tcLong),
     std::make_pair("sizeof", tc_SIZEOF),
-    //    std::make_pair("union", tcUnion),
     std::make_pair("case", tc_CASE),
     std::make_pair("static", tc_STATIC),
     std::make_pair("unsigned", tc_UNSIGNED),
@@ -38,18 +32,12 @@ std::pair<std::string, cx_token_code> map_data[] = {
     std::make_pair("else", tc_ELSE),
     std::make_pair("namespace", tc_NAMESPACE),
     std::make_pair("using", tc_USING),
-    //   std::make_pair("enum", tcEnum),
     std::make_pair("new", tc_NEW),
     std::make_pair("virtual", tc_VIRTUAL),
-    //    std::make_pair("char16_t", tcChar16_t),
     std::make_pair("explicit", tc_EXPLICIT),
     std::make_pair("noexcept", tc_NOEXCEPT),
-    //    std::make_pair("char32_t", tcChar32_t),
     std::make_pair("export", tc_EXPORT),
-    //    std::make_pair("nullptr", tc_NULLPTR),
     std::make_pair("switch", tc_SWITCH),
-    //    std::make_pair("struct", tcStruct),
-    //    std::make_pair("void", tcVoid),
     std::make_pair("extern", tc_EXTERN),
     std::make_pair("operator", tc_OPERATOR),
     std::make_pair("template", tc_TEMPLATE),
@@ -69,7 +57,7 @@ std::pair<std::string, cx_token_code> map_data[] = {
 };
 
 
-token_map TResWord(map_data,
+token_map cx_reserved_words(map_data,
         map_data + sizeof map_data / sizeof map_data[0]);
 
 /*****************
@@ -80,7 +68,7 @@ token_map TResWord(map_data,
 
 /** get     Extract a word token from the source and downshift
  *          its characters.  Check if it's a reserved word.
- * 
+ *
  * @param buffer : ptr to text input buffer.
  */
 void cx_word_token::get(cx_text_in_buffer &buffer) {
@@ -112,8 +100,8 @@ void cx_word_token::check_for_reserved_word(void) {
 
     /* from the reserved word table, check to see if the word
      * is in there. */
-    cx_token_code c__ = TResWord[this->string__()];
-    if (c__ > 0) code__ = c__;
+    cx_token_code c_ = cx_reserved_words[this->string__()];
+    if (c_ > 0) code__ = c_;
 
 }
 

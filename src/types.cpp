@@ -15,13 +15,26 @@ cx_symtab_node *p_stdout = nullptr;
 cx_symtab_node *p_stderr = nullptr;
 
 cx_type *p_integer_type = nullptr;
+cx_type *p_short_type = nullptr;
+cx_type *p_long_type = nullptr;
+
+cx_type *p_uint8_type = nullptr;
+cx_type *p_uint16_type = nullptr;
+cx_type *p_uint32_type = nullptr;
+cx_type *p_uint64_type = nullptr;
+
 cx_type *p_float_type = nullptr;
 cx_type *p_double_type = nullptr;
+
 cx_type *p_boolean_type = nullptr;
+
 cx_type *p_char_type = nullptr;
-//cx_type *p_string_type = nullptr;
+cx_type *p_wchar_type = nullptr;
+
 //cx_type *p_class_type = nullptr;
+
 cx_type *p_complex_type = nullptr;
+
 cx_type *p_file_type = nullptr;
 
 cx_type *p_dummy_type = nullptr;
@@ -36,14 +49,48 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
 : form(fc), size(s), p_type_id(p_id), reference_count(0) {
 
     switch (fc) {
-            /*       case fc_subrange:
-                       subrange.p_base_type = nullptr;
-                       break;*/
         case fc_array:
+            this->size = s;
+            this->form = fc_array;
             array.p_index_type = array.p_element_type = nullptr;
             break;
         default:
             break;
+    }
+
+    std::string type_name = "dummy";
+    
+    if (p_type_id != nullptr)
+        type_name = p_type_id->string__();
+
+    if (type_name == "short") {
+        type_code = cx_short;
+    } else if (type_name == "int") {
+        type_code = cx_int;
+    } else if (type_name == "char") {
+        type_code = cx_char;
+    } else if (type_name == "wchar") {
+        type_code = cx_wchar;
+    } else if (type_name == "long") {
+        type_code = cx_long;
+    } else if (type_name == "float") {
+        type_code = cx_float;
+    } else if (type_name == "double") {
+        type_code = cx_double;
+    } else if (type_name == "bool") {
+        type_code = cx_bool;
+    } else if (type_name == "uint8") {
+        type_code = cx_uint8;
+    } else if (type_name == "uint16") {
+        type_code = cx_uint16;
+    } else if (type_name == "uint32") {
+        type_code = cx_uint32;
+    } else if (type_name == "uint64") {
+        type_code = cx_uint64;
+    } else if (type_name == "class") {
+        type_code = cx_complex;
+    } else if (type_name == "file") {
+        type_code = cx_file;
     }
 }
 
@@ -51,14 +98,12 @@ cx_type::cx_type(int length, bool constant)
 : size(length), form(fc_array), reference_count(0), is_constant__(constant) {
     p_type_id = nullptr;
 
+    // used for string constants only. can probably go away
     array.p_index_type = array.p_element_type = nullptr;
     set_type(array.p_index_type, p_integer_type);
     set_type(array.p_element_type, p_char_type);
     array.element_count = length;
 
-    /*set_type(array.p_index_type->subrange.p_base_type, p_integer_type);
-    array.p_index_type->subrange.min = 1;
-    array.p_index_type->subrange.max = length;*/
 }
 
 /** Destructor      Delete the allocated objects according to
@@ -259,41 +304,79 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = rc_forward;
 
+    // signed int
     cx_symtab_node *p_integer_id = p_symtab->enter("int", dc_type);
+    cx_symtab_node *p_short_id = p_symtab->enter("short", dc_type);
+    cx_symtab_node *p_long_id = p_symtab->enter("long", dc_type);
+
+    // unsigned int
+    cx_symtab_node *p_uint8_id = p_symtab->enter("uint8", dc_type);
+    cx_symtab_node *p_uint16_id = p_symtab->enter("uint16", dc_type);
+    cx_symtab_node *p_uint32_id = p_symtab->enter("uint32", dc_type);
+    cx_symtab_node *p_uint64_id = p_symtab->enter("uint64", dc_type);
+
     cx_symtab_node *p_float_id = p_symtab->enter("float", dc_type);
+    cx_symtab_node *p_double_id = p_symtab->enter("double", dc_type);
 
     cx_symtab_node *p_complex_id = p_symtab->enter("class", dc_type);
 
     cx_symtab_node *p_boolean_id = p_symtab->enter("bool", dc_type);
+
     cx_symtab_node *p_char_id = p_symtab->enter("char", dc_type);
+    cx_symtab_node *p_wchar_id = p_symtab->enter("wchar", dc_type);
+
     cx_symtab_node *p_false_id = p_symtab->enter("false", dc_constant);
     cx_symtab_node *p_true_id = p_symtab->enter("true", dc_constant);
-    //cx_symtab_node *p_string_id = p_symtab->enter("string", dc_type);
 
     cx_symtab_node *p_fileId = p_symtab->enter("file", dc_type);
 
     if (!p_integer_type) {
         set_type(p_integer_type, new cx_type(fc_scalar, sizeof (int), p_integer_id));
     }
+
+    if (!p_short_type) {
+        set_type(p_short_type, new cx_type(fc_scalar, sizeof (short), p_short_id));
+    }
+
+    if (!p_long_type) {
+        set_type(p_long_type, new cx_type(fc_scalar, sizeof (long), p_long_id));
+    }
+
+    if (!p_uint8_type) {
+        set_type(p_uint8_type, new cx_type(fc_scalar, sizeof (uint8_t), p_uint8_id));
+    }
+
+    if (!p_uint16_type) {
+        set_type(p_uint16_type, new cx_type(fc_scalar, sizeof (uint16_t), p_uint16_id));
+    }
+
+    if (!p_uint32_type) {
+        set_type(p_uint32_type, new cx_type(fc_scalar, sizeof (uint32_t), p_uint32_id));
+    }
+
+    if (!p_uint64_type) {
+        set_type(p_uint64_type, new cx_type(fc_scalar, sizeof (uint64_t), p_uint64_id));
+    }
+
     if (!p_float_type) {
         set_type(p_float_type, new cx_type(fc_scalar, sizeof (float), p_float_id));
     }
 
-    if (!p_boolean_type) {
-        set_type(p_boolean_type, new cx_type(fc_enum, sizeof (int), p_boolean_id));
+    if (!p_double_type) {
+        set_type(p_double_type, new cx_type(fc_scalar, sizeof (double), p_double_id));
     }
+
+    if (!p_boolean_type) {
+        set_type(p_boolean_type, new cx_type(fc_enum, sizeof (bool), p_boolean_id));
+    }
+
     if (!p_char_type) {
         set_type(p_char_type, new cx_type(fc_scalar, sizeof (char), p_char_id));
     }
 
-/*    if (!p_string_type) {
-        set_type(p_string_type, new cx_type(fc_array, 255, p_string_id));
-        set_type(p_string_type->array.p_element_type, p_char_type);
-        p_string_type->array.min_index = 0;
-        p_string_type->array.max_index = 255;
-        p_string_type->array.element_count = 256;
-        set_type(p_string_type->array.p_index_type, p_integer_type);
-    }*/
+    if (!p_wchar_type) {
+        set_type(p_wchar_type, new cx_type(fc_scalar, sizeof (wchar_t), p_wchar_id));
+    }
 
     if (!p_complex_type) {
         set_type(p_complex_type, new cx_type(fc_complex, sizeof (cx_type), p_complex_id));
@@ -307,17 +390,25 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     // link each predefined type id's node to it's type object
     set_type(p_integer_id->p_type, p_integer_type);
+    set_type(p_short_id->p_type, p_short_type);
+    set_type(p_long_id->p_type, p_long_type);
+
+    set_type(p_uint8_id->p_type, p_uint8_type);
+    set_type(p_uint16_id->p_type, p_uint16_type);
+    set_type(p_uint32_id->p_type, p_uint32_type);
+    set_type(p_uint64_id->p_type, p_uint64_type);
 
     set_type(p_float_id->p_type, p_float_type);
+    set_type(p_double_id->p_type, p_double_type);
 
     set_type(p_boolean_id->p_type, p_boolean_type);
+
     set_type(p_char_id->p_type, p_char_type);
+    set_type(p_wchar_id->p_type, p_wchar_type);
 
     set_type(p_complex_id->p_type, p_complex_type);
 
     set_type(p_fileId->p_type, p_file_type);
-
-   // set_type(p_string_id->p_type, p_string_type);
 
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = p_false_id;
@@ -349,11 +440,24 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
  */
 void remove_builtin_types(void) {
     remove_type(p_complex_type);
-    remove_type(p_integer_type);
+
     remove_type(p_float_type);
+    remove_type(p_double_type);
+
     remove_type(p_boolean_type);
+
     remove_type(p_char_type);
-   // remove_type(p_string_type);
+    remove_type(p_wchar_type);
+
+    remove_type(p_short_type);
+    remove_type(p_integer_type);
+    remove_type(p_long_type);
+
+    remove_type(p_uint8_type);
+    remove_type(p_uint16_type);
+    remove_type(p_uint32_type);
+    remove_type(p_uint64_type);
+
     remove_type(p_dummy_type);
     remove_type(p_file_type);
 }

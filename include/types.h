@@ -16,12 +16,63 @@ class cx_type;
 class cx_symtab_node;
 class cx_symtab;
 
-extern cx_type *p_char_type;
+// Pointers to predefined types.
+extern cx_symtab_node *p_main_function_id;
+extern cx_symtab_node *p_stdin;
+extern cx_symtab_node *p_stdout;
+extern cx_symtab_node *p_stderr;
 
-//cx_symtab_node *p_main_function_id;
+extern cx_type *p_integer_type;
+extern cx_type *p_short_type;
+extern cx_type *p_long_type;
+
+extern cx_type *p_uint8_type;
+extern cx_type *p_uint16_type;
+extern cx_type *p_uint32_type;
+extern cx_type *p_uint64_type;
+
+extern cx_type *p_float_type;
+extern cx_type *p_double_type;
+
+extern cx_type *p_boolean_type;
+
+extern cx_type *p_char_type;
+extern cx_type *p_wchar_type;
+
+//cx_type *p_class_type = nullptr;
+
+extern cx_type *p_complex_type;
+
+extern cx_type *p_file_type;
+
+extern cx_type *p_dummy_type;
 
 enum cx_type_form_code {
-    fc_none, fc_scalar, fc_enum, fc_subrange, fc_array, fc_complex, fc_stream
+    fc_none, 
+    fc_scalar, 
+    fc_enum, 
+    fc_subrange, 
+    fc_array, 
+    fc_complex, 
+    fc_stream
+};
+
+enum cx_type_code {
+    cx_short,
+    cx_int,
+    cx_char,
+    cx_wchar,
+    cx_long,
+    cx_float,
+    cx_double,
+    cx_bool,
+    cx_uint8,
+    cx_uint16,
+    cx_uint32,
+    cx_uint64,
+    cx_void,
+    cx_complex,
+    cx_file,
 };
 
 extern const char *form_strings[];
@@ -34,6 +85,8 @@ public:
     cx_type_form_code form;
     int size;
     cx_symtab_node *p_type_id;
+    
+    cx_type_code type_code;
 
     union {
 
@@ -88,10 +141,6 @@ public:
 
     bool is_constant(void) const {
         return is_constant__;
-    }
-
-    bool is_string(void) const {
-        return (!is_scalar_type() && array.p_element_type == p_char_type);
     }
 
     cx_type *base_type(void) const {

@@ -138,10 +138,10 @@ cx_executor::execute_expression(void) {
         } else {
 
             // string <op> string
-            char *addr2 = (char *) top()->addr__;
+            char *addr2 = (char *) top()->basic_types.addr__;
             pop();
 
-            char *addr1 = (char *) top()->addr__;
+            char *addr1 = (char *) top()->basic_types.addr__;
             pop();
 
             int cmp = strncmp(addr1, addr2, p_operand1_type->size);
@@ -580,8 +580,7 @@ cx_executor::execute_factor(void) {
             /* push either a character or a string address onto the
              * runtime stack, depending on the string length. */
             int length = strlen(p_node->string__()) - 2; // skip quotes
-            if (length == 1) {
-
+            if (length <= 1) {
                 // Character
                 push(p_node->defn.constant.value.char__);
                 p_result_type = p_char_type;
@@ -607,6 +606,7 @@ cx_executor::execute_factor(void) {
             p_result_type = p_boolean_type;
         }
             break;
+            
         case tc_left_paren:
         {
 
@@ -617,6 +617,73 @@ cx_executor::execute_factor(void) {
             p_result_type = execute_expression();
 
             get_token(); // first token after )
+        }
+            break;
+        case tc_left_bracket:
+        {
+
+            get_token();
+            int num_of_elements = 0;
+            int total_size = 0;
+            //int size = 0;
+            int old_size = 0;
+            bool comma = false;
+            void *p_address = nullptr;
+            char *tmp = (char *) p_address;
+            cx_type *init_list = new cx_type(fc_array, 0, nullptr);
+
+            do {
+                p_result_type = execute_expression();
+
+                total_size += p_result_type->size;
+
+                p_address = realloc(p_address, old_size + p_result_type->size);
+
+                if (p_address == nullptr) {
+                    perror("realloc");
+                    exit(0);
+                }
+                
+                tmp = (char *) p_address;
+                
+                if (p_result_type->is_scalar_type()) {
+                    if (p_result_type == p_integer_type) {
+                        int value = top()->basic_types.int__;
+                        memcpy(&tmp[old_size], &value, p_result_type->size);
+                    } else if (p_result_type == p_float_type) {
+                        float value = top()->basic_types.float__;
+                        memcpy(&tmp[old_size], &value, p_result_type->size);
+                    } else if (p_result_type == p_char_type) {
+                        char value = top()->basic_types.char__;
+                        memcpy(&tmp[old_size], &value, p_result_type->size);
+                    }
+                } else {
+                    void *p_source = top()->basic_types.addr__;
+                    memcpy(&tmp[old_size], p_source, p_result_type->size);
+                }
+
+                pop();
+                ++num_of_elements;
+                old_size = total_size;
+
+                if (token == tc_comma) {
+                    comma = true;
+                    get_token();
+                } else comma = false;
+
+            } while (comma);
+
+            // }
+            get_token();
+            push(p_address);
+            init_list->array.element_count = num_of_elements;
+            init_list->array.max_index = num_of_elements;
+            init_list->size = total_size;
+            set_type(init_list->array.p_element_type, p_result_type);
+            set_type(init_list->array.p_index_type, p_integer_type);
+
+            p_result_type = init_list;
+
         }
             break;
         case tc_semicolon:
@@ -698,29 +765,29 @@ cx_executor::execute_variable(const cx_symtab_node *p_id,
     if ((!address_flag) && (p_type->is_scalar_type())) {
         if (p_type == p_float_type) {
 
-            cx_stack_item *t = (cx_stack_item *) top()->addr__;
+            cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
             pop();
-
             push(t->basic_types.float__);
 
         } else if (p_type->base_type() == p_char_type) {
-            cx_stack_item *t = (cx_stack_item *) top()->addr__;
-            pop();
 
+            cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
+            pop();
             push(t->basic_types.char__);
         } else {
-            cx_stack_item *t = (cx_stack_item *) top()->addr__;
-            pop();
 
+            cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
+            pop();
             push(t->basic_types.int__);
+
         }
     }
 
     if (!address_flag) {
         void *p_data_value = (p_type->is_scalar_type()) ?
-                top() : top()->addr__;
+                top() : top()->basic_types.addr__;
 
-        trace_data_fetch(p_id, p_data_value, p_type);
+        trace_data_fetch(p_id, *top(), p_type);
     }
 
     return p_type;
@@ -753,7 +820,7 @@ cx_executor::execute_subscripts(const cx_type *p_type) {
 
             // Modify the data address at the top of the stack.
 
-            char *t = (char *) top()->addr__;
+            char *t = (char *) top()->basic_types.addr__;
             pop();
 
             push(t + (p_type->array.p_element_type->size * value));
@@ -782,7 +849,7 @@ cx_executor::execute_field(void) {
     get_token();
     cx_symtab_node *p_field_id = p_node;
 
-    //push(((char *) (top()->addr__)) + p_field_id->defn.data.offset);
+    //push(((char *) (top()->basic_types.addr__)) + p_field_id->defn.data.offset);
 
     get_token();
     return p_field_id->p_type;

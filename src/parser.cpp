@@ -9,7 +9,7 @@ extern cx_symtab_node *p_program_ptr_id;
 
 /** parse       parse the source file.  After listing each
  *              source line, extract and list its tokens.
- * 
+ *
  * @return ptr to '__cx_global__' program Id.
  */
 cx_symtab_node *cx_parser::parse(bool std_lib_module) {
@@ -57,7 +57,7 @@ cx_symtab_node *cx_parser::parse(bool std_lib_module) {
         p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
 
         resync(tokenlist_program_end);
-        conditional_get_token_append(tc_end_of_file, err_missing_right___bracket);
+        conditional_get_token_append(tc_end_of_file, err_missing_right_bracket);
 
         if (cx_dev_debug_flag) {
             list.put_line();
@@ -75,7 +75,7 @@ cx_symtab_node *cx_parser::parse(bool std_lib_module) {
  *                  token is not in one of the token lists,
  *                  flag it as an error and then skip tokens
  *                  up to one that is in a list or end of file.
- * 
+ *
  * @param p_list1 : token list.
  * @param p_list2 : token list.
  * @param p_list3 : token list.

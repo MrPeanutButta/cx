@@ -212,12 +212,16 @@ cx_type *cx_parser::parse_factor(void) {
                 if (length <= 1) {
                     p_node->defn.constant.value.char__ = p_string[1];
                 } else {
-                    p_node->defn.constant.value.p_string = new char[length];
 
+                    const int size = sizeof (char) * (length + 1);
+                    p_node->defn.constant.value.p_string = new char[size];
+                    memset(p_node->defn.constant.value.p_string, '\0', size);
                     memcpy(p_node->defn.constant.value.p_string,
-                            &p_string[1], length);
+                            &p_string[1], size);
 
+                    // remove the quote
                     p_node->defn.constant.value.p_string[length] = '\0';
+
                     p_node->p_type->form = fc_array;
                     p_node->p_type->array.element_count = length;
                     p_node->p_type->array.max_index = length;
@@ -243,6 +247,51 @@ cx_type *cx_parser::parse_factor(void) {
             check_boolean(parse_factor());
             p_result_type = p_boolean_type;
 
+            break;
+        case tc_left_bracket:
+        {
+            get_token_append();
+            int element_count = 0;
+            bool comma = false;
+            cx_type *p_prev_type = nullptr;
+
+            do {
+                p_result_type = parse_expression();
+
+                if (p_prev_type == nullptr)
+                    p_prev_type = p_result_type;
+
+                // make sure we init all of the same type
+                if (p_prev_type != p_result_type) {
+                    cx_error(err_incompatible_assignment);
+                    p_result_type = p_dummy_type;
+                    break;
+                }
+
+                ++element_count;
+
+                if (token == tc_comma) {
+                    comma = true;
+                    get_token_append();
+                } else comma = false;
+
+            } while (comma);
+
+            conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+
+            const int size = element_count * p_result_type->base_type()->size;
+            cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
+            //p_array_type->form = fc_array;
+            p_array_type->array.element_count = element_count;
+            p_array_type->array.max_index = element_count;
+            p_array_type->array.min_index = 0;
+            
+            set_type(p_array_type->array.p_element_type, p_result_type);
+            set_type(p_array_type->array.p_index_type, p_integer_type);
+            
+            p_result_type = p_array_type;
+
+        }
             break;
         case tc_semicolon:
             break;
@@ -308,6 +357,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
 
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_minus_minus:
@@ -322,6 +373,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_minus_equal:
@@ -330,6 +383,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_star_equal:
@@ -338,6 +393,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_divide_equal:
@@ -346,6 +403,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_modulas_equal:
@@ -354,6 +413,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_bit_leftshift_equal:
@@ -362,6 +423,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_bit_rightshift_equal:
@@ -370,6 +433,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_bit_AND_equal:
@@ -378,6 +443,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_bit_XOR_equal:
@@ -386,6 +453,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_bit_OR_equal:
@@ -394,6 +463,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
                         err_incompatible_assignment);
+                
+                p_result_type = p_expr_type;
             }
                 break;
             case tc_comma:
@@ -403,8 +474,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
             case tc_identifier:
                 get_token_append();
                 p_expr_type = p_result_type;
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                
             default:
                 cx_error(err_invalid_assignment);
                 break;

@@ -36,7 +36,7 @@ public:
         if (p_code != nullptr) delete[] p_code;
     }
 
-    // aappend to already existing icode
+    // append to already existing icode
     void append(const cx_icode &icode);
 
     void put(cx_token_code tc);

@@ -4,10 +4,10 @@
 /** parse_formal_parm_list     parse a formal parameter list:
  *
  *                              ( <type-id> <id-list> ); or {
- * 
+ *
  * @param count
  * @param total_size
- * @return 
+ * @return
  */
 cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id, int &count, int &total_size) {
 
@@ -43,6 +43,17 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
         if (token == tc_bit_AND) {
             parm_defined_as = dc_reference;
             get_token_append();
+        } else if (token == tc_star) {
+            get_token_append();
+            if (token == tc_bit_AND) {
+                get_token_append();
+                parm_defined_as = dc_reference;
+            } else {
+                parm_defined_as = dc_value_parm;
+            }
+
+            is_array = true;
+
         } else parm_defined_as = dc_value_parm;
 
         p_parm_id = enter_new_local(p_token->string__(), parm_defined_as);
@@ -61,10 +72,15 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
 
         //  , or )
         get_token_append();
-        set_type(p_parm_id->p_type, p_parm_type);
 
-        if (token == tc_left_subscript) {
-            parse_array_type(p_function_id, p_parm_id);
+        if (is_array) {
+
+            set_type(p_parm_id->p_type, p_parm_type);
+            parse_unksize_array_type(p_function_id,
+                    p_parm_id);
+
+        } else {
+            set_type(p_parm_id->p_type, p_parm_type);
         }
 
         resync(tokenlist_identifier_follow);
@@ -114,7 +130,7 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
 
 /** parse_subroutine_call     parse a call to a declared or a
  *                          standard procedure or function.
- * 
+ *
  * @param p_function_id    : ptr to routine id's symbol table node.
  * @param parm_check_flag : true to check parameter, false not to
  * @return ptr to the subroutine's type object
@@ -133,7 +149,7 @@ cx_type *cx_parser::parse_subroutine_call(const cx_symtab_node *p_function_id,
 
 /** parse_declared_subroutine_call parse a call to a declared
  *                              procedure or function.
- * 
+ *
  * @param p_function_id    : ptr to subroutine id's symbol table node.
  * @param parm_check_flag : true to check parameter, false not to.
  * @return ptr to the subroutine's type object.
@@ -148,7 +164,7 @@ cx_type *cx_parser::parse_declared_subroutine_call
 /** parse_actual_parm_list     parse an actual parameter list:
  *
  *                              ( <expr-list> )
- * 
+ *
  * @param p_function_id    : ptr to routine id's symbol table node.
  * @param parm_check_flag : true to check parameter, false not to.
  */
@@ -189,7 +205,7 @@ void cx_parser::parse_actual_parm_list(const cx_symtab_node *p_function_id,
 
 /** parse_actual_parm     parse an actual parameter.  Make sure it
  *                      matches the corresponding formal parm.
- * 
+ *
  * @param p_formal_id     : ptr to the corresponding formal parm
  *                        id's symbol table node
  * @param parm_check_flag : true to check parameter, false not to.
@@ -228,7 +244,7 @@ void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
         cx_symtab_node *p_actual_id = find(p_token->string__());
 
         // skip type declaration
-        if (p_actual_id->defn.how == ::dc_type) {
+        if (p_actual_id->defn.how == dc_type) {
             get_token();
 
             if (token == tc_bit_AND)get_token();
@@ -239,7 +255,8 @@ void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
         icode.put(p_actual_id);
 
         get_token_append();
-        if (p_formal_id->p_type != parse_variable(p_actual_id)) {
+        if (p_formal_id->p_type->base_type()
+                != parse_variable(p_actual_id)->base_type()) {
             cx_error(err_incompatible_types);
         }
         resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);

@@ -56,8 +56,8 @@ cx_runtime_stack::push_frame_header(int old_level, int new_level,
     p_new_frame_base->function_value = return_value;
 
     // link back to original frame base
-    p_new_frame_base->dynamic_link->addr__ = p_frame_base;
-    p_new_frame_base->return_address.icode->addr__ = p_icode;
+    p_new_frame_base->dynamic_link->basic_types.addr__ = p_frame_base;
+    p_new_frame_base->return_address.icode->basic_types.addr__ = p_icode;
 
     return p_new_frame_base;
 }
@@ -95,7 +95,7 @@ cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
     // Don't do anything if it's the bottommost stack frame.
     if (p_frame_base != p_stackbase) {
         // Return to the caller's intermediate code.
-        p_icode = (cx_icode *) p_header->return_address.icode->addr__;
+        p_icode = (cx_icode *) p_header->return_address.icode->basic_types.addr__;
         p_icode->go_to(p_header->return_address.location->basic_types.int__);
 
         it_frame_base = p_header->return_address.previous_header;
@@ -107,7 +107,7 @@ cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
 
         if (p_function_id->defn.how != dc_function) pop();
 
-        p_frame_base = (cx_frame_header *) p_header->dynamic_link->addr__;
+        p_frame_base = (cx_frame_header *) p_header->dynamic_link->basic_types.addr__;
     }
 }
 
@@ -122,16 +122,27 @@ cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
     cx_type *p_type = p_id->p_type; // ptr to type object of value
 
     if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
-        if (p_type == p_integer_type) push(0);
-        else if (p_type == p_float_type) push(0.0f);
-        else if (p_type == p_boolean_type) push(0);
-        else if (p_type == p_char_type) push('\0');
-        else if (p_type->form == fc_enum) push(0);
+        if (p_type == p_integer_type) push((int)0);
+        else if (p_type == p_float_type) push((float)0.0);
+        else if (p_type == p_double_type) push((double)0.0);
+        else if (p_type == p_short_type) push((short)0);
+        else if (p_type == p_long_type) push((long)0);
+        else if (p_type == p_wchar_type) push((wchar_t)'\0');
+        else if (p_type == p_uint8_type) push((uint8_t)0);
+        else if (p_type == p_uint16_type) push((uint16_t)0);
+        else if (p_type == p_uint32_type) push((uint32_t)0);
+        else if (p_type == p_uint64_type) push((uint64_t)0);
+
+        else if (p_type == p_boolean_type) push((bool)false);
+        else if (p_type == p_char_type) push((char)'\0');
+        else if (p_type->form == fc_enum) push((int)0);
     } else {
 
         if (p_type->size > 0) {
             // Array or record
-            void *addr = new char[p_type->size];
+            const int size = p_type->size;
+            void *addr = malloc(size + 1);
+            //memset(addr, 0, size);
             push(addr);
         } else {
             push((void *) nullptr);
@@ -152,16 +163,13 @@ cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
  */
 void
 cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
-    if ((!p_id->p_type->is_scalar_type()) && (p_id->defn.how != dc_reference)) {
 
-        cx_stack_item *p_value = p_id->runstack_item;
+    void *addr = p_id->runstack_item->basic_types.addr__;
+    cx_type_form_code form = p_id->p_type->form;
+    cx_define_code def_how = p_id->defn.how;
 
-        if (p_value->addr__ != nullptr) {
-            char *pchar = (char *) p_value->addr__;
-            const int length = strlen(pchar);
-            memset(pchar, 0, length);
-            delete[] pchar;
-        }
+    if ((addr != nullptr) && (form == fc_array) && (def_how != dc_reference)) {
+        free(p_id->runstack_item->basic_types.addr__);
     }
 
     p_id->runstack_item = nullptr;
@@ -183,18 +191,6 @@ cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
     bool functionFlag = p_id->defn.how == dc_function; // true if function
     //   else false
     cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
-
-    /*--Compute the difference between the current nesting level
-     *--and the level of the variable or parameter.  Treat a function
-     *--value as if it were a local variable of the function.  (Local
-     *--variables are one level higher than the function name.)*/
-    //    int delta = current_nesting_level - p_id->level;
-    //    if (functionFlag) --delta;
-    //
-    //    // Chase static links delta times.
-    //    while (delta-- > 0) {
-    //        p_header = (cx_frame_header *) p_header->static_link->addr__;
-    //    }
 
     return functionFlag ? p_header->function_value
             : p_id->runstack_item;

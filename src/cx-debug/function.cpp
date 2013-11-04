@@ -144,8 +144,23 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
         /* Reference parameter: execute_variable will leave the actual
          * parameter's address on top of the stack. */
         if (p_formal_id->defn.how == dc_reference) {
+
+            const int size = p_node->p_type->size;
+            p_formal_type->form = p_node->p_type->form;
             execute_variable(p_node, true);
-            p_formal_id->runstack_item = top();
+
+            if (p_formal_type->form == fc_array) {
+
+                p_formal_type->size = size;
+                p_formal_type->array.element_count = size;
+                p_formal_type->array.max_index = size;
+
+                p_formal_id->runstack_item = top();
+
+            } else {
+                p_formal_id->runstack_item = top();
+            }
+
             get_token();
         }// value parameter
         else {
@@ -156,31 +171,38 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
 
                 // real formal := integer actual:
                 // convert integer value to real.
-                push(float(top()->basic_types.int__));
-                p_formal_id->runstack_item = top();
-
+                float ff = top()->basic_types.int__;
                 pop();
+                
+                push(ff);
+                p_formal_id->runstack_item = top();
             } else if (!p_formal_type->is_scalar_type()) {
 
                 /* Formal parameter is an array or a record:
                  * Make a copy of the actual parameter's value. */
 
-                void *p_source = top()->addr__;
+                const int size = p_actual_type->size;
+                void *p_target_address = nullptr;
+                const int num_of_elements = size / p_actual_type->base_type()->size;
+
+                p_target_address = realloc(p_target_address, size);
+                memset(p_target_address, 0, size);
+
+                if (p_target_address == nullptr) {
+                    perror("realloc");
+                    exit(0);
+                }
+
+                void *p_source = top()->basic_types.addr__;
+                memcpy(p_target_address, p_source, size);
 
                 pop();
-
-                const int length = strlen((char *) p_source);
-                void *addr = new char[length + 1];
-
-                memset(addr, '\0', sizeof (addr));
-                memcpy(addr, p_source, length);
-
-                push(addr);
-
-                p_formal_type->size = length + 1;
-                p_formal_type->array.element_count = length + 1;
-                p_formal_type->array.max_index = length + 1;
-
+                push(p_target_address);
+                
+                p_formal_type->array.element_count = num_of_elements;
+                p_formal_type->array.max_index = num_of_elements;
+                p_formal_type->size = size;
+                p_formal_type->form = fc_array;
                 p_formal_id->runstack_item = top();
             } else {
 

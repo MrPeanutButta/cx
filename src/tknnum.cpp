@@ -24,7 +24,7 @@ enum cx_radix_base {
 
 /** get         Extract a number token from the source and set
  *              its value.
- * 
+ *
  * @param buffer : ptr to text input buffer.
  */
 void cx_number_token::get(cx_text_in_buffer &buffer) {
@@ -153,7 +153,7 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
 
 /** accumulate_value     Extract a number part from the source
  *                      and set its value.
- * 
+ *
  * @param buffer : ptr to text input buffer.
  * @param value  : accumulated value (from one or more calls).
  * @param ec     : error code if failure.
@@ -164,7 +164,7 @@ int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
 
     const int max_digit_count = 20;
 
-    /* cx_error if the first character is not a digit 
+    /* cx_error if the first character is not a digit
      * and radix base is not hex */
     if ((char_code_map[ch] != cc_digit) && (!isxdigit(ch))) {
         cx_error(ec);
@@ -218,7 +218,7 @@ bool cx_number_token::is_x_digit(const char& c) {
 }*/
 
 /** print       print the token to the list file.
- * 
+ *
  */
 void cx_number_token::print(void) const {
     if (type__ == ty_integer) {

@@ -7,7 +7,7 @@ cx_char_code_map char_code_map; // maps a character to its code
 /** Constructor     Construct a scanner by constructing the
  *                  text input file buffer and initializing the
  *                  character code map.
- * 
+ *
  * @param p_buffer : ptr to text input buffer to scan.
  */
 cx_text_scanner::cx_text_scanner(cx_text_in_buffer *p_buffer)
@@ -53,7 +53,7 @@ cx_text_scanner::cx_text_scanner(cx_text_in_buffer *p_buffer)
  *                      text input as long as they're
  *                      whitespace. Each comment is a whitespace
  *                      character.
- * 
+ *
  */
 void cx_text_scanner::skip_whitespace(void) {
     char ch = p_text_in_buffer->current_char();
@@ -87,7 +87,7 @@ void cx_text_scanner::skip_whitespace(void) {
 
 /** get         Extract the next__ token from the text input,
  *              based on the current character.
- * 
+ *
  * @return pointer to the extracted token.
  */
 cx_token * cx_text_scanner::get(void) {

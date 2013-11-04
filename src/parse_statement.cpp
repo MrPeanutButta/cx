@@ -309,7 +309,7 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
 
     parse_statement_list(p_function_id, tc_right_bracket);
 
-    conditional_get_token_append(tc_right_bracket, err_missing_right___bracket);
+    conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
 
 }
 

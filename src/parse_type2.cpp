@@ -49,7 +49,7 @@ cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id,
 
     set_type(p_array_node->p_type, p_array_type);
 
-    if (p_array_node->defn.how == ::dc_undefined) {
+    if (p_array_node->defn.how == dc_undefined) {
         p_array_node->defn.how = dc_variable;
     }
 
@@ -76,28 +76,22 @@ cx_type *cx_parser::parse_unksize_array_type(cx_symtab_node* p_function_id,
 
     cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
 
-    cx_type *p_element_type = p_array_type;
     cx_type *p_expr_type = nullptr;
 
     // Final element type.
-    set_type(p_element_type->array.p_element_type, p_array_node->p_type);
+    set_type(p_array_type->array.p_element_type, p_array_node->p_type);
 
     bool is_function = false;
+    const bool is_expression = token_in(token, tokenlist_assign_ops);
 
-    if (token != tc_left_paren) get_token_append();
-    else is_function = true;
+    if ((token != tc_left_paren) && (token != tc_right_paren) &&
+            (!is_expression)) get_token_append();
+    else if ((token != tc_right_paren) && (!is_expression)) is_function = true;
 
     int min_index = 0;
     int max_index = 0;
 
-    if (token == tc_left_paren) {
-        //get_token_append();
-        // xxx fixme, need a way to get out of assignment
-        max_index = 0;
-
-    }
-
-    set_type(p_element_type->array.p_index_type, p_integer_type);
+    set_type(p_array_type->array.p_index_type, p_integer_type);
     p_array_type->array.element_count = max_index;
     p_array_type->array.min_index = min_index;
     p_array_type->array.max_index = max_index;
@@ -107,11 +101,30 @@ cx_type *cx_parser::parse_unksize_array_type(cx_symtab_node* p_function_id,
         return p_array_type;
     }
 
-    if (token_in(token, tokenlist_assign_ops))parse_assignment(p_array_node);
+    if (is_expression) {
 
-    set_type(p_array_node->p_type, p_array_type);
+        p_expr_type = parse_assignment(p_array_node);
 
-    if (p_array_node->defn.how == ::dc_undefined) {
+        if (p_expr_type->base_type() != p_array_type->base_type()) {
+            // make sure we init all of the same type
+            cx_error(err_incompatible_assignment);
+            p_array_type = p_dummy_type;
+
+        } else {
+
+            delete p_array_type;
+            set_type(p_array_node->p_type->array.p_index_type, p_integer_type);
+            set_type(p_array_node->p_type->array.p_element_type, p_expr_type->array.p_element_type);
+            set_type(p_array_node->p_type, p_expr_type);
+
+            p_array_node->p_type->p_type_id = p_array_node;
+            p_array_type = p_expr_type;
+        }
+    } else {
+        set_type(p_array_node->p_type, p_array_type);
+    }
+
+    if (p_array_node->defn.how == dc_undefined) {
         p_array_node->defn.how = dc_variable;
     }
 
@@ -391,6 +404,6 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
     p_complex_type->complex.p_class_scope_symtab = new cx_symtab;
     // p_complex_type->complex.p_class_scope_symtab->connect_tables(p_complex_type->complex.MemberTable);
 
-    conditional_get_token_append(tc_right_bracket, err_missing_right___bracket);
+    conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
     conditional_get_token_append(tc_semicolon, err_missing_semicolon);
 }

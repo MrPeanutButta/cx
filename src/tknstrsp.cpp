@@ -3,15 +3,15 @@
 #include "token.h"
 
 /** get_escape_char             Return escape char
- * 
+ *
  * simple-escape-sequence: one of       \’ \" \? \\
  *                                      \a \b \f \n \r \t \v
  * octal-escape-sequence:       \ octal-digit
  *                              \ octal-digit octal-digit
- *                              \ octal-digit octal-digit octal-digit 
+ *                              \ octal-digit octal-digit octal-digit
  * hexadecimal-escape-sequence: \x hexadecimal-digit
  *                              hexadecimal-escape-sequence hexadecimal-digit
- * 
+ *
  * @param c : char following a \.
  * @return the escape char.
  */
@@ -43,7 +43,7 @@ char cx_token::get_escape_char(const char& c) {
  *******************/
 
 /** get     get a string token from the source.
- * 
+ *
  * @param buffer : ptr to text input buffer.
  */
 void cx_string_token::get(cx_text_in_buffer &buffer) {
@@ -83,7 +83,7 @@ void cx_string_token::get(cx_text_in_buffer &buffer) {
 }
 
 /** get         Extract single quoted char ' '
- * 
+ *
  * @param buffer : ptr to text input buffer.
  */
 void cx_char_token::get(cx_text_in_buffer &buffer) {
@@ -117,7 +117,7 @@ void cx_char_token::print(void) const {
 }
 
 /** print       print the token to the list file.
- * 
+ *
  */
 void cx_string_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> string:", string);
@@ -132,7 +132,7 @@ void cx_string_token::print(void) const {
 
 /** get         Extract a one-, two-, or three-character special symbol
  *              token from the source.
- * 
+ *
  * @param buffer : ptr to text input buffer.
  */
 void cx_special_token::get(cx_text_in_buffer &buffer) {
@@ -321,7 +321,7 @@ void cx_special_token::get(cx_text_in_buffer &buffer) {
 }
 
 /** print       print the token to the list file.
- * 
+ *
  */
 void cx_special_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> special:", string);
@@ -335,7 +335,7 @@ void cx_special_token::print(void) const {
  *****************/
 
 /** get         Extract an invalid character from the source.
- * 
+ *
  * @param buffer : ptr to text input buffer.
  */
 void cx_error_token::get(cx_text_in_buffer &buffer) {

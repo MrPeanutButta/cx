@@ -1,7 +1,6 @@
 #ifndef misc_h
 #define misc_h
 
-
 #include <map>
 #include <string>
 

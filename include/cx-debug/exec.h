@@ -1,10 +1,8 @@
 #ifndef exec_h
 #define exec_h
 
-//#include <stack>
 #include <vector>
 #include <algorithm>
-//#include <iterator>
 #include <cstdint>
 #include <iostream>
 #include "error.h"
@@ -14,6 +12,7 @@
 #include "backend.h"
 
 class cx_type;
+extern bool cx_dev_debug_flag;
 
 ///  cx_stack_item          Item pushed onto the runtime stack.
 
@@ -23,55 +22,133 @@ struct cx_stack_item {
     }
 
     ~cx_stack_item() {
-        std::clog << "variable destroyed\n";
     }
 
     /* overloaded ctors makes it easier
      * to perform a push */
     cx_stack_item(const uint8_t &value) {
-        basic_types.byte__ = value;
-        std::clog << "new byte = " << basic_types.byte__ << std::endl;
+        basic_types.uint8__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new uint8 = " << basic_types.uint8__ << std::endl;
+    }
+
+    cx_stack_item(const uint16_t &value) {
+        basic_types.uint16__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new uint16 = " << basic_types.uint16__ << std::endl;
+    }
+
+    cx_stack_item(const uint32_t &value) {
+        basic_types.uint32__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new uint32 = " << basic_types.uint32__ << std::endl;
+    }
+
+    cx_stack_item(const uint64_t &value) {
+        basic_types.uint64__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new uint64 = " << basic_types.uint64__ << std::endl;
+    }
+
+    cx_stack_item(const short &value) {
+        basic_types.short__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new short = " << basic_types.short__ << std::endl;
+    }
+
+    cx_stack_item(const bool &value) {
+        basic_types.bool__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new bool = " << basic_types.bool__ << std::endl;
     }
 
     cx_stack_item(const int &value) {
         basic_types.int__ = value;
 
-        if (value == -1) {
-            std::clog << "* return value place holder\n";
-        } else {
-            std::clog << "new int = " << basic_types.int__ << std::endl;
+        if (cx_dev_debug_flag) {
+            if (value == -1) {
+                std::clog << "* return value place holder\n";
+            } else {
+                std::clog << "new int = " << basic_types.int__ << std::endl;
+            }
         }
+    }
 
+    cx_stack_item(const long &value) {
+        basic_types.long__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new long = " << basic_types.long__ << std::endl;
     }
 
     cx_stack_item(const float &value) {
         basic_types.float__ = value;
-        std::clog << "new float = " << basic_types.float__ << std::endl;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new float = " << basic_types.float__ << std::endl;
+    }
+
+    cx_stack_item(const double &value) {
+        basic_types.double__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new double = " << basic_types.double__ << std::endl;
     }
 
     cx_stack_item(const char &value) {
         basic_types.char__ = value;
-        std::clog << "new char = " << basic_types.char__ << std::endl;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new char = " << basic_types.char__ << std::endl;
+    }
+
+    cx_stack_item(const wchar_t &value) {
+        basic_types.wchar__ = value;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new wchar = " << basic_types.wchar__ << std::endl;
     }
 
     cx_stack_item(void *address) {
-        addr__ = address;
-        std::clog << "new ptr = " << basic_types.addr__ << std::endl;
+        basic_types.addr__ = address;
+
+        if (cx_dev_debug_flag)
+            std::clog << "new ptr = " << basic_types.addr__ << std::endl;
     }
 
     union {
         // basic types
-        uint8_t byte__;
-        int int__;
-        float float__;
-        char char__;
 
-        // pointer or reference
+        // unsigned
+        uint8_t uint8__;
+        uint16_t uint16__;
+        uint32_t uint32__;
+        uint64_t uint64__;
+
+        bool bool__;
+        ;
+
+        // signed
+        short short__;
+        int int__;
+        long long__;
+
+        float float__;
+        double double__;
+
+        char char__;
+        wchar_t wchar__;
+
+        // pointer, reference, record or array
         void *addr__;
     } basic_types;
 
-    // arrays and or pointer to members
-    void *addr__;
 };
 
 typedef std::vector<cx_stack_item *> cx_stack;
@@ -90,7 +167,8 @@ struct cx_frame_header : public cx_stack_item {
         return_address.icode = orig->return_address.icode;
         return_address.location = orig->return_address.location;
 
-        std::clog << "* new (copy) stack frame element :" << this << std::endl;
+        if (cx_dev_debug_flag)
+            std::clog << ">>* new (copy) stack frame element :" << this << std::endl;
     }
 
     cx_frame_header(void) {
@@ -102,7 +180,8 @@ struct cx_frame_header : public cx_stack_item {
         return_address.icode = new cx_stack_item;
         return_address.location = new cx_stack_item;
 
-        std::clog << "* new (empty) stack frame element:"  << this  << std::endl;
+        if (cx_dev_debug_flag)
+            std::clog << ">>* new (empty) stack frame element:" << this << std::endl;
     }
 
     cx_stack_item *function_value;
@@ -132,16 +211,52 @@ class cx_runtime_stack {
 public:
     cx_runtime_stack(void);
 
+    void push(const bool &value) {
+        cx_runstack.push_back(new cx_stack_item((bool)value));
+    }
+
+    void push(const short &value) {
+        cx_runstack.push_back(new cx_stack_item((short) value));
+    }
+
+    void push(const long &value) {
+        cx_runstack.push_back(new cx_stack_item((long) value));
+    }
+
+    void push(const double &value) {
+        cx_runstack.push_back(new cx_stack_item((double) value));
+    }
+
+    void push(const uint8_t &value) {
+        cx_runstack.push_back(new cx_stack_item((uint8_t) value));
+    }
+
+    void push(const uint16_t &value) {
+        cx_runstack.push_back(new cx_stack_item((uint16_t) value));
+    }
+
+    void push(const uint32_t &value) {
+        cx_runstack.push_back(new cx_stack_item((uint32_t) value));
+    }
+
+    void push(const uint64_t &value) {
+        cx_runstack.push_back(new cx_stack_item((uint64_t) value));
+    }
+
+    void push(const wchar_t &value) {
+        cx_runstack.push_back(new cx_stack_item((wchar_t) value));
+    }
+
     void push(const int &value) {
-        cx_runstack.push_back(new cx_stack_item(value));
+        cx_runstack.push_back(new cx_stack_item((int) value));
     }
 
     void push(const float &value) {
-        cx_runstack.push_back(new cx_stack_item(value));
+        cx_runstack.push_back(new cx_stack_item((float) value));
     }
 
     void push(const char &value) {
-        cx_runstack.push_back(new cx_stack_item(value));
+        cx_runstack.push_back(new cx_stack_item((char) value));
     }
 
     void push(void *addr) {
@@ -174,7 +289,10 @@ public:
 
             cx_runstack.erase(item);
         } else {
-            std::clog << "item not found on the stack\n";
+
+            if (cx_dev_debug_flag)
+                std::clog << "item not found on the stack\n";
+
         }
     }
 
@@ -224,6 +342,11 @@ class cx_executor : public cx_backend {
     void execute_statement(cx_symtab_node *p_function_id);
     void execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator);
     void execute_assignment(const cx_symtab_node *p_target_id);
+
+    void assign(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+            void* &p_target_address);
+
     void execute_DO(cx_symtab_node *p_function_id);
     void execute_WHILE(cx_symtab_node *p_function_id);
     void execute_IF(cx_symtab_node *p_function_id);
@@ -247,12 +370,12 @@ class cx_executor : public cx_backend {
     void trace_routine_exit(const cx_symtab_node *p_function_id);
     void trace_statement(void);
     void trace_data_store(const cx_symtab_node *p_target_id,
-            const void *p_data_value,
+            const cx_stack_item &p_data_value,
             const cx_type *p_data_type);
     void trace_data_fetch(const cx_symtab_node *p_id,
-            const void *p_data_value,
+            const cx_stack_item &p_data_value,
             const cx_type *p_data_type);
-    void trace_data_value(const void *p_data_value,
+    void trace_data_value(const cx_stack_item &p_data_value,
             const cx_type *p_data_type);
 
     void range_check(const cx_type *p_target_type, int value);

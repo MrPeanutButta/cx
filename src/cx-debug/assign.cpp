@@ -1,73 +1,5 @@
-/** Executor (Statements)
- * exec_routine.cpp
- *
- * Execute standard Cx statements
- */
-
-#include <iostream>
-#include "exec.h"
+#include "cx-debug/exec.h"
 #include "common.h"
-
-/** execute_statement   	Execute a Cx statement
- *
- * @param p_function_id : ptr to the routine symtab node
- */
-void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
-    if (token != tc_left_bracket) {
-        ++statement_count;
-        trace_statement();
-    }
-
-    switch (token) {
-        case tc_identifier:
-        {
-            if (p_node->defn.how == dc_function) {
-                execute_subroutine_call(p_node);
-            } else {
-                execute_assignment(p_node);
-            }
-        }
-            break;
-        case tc_DO: execute_DO(p_function_id);
-            break;
-        case tc_WHILE: execute_WHILE(p_function_id);
-            break;
-        case tc_IF: execute_IF(p_function_id);
-            break;
-        case tc_FOR: execute_FOR(p_function_id);
-            break;
-        case tc_SWITCH: //parse_SWITCH();
-            break;
-        case tc_CASE:
-        case tc_DEFAULT://parse_case_label();
-            break;
-        case tc_BREAK:
-            get_token();
-            break_loop = true;
-            break;
-        case tc_left_bracket: execute_compound(p_function_id);
-            break;
-        case tc_RETURN: execute_RETURN(p_function_id);
-            break;
-        default:
-            break;
-    }
-}
-
-/** execute_statement_list        Execute a list or compounded
- *                              statements until a terminator token
- *                              is reached.
- *
- * @param p_function_id : ptr to the routine symtab node
- * @param terminator : token to terminate compound execution.
- */
-void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator) {
-    do {
-        execute_statement(p_function_id);
-
-        while (token == tc_semicolon) get_token();
-    } while ((token != terminator) && (token != tc_dummy) && (!break_loop));
-}
 
 /** execute_assignment 	Execute assignment.
  *
@@ -83,6 +15,8 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
     cx_type *p_target_type = nullptr; // ptr to target type object
     cx_type *p_expr_type = nullptr; // ptr to expression type object
 
+    void *p_target_address = nullptr;
+
     if (p_target_id->defn.how == dc_function) {
         p_target_type = p_target_id->p_type;
         p_target = run_stack.get_value_address(p_target_id);
@@ -94,8 +28,13 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         p_target_type = execute_variable(p_target_id, true);
 
         if (p_target_type->form != fc_stream) {
-            p_target = (cx_stack_item *) top()->addr__;
-            pop();
+            if (!p_target_type->is_scalar_type()) {
+                p_target_address = top()->basic_types.addr__;
+                pop();
+            } else {
+                p_target = (cx_stack_item *) top()->basic_types.addr__;
+                pop();
+            }
         }
     }
 
@@ -104,92 +43,10 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         case tc_equal:
         {
             get_token();
-            p_expr_type = execute_expression();
-
-            // Do the assignment.
-            if (p_target_type == p_float_type) {
-
-                p_target->basic_types.float__ =
-                        (p_expr_type->base_type() == p_integer_type)
-                        ? top()->basic_types.int__ // real := integer
-                        : top()->basic_types.float__; // real := real
-
-                pop();
-            } else if (((p_target_type->base_type() == p_integer_type) &&
-                    (p_target_type->base_type()->form != fc_array)) ||
-                    (p_target_type->base_type()->form == fc_enum)) {
-
-                int int_value = 0;
-
-                if ((p_expr_type->base_type() == p_integer_type) ||
-                        (p_expr_type->base_type() == p_boolean_type)) {
-                    int_value = top()->basic_types.int__;
-                    pop();
-                } else if (p_expr_type->base_type() == p_float_type) {
-                    int_value = top()->basic_types.float__;
-                    pop();
-                } else if (p_expr_type->base_type() == p_char_type) {
-                    int_value = (int) top()->basic_types.char__;
-                    pop();
-                }
-
-
-                range_check(p_target_type, int_value);
-
-                // integer     := integer
-                // enumeration := enumeration
-                p_target->basic_types.int__ = int_value;
-
-            } else if (p_target_type == p_char_type) {
-                char char_value('\0');
-
-                if (p_expr_type == p_integer_type) {
-                    char_value = (char) top()->basic_types.int__;
-                    pop();
-                } else if ((p_expr_type->base_type() == p_char_type)) {
-                    char_value = top()->basic_types.char__;
-                    pop();
-                }
-
-                range_check(p_target_type, char_value);
-
-                // character := character
-                p_target->basic_types.char__ = char_value;
-            } else if (p_target_type == p_file_type) {
-
-                if (p_expr_type == p_integer_type) {
-                    int int__ = top()->basic_types.int__;
-                    pop();
-                    fprintf(p_target_id->p_type->stream.p_file_stream, "%i", int__);
-                } else if (p_expr_type == p_float_type) {
-                    float float__ = top()->basic_types.float__;
-                    pop();
-                    fprintf(p_target_id->p_type->stream.p_file_stream, "%f", float__);
-                } else if (p_expr_type == p_char_type) {
-                    char char__ = top()->basic_types.char__;
-                    pop();
-                    fprintf(p_target_id->p_type->stream.p_file_stream, "%c", char__);
-                } else {
-                    void *p_source = top()->addr__;
-                    pop();
-                    fprintf(p_target_id->p_type->stream.p_file_stream, "%s", (char *) p_source);
-                }
-            } else if (p_target_id->p_type->is_string()) {
-
-                void *p_source = top()->addr__;
-                pop();
-                const int length = strlen((char *) p_source);
-
-                memcpy(p_target, p_source, length);
-
-                // + 1 to length for null char
-                p_target_id->p_type->array.element_count = length + 1;
-                p_target_id->p_type->array.max_index = length + 1;
-                p_target_id->p_type->size = length + 1;
-
-            }
-
-            trace_data_store(p_target_id, p_target, p_target_type);
+            //p_expr_type = execute_expression();
+            assign(p_target_id, p_target_type,
+                    execute_expression(),
+                    p_target, p_target_address);
         }
             break;
         case tc_plus_plus:
@@ -205,7 +62,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__++;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_minus_minus:
@@ -221,7 +77,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__--;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_plus_equal:
@@ -235,7 +90,8 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                         : top()->basic_types.float__; // real := real
 
                 pop();
-            } else if ((p_target_type->base_type() == p_integer_type) ||
+            } else if (((p_target_type == p_integer_type) &&
+                    (p_target_type->is_scalar_type())) ||
                     (p_target_type->base_type()->form == fc_enum)) {
 
                 int value = p_expr_type->base_type() == p_integer_type
@@ -255,47 +111,44 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
 
                 // character := character
                 p_target->basic_types.char__ += value;
-            } else if (p_target_id->p_type->is_string()) {
+            } else {
+                const int size = p_expr_type->size;
+                const int old_size = p_target_type->size;
+                const int num_of_elements = (old_size + size) / p_expr_type->base_type()->size;
 
-                if (p_expr_type->is_string()) {
-                    void *p_source = top()->addr__;
-                    pop();
+                p_target_address = realloc(p_target_address, old_size + size);
 
-                    const int length = strlen((char *) p_source);
-                    char *buffer = new char[length + 1];
-
-                    memset(&buffer, 0, sizeof (buffer));
-                    memcpy(&buffer, p_source, length);
-
-                    buffer[length] = '\0';
-
-                    p_target_id->p_type->array.element_count += length + 1;
-                    p_target_id->p_type->array.max_index += length + 1;
-
-                    strcat((char *) p_target, buffer);
-
-                    p_target_id->p_type->size += length + 1;
-
-                } else if (p_expr_type == p_char_type) {
-
-                    char source = top()->basic_types.char__;
-                    pop();
-
-                    const int length = strlen((char *) p_target);
-
-                    char *t = (char *) p_target;
-                    memcpy(&t[length], &source, 1);
-
-                    // array  := array
-                    // record := record
-                    p_target_id->p_type->array.element_count = length + 2;
-                    p_target_id->p_type->array.max_index = length + 2;
-                    p_target_id->p_type->size = length + 2;
+                if (p_target_address == nullptr) {
+                    perror("realloc");
+                    exit(0);
                 }
-            }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
+                char *tmp = (char *) p_target_address;
+
+                if (p_expr_type->is_scalar_type()) {
+                    if (p_expr_type == p_integer_type) {
+                        int value = top()->basic_types.int__;
+                        memcpy(&tmp[old_size], &value, size);
+                    } else if (p_expr_type == p_float_type) {
+                        float value = top()->basic_types.float__;
+                        memcpy(&tmp[old_size], &value, size);
+                    } else if (p_expr_type == p_char_type) {
+                        char value = top()->basic_types.char__;
+                        memcpy(&tmp[old_size], &value, size);
+                    }
+                } else {
+                    void *p_source = top()->basic_types.addr__;
+                    memcpy(&tmp[old_size], p_source, size);
+                }
+
+                pop();
+                p_target_id->runstack_item->basic_types.addr__ = p_target_address;
+                p_target_id->p_type->array.element_count = num_of_elements;
+                p_target_id->p_type->array.max_index = num_of_elements;
+                p_target_id->p_type->size += size;
+            }
         }
+
             break;
         case tc_minus_equal:
         {
@@ -331,7 +184,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ -= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_star_equal:
@@ -373,7 +225,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ -= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_divide_equal:
@@ -408,7 +259,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ /= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_modulas_equal:
@@ -435,7 +285,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ %= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_bit_leftshift_equal:
@@ -463,7 +312,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ <<= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_bit_rightshift_equal:
@@ -490,7 +338,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ >>= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_bit_AND_equal:
@@ -518,7 +365,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ &= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_bit_XOR_equal:
@@ -546,7 +392,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ ^= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         case tc_bit_OR_equal:
@@ -575,236 +420,136 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
                 p_target->basic_types.char__ |= value;
             }
 
-            trace_data_store(p_target_id, p_target, p_target_type);
         }
             break;
         default:
             break;
     }
-}
 
-/** execute_DO   Executes do/while statement while <expression> is true.
- *
- *      do
- *      <staement>;
- *      while(<expression>);
- *
- * @param p_function_id : routine ID this statement is apart of.
- */
-void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
-
-    int break_point; // = get_location_marker();
-    int at_loop_start = current_location(); // location of loop start in icode;
-    int condition = 0;
-
-    do {
-
-        get_token(); // do
-        break_point = get_location_marker();
-        get_token();
-
-        execute_statement_list(p_function_id, tc_WHILE);
-
-        if (break_loop) {
-            go_to(break_point);
-            get_token();
-            break;
-        }
-
-        get_token(); //while
-        execute_expression(); // (condition)
-        condition = top()->basic_types.int__;
-
-        if (condition != 0) this->go_to(at_loop_start);
-    } while (current_location() == at_loop_start);
-
-    // reset break flag
-    break_loop = false;
+    //trace_data_store(p_target_id, *p_target_id->runstack_item, p_target_type);
 
 }
 
-/** execute_WHILE        Executes while statement while <expression> is true.
- *
- *      while(<expression>)
- *            <statement>;
- *
- * @param p_function_id : routine ID this statement is apart of.
- */
-void cx_executor::execute_WHILE(cx_symtab_node * p_function_id) {
+void cx_executor::assign(const cx_symtab_node* p_target_id,
+        cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+        void* &p_target_address) {
 
-    int break_point;
-    int at_loop_start = current_location();
-    int condition = 0;
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code expr_type = p_expr_type->type_code;
 
-    do {
+    if (p_target_type->is_scalar_type()) {
 
-        get_token(); // while
-        break_point = get_location_marker();
-        get_token();
-
-        get_token(); //  (
-        execute_expression();
-        condition = top()->basic_types.int__;
+        memcpy(&p_target->basic_types, &top()->basic_types, p_expr_type->size);
         pop();
-        get_token(); //  )
-        if (condition != 0) {
-            execute_statement(p_function_id);
-
-            if (break_loop) {
-                go_to(break_point);
-                get_token();
-                break;
-            }
-
-            go_to(at_loop_start);
-        } else go_to(break_point);
-
-
-
-    } while (current_location() == at_loop_start);
-
-    // reset break
-    break_loop = false;
-}
-
-/** execute_compound     Execute statement block.
- *
- *      {       // begin
- *              <statements>;
- *      }       // end
- *
- * @param p_function_id : routine ID this statement is apart of.
- */
-void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
-
-    get_token();
-
-    execute_statement_list(p_function_id, tc_right_bracket);
-
-    if (token == tc_right_bracket)get_token();
-}
-
-/** execute_IF   Executes if statements.
- *
- *      if(<boolean expression>)
- *              <statement>;
- *      else if (<boolean expression>)
- *              <statement>;
- *      else
- *              <statement>;
- *
- * @param p_function_id : routine ID this statement is apart of.
- */
-void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
-    //  if
-    get_token();
-
-    // get the location of where to go to if <expr> is false.
-    int at_false = get_location_marker();
-    get_token();
-
-    // (
-    get_token();
-
-    execute_expression();
-    int condition = top()->basic_types.int__;
-
-    // )
-    get_token();
-
-    if (condition != 0) {
-
-        // True: { or single statement
-        execute_statement(p_function_id);
-        while (token == tc_semicolon)get_token();
-
-        // If there is an ELSE part, jump around it.
-        if (token == tc_ELSE) {
-            get_token();
-            go_to(get_location_marker());
-            get_token(); // token following the IF statement
-        }
+    } else if (p_target_type == p_file_type) {
+      
+        // location in io.cpp
+        pop();
+      
     } else {
 
-        // False: Go to the false location.
-        go_to(at_false);
-        get_token();
+        const int size = p_expr_type->size;
+        const int old_size = p_target_type->size;
+        const int num_of_elements = size / p_expr_type->base_type()->size;
 
-        if (token == tc_ELSE) {
+        p_target_address = realloc(p_target_address, size);
 
-            // ELSE <stmt-2>
-            get_token();
-            get_location_marker(); // skip over location marker
-            // { or single statement
-            get_token();
-            execute_statement(p_function_id);
-
-            while (token == tc_semicolon)get_token();
+        if (p_target_address == nullptr) {
+            perror("realloc");
+            exit(0);
         }
-    }
-}
 
-/** execute_FOR  Executes for statement.
- *          initialize   condition     increment
- *      for(<statement>; <expression>; <expression>)
- *              <statement>;
- *
- * @param p_function_id
- */
-void cx_executor::execute_FOR(cx_symtab_node * p_function_id) {
+        char *tmp = (char *) p_target_address;
 
-    int condition = 0;
+        if (p_expr_type->is_scalar_type()) {
+            switch (expr_type) {
+                case cx_short:
+                {
+                    short value = top()->basic_types.short__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_int:
+                {
+                    int value = top()->basic_types.int__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_char:
+                {
+                    char value = top()->basic_types.char__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_wchar:
+                {
+                    wchar_t value = top()->basic_types.wchar__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_long:
+                {
+                    long value = top()->basic_types.long__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_float:
+                {
+                    float value = top()->basic_types.float__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_double:
+                {
+                    double value = top()->basic_types.double__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_bool:
+                {
+                    bool value = top()->basic_types.bool__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_uint8:
+                {
+                    uint8_t value = top()->basic_types.uint8__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_uint16:
+                {
+                    uint16_t value = top()->basic_types.uint16__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_uint32:
+                {
+                    uint32_t value = top()->basic_types.uint32__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                case cx_uint64:
+                {
+                    uint64_t value = top()->basic_types.uint64__;
+                    memcpy(tmp, &value, size);
+                }
+                    break;
+                default:
+                    break;
+            }
 
-    get_token(); // for
-    // get the location of where to go to if <expr> is false.
-    int break_point = get_location_marker();
-    get_token();
-    int statement_location = get_location_marker();
-    get_token();
-    int condition_marker = get_location_marker();
-    get_token();
-    int increment_marker = get_location_marker();
-
-
-    get_token();
-
-    // (
-    get_token();
-
-    if (token != tc_semicolon) {
-        // declaration would go here //
-        execute_assignment(p_node);
-    }
-
-    do {
-        get_token(); //  ;
-        if (token != tc_semicolon) {
-
-            // expr 2
-            execute_expression();
-            get_token(); //  ;
-        } else get_token();
-
-        condition = top()->basic_types.int__;
-        pop();
-        if (condition != 0) {
-            go_to(statement_location);
-            get_token();
-            execute_statement(p_function_id);
-            if (break_loop) go_to(break_point);
         } else {
-            go_to(break_point);
-            get_token();
-            break;
+            void *p_source = top()->basic_types.addr__;
+            memcpy(tmp, p_source, size);
         }
 
-        go_to(increment_marker);
-        get_token();
-        // expr 3
-        execute_expression();
+        pop();
+        p_target_id->runstack_item->basic_types.addr__ = p_target_address;
+        
+        p_target_id->p_type->array.element_count = num_of_elements;
+        p_target_id->p_type->array.max_index = num_of_elements;
+        p_target_id->p_type->size = size;
 
-        go_to(condition_marker);
-    } while (current_location() == condition_marker);
-
-    break_loop = false;
+    }
 }

@@ -27,7 +27,7 @@ const char *cx_symbol_strings[] = {
 
 /** Copy constructor    Make a copy of the icode.  Only copy as
  *                      many bytes of icode as necessary.
- * 
+ *
  * @param icode : icode to copy.
  */
 cx_icode::cx_icode(const cx_icode &icode) {
@@ -40,12 +40,12 @@ cx_icode::cx_icode(const cx_icode &icode) {
 
 //cx_icode::append(const cx_icode& icode){
 //    int total_length = int(cursor - p_code) + int(icode.cursor - icode.p_code);
-//    
+//
 //    int cur_loc = current_location();
 //}
 
 /** check_bounds         Guard against code segment overflow.
- * 
+ *
  * @param size : number of bytes to append.
  */
 void cx_icode::check_bounds(int size) {
@@ -57,7 +57,7 @@ void cx_icode::check_bounds(int size) {
 
 /** put(cx_token_code)     Append a token code to the intermediate
  *                      code.
- * 
+ *
  * @param tc : token code.
  */
 void cx_icode::put(cx_token_code tc) {
@@ -72,7 +72,7 @@ void cx_icode::put(cx_token_code tc) {
 /** put(cx_symtab_node *)      Append a symbol table node's symbol
  *                          table and node indexes to the
  *                          intermediate code.
- * 
+ *
  * @param p_node : ptr to symtab node
  */
 void cx_icode::put(const cx_symtab_node *p_node) {
@@ -91,7 +91,7 @@ void cx_icode::put(const cx_symtab_node *p_node) {
 
 /** get         Extract the next__ token from the
  *              intermediate code.
- * 
+ *
  * @return ptr to the extracted token.
  */
 cx_token *cx_icode::get(void) {
@@ -174,7 +174,7 @@ cx_token *cx_icode::get(void) {
 
 /** get_symtab_node       Extract a symbol table node pointer
  *                      from the intermediate code.
- * 
+ *
  * @return ptr to the symbol table node
  */
 cx_symtab_node *cx_icode::get_symtab_node(void) {
@@ -192,7 +192,7 @@ cx_symtab_node *cx_icode::get_symtab_node(void) {
 
 /** insert_line_marker    Insert a line marker into the
  *                      intermediate code just before the
- *                      last appended token code. 
+ *                      last appended token code.
  */
 void cx_icode::insert_line_marker(void) {
     if (error_count > 0) return;
@@ -219,7 +219,7 @@ void cx_icode::insert_line_marker(void) {
 
 /** put_location_marker   Append a location marker to the
  *                      intermediate code.
- * 
+ *
  * @return location of the location marker's offset.
  */
 int cx_icode::put_location_marker(void) {
@@ -246,7 +246,7 @@ int cx_icode::put_location_marker(void) {
  *                          intermediate code by patching in the
  *                          offset of the current token's
  *                          location.
- * 
+ *
  * @param location : location of the offset to fix up.
  */
 void cx_icode::fixup_location_marker(int location) {
@@ -258,7 +258,7 @@ void cx_icode::fixup_location_marker(int location) {
 
 /** get_location_marker       Extract a location marker from the
  *                          intermediate code.
- * 
+ *
  * @return location offset.
  */
 int cx_icode::get_location_marker(void) {
@@ -273,7 +273,7 @@ int cx_icode::get_location_marker(void) {
 
 /** put_case_item         Append a CASE item to the intermediate
  *                      code.
- * 
+ *
  * @param value   : CASE label value
  * @param location: location of CASE branch statement
  */
@@ -291,7 +291,7 @@ void cx_icode::put_case_item(int value, int location) {
 
 /** get_case_item         Extract a CASE item from the
  *                      intermediate code.
- * 
+ *
  * @param value   : ref to CASE label value
  * @param location: ref to location of CASE branch statement
  */

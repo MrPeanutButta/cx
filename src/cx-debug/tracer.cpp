@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include "common.h"
 #include "buffer.h"
 #include "exec.h"
@@ -40,7 +41,7 @@ void cx_executor::trace_statement(void) {
  * @param p_data_type  : ptr to the data's type object.
  */
 void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
-        const void *p_data_value,
+        const cx_stack_item &p_data_value,
         const cx_type *p_data_type) {
     if (trace_store_flag) {
         cx_type_form_code form = p_target_id->p_type->form;
@@ -62,7 +63,7 @@ void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
  * @param p_data_type  : ptr to the data's type object.
  */
 void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
-        const void *p_data_value,
+        const cx_stack_item &p_data_value,
         const cx_type *p_data_type) {
     if (trace_fetch_flag) {
         cx_type_form_code form = p_id->p_type->form;
@@ -81,39 +82,49 @@ void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
  * @param p_data_value : ptr to the data value.
  * @param p_data_type  : ptr to the data's type object.
  */
-void cx_executor::trace_data_value(const void *p_data_value,
+void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
         const cx_type *p_data_type) {
 
     if (p_data_type->form == fc_stream) return;
 
-    char text[max_input_buffer_size]; // text for value
+    std::stringstream text;
 
     if (p_data_type == p_float_type) {
-        sprintf(text, "%0.6g", ((cx_stack_item *) p_data_value)->basic_types.float__);
+        text << p_data_value.basic_types.float__;
     } else if (p_data_type == p_char_type) {
-        sprintf(text, "'%c'", ((cx_stack_item *) p_data_value)->basic_types.char__);
+        text << '\'' << p_data_value.basic_types.char__ << '\'';
+    } else if (p_data_type == p_integer_type) {
+        text << p_data_value.basic_types.int__;
+    } else if (p_data_type == p_short_type) {
+        text << p_data_value.basic_types.short__;
+    } else if (p_data_type == p_long_type) {
+        text << p_data_value.basic_types.long__;
+    } else if (p_data_type == p_wchar_type) {
+        text << '\'' << p_data_value.basic_types.wchar__ << '\'';
+    } else if (p_data_type == p_uint8_type) {
+        text << p_data_value.basic_types.uint8__;        
+    } else if (p_data_type == p_uint16_type) {
+        text << p_data_value.basic_types.uint16__;
+    } else if (p_data_type == p_uint32_type) {
+        text << p_data_value.basic_types.uint32__;
+    } else if (p_data_type == p_uint64_type) {
+        text << p_data_value.basic_types.uint64__;
     } else if (p_data_type == p_boolean_type) {
-        strcpy(text, ((cx_stack_item *) p_data_value)->basic_types.int__ == 0
-                ? "false" : "true");
+        text << std::boolalpha << p_data_value.basic_types.bool__;
     } else if (p_data_type->form == fc_array) {
         if (p_data_type->array.p_element_type == p_char_type) {
-            int length = p_data_type->array.element_count;
-            memcpy(text + 1, p_data_value, length);
-            text[0] = '\'';
-            text[length + 1] = '\'';
-            text[length + 2] = '\0';
-        } else strcpy(text, "<array>");
+            text << '\"' << (char *) p_data_value.basic_types.addr__ << '\"';
+        } else text << "<array>";
     } else if (p_data_type->form == fc_complex) {
-        strcpy(text, "<complex>");
+        text << "<complex>";
     } else if (p_data_type->base_type()->form == fc_enum) {
-        int count = ((cx_stack_item *) p_data_value)->basic_types.int__;
+        int count = p_data_value.basic_types.int__;
         cx_symtab_node *p_id = p_data_type->base_type()->enumeration.p_const_ids;
         while (--count >= 0) p_id = p_id->next__;
-        strcpy(text, p_id->string__());
+        text << p_id->string__();
     } else {
-        cx_stack_item *tmp = (cx_stack_item *) p_data_value;
-        sprintf(text, "%d", tmp->basic_types.int__);
+        text << p_data_value.basic_types.addr__;
     }
 
-    std::cout << text << std::endl;
+    std::cout << text.str() << std::endl;
 }
