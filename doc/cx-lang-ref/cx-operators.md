@@ -63,24 +63,23 @@ will perform the same operation but for the single element.
 
         array1 += 'c'
 
-``` cpp Compound Assignment Example
-#include cxstdio // for puts
+``` cpp
+    #include cxstdio // for puts
 
-// Array compound assignment example
+    // Array compound assignment example
 
-int main(){
+    int main(){
 
-	// character array type
-	char *string = "this is a really long string for you!!!!!";
+        // character array type
+        char *string = "this is a really long string for you!!!!!";
 
-	// All arrays perform compound assignment via += operator.
-	string += "... this was allocated and appended";
+        // All arrays perform compound assignment via += operator.
+        string += "... this was allocated and appended";
 
-	puts(string);
+        puts(string);
 
-	return 0;
-}
-
+        return 0;
+    }   
 ```
 
 ## Increase and Decrease
@@ -174,27 +173,27 @@ Bitwise SHR `>>`
 	<<              SHL             Shift Left
 	>>              SHR             Shift Right
 
-``` cpp Bitwise Operator Example
-// Binary numeral system (base 2) square root (integer)
-int isqrt(int num) {
-    int res = 0;
-    int bit = 1 << 14;
+``` cpp
+    // Binary numeral system (base 2) square root (integer)
+    int isqrt(int num) {
+       int res = 0;
+       int bit = 1 << 14;
 
-    // "bit" starts at the highest power of four <= the argument.
-    while (bit > num)
-        bit >>= 2;
+       // "bit" starts at the highest power of four <= the argument.
+       while (bit > num)
+          bit >>= 2;
 
-    while (bit != 0) {
-        if (num >= res + bit) {
-            num -= res + bit;
-            res = (res >> 1) + bit;
-        }else{
-            res >>= 1;
-        }
+      while (bit != 0) {
+          if (num >= res + bit) {
+              num -= res + bit;
+              res = (res >> 1) + bit;
+          }else{
+              res >>= 1;
+          }
 
-        bit >>= 2;
+         bit >>= 2;
+     }
+
+     return res;
     }
-
-    return res;
-}
 ```
