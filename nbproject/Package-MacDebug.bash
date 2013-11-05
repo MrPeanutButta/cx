@@ -6,8 +6,8 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=None-Linux-x86
-CND_CONF=Release
+CND_PLATFORM=CLang-Linux-x86
+CND_CONF=MacDebug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 CND_DLIB_EXT=so

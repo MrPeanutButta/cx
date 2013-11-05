@@ -7,5 +7,27 @@
         <activeConfTypeElem>1</activeConfTypeElem>
         <activeConfIndexElem>2</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="2">
+        <file>
+            <url>include/parser.h</url>
+            <bookmark id="1">
+                <name/>
+                <line>36</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>include/exec.h</url>
+            <bookmark id="2">
+                <name/>
+                <line>121</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/aaron/Dropbox/src/Cx/examples/exec_test.Cx</file>
+        </group>
+    </open-files>
 </project-private>

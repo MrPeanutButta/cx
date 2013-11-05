@@ -1,4 +1,3 @@
-
 #include <cstdio>
 #include "buffer.h"
 #include "error.h"
@@ -59,7 +58,7 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
     }
 
     std::string type_name = "dummy";
-    
+
     if (p_type_id != nullptr)
         type_name = p_type_id->string__();
 

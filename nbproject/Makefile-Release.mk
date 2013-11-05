@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=None-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -38,14 +38,27 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/buffer.o \
 	${OBJECTDIR}/src/common.o \
 	${OBJECTDIR}/src/complist.o \
+	${OBJECTDIR}/src/cx-debug/assign.o \
+	${OBJECTDIR}/src/cx-debug/do.o \
+	${OBJECTDIR}/src/cx-debug/exec.o \
+	${OBJECTDIR}/src/cx-debug/expression.o \
+	${OBJECTDIR}/src/cx-debug/function.o \
+	${OBJECTDIR}/src/cx-debug/io.o \
+	${OBJECTDIR}/src/cx-debug/statment.o \
+	${OBJECTDIR}/src/cx-debug/tracer.o \
+	${OBJECTDIR}/src/cx-debug/while.o \
 	${OBJECTDIR}/src/error.o \
 	${OBJECTDIR}/src/exec.o \
 	${OBJECTDIR}/src/exec_expression.o \
+	${OBJECTDIR}/src/exec_routine.o \
 	${OBJECTDIR}/src/exec_statment.o \
 	${OBJECTDIR}/src/icode.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/parse_declarations.o \
+	${OBJECTDIR}/src/parse_directive.o \
 	${OBJECTDIR}/src/parse_expression.o \
+	${OBJECTDIR}/src/parse_routine1.o \
+	${OBJECTDIR}/src/parse_routine2.o \
 	${OBJECTDIR}/src/parse_statement.o \
 	${OBJECTDIR}/src/parse_type1.o \
 	${OBJECTDIR}/src/parse_type2.o \
@@ -55,6 +68,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/tknnum.o \
 	${OBJECTDIR}/src/tknstrsp.o \
 	${OBJECTDIR}/src/tknword.o \
+	${OBJECTDIR}/src/tracer.o \
 	${OBJECTDIR}/src/types.o
 
 
@@ -97,6 +111,51 @@ ${OBJECTDIR}/src/complist.o: src/complist.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/complist.o src/complist.cpp
 
+${OBJECTDIR}/src/cx-debug/assign.o: src/cx-debug/assign.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/assign.o src/cx-debug/assign.cpp
+
+${OBJECTDIR}/src/cx-debug/do.o: src/cx-debug/do.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/do.o src/cx-debug/do.cpp
+
+${OBJECTDIR}/src/cx-debug/exec.o: src/cx-debug/exec.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/exec.o src/cx-debug/exec.cpp
+
+${OBJECTDIR}/src/cx-debug/expression.o: src/cx-debug/expression.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/expression.o src/cx-debug/expression.cpp
+
+${OBJECTDIR}/src/cx-debug/function.o: src/cx-debug/function.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/function.o src/cx-debug/function.cpp
+
+${OBJECTDIR}/src/cx-debug/io.o: src/cx-debug/io.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/io.o src/cx-debug/io.cpp
+
+${OBJECTDIR}/src/cx-debug/statment.o: src/cx-debug/statment.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/statment.o src/cx-debug/statment.cpp
+
+${OBJECTDIR}/src/cx-debug/tracer.o: src/cx-debug/tracer.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/tracer.o src/cx-debug/tracer.cpp
+
+${OBJECTDIR}/src/cx-debug/while.o: src/cx-debug/while.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/cx-debug/while.o src/cx-debug/while.cpp
+
 ${OBJECTDIR}/src/error.o: src/error.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -111,6 +170,11 @@ ${OBJECTDIR}/src/exec_expression.o: src/exec_expression.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_expression.o src/exec_expression.cpp
+
+${OBJECTDIR}/src/exec_routine.o: src/exec_routine.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_routine.o src/exec_routine.cpp
 
 ${OBJECTDIR}/src/exec_statment.o: src/exec_statment.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -132,10 +196,25 @@ ${OBJECTDIR}/src/parse_declarations.o: src/parse_declarations.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_declarations.o src/parse_declarations.cpp
 
+${OBJECTDIR}/src/parse_directive.o: src/parse_directive.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_directive.o src/parse_directive.cpp
+
 ${OBJECTDIR}/src/parse_expression.o: src/parse_expression.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_expression.o src/parse_expression.cpp
+
+${OBJECTDIR}/src/parse_routine1.o: src/parse_routine1.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_routine1.o src/parse_routine1.cpp
+
+${OBJECTDIR}/src/parse_routine2.o: src/parse_routine2.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/parse_routine2.o src/parse_routine2.cpp
 
 ${OBJECTDIR}/src/parse_statement.o: src/parse_statement.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -181,6 +260,11 @@ ${OBJECTDIR}/src/tknword.o: src/tknword.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tknword.o src/tknword.cpp
+
+${OBJECTDIR}/src/tracer.o: src/tracer.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tracer.o src/tracer.cpp
 
 ${OBJECTDIR}/src/types.o: src/types.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

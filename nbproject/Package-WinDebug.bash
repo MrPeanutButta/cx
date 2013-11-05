@@ -6,8 +6,8 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=GNU-Linux-x86
-CND_CONF=Mac_-_debug
+CND_PLATFORM=CLang-Linux-x86
+CND_CONF=WinDebug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 CND_DLIB_EXT=so
