@@ -4,7 +4,7 @@
 #include <sstream>
 #include "common.h"
 #include "buffer.h"
-#include "exec.h"
+#include "cx-debug/exec.h"
 
 /** trace_routine_entry   Trace the entry into a routine.
  * 
@@ -102,7 +102,7 @@ void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
     } else if (p_data_type == p_wchar_type) {
         text << '\'' << p_data_value.basic_types.wchar__ << '\'';
     } else if (p_data_type == p_uint8_type) {
-        text << p_data_value.basic_types.uint8__;        
+        text << p_data_value.basic_types.uint8__;
     } else if (p_data_type == p_uint16_type) {
         text << p_data_value.basic_types.uint16__;
     } else if (p_data_type == p_uint32_type) {

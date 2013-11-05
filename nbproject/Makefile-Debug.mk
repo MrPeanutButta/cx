@@ -48,10 +48,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/cx-debug/tracer.o \
 	${OBJECTDIR}/src/cx-debug/while.o \
 	${OBJECTDIR}/src/error.o \
-	${OBJECTDIR}/src/exec.o \
-	${OBJECTDIR}/src/exec_expression.o \
-	${OBJECTDIR}/src/exec_routine.o \
-	${OBJECTDIR}/src/exec_statment.o \
 	${OBJECTDIR}/src/icode.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/parse_declarations.o \
@@ -68,7 +64,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/tknnum.o \
 	${OBJECTDIR}/src/tknstrsp.o \
 	${OBJECTDIR}/src/tknword.o \
-	${OBJECTDIR}/src/tracer.o \
 	${OBJECTDIR}/src/types.o
 
 
@@ -161,26 +156,6 @@ ${OBJECTDIR}/src/error.o: nbproject/Makefile-${CND_CONF}.mk src/error.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/error.o src/error.cpp
 
-${OBJECTDIR}/src/exec.o: nbproject/Makefile-${CND_CONF}.mk src/exec.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec.o src/exec.cpp
-
-${OBJECTDIR}/src/exec_expression.o: nbproject/Makefile-${CND_CONF}.mk src/exec_expression.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_expression.o src/exec_expression.cpp
-
-${OBJECTDIR}/src/exec_routine.o: nbproject/Makefile-${CND_CONF}.mk src/exec_routine.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_routine.o src/exec_routine.cpp
-
-${OBJECTDIR}/src/exec_statment.o: nbproject/Makefile-${CND_CONF}.mk src/exec_statment.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/exec_statment.o src/exec_statment.cpp
-
 ${OBJECTDIR}/src/icode.o: nbproject/Makefile-${CND_CONF}.mk src/icode.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
@@ -260,11 +235,6 @@ ${OBJECTDIR}/src/tknword.o: nbproject/Makefile-${CND_CONF}.mk src/tknword.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tknword.o src/tknword.cpp
-
-${OBJECTDIR}/src/tracer.o: nbproject/Makefile-${CND_CONF}.mk src/tracer.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tracer.o src/tracer.cpp
 
 ${OBJECTDIR}/src/types.o: nbproject/Makefile-${CND_CONF}.mk src/types.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

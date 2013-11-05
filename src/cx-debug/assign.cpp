@@ -1,5 +1,6 @@
 #include "cx-debug/exec.h"
 #include "common.h"
+#include "types.h"
 
 /** execute_assignment 	Execute assignment.
  *
@@ -43,7 +44,6 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         case tc_equal:
         {
             get_token();
-            //p_expr_type = execute_expression();
             assign(p_target_id, p_target_type,
                     execute_expression(),
                     p_target, p_target_address);
@@ -52,31 +52,15 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         case tc_plus_plus:
         {
             get_token();
-            // Do the assignment.
-            if (p_target_type == p_float_type) {
-                p_target->basic_types.float__++;
-            } else if ((p_target_type->base_type() == p_integer_type) ||
-                    (p_target_type->base_type()->form == fc_enum)) {
-                p_target->basic_types.int__++;
-            } else if (p_target_type->base_type() == p_char_type) {
-                p_target->basic_types.char__++;
-            }
-
+            plus_plus(p_target_type, p_target);
         }
             break;
         case tc_minus_minus:
         {
             get_token();
             // Do the assignment.
-            if (p_target_type == p_float_type) {
-                p_target->basic_types.float__--;
-            } else if ((p_target_type->base_type() == p_integer_type) ||
-                    (p_target_type->base_type()->form == fc_enum)) {
-                p_target->basic_types.int__--;
-            } else if (p_target_type->base_type() == p_char_type) {
-                p_target->basic_types.char__--;
-            }
-
+            get_token();
+            minus_minus(p_target_type, p_target);
         }
             break;
         case tc_plus_equal:
@@ -442,14 +426,13 @@ void cx_executor::assign(const cx_symtab_node* p_target_id,
         memcpy(&p_target->basic_types, &top()->basic_types, p_expr_type->size);
         pop();
     } else if (p_target_type == p_file_type) {
-      
+
         // location in io.cpp
         pop();
-      
+
     } else {
 
         const int size = p_expr_type->size;
-        const int old_size = p_target_type->size;
         const int num_of_elements = size / p_expr_type->base_type()->size;
 
         p_target_address = realloc(p_target_address, size);
@@ -546,10 +529,156 @@ void cx_executor::assign(const cx_symtab_node* p_target_id,
 
         pop();
         p_target_id->runstack_item->basic_types.addr__ = p_target_address;
-        
+
         p_target_id->p_type->array.element_count = num_of_elements;
         p_target_id->p_type->array.max_index = num_of_elements;
         p_target_id->p_type->size = size;
 
+    }
+}
+
+void cx_executor::plus_plus(cx_type* p_target_type,
+        cx_stack_item* p_target) {
+
+    cx_type_code target_type = p_target_type->type_code;
+
+    if (p_target_type->is_scalar_type()) {
+        switch (target_type) {
+            case cx_short:
+            {
+                ++p_target->basic_types.short__;
+            }
+                break;
+            case cx_int:
+            {
+                ++p_target->basic_types.int__;
+            }
+                break;
+            case cx_char:
+            {
+                ++p_target->basic_types.char__;
+            }
+                break;
+            case cx_wchar:
+            {
+                ++p_target->basic_types.wchar__;
+            }
+                break;
+            case cx_long:
+            {
+                ++p_target->basic_types.long__;
+            }
+                break;
+            case cx_float:
+            {
+                ++p_target->basic_types.float__;
+            }
+                break;
+            case cx_double:
+            {
+                ++p_target->basic_types.double__;
+            }
+                break;
+            case cx_bool:
+            {
+                p_target->basic_types.bool__ = true;
+            }
+                break;
+            case cx_uint8:
+            {
+                ++p_target->basic_types.uint8__;
+            }
+                break;
+            case cx_uint16:
+            {
+                ++p_target->basic_types.uint16__;
+            }
+                break;
+            case cx_uint32:
+            {
+                ++p_target->basic_types.uint32__;
+            }
+                break;
+            case cx_uint64:
+            {
+                ++p_target->basic_types.uint64__;
+            }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void cx_executor::minus_minus(cx_type* p_target_type,
+        cx_stack_item* p_target) {
+
+    cx_type_code target_type = p_target_type->type_code;
+
+    if (p_target_type->is_scalar_type()) {
+        switch (target_type) {
+            case cx_short:
+            {
+                --p_target->basic_types.short__;
+            }
+                break;
+            case cx_int:
+            {
+                --p_target->basic_types.int__;
+            }
+                break;
+            case cx_char:
+            {
+                --p_target->basic_types.char__;
+            }
+                break;
+            case cx_wchar:
+            {
+                --p_target->basic_types.wchar__;
+            }
+                break;
+            case cx_long:
+            {
+                --p_target->basic_types.long__;
+            }
+                break;
+            case cx_float:
+            {
+                --p_target->basic_types.float__;
+            }
+                break;
+            case cx_double:
+            {
+                --p_target->basic_types.double__;
+            }
+                break;
+            case cx_bool:
+            {
+                p_target->basic_types.bool__ = false;
+            }
+                break;
+            case cx_uint8:
+            {
+                --p_target->basic_types.uint8__;
+            }
+                break;
+            case cx_uint16:
+            {
+                --p_target->basic_types.uint16__;
+            }
+                break;
+            case cx_uint32:
+            {
+                --p_target->basic_types.uint32__;
+            }
+                break;
+            case cx_uint64:
+            {
+                --p_target->basic_types.uint64__;
+            }
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -48,12 +48,12 @@ extern cx_type *p_file_type;
 extern cx_type *p_dummy_type;
 
 enum cx_type_form_code {
-    fc_none, 
-    fc_scalar, 
-    fc_enum, 
-    fc_subrange, 
-    fc_array, 
-    fc_complex, 
+    fc_none,
+    fc_scalar,
+    fc_enum,
+    fc_subrange,
+    fc_array,
+    fc_complex,
     fc_stream
 };
 
@@ -85,7 +85,7 @@ public:
     cx_type_form_code form;
     int size;
     cx_symtab_node *p_type_id;
-    
+
     cx_type_code type_code;
 
     union {

@@ -49,10 +49,6 @@
       <itemPath>src/common.cpp</itemPath>
       <itemPath>src/complist.cpp</itemPath>
       <itemPath>src/error.cpp</itemPath>
-      <itemPath>src/exec.cpp</itemPath>
-      <itemPath>src/exec_expression.cpp</itemPath>
-      <itemPath>src/exec_routine.cpp</itemPath>
-      <itemPath>src/exec_statment.cpp</itemPath>
       <itemPath>src/icode.cpp</itemPath>
       <itemPath>src/main.cpp</itemPath>
       <itemPath>src/parse_declarations.cpp</itemPath>
@@ -69,7 +65,6 @@
       <itemPath>src/tknnum.cpp</itemPath>
       <itemPath>src/tknstrsp.cpp</itemPath>
       <itemPath>src/tknword.cpp</itemPath>
-      <itemPath>src/tracer.cpp</itemPath>
       <itemPath>src/types.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="f2" displayName="stdlib" projectFiles="true">
@@ -174,14 +169,6 @@
       </item>
       <item path="src/error.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="src/exec.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/exec_expression.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/exec_routine.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/exec_statment.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="src/icode.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
@@ -213,8 +200,6 @@
       <item path="src/tknstrsp.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/tknword.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/tracer.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/types.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -309,14 +294,6 @@
       </item>
       <item path="src/error.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="src/exec.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/exec_expression.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/exec_routine.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="src/exec_statment.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="src/icode.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
@@ -349,8 +326,6 @@
       </item>
       <item path="src/tknword.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="src/tracer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="src/types.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="stdlib/cxctype" ex="false" tool="3" flavor2="0">
@@ -373,6 +348,7 @@
           <standard>8</standard>
           <incDir>
             <pElem>include</pElem>
+            <pElem>include/cx-debug</pElem>
           </incDir>
           <warningLevel>3</warningLevel>
         </ccTool>
@@ -447,22 +423,6 @@
         <ccTool>
         </ccTool>
       </item>
-      <item path="src/exec.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/exec_expression.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/exec_routine.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/exec_statment.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
       <item path="src/icode.cpp" ex="false" tool="1" flavor2="8">
         <ccTool>
         </ccTool>
@@ -527,10 +487,6 @@
         <ccTool>
         </ccTool>
       </item>
-      <item path="src/tracer.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
       <item path="src/types.cpp" ex="false" tool="1" flavor2="8">
         <ccTool>
         </ccTool>
@@ -555,6 +511,7 @@
           <standard>8</standard>
           <incDir>
             <pElem>include</pElem>
+            <pElem>include/cx-debug</pElem>
           </incDir>
           <useLinkerLibraries>false</useLinkerLibraries>
           <warningLevel>3</warningLevel>
@@ -630,22 +587,6 @@
         <ccTool>
         </ccTool>
       </item>
-      <item path="src/exec.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/exec_expression.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/exec_routine.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/exec_statment.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
       <item path="src/icode.cpp" ex="false" tool="1" flavor2="8">
         <ccTool>
         </ccTool>
@@ -707,10 +648,6 @@
         </ccTool>
       </item>
       <item path="src/tknword.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-        </ccTool>
-      </item>
-      <item path="src/tracer.cpp" ex="false" tool="1" flavor2="8">
         <ccTool>
         </ccTool>
       </item>

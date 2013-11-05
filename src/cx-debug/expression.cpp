@@ -4,9 +4,9 @@
  * Executes Cx expressions
  */
 #include <iostream>
-#include "exec.h"
+#include "cx-debug/exec.h"
 #include "common.h"
-#include "rlutil.h"
+#include "cx-debug/rlutil.h"
 
 /** execute_expression   Execute an expression (binary relational
  *                      operators = < > <> <= and >= ).
@@ -606,7 +606,7 @@ cx_executor::execute_factor(void) {
             p_result_type = p_boolean_type;
         }
             break;
-            
+
         case tc_left_paren:
         {
 
@@ -643,9 +643,9 @@ cx_executor::execute_factor(void) {
                     perror("realloc");
                     exit(0);
                 }
-                
+
                 tmp = (char *) p_address;
-                
+
                 if (p_result_type->is_scalar_type()) {
                     if (p_result_type == p_integer_type) {
                         int value = top()->basic_types.int__;

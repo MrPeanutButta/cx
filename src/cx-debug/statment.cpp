@@ -5,7 +5,7 @@
  */
 
 #include <iostream>
-#include "exec.h"
+#include "cx-debug/exec.h"
 #include "common.h"
 
 /** execute_statement   	Execute a Cx statement

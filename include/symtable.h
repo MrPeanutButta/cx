@@ -11,7 +11,7 @@
 #include <map>
 #include <cstring>
 #include "misc.h"
-#include "exec.h"
+#include "cx-debug/exec.h"
 
 struct cx_stack_item;
 

@@ -20,24 +20,24 @@
 //#include cxmath
 // global starts here
 
-
-int main(){
+int main() {
 
     char *string = "how to string?";
-    
+
     puts(string);
-    
+
     //string += "___this is how to string";
-    
+
     puts(string);
-    
+
     int i = 456;
     float f = 34.0002;
-    
+
     char c = 'r';
-//  //  long l = 444400;
-//    
-//   // uint8 u = 0xff;
-//    
-    return 0;//t;
+    c++;
+    //  //  long l = 444400;
+    //    
+    //   // uint8 u = 0xff;
+    //    
+    return 0; //t;
 }

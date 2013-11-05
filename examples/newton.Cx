@@ -1,11 +1,11 @@
 
-     /* newton's square root algorithm.
-      * enter 1 to exit.
-      */
+/* newton's square root algorithm.
+ * enter 1 to exit.
+ */
 
 {
 
-    do{
+    do {
         number = input;
         root = number;
 
@@ -17,12 +17,11 @@
          * known as the compound statement operator.
          */
         do
-            root = (number/root + root)/2;
-        while(((root * root) > number) && (i++ < 10)); // exit if we found the square.
+            root = (number / root + root) / 2; while (((root * root) > number) && (i++ < 10)); // exit if we found the square.
 
         // output sqr root
         output = root;
 
-    }while(number != 1);
+    } while (number != 1);
 
 }

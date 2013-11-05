@@ -1,4 +1,4 @@
-#include "exec.h"
+#include "cx-debug/exec.h"
 
 /** execute_DO   Executes do/while statement while <expression> is true.
  *
@@ -12,7 +12,7 @@ void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 
     int break_point;
     int at_loop_start = current_location(); // location of loop start in icode;
-    int condition = 0;
+    bool condition = false;
 
     do {
 
@@ -30,7 +30,7 @@ void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 
         get_token(); //while
         execute_expression(); // (condition)
-        condition = top()->basic_types.int__;
+        condition = top()->basic_types.bool__;
 
         if (condition != 0) this->go_to(at_loop_start);
     } while (current_location() == at_loop_start);

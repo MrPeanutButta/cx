@@ -7,7 +7,7 @@
 
 #include <memory.h>
 #include "common.h"
-#include "exec.h"
+#include "cx-debug/exec.h"
 
 /** execute_routine    	Execute a program, procedure, or
  *			function.
@@ -173,7 +173,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 // convert integer value to real.
                 float ff = top()->basic_types.int__;
                 pop();
-                
+
                 push(ff);
                 p_formal_id->runstack_item = top();
             } else if (!p_formal_type->is_scalar_type()) {
@@ -198,7 +198,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
 
                 pop();
                 push(p_target_address);
-                
+
                 p_formal_type->array.element_count = num_of_elements;
                 p_formal_type->array.max_index = num_of_elements;
                 p_formal_type->size = size;
