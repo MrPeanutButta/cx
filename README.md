@@ -17,7 +17,7 @@ be loaded at runtime.
 ### Cx Documentation
 All documentaion will be posted and updated at the link below. More information ,ay be found in 
 Cx/doc
-* [Cx-doc](aaronhebert.net/cx/cx-doc.html)
+* [Cx-doc](http://aaronhebert.net/cx/cx-doc.html)
 
 ### Status
 This project is for educational purposes only.<br>
