@@ -14,10 +14,10 @@ Need to complete:
 * void : function returning nothing
 * null : constant
 * auto : dynamic type
-        + a fully dynamic type like in ruby
+    + a fully dynamic type like in ruby
 * multidimentional arrays
 * class : basic objects
-        + classes will copy inherit all contents with associated scopes.
+    + classes will copy inherit all contents with associated scopes.
  
 ``` cpp
 class object : base{
