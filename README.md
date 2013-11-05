@@ -51,7 +51,7 @@ Sections currently in progress include:
 * File I/O - revision
 * Preprocessing directives
 * Just-in-Time compiling
-        + debating on cumstom JIT or existing library
+    + debating on custom JIT or existing library
 
 ### Getting involved
 Fork the repo. All of your changes are to be made on your copy of the repo. Changes to the master repo are done via pull requests followed by code review.<br>
