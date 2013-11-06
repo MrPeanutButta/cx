@@ -5,8 +5,8 @@
 #include "token.h"
 #include "scanner.h"
 
-const cx_token_code mc_line_marker = ((cx_token_code) 127);
-const cx_token_code mc_location_marker = ((cx_token_code) 126);
+//const cx_token_code mc_line_marker = ((cx_token_code) 127);
+//const cx_token_code mc_location_marker = ((cx_token_code) 126);
 
 class cx_symtab_node;
 

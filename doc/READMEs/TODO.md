@@ -14,6 +14,7 @@ File streams are currently being refactored in io.cpp.
 ## Data Types and Constants (active)
 Need to complete:
 
+* assignment based on byte size and type compatibility
 * void : function returning nothing
 * null : constant null value
 * const : needs work

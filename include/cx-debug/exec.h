@@ -14,6 +14,33 @@
 class cx_type;
 extern bool cx_dev_debug_flag;
 
+    union mem_block{
+        // basic types
+
+        // unsigned
+        uint8_t uint8__;
+        uint16_t uint16__;
+        uint32_t uint32__;
+        uint64_t uint64__;
+
+        bool bool__;
+        ;
+
+        // signed
+        short short__;
+        int int__;
+        long long__;
+
+        float float__;
+        double double__;
+
+        char char__;
+        wchar_t wchar__;
+
+        // pointer, reference, record or array
+        void *addr__;
+    };
+
 ///  cx_stack_item          Item pushed onto the runtime stack.
 
 struct cx_stack_item {
@@ -122,32 +149,7 @@ struct cx_stack_item {
             std::clog << "new ptr = " << basic_types.addr__ << std::endl;
     }
 
-    union {
-        // basic types
-
-        // unsigned
-        uint8_t uint8__;
-        uint16_t uint16__;
-        uint32_t uint32__;
-        uint64_t uint64__;
-
-        bool bool__;
-        ;
-
-        // signed
-        short short__;
-        int int__;
-        long long__;
-
-        float float__;
-        double double__;
-
-        char char__;
-        wchar_t wchar__;
-
-        // pointer, reference, record or array
-        void *addr__;
-    } basic_types;
+    mem_block basic_types;
 
 };
 
@@ -344,6 +346,10 @@ class cx_executor : public cx_backend {
     void execute_assignment(const cx_symtab_node *p_target_id);
 
     void assign(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+            void* &p_target_address);
+
+    void plus_equal(const cx_symtab_node* p_target_id,
             cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
             void* &p_target_address);
 

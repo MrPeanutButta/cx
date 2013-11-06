@@ -66,71 +66,10 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
         case tc_plus_equal:
         {
             get_token();
-            p_expr_type = execute_expression();
-            // Do the assignment.
-            if (p_target_type == p_float_type) {
-                p_target->basic_types.float__ += p_expr_type->base_type() == p_integer_type
-                        ? top()->basic_types.int__ // real := integer
-                        : top()->basic_types.float__; // real := real
+            plus_equal(p_target_id, p_target_type, execute_expression(),
+                    p_target, p_target_address);
 
-                pop();
-            } else if (((p_target_type == p_integer_type) &&
-                    (p_target_type->is_scalar_type())) ||
-                    (p_target_type->base_type()->form == fc_enum)) {
 
-                int value = p_expr_type->base_type() == p_integer_type
-                        ? top()->basic_types.int__ // real := integer
-                        : top()->basic_types.float__; // real := real
-
-                pop();
-                range_check(p_target_type, value);
-
-                // integer     := integer
-                // enumeration := enumeration
-                p_target->basic_types.int__ += value;
-            } else if (p_target_type == p_char_type) {
-                char value = top()->basic_types.char__;
-                pop();
-                range_check(p_target_type, value);
-
-                // character := character
-                p_target->basic_types.char__ += value;
-            } else {
-                const int size = p_expr_type->size;
-                const int old_size = p_target_type->size;
-                const int num_of_elements = (old_size + size) / p_expr_type->base_type()->size;
-
-                p_target_address = realloc(p_target_address, old_size + size);
-
-                if (p_target_address == nullptr) {
-                    perror("realloc");
-                    exit(0);
-                }
-
-                char *tmp = (char *) p_target_address;
-
-                if (p_expr_type->is_scalar_type()) {
-                    if (p_expr_type == p_integer_type) {
-                        int value = top()->basic_types.int__;
-                        memcpy(&tmp[old_size], &value, size);
-                    } else if (p_expr_type == p_float_type) {
-                        float value = top()->basic_types.float__;
-                        memcpy(&tmp[old_size], &value, size);
-                    } else if (p_expr_type == p_char_type) {
-                        char value = top()->basic_types.char__;
-                        memcpy(&tmp[old_size], &value, size);
-                    }
-                } else {
-                    void *p_source = top()->basic_types.addr__;
-                    memcpy(&tmp[old_size], p_source, size);
-                }
-
-                pop();
-                p_target_id->runstack_item->basic_types.addr__ = p_target_address;
-                p_target_id->p_type->array.element_count = num_of_elements;
-                p_target_id->p_type->array.max_index = num_of_elements;
-                p_target_id->p_type->size += size;
-            }
         }
 
             break;
@@ -424,11 +363,11 @@ void cx_executor::assign(const cx_symtab_node* p_target_id,
     if (p_target_type->is_scalar_type()) {
 
         memcpy(&p_target->basic_types, &top()->basic_types, p_expr_type->size);
-        pop();
+
     } else if (p_target_type == p_file_type) {
 
         // location in io.cpp
-        pop();
+
 
     } else {
 
@@ -527,14 +466,16 @@ void cx_executor::assign(const cx_symtab_node* p_target_id,
             memcpy(tmp, p_source, size);
         }
 
-        pop();
-        p_target_id->runstack_item->basic_types.addr__ = p_target_address;
-
         p_target_id->p_type->array.element_count = num_of_elements;
         p_target_id->p_type->array.max_index = num_of_elements;
         p_target_id->p_type->size = size;
 
+        p_target_id->runstack_item->basic_types.addr__ = p_target_address;
+
     }
+
+    trace_data_store(p_target_id, *p_target_id->runstack_item, p_target_type);
+    pop();
 }
 
 void cx_executor::plus_plus(cx_type* p_target_type,
@@ -681,4 +622,151 @@ void cx_executor::minus_minus(cx_type* p_target_type,
                 break;
         }
     }
+}
+
+void
+cx_executor::plus_equal(const cx_symtab_node* p_target_id,
+        cx_type* p_target_type, const cx_type* p_expr_type,
+        cx_stack_item* p_target, void*& p_target_address) {
+
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code expr_type = p_expr_type->type_code;
+
+    mem_block *mem = &top()->basic_types;
+    
+    if (p_target_type->is_scalar_type()) {
+        switch (target_type) {
+            case cx_short:
+            {
+                short *t = &p_target->basic_types.short__;
+              
+            }
+                break;
+            case cx_int:
+            {
+                int *t = &p_target->basic_types.int__;
+                
+                
+                *t += mem->float__;
+                       }
+                break;
+            case cx_char:
+            {
+                --p_target->basic_types.char__;
+            }
+                break;
+            case cx_wchar:
+            {
+                --p_target->basic_types.wchar__;
+            }
+                break;
+            case cx_long:
+            {
+                --p_target->basic_types.long__;
+            }
+                break;
+            case cx_float:
+            {
+                --p_target->basic_types.float__;
+            }
+                break;
+            case cx_double:
+            {
+                --p_target->basic_types.double__;
+            }
+                break;
+            case cx_bool:
+            {
+                p_target->basic_types.bool__ = false;
+            }
+                break;
+            case cx_uint8:
+            {
+                --p_target->basic_types.uint8__;
+            }
+                break;
+            case cx_uint16:
+            {
+                --p_target->basic_types.uint16__;
+            }
+                break;
+            case cx_uint32:
+            {
+                --p_target->basic_types.uint32__;
+            }
+                break;
+            case cx_uint64:
+            {
+                --p_target->basic_types.uint64__;
+            }
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Do the assignment.
+    //    if (p_target_type == p_float_type) {
+    //        p_target->basic_types.float__ += p_expr_type->base_type() == p_integer_type
+    //                ? top()->basic_types.int__ // real := integer
+    //                : top()->basic_types.float__; // real := real
+    //
+    //        pop();
+    //    } else if (((p_target_type == p_integer_type) &&
+    //            (p_target_type->is_scalar_type())) ||
+    //            (p_target_type->base_type()->form == fc_enum)) {
+    //
+    //        int value = p_expr_type->base_type() == p_integer_type
+    //                ? top()->basic_types.int__ // real := integer
+    //                : top()->basic_types.float__; // real := real
+    //
+    //        pop();
+    //        range_check(p_target_type, value);
+    //
+    //        // integer     := integer
+    //        // enumeration := enumeration
+    //        p_target->basic_types.int__ += value;
+    //    } else if (p_target_type == p_char_type) {
+    //        char value = top()->basic_types.char__;
+    //        pop();
+    //        range_check(p_target_type, value);
+    //
+    //        // character := character
+    //        p_target->basic_types.char__ += value;
+    //    } else {
+    //        const int size = p_expr_type->size;
+    //        const int old_size = p_target_type->size;
+    //        const int num_of_elements = (old_size + size) / p_expr_type->base_type()->size;
+    //
+    //        p_target_address = realloc(p_target_address, old_size + size);
+    //
+    //        if (p_target_address == nullptr) {
+    //            perror("realloc");
+    //            exit(0);
+    //        }
+    //
+    //        char *tmp = (char *) p_target_address;
+    //
+    //        if (p_expr_type->is_scalar_type()) {
+    //            if (p_expr_type == p_integer_type) {
+    //                int value = top()->basic_types.int__;
+    //                memcpy(&tmp[old_size], &value, size);
+    //            } else if (p_expr_type == p_float_type) {
+    //                float value = top()->basic_types.float__;
+    //                memcpy(&tmp[old_size], &value, size);
+    //            } else if (p_expr_type == p_char_type) {
+    //                char value = top()->basic_types.char__;
+    //                memcpy(&tmp[old_size], &value, size);
+    //            }
+    //        } else {
+    //            void *p_source = top()->basic_types.addr__;
+    //            memcpy(&tmp[old_size], p_source, size);
+    //        }
+    //
+    //        pop();
+    //        p_target_id->runstack_item->basic_types.addr__ = p_target_address;
+    //        p_target_id->p_type->array.element_count = num_of_elements;
+    //        p_target_id->p_type->array.max_index = num_of_elements;
+    //        p_target_id->p_type->size += size;
+    //    }
 }

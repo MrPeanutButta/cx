@@ -14,7 +14,7 @@
  *
  */
 
-#include cxstdio
+//#include cxstdio
 //#include cxctype
 //#include cxstring
 //#include cxmath
@@ -22,19 +22,11 @@
 
 int main() {
 
-    char *string = "how to string?";
+    int i;
+    
+    i = 456;
+    i += 2.0;
 
-    puts(string);
-
-    //string += "___this is how to string";
-
-    puts(string);
-
-    int i = 456;
-    float f = 34.0002;
-
-    char c = 'r';
-    c++;
     //  //  long l = 444400;
     //    
     //   // uint8 u = 0xff;
