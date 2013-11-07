@@ -33,7 +33,7 @@ public:
     }
 
     ~cx_icode(void) {
-        if (p_code != nullptr) delete[] p_code;
+        //if (p_code != nullptr) delete[] p_code;
     }
 
     // append to already existing icode

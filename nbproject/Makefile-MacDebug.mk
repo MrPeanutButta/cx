@@ -85,11 +85,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx-lang
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx-lang: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx-lang ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/src/buffer.o: nbproject/Makefile-${CND_CONF}.mk src/buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -247,7 +247,7 @@ ${OBJECTDIR}/src/types.o: nbproject/Makefile-${CND_CONF}.mk src/types.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx-lang
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx
 
 # Subprojects
 .clean-subprojects:

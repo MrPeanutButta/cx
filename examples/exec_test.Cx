@@ -29,6 +29,8 @@ int main() {
     i *= 2;
     i -= 200;
 
+    i = 0xFFFFFF;
+    i >>= 8;
     t += " byebyebyebyebyebyebyebyebyebyebyebyebyebye";
 
     //  //  long l = 444400;
