@@ -23,9 +23,13 @@
 int main() {
 
     int i;
-    
+    char *t = "hihihihihihihihihihihihihihihi";
     i = 456;
     i += 2.0;
+    
+    i -= 200;
+    
+    t += " byebyebyebyebyebyebyebyebyebyebyebyebyebye";
 
     //  //  long l = 444400;
     //    

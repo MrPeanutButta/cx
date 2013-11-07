@@ -62,20 +62,14 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
     if (p_type_id != nullptr)
         type_name = p_type_id->string__();
 
-    if (type_name == "short") {
-        type_code = cx_short;
-    } else if (type_name == "int") {
+if (type_name == "int") {
         type_code = cx_int;
     } else if (type_name == "char") {
         type_code = cx_char;
     } else if (type_name == "wchar") {
         type_code = cx_wchar;
-    } else if (type_name == "long") {
-        type_code = cx_long;
     } else if (type_name == "float") {
         type_code = cx_float;
-    } else if (type_name == "double") {
-        type_code = cx_double;
     } else if (type_name == "bool") {
         type_code = cx_bool;
     } else if (type_name == "uint8") {
@@ -305,8 +299,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     // signed int
     cx_symtab_node *p_integer_id = p_symtab->enter("int", dc_type);
-    cx_symtab_node *p_short_id = p_symtab->enter("short", dc_type);
-    cx_symtab_node *p_long_id = p_symtab->enter("long", dc_type);
 
     // unsigned int
     cx_symtab_node *p_uint8_id = p_symtab->enter("uint8", dc_type);
@@ -315,7 +307,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     cx_symtab_node *p_uint64_id = p_symtab->enter("uint64", dc_type);
 
     cx_symtab_node *p_float_id = p_symtab->enter("float", dc_type);
-    cx_symtab_node *p_double_id = p_symtab->enter("double", dc_type);
 
     cx_symtab_node *p_complex_id = p_symtab->enter("class", dc_type);
 
@@ -331,14 +322,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     if (!p_integer_type) {
         set_type(p_integer_type, new cx_type(fc_scalar, sizeof (int), p_integer_id));
-    }
-
-    if (!p_short_type) {
-        set_type(p_short_type, new cx_type(fc_scalar, sizeof (short), p_short_id));
-    }
-
-    if (!p_long_type) {
-        set_type(p_long_type, new cx_type(fc_scalar, sizeof (long), p_long_id));
     }
 
     if (!p_uint8_type) {
@@ -359,10 +342,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     if (!p_float_type) {
         set_type(p_float_type, new cx_type(fc_scalar, sizeof (float), p_float_id));
-    }
-
-    if (!p_double_type) {
-        set_type(p_double_type, new cx_type(fc_scalar, sizeof (double), p_double_id));
     }
 
     if (!p_boolean_type) {
@@ -389,8 +368,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     // link each predefined type id's node to it's type object
     set_type(p_integer_id->p_type, p_integer_type);
-    set_type(p_short_id->p_type, p_short_type);
-    set_type(p_long_id->p_type, p_long_type);
 
     set_type(p_uint8_id->p_type, p_uint8_type);
     set_type(p_uint16_id->p_type, p_uint16_type);
@@ -398,7 +375,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(p_uint64_id->p_type, p_uint64_type);
 
     set_type(p_float_id->p_type, p_float_type);
-    set_type(p_double_id->p_type, p_double_type);
 
     set_type(p_boolean_id->p_type, p_boolean_type);
 
@@ -441,16 +417,13 @@ void remove_builtin_types(void) {
     remove_type(p_complex_type);
 
     remove_type(p_float_type);
-    remove_type(p_double_type);
 
     remove_type(p_boolean_type);
 
     remove_type(p_char_type);
     remove_type(p_wchar_type);
 
-    remove_type(p_short_type);
     remove_type(p_integer_type);
-    remove_type(p_long_type);
 
     remove_type(p_uint8_type);
     remove_type(p_uint16_type);

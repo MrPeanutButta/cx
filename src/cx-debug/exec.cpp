@@ -124,9 +124,6 @@ cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
     if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
         if (p_type == p_integer_type) push((int) 0);
         else if (p_type == p_float_type) push((float) 0.0);
-        else if (p_type == p_double_type) push((double) 0.0);
-        else if (p_type == p_short_type) push((short) 0);
-        else if (p_type == p_long_type) push((long) 0);
         else if (p_type == p_wchar_type) push((wchar_t)'\0');
         else if (p_type == p_uint8_type) push((uint8_t) 0);
         else if (p_type == p_uint16_type) push((uint16_t) 0);

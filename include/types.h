@@ -58,13 +58,10 @@ enum cx_type_form_code {
 };
 
 enum cx_type_code {
-    cx_short,
     cx_int,
     cx_char,
     cx_wchar,
-    cx_long,
     cx_float,
-    cx_double,
     cx_bool,
     cx_uint8,
     cx_uint16,

@@ -24,15 +24,10 @@ extern bool cx_dev_debug_flag;
         uint64_t uint64__;
 
         bool bool__;
-        ;
 
         // signed
-        short short__;
         int int__;
-        long long__;
-
         float float__;
-        double double__;
 
         char char__;
         wchar_t wchar__;
@@ -81,13 +76,6 @@ struct cx_stack_item {
             std::clog << "new uint64 = " << basic_types.uint64__ << std::endl;
     }
 
-    cx_stack_item(const short &value) {
-        basic_types.short__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new short = " << basic_types.short__ << std::endl;
-    }
-
     cx_stack_item(const bool &value) {
         basic_types.bool__ = value;
 
@@ -107,25 +95,11 @@ struct cx_stack_item {
         }
     }
 
-    cx_stack_item(const long &value) {
-        basic_types.long__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new long = " << basic_types.long__ << std::endl;
-    }
-
     cx_stack_item(const float &value) {
         basic_types.float__ = value;
 
         if (cx_dev_debug_flag)
             std::clog << "new float = " << basic_types.float__ << std::endl;
-    }
-
-    cx_stack_item(const double &value) {
-        basic_types.double__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new double = " << basic_types.double__ << std::endl;
     }
 
     cx_stack_item(const char &value) {
@@ -215,18 +189,6 @@ public:
 
     void push(const bool &value) {
         cx_runstack.push_back(new cx_stack_item((bool)value));
-    }
-
-    void push(const short &value) {
-        cx_runstack.push_back(new cx_stack_item((short) value));
-    }
-
-    void push(const long &value) {
-        cx_runstack.push_back(new cx_stack_item((long) value));
-    }
-
-    void push(const double &value) {
-        cx_runstack.push_back(new cx_stack_item((double) value));
     }
 
     void push(const uint8_t &value) {
@@ -352,7 +314,10 @@ class cx_executor : public cx_backend {
     void plus_equal(const cx_symtab_node* p_target_id,
             cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
             void* &p_target_address);
-
+    void minus_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+            void* &p_target_address);
+    
     void plus_plus(cx_type* p_target_type,
             cx_stack_item* p_target);
     void minus_minus(cx_type* p_target_type,

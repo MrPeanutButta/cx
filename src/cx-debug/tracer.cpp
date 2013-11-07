@@ -95,10 +95,6 @@ void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
         text << '\'' << p_data_value.basic_types.char__ << '\'';
     } else if (p_data_type == p_integer_type) {
         text << p_data_value.basic_types.int__;
-    } else if (p_data_type == p_short_type) {
-        text << p_data_value.basic_types.short__;
-    } else if (p_data_type == p_long_type) {
-        text << p_data_value.basic_types.long__;
     } else if (p_data_type == p_wchar_type) {
         text << '\'' << p_data_value.basic_types.wchar__ << '\'';
     } else if (p_data_type == p_uint8_type) {
