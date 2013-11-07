@@ -17,20 +17,20 @@
  */
 char cx_token::get_escape_char(const char& c) {
     switch (c) {
-        case '\'': return '\'';
-        case '\"': return '\"';
-        case '\?': return '\?';
-        case '\\': return '\\';
-        case 'a': return '\a';
-        case 'b': return '\b';
-        case 'f': return '\f';
-        case 'n': return '\n';
-        case 'r': return '\r';
-        case 't': return '\t';
-        case 'v': return '\v';
-        case '0': return '\0';
-        default:
-            cx_error(err_invalid_escape_char);
+    case '\'': return '\'';
+    case '\"': return '\"';
+    case '\?': return '\?';
+    case '\\': return '\\';
+    case 'a': return '\a';
+    case 'b': return '\b';
+    case 'f': return '\f';
+    case 'n': return '\n';
+    case 'r': return '\r';
+    case 't': return '\t';
+    case 'v': return '\v';
+    case '0': return '\0';
+    default:
+        cx_error(err_invalid_escape_char);
     }
 
     return '\0';
@@ -142,179 +142,179 @@ void cx_special_token::get(cx_text_in_buffer &buffer) {
     *ps++ = ch;
 
     switch (ch) {
-        case '^': ch = buffer.get_char();
+    case '^': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_bit_XOR_equal;
+            buffer.get_char();
+        } else code__ = tc_bit_XOR;
+        break;
+    case '&': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_bit_AND_equal;
+            buffer.get_char();
+        } else if (ch == '&') {
+            *ps++ = '&';
+            code__ = tc_logic_AND;
+            buffer.get_char();
+        } else code__ = tc_bit_AND;
+        break;
+    case '|': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_bit_OR_equal;
+            buffer.get_char();
+        } else if (ch == '|') {
+            *ps++ = '|';
+            code__ = tc_logic_OR;
+            buffer.get_char();
+        } else code__ = tc_bit_OR;
+        break;
+    case '~': ch = buffer.get_char();
+        code__ = tc_bit_NOT;
+        break;
+    case '*': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_star_equal;
+            buffer.get_char();
+        } else code__ = tc_star;
+        break;
+    case '(': code__ = tc_left_paren;
+        buffer.get_char();
+        break;
+    case ')': code__ = tc_right_paren;
+        buffer.get_char();
+        break;
+    case '-': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_minus_equal;
+            buffer.get_char();
+        } else if (ch == '-') {
+            *ps++ = '-';
+            code__ = tc_minus_minus;
+            buffer.get_char();
+        } else if (ch == '>') {
+            *ps++ = '>';
+            code__ = tc_pointer_member;
+            buffer.get_char();
+        } else code__ = tc_minus;
+        break;
+    case '+': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_plus_equal;
+            buffer.get_char();
+        } else if (ch == '+') {
+            *ps++ = '+';
+            code__ = tc_plus_plus;
+            buffer.get_char();
+        } else code__ = tc_plus;
+        break;
+    case '=': ch = buffer.get_char();
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_equal_equal;
+            buffer.get_char();
+        } else code__ = tc_equal;
+        break;
+    case '[': code__ = tc_left_subscript;
+        buffer.get_char();
+        break;
+    case ']': code__ = tc_right_subscript;
+        buffer.get_char();
+        break;
+    case '{': code__ = tc_left_bracket;
+        buffer.get_char();
+        break;
+    case '}': code__ = tc_right_bracket;
+        buffer.get_char();
+        break;
+    case ';': code__ = tc_semicolon;
+        buffer.get_char();
+        break;
+    case ',': code__ = tc_comma;
+        buffer.get_char();
+        break;
+    case '/': ch = buffer.get_char(); // /, /=
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_divide_equal;
+            buffer.get_char();
+        } else code__ = tc_divide;
+        break;
+    case ':': ch = buffer.get_char(); // : or ::
+        if (ch == ':') {
+            *ps++ = ':';
+            code__ = tc_colon_colon;
+            buffer.get_char();
+        } else code__ = tc_colon;
+        break;
+    case '<': ch = buffer.get_char(); // < or <=
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_lessthan_equal;
+            buffer.get_char();
+        } else if (ch == '<') {
+            *ps++ = '<';
+            ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code__ = tc_bit_XOR_equal;
+                code__ = tc_bit_leftshift_equal;
                 buffer.get_char();
-            } else code__ = tc_bit_XOR;
-            break;
-        case '&': ch = buffer.get_char();
+            } else code__ = tc_bit_leftshift;
+        } else code__ = tc_lessthan;
+        break;
+    case '>': ch = buffer.get_char(); // > or >=
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_greaterthan_equal;
+            buffer.get_char();
+        } else if (ch == '>') {
+            *ps++ = '>';
+            ch = buffer.get_char();
             if (ch == '=') {
                 *ps++ = '=';
-                code__ = tc_bit_AND_equal;
+                code__ = tc_bit_rightshift_equal;
                 buffer.get_char();
-            } else if (ch == '&') {
-                *ps++ = '&';
-                code__ = tc_logic_AND;
-                buffer.get_char();
-            } else code__ = tc_bit_AND;
-            break;
-        case '|': ch = buffer.get_char();
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_bit_OR_equal;
-                buffer.get_char();
-            } else if (ch == '|') {
-                *ps++ = '|';
-                code__ = tc_logic_OR;
-                buffer.get_char();
-            } else code__ = tc_bit_OR;
-            break;
-        case '~': ch = buffer.get_char();
-            code__ = tc_bit_NOT;
-            break;
-        case '*': ch = buffer.get_char();
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_star_equal;
-                buffer.get_char();
-            } else code__ = tc_star;
-            break;
-        case '(': code__ = tc_left_paren;
+            } else code__ = tc_bit_rightshift;
+        } else code__ = tc_greaterthan;
+        break;
+    case '!': ch = buffer.get_char(); // ! or !=
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_not_equal;
             buffer.get_char();
-            break;
-        case ')': code__ = tc_right_paren;
+        } else code__ = tc_logic_NOT;
+        break;
+    case '%': ch = buffer.get_char(); // ! or !=
+        if (ch == '=') {
+            *ps++ = '=';
+            code__ = tc_modulas_equal;
             buffer.get_char();
-            break;
-        case '-': ch = buffer.get_char();
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_minus_equal;
-                buffer.get_char();
-            } else if (ch == '-') {
-                *ps++ = '-';
-                code__ = tc_minus_minus;
-                buffer.get_char();
-            } else if (ch == '>') {
-                *ps++ = '>';
-                code__ = tc_pointer_member;
-                buffer.get_char();
-            } else code__ = tc_minus;
-            break;
-        case '+': ch = buffer.get_char();
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_plus_equal;
-                buffer.get_char();
-            } else if (ch == '+') {
-                *ps++ = '+';
-                code__ = tc_plus_plus;
-                buffer.get_char();
-            } else code__ = tc_plus;
-            break;
-        case '=': ch = buffer.get_char();
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_equal_equal;
-                buffer.get_char();
-            } else code__ = tc_equal;
-            break;
-        case '[': code__ = tc_left_subscript;
+        } else code__ = tc_modulas;
+        break;
+    case '.': ch = buffer.get_char();
+        if (ch == '.') {
+            *ps++ = '.';
+            code__ = tc_dot_dot;
             buffer.get_char();
-            break;
-        case ']': code__ = tc_right_subscript;
-            buffer.get_char();
-            break;
-        case '{': code__ = tc_left_bracket;
-            buffer.get_char();
-            break;
-        case '}': code__ = tc_right_bracket;
-            buffer.get_char();
-            break;
-        case ';': code__ = tc_semicolon;
-            buffer.get_char();
-            break;
-        case ',': code__ = tc_comma;
-            buffer.get_char();
-            break;
-        case '/': ch = buffer.get_char(); // /, /=
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_divide_equal;
-                buffer.get_char();
-            } else code__ = tc_divide;
-            break;
-        case ':': ch = buffer.get_char(); // : or ::
-            if (ch == ':') {
-                *ps++ = ':';
-                code__ = tc_colon_colon;
-                buffer.get_char();
-            } else code__ = tc_colon;
-            break;
-        case '<': ch = buffer.get_char(); // < or <=
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_lessthan_equal;
-                buffer.get_char();
-            } else if (ch == '<') {
-                *ps++ = '<';
-                ch = buffer.get_char();
-                if (ch == '=') {
-                    *ps++ = '=';
-                    code__ = tc_bit_leftshift_equal;
-                    buffer.get_char();
-                } else code__ = tc_bit_leftshift;
-            } else code__ = tc_lessthan;
-            break;
-        case '>': ch = buffer.get_char(); // > or >=
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_greaterthan_equal;
-                buffer.get_char();
-            } else if (ch == '>') {
-                *ps++ = '>';
-                ch = buffer.get_char();
-                if (ch == '=') {
-                    *ps++ = '=';
-                    code__ = tc_bit_rightshift_equal;
-                    buffer.get_char();
-                } else code__ = tc_bit_rightshift;
-            } else code__ = tc_greaterthan;
-            break;
-        case '!': ch = buffer.get_char(); // ! or !=
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_not_equal;
-                buffer.get_char();
-            } else code__ = tc_logic_NOT;
-            break;
-        case '%': ch = buffer.get_char(); // ! or !=
-            if (ch == '=') {
-                *ps++ = '=';
-                code__ = tc_modulas_equal;
-                buffer.get_char();
-            } else code__ = tc_modulas;
-            break;
-        case '.': ch = buffer.get_char();
-            if (ch == '.') {
-                *ps++ = '.';
-                code__ = tc_dot_dot;
-                buffer.get_char();
-            } else code__ = tc_dot;
-            break;
-        case '?': code__ = tc_questionmark;
-            buffer.get_char();
-            break;
-        case '#': code__ = tc_pound;
-            buffer.get_char();
-            break;
-        case '\"': code__ = tc_double_quote;
-            buffer.get_char();
-        default: code__ = tc_error; // error
-            buffer.get_char();
-            cx_error(err_unrecognizable);
-            break;
+        } else code__ = tc_dot;
+        break;
+    case '?': code__ = tc_questionmark;
+        buffer.get_char();
+        break;
+    case '#': code__ = tc_pound;
+        buffer.get_char();
+        break;
+    case '\"': code__ = tc_double_quote;
+        buffer.get_char();
+    default: code__ = tc_error; // error
+        buffer.get_char();
+        cx_error(err_unrecognizable);
+        break;
     }
 
     *ps = '\0';

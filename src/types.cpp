@@ -48,13 +48,13 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
 : form(fc), size(s), p_type_id(p_id), reference_count(0) {
 
     switch (fc) {
-        case fc_array:
-            this->size = s;
-            this->form = fc_array;
-            array.p_index_type = array.p_element_type = nullptr;
-            break;
-        default:
-            break;
+    case fc_array:
+        this->size = s;
+        this->form = fc_array;
+        array.p_index_type = array.p_element_type = nullptr;
+        break;
+    default:
+        break;
     }
 
     std::string type_name = "dummy";
@@ -62,7 +62,7 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
     if (p_type_id != nullptr)
         type_name = p_type_id->string__();
 
-if (type_name == "int") {
+    if (type_name == "int") {
         type_code = cx_int;
     } else if (type_name == "char") {
         type_code = cx_char;
@@ -108,19 +108,19 @@ cx_type::cx_type(int length, bool constant)
  */
 cx_type::~cx_type() {
     switch (form) {
-            /*  case fc_subrange:
-                  remove_type(subrange.p_base_type);
-                  break;*/
-        case fc_array:
-            remove_type(array.p_index_type);
-            remove_type(array.p_element_type);
-            break;
-        case fc_complex:
-            // delete complex.pSymtabPublic;
-            break;
+        /*  case fc_subrange:
+              remove_type(subrange.p_base_type);
+              break;*/
+    case fc_array:
+        remove_type(array.p_index_type);
+        remove_type(array.p_element_type);
+        break;
+    case fc_complex:
+        // delete complex.pSymtabPublic;
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -141,16 +141,16 @@ void cx_type::print_type_spec(cx_verbosity_code vc) {
     list.put_line();
 
     switch (form) {
-        case fc_enum: print_enum_type(vc);
-            break;
-        case fc_subrange: print_subrange_type(vc);
-            break;
-        case fc_array: print_array_type(vc);
-            break;
-        case fc_complex: print_record_type(vc);
-            break;
-        default:
-            break;
+    case fc_enum: print_enum_type(vc);
+        break;
+    case fc_subrange: print_subrange_type(vc);
+        break;
+    case fc_array: print_array_type(vc);
+        break;
+    case fc_complex: print_record_type(vc);
+        break;
+    default:
+        break;
     }
 }
 

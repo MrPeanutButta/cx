@@ -55,20 +55,20 @@ cx_type *cx_parser::parse_simple_expression(void) {
         p_operand_type = parse_term();
 
         switch (op) {
-            case tc_plus:
-            case tc_minus:
-                if (integer_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_integer_type;
-                } else if (real_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_float_type;
-                } else cx_error(err_incompatible_types);
-                break;
-            case tc_logic_OR:
-                check_boolean(p_result_type, p_operand_type);
-                p_result_type = p_boolean_type;
-                break;
-            default:
-                break;
+        case tc_plus:
+        case tc_minus:
+            if (integer_operands(p_result_type, p_operand_type)) {
+                p_result_type = p_integer_type;
+            } else if (real_operands(p_result_type, p_operand_type)) {
+                p_result_type = p_float_type;
+            } else cx_error(err_incompatible_types);
+            break;
+        case tc_logic_OR:
+            check_boolean(p_result_type, p_operand_type);
+            p_result_type = p_boolean_type;
+            break;
+        default:
+            break;
         }
     }
 
@@ -95,30 +95,30 @@ cx_type *cx_parser::parse_term(void) {
         p_operand_type = parse_factor();
 
         switch (op) {
-            case tc_star:
-                if (integer_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_integer_type;
-                } else if (real_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_float_type;
-                } else cx_error(err_incompatible_types);
-                break;
-            case tc_divide:
-                if (integer_operands(p_result_type, p_operand_type) ||
-                        real_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_integer_type;
-                } else cx_error(err_incompatible_types);
-                break;
-            case tc_modulas:
-                if (integer_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_integer_type;
-                } else cx_error(err_incompatible_types);
-                break;
-            case tc_logic_AND:
-                check_boolean(p_result_type, p_operand_type);
-                p_result_type = p_boolean_type;
-                break;
-            default:
-                break;
+        case tc_star:
+            if (integer_operands(p_result_type, p_operand_type)) {
+                p_result_type = p_integer_type;
+            } else if (real_operands(p_result_type, p_operand_type)) {
+                p_result_type = p_float_type;
+            } else cx_error(err_incompatible_types);
+            break;
+        case tc_divide:
+            if (integer_operands(p_result_type, p_operand_type) ||
+                    real_operands(p_result_type, p_operand_type)) {
+                p_result_type = p_integer_type;
+            } else cx_error(err_incompatible_types);
+            break;
+        case tc_modulas:
+            if (integer_operands(p_result_type, p_operand_type)) {
+                p_result_type = p_integer_type;
+            } else cx_error(err_incompatible_types);
+            break;
+        case tc_logic_AND:
+            check_boolean(p_result_type, p_operand_type);
+            p_result_type = p_boolean_type;
+            break;
+        default:
+            break;
         }
     }
 
@@ -136,169 +136,169 @@ cx_type *cx_parser::parse_factor(void) {
     cx_type *p_result_type = nullptr;
 
     switch (token) {
-        case tc_identifier:
-        {
-            cx_symtab_node *p_node = search_all(p_token->string__());
+    case tc_identifier:
+    {
+        cx_symtab_node *p_node = search_all(p_token->string__());
 
-            if (p_node == nullptr)
-                cx_error(err_undefined_identifier);
+        if (p_node == nullptr)
+            cx_error(err_undefined_identifier);
 
-            icode.put(p_node);
+        icode.put(p_node);
 
-            switch (p_node->defn.how) {
-                case dc_function:
-                    get_token_append();
-                    p_result_type = parse_subroutine_call(p_node, true);
-                    break;
-                case dc_constant:
-                    get_token_append();
-                    p_result_type = p_node->p_type;
-                    break;
-
-                case dc_type:
-                    get_token_append();
-                    p_result_type = p_node->p_type;
-                    break;
-                case dc_variable:
-                case dc_value_parm:
-                case dc_reference:
-                case dc_member:
-                    get_token_append();
-                    p_result_type = parse_variable(p_node);
-                    break;
-                default:
-                    cx_error(err_undefined_identifier);
-                    break;
-            }
-        }
+        switch (p_node->defn.how) {
+        case dc_function:
+            get_token_append();
+            p_result_type = parse_subroutine_call(p_node, true);
             break;
-        case tc_number:
-        {
-            cx_symtab_node *p_node = search_all(p_token->string__());
-
-            if (!p_node) {
-                p_node = enter_local(p_token->string__());
-
-                if (p_token->type() == ty_integer) {
-                    p_node->p_type = p_integer_type;
-                    p_node->defn.constant.value.int__ = p_token->value().int__;
-                } else {
-                    p_node->p_type = p_float_type;
-                    p_node->defn.constant.value.float__ = p_token->value().float__;
-                }
-            }
-
+        case dc_constant:
+            get_token_append();
             p_result_type = p_node->p_type;
-            icode.put(p_node);
-        }
-            get_token_append();
             break;
 
-        case tc_char:
-        case tc_string:
-        {
-
-            char *p_string = p_token->string__();
-            cx_symtab_node *p_node = search_all(p_token->string__());
-            int length = strlen(p_string) - 2;
-            // '\0' == -1
-            p_result_type = ((length == 1) || (length == -1)) ?
-                    p_char_type : new cx_type(length);
-
-            if (!p_node) {
-                p_node = enter_local(p_token->string__());
-                set_type(p_node->p_type, p_result_type);
-
-                if (length <= 1) {
-                    p_node->defn.constant.value.char__ = p_string[1];
-                } else {
-
-                    const int size = sizeof (char) * (length + 1);
-                    p_node->defn.constant.value.p_string = new char[size];
-                    memset(p_node->defn.constant.value.p_string, '\0', size);
-                    memcpy(p_node->defn.constant.value.p_string,
-                            &p_string[1], size);
-
-                    // remove the quote
-                    p_node->defn.constant.value.p_string[length] = '\0';
-
-                    p_node->p_type->form = fc_array;
-                    p_node->p_type->array.element_count = length;
-                    p_node->p_type->array.max_index = length;
-                    p_node->p_type->array.min_index = 0;
-                    p_node->p_type->array.p_element_type = p_char_type;
-                    p_node->p_type->array.p_index_type = p_integer_type;
-                }
-            }
-            icode.put(p_node);
-
+        case dc_type:
             get_token_append();
-        }
+            p_result_type = p_node->p_type;
             break;
-
-        case tc_left_paren:
+        case dc_variable:
+        case dc_value_parm:
+        case dc_reference:
+        case dc_member:
             get_token_append();
-            p_result_type = parse_expression();
-
-            conditional_get_token_append(tc_right_paren, err_missing_right_paren);
-            break;
-        case tc_logic_NOT:
-            get_token_append();
-            check_boolean(parse_factor());
-            p_result_type = p_boolean_type;
-
-            break;
-        case tc_left_bracket:
-        {
-            get_token_append();
-            int element_count = 0;
-            bool comma = false;
-            cx_type *p_prev_type = nullptr;
-
-            do {
-                p_result_type = parse_expression();
-
-                if (p_prev_type == nullptr)
-                    p_prev_type = p_result_type;
-
-                // make sure we init all of the same type
-                if (p_prev_type != p_result_type) {
-                    cx_error(err_incompatible_assignment);
-                    p_result_type = p_dummy_type;
-                    break;
-                }
-
-                ++element_count;
-
-                if (token == tc_comma) {
-                    comma = true;
-                    get_token_append();
-                } else comma = false;
-
-            } while (comma);
-
-            conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-
-            const int size = element_count * p_result_type->base_type()->size;
-            cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
-            //p_array_type->form = fc_array;
-            p_array_type->array.element_count = element_count;
-            p_array_type->array.max_index = element_count;
-            p_array_type->array.min_index = 0;
-
-            set_type(p_array_type->array.p_element_type, p_result_type);
-            set_type(p_array_type->array.p_index_type, p_integer_type);
-
-            p_result_type = p_array_type;
-
-        }
-            break;
-        case tc_semicolon:
+            p_result_type = parse_variable(p_node);
             break;
         default:
-            cx_error(err_invalid_expression);
-            p_result_type = p_dummy_type;
+            cx_error(err_undefined_identifier);
             break;
+        }
+    }
+        break;
+    case tc_number:
+    {
+        cx_symtab_node *p_node = search_all(p_token->string__());
+
+        if (!p_node) {
+            p_node = enter_local(p_token->string__());
+
+            if (p_token->type() == ty_integer) {
+                p_node->p_type = p_integer_type;
+                p_node->defn.constant.value.int__ = p_token->value().int__;
+            } else {
+                p_node->p_type = p_float_type;
+                p_node->defn.constant.value.float__ = p_token->value().float__;
+            }
+        }
+
+        p_result_type = p_node->p_type;
+        icode.put(p_node);
+    }
+        get_token_append();
+        break;
+
+    case tc_char:
+    case tc_string:
+    {
+
+        char *p_string = p_token->string__();
+        cx_symtab_node *p_node = search_all(p_token->string__());
+        int length = strlen(p_string) - 2;
+        // '\0' == -1
+        p_result_type = ((length == 1) || (length == -1)) ?
+                p_char_type : new cx_type(length);
+
+        if (!p_node) {
+            p_node = enter_local(p_token->string__());
+            set_type(p_node->p_type, p_result_type);
+
+            if (length <= 1) {
+                p_node->defn.constant.value.char__ = p_string[1];
+            } else {
+
+                const int size = sizeof (char) * (length + 1);
+                p_node->defn.constant.value.p_string = new char[size];
+                memset(p_node->defn.constant.value.p_string, '\0', size);
+                memcpy(p_node->defn.constant.value.p_string,
+                        &p_string[1], size);
+
+                // remove the quote
+                p_node->defn.constant.value.p_string[length] = '\0';
+
+                p_node->p_type->form = fc_array;
+                p_node->p_type->array.element_count = length;
+                p_node->p_type->array.max_index = length;
+                p_node->p_type->array.min_index = 0;
+                p_node->p_type->array.p_element_type = p_char_type;
+                p_node->p_type->array.p_index_type = p_integer_type;
+            }
+        }
+        icode.put(p_node);
+
+        get_token_append();
+    }
+        break;
+
+    case tc_left_paren:
+        get_token_append();
+        p_result_type = parse_expression();
+
+        conditional_get_token_append(tc_right_paren, err_missing_right_paren);
+        break;
+    case tc_logic_NOT:
+        get_token_append();
+        check_boolean(parse_factor());
+        p_result_type = p_boolean_type;
+
+        break;
+    case tc_left_bracket:
+    {
+        get_token_append();
+        int element_count = 0;
+        bool comma = false;
+        cx_type *p_prev_type = nullptr;
+
+        do {
+            p_result_type = parse_expression();
+
+            if (p_prev_type == nullptr)
+                p_prev_type = p_result_type;
+
+            // make sure we init all of the same type
+            if (p_prev_type != p_result_type) {
+                cx_error(err_incompatible_assignment);
+                p_result_type = p_dummy_type;
+                break;
+            }
+
+            ++element_count;
+
+            if (token == tc_comma) {
+                comma = true;
+                get_token_append();
+            } else comma = false;
+
+        } while (comma);
+
+        conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+
+        const int size = element_count * p_result_type->base_type()->size;
+        cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
+        //p_array_type->form = fc_array;
+        p_array_type->array.element_count = element_count;
+        p_array_type->array.max_index = element_count;
+        p_array_type->array.min_index = 0;
+
+        set_type(p_array_type->array.p_element_type, p_result_type);
+        set_type(p_array_type->array.p_index_type, p_integer_type);
+
+        p_result_type = p_array_type;
+
+    }
+        break;
+    case tc_semicolon:
+        break;
+    default:
+        cx_error(err_invalid_expression);
+        p_result_type = p_dummy_type;
+        break;
     }
 
     return p_result_type;
@@ -315,18 +315,18 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
     cx_type *p_result_type = p_id->p_type;
 
     switch (p_id->defn.how) {
-        case dc_variable:
-        case dc_value_parm:
-        case dc_reference:
-        case dc_pointer:
-        case dc_function:
-        case dc_undefined:
-            break;
+    case dc_variable:
+    case dc_value_parm:
+    case dc_reference:
+    case dc_pointer:
+    case dc_function:
+    case dc_undefined:
+        break;
 
-        default:
-            p_result_type = p_dummy_type;
-            cx_error(err_invalid_identifier_usage);
-            break;
+    default:
+        p_result_type = p_dummy_type;
+        cx_error(err_invalid_identifier_usage);
+        break;
     }
 
     //  [ or . : Loop to parse any subscripts and fields.
@@ -334,15 +334,15 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
     do {
         switch (token) {
 
-            case tc_left_subscript:
-                p_result_type = parse_subscripts(p_result_type);
-                break;
+        case tc_left_subscript:
+            p_result_type = parse_subscripts(p_result_type);
+            break;
 
-            case tc_dot:
-                p_result_type = parse_field(p_result_type);
-                break;
+        case tc_dot:
+            p_result_type = parse_field(p_result_type);
+            break;
 
-            default: done_flag = true;
+        default: done_flag = true;
         }
     } while (!done_flag);
 
@@ -350,134 +350,134 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
         cx_type *p_expr_type = nullptr;
 
         switch (token) {
-            case tc_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
+        case tc_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
 
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_minus_minus:
-                get_token_append();
-                break;
-            case tc_plus_plus:
-                get_token_append();
-                break;
-            case tc_plus_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_minus_minus:
+            get_token_append();
+            break;
+        case tc_plus_plus:
+            get_token_append();
+            break;
+        case tc_plus_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_minus_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_minus_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_star_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_star_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_divide_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_divide_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_modulas_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_modulas_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_bit_leftshift_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_bit_leftshift_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_bit_rightshift_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_bit_rightshift_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_bit_AND_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_bit_AND_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_bit_XOR_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_bit_XOR_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_bit_OR_equal:
-            {
-                get_token_append();
-                p_expr_type = parse_expression();
-                check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_bit_OR_equal:
+        {
+            get_token_append();
+            p_expr_type = parse_expression();
+            check_assignment_type_compatible(p_result_type, p_expr_type,
+                    err_incompatible_assignment);
 
-                p_result_type = p_expr_type;
-            }
-                break;
-            case tc_comma:
-            case tc_semicolon:
-                break;
-                break;
-            case tc_identifier:
-                get_token_append();
-                p_expr_type = p_result_type;
+            p_result_type = p_expr_type;
+        }
+            break;
+        case tc_comma:
+        case tc_semicolon:
+            break;
+            break;
+        case tc_identifier:
+            get_token_append();
+            p_expr_type = p_result_type;
 
-            default:
-                cx_error(err_invalid_assignment);
-                break;
+        default:
+            cx_error(err_invalid_assignment);
+            break;
         }
     }
 

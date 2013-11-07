@@ -14,27 +14,27 @@
 class cx_type;
 extern bool cx_dev_debug_flag;
 
-    union mem_block{
-        // basic types
+union mem_block {
+    // basic types
 
-        // unsigned
-        uint8_t uint8__;
-        uint16_t uint16__;
-        uint32_t uint32__;
-        uint64_t uint64__;
+    // unsigned
+    uint8_t uint8__;
+    uint16_t uint16__;
+    uint32_t uint32__;
+    uint64_t uint64__;
 
-        bool bool__;
+    bool bool__;
 
-        // signed
-        int int__;
-        float float__;
+    // signed
+    int int__;
+    float float__;
 
-        char char__;
-        wchar_t wchar__;
+    char char__;
+    wchar_t wchar__;
 
-        // pointer, reference, record or array
-        void *addr__;
-    };
+    // pointer, reference, record or array
+    void *addr__;
+};
 
 ///  cx_stack_item          Item pushed onto the runtime stack.
 
@@ -301,23 +301,39 @@ class cx_executor : public cx_backend {
     void execute_actual_parameters(cx_symtab_node *p_function_id);
 
     // Statements
-    cx_symtab_node *enter_new(cx_symtab_node *p_function_id, const char *p_string);
+    cx_symtab_node *enter_new(cx_symtab_node *p_function_id,
+            const char *p_string);
     cx_symtab_node *allocate_new_node(cx_symtab_node *p_function_id);
     void execute_statement(cx_symtab_node *p_function_id);
-    void execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator);
+    void execute_statement_list(cx_symtab_node *p_function_id,
+            cx_token_code terminator);
     void execute_assignment(const cx_symtab_node *p_target_id);
 
     void assign(const cx_symtab_node* p_target_id,
-            cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target,
             void* &p_target_address);
 
     void plus_equal(const cx_symtab_node* p_target_id,
-            cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target,
             void* &p_target_address);
     void minus_equal(const cx_symtab_node* p_target_id,
-            cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
-            void* &p_target_address);
-    
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+    void star_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+    void divide_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+    void modulas_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+    void leftshift_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+
     void plus_plus(cx_type* p_target_type,
             cx_stack_item* p_target);
     void minus_minus(cx_type* p_target_type,

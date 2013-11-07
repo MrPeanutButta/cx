@@ -26,14 +26,14 @@ int main() {
     char *t = "hihihihihihihihihihihihihihihi";
     i = 456;
     i += 2.0;
-    
+    i *= 2;
     i -= 200;
-    
+
     t += " byebyebyebyebyebyebyebyebyebyebyebyebyebye";
 
     //  //  long l = 444400;
-    //    
+    //
     //   // uint8 u = 0xff;
-    //    
+    //
     return 0; //t;
 }

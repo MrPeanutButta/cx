@@ -10,43 +10,43 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
     insert_line_marker();
 
     switch (token) {
-        case tc_identifier: parse_declarations_or_assignment(p_function_id);
+    case tc_identifier: parse_declarations_or_assignment(p_function_id);
 
-            break;
-            // not a type but a cv-qualifier
-        case tc_CONST:
-            get_token_append();
-            parse_constant_declaration(p_function_id);
-            break;
-            //case tcEnum:
-            //get_token_append();
-            //            parse_enum_header(p_function_id);
-            //break;
-        case tc_DO: parse_DO(p_function_id);
-            break;
-        case tc_WHILE: parse_WHILE(p_function_id);
-            break;
-        case tc_IF: parse_IF(p_function_id);
-            break;
-        case tc_FOR: parse_FOR(p_function_id);
-            break;
-        case tc_SWITCH: parse_SWITCH(p_function_id);
-            break;
-            //case tc_CASE:
-            //case tc_DEFAULT:parse_case_label(p_function_id);
-            //  break;
-        case tc_BREAK: get_token_append();
-            break;
-        case tc_left_bracket: parse_compound(p_function_id);
-            break;
-        case tc_RETURN: parse_RETURN(p_function_id);
-            break;
-        case tc_pound:
-            get_token();
-            parse_execute_directive(p_function_id);
-            break;
-        default:
-            break;
+        break;
+        // not a type but a cv-qualifier
+    case tc_CONST:
+        get_token_append();
+        parse_constant_declaration(p_function_id);
+        break;
+        //case tcEnum:
+        //get_token_append();
+        //            parse_enum_header(p_function_id);
+        //break;
+    case tc_DO: parse_DO(p_function_id);
+        break;
+    case tc_WHILE: parse_WHILE(p_function_id);
+        break;
+    case tc_IF: parse_IF(p_function_id);
+        break;
+    case tc_FOR: parse_FOR(p_function_id);
+        break;
+    case tc_SWITCH: parse_SWITCH(p_function_id);
+        break;
+        //case tc_CASE:
+        //case tc_DEFAULT:parse_case_label(p_function_id);
+        //  break;
+    case tc_BREAK: get_token_append();
+        break;
+    case tc_left_bracket: parse_compound(p_function_id);
+        break;
+    case tc_RETURN: parse_RETURN(p_function_id);
+        break;
+    case tc_pound:
+        get_token();
+        parse_execute_directive(p_function_id);
+        break;
+    default:
+        break;
     }
 
     if (token != tc_end_of_file) {
@@ -271,24 +271,24 @@ void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p
     }
 
     switch (token) {
-        case tc_identifier:
-            if (!search_all(p_token->string__())) {
-                cx_error(err_undefined_identifier);
-            }
+    case tc_identifier:
+        if (!search_all(p_token->string__())) {
+            cx_error(err_undefined_identifier);
+        }
 
-            get_token_append();
-            break;
-        case tc_number:
-            if (p_token->type() != ty_integer) cx_error(err_invalid_constant);
-            get_token_append();
-            break;
-        case tc_string:
-            if (sign_flag || (strlen(p_token->string__()) != 3)) {
-                cx_error(err_invalid_constant);
-            }
-            break;
-        default:
-            break;
+        get_token_append();
+        break;
+    case tc_number:
+        if (p_token->type() != ty_integer) cx_error(err_invalid_constant);
+        get_token_append();
+        break;
+    case tc_string:
+        if (sign_flag || (strlen(p_token->string__()) != 3)) {
+            cx_error(err_invalid_constant);
+        }
+        break;
+    default:
+        break;
     }
 
     conditional_get_token_append(tc_colon, err_missing_colon);
