@@ -333,6 +333,16 @@ class cx_executor : public cx_backend {
     void leftshift_equal(const cx_symtab_node* p_target_id,
             cx_type* p_target_type, const cx_type* p_expr_type,
             cx_stack_item* p_target);
+    void rightshift_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+    void and_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+    void xor_equal(const cx_symtab_node* p_target_id,
+            cx_type* p_target_type, const cx_type* p_expr_type,
+            cx_stack_item* p_target);
+
 
     void plus_plus(cx_type* p_target_type,
             cx_stack_item* p_target);

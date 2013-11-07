@@ -107,81 +107,22 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
     case tc_bit_rightshift_equal:
     {
         get_token();
-        p_expr_type = execute_expression();
-        // Do the assignment.
-        if ((p_target_type->base_type() == p_integer_type) ||
-                (p_target_type->base_type()->form == fc_enum)) {
-
-            int value = top()->basic_types.int__; // real := integer
-
-            pop();
-            range_check(p_target_type, value);
-
-            // integer     := integer
-            // enumeration := enumeration
-            p_target->basic_types.int__ >>= value;
-        } else if (p_target_type->base_type() == p_char_type) {
-            char value = top()->basic_types.char__;
-            range_check(p_target_type, value);
-
-            // character := character
-            p_target->basic_types.char__ >>= value;
-        }
-
+        rightshift_equal(p_target_id, p_target_type, execute_expression(),
+                p_target);
     }
         break;
     case tc_bit_AND_equal:
     {
         get_token();
-        p_expr_type = execute_expression();
-        // Do the assignment.
-        if ((p_target_type->base_type() == p_integer_type) ||
-                (p_target_type->base_type()->form == fc_enum)) {
-
-            int value = top()->basic_types.int__; // real := integer
-
-            pop();
-
-            range_check(p_target_type, value);
-
-            // integer     := integer
-            // enumeration := enumeration
-            p_target->basic_types.int__ &= value;
-        } else if (p_target_type->base_type() == p_char_type) {
-            char value = top()->basic_types.char__;
-            range_check(p_target_type, value);
-
-            // character := character
-            p_target->basic_types.char__ &= value;
-        }
-
+        and_equal(p_target_id, p_target_type, execute_expression(),
+                p_target);
     }
         break;
     case tc_bit_XOR_equal:
     {
         get_token();
-        p_expr_type = execute_expression();
-        // Do the assignment.
-        if ((p_target_type->base_type() == p_integer_type) ||
-                (p_target_type->base_type()->form == fc_enum)) {
-
-            int value = top()->basic_types.int__; // real := integer
-
-            pop();
-
-            range_check(p_target_type, value);
-
-            // integer     := integer
-            // enumeration := enumeration
-            p_target->basic_types.int__ ^= value;
-        } else if (p_target_type->base_type() == p_char_type) {
-            char value = top()->basic_types.char__;
-            range_check(p_target_type, value);
-
-            // character := character
-            p_target->basic_types.char__ ^= value;
-        }
-
+        xor_equal(p_target_id, p_target_type, execute_expression(),
+                p_target);
     }
         break;
     case tc_bit_OR_equal:
@@ -2897,6 +2838,990 @@ cx_executor::leftshift_equal(const cx_symtab_node* p_target_id,
         case cx_uint64:
         {
             *t_uint64 <<= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    default:
+        break;
+    }
+}
+
+void
+cx_executor::rightshift_equal(const cx_symtab_node* p_target_id,
+        cx_type* p_target_type, const cx_type* p_expr_type,
+        cx_stack_item* p_target) {
+
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code expr_type = p_expr_type->type_code;
+
+    mem_block *mem = &top()->basic_types;
+    int *t_int = &p_target->basic_types.int__;
+    char *t_char = &p_target->basic_types.char__;
+    wchar_t *t_wchar = &p_target->basic_types.wchar__;
+    uint8_t *t_uint8 = &p_target->basic_types.uint8__;
+    uint16_t *t_uint16 = &p_target->basic_types.uint16__;
+    uint32_t *t_uint32 = &p_target->basic_types.uint32__;
+    uint64_t *t_uint64 = &p_target->basic_types.uint64__;
+
+    switch (target_type) {
+
+    case cx_int:
+    {
+        switch (expr_type) {
+        case cx_int:
+        {
+            *t_int >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_int >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_int >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_int >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_int >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_int >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_int >>= mem->uint64__;
+        }
+            break;
+        default:break;
+        }
+    }
+        break;
+    case cx_char:
+    {
+        switch (expr_type) {
+        case cx_int:
+        {
+            *t_char >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_char >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_char >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_char >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_char >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_char >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_char >>= mem->uint64__;
+        }
+            break;
+        default:break;
+        }
+    }
+        break;
+    case cx_wchar:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_wchar >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_wchar >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_wchar >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_wchar >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_wchar >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_wchar >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_wchar >>= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint8:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint8 >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint8 >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint8 >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint8 >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint8 >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint8 >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint8 >>= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint16:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint16 >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint16 >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint16 >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint16 >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint16 >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint16 >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint16 >>= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint32:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint32 >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint32 >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint32 >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint32 >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint32 >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint32 >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint32 >>= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint64:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint64 >>= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint64 >>= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint64 >>= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint64 >>= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint64 >>= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint64 >>= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint64 >>= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    default:
+        break;
+    }
+}
+
+void
+cx_executor::and_equal(const cx_symtab_node* p_target_id,
+        cx_type* p_target_type, const cx_type* p_expr_type,
+        cx_stack_item* p_target) {
+
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code expr_type = p_expr_type->type_code;
+
+    mem_block *mem = &top()->basic_types;
+    int *t_int = &p_target->basic_types.int__;
+    char *t_char = &p_target->basic_types.char__;
+    wchar_t *t_wchar = &p_target->basic_types.wchar__;
+    uint8_t *t_uint8 = &p_target->basic_types.uint8__;
+    uint16_t *t_uint16 = &p_target->basic_types.uint16__;
+    uint32_t *t_uint32 = &p_target->basic_types.uint32__;
+    uint64_t *t_uint64 = &p_target->basic_types.uint64__;
+
+    switch (target_type) {
+
+    case cx_int:
+    {
+        switch (expr_type) {
+        case cx_int:
+        {
+            *t_int &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_int &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_int &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_int &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_int &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_int &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_int &= mem->uint64__;
+        }
+            break;
+        default:break;
+        }
+    }
+        break;
+    case cx_char:
+    {
+        switch (expr_type) {
+        case cx_int:
+        {
+            *t_char &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_char &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_char &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_char &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_char &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_char &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_char &= mem->uint64__;
+        }
+            break;
+        default:break;
+        }
+    }
+        break;
+    case cx_wchar:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_wchar &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_wchar &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_wchar &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_wchar &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_wchar &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_wchar &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_wchar &= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint8:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint8 &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint8 &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint8 &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint8 &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint8 &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint8 &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint8 &= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint16:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint16 &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint16 &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint16 &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint16 &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint16 &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint16 &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint16 &= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint32:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint32 &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint32 &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint32 &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint32 &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint32 &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint32 &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint32 &= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint64:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint64 &= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint64 &= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint64 &= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint64 &= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint64 &= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint64 &= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint64 &= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    default:
+        break;
+    }
+}
+
+void
+cx_executor::xor_equal(const cx_symtab_node* p_target_id,
+        cx_type* p_target_type, const cx_type* p_expr_type,
+        cx_stack_item* p_target) {
+
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code expr_type = p_expr_type->type_code;
+
+    mem_block *mem = &top()->basic_types;
+    int *t_int = &p_target->basic_types.int__;
+    char *t_char = &p_target->basic_types.char__;
+    wchar_t *t_wchar = &p_target->basic_types.wchar__;
+    uint8_t *t_uint8 = &p_target->basic_types.uint8__;
+    uint16_t *t_uint16 = &p_target->basic_types.uint16__;
+    uint32_t *t_uint32 = &p_target->basic_types.uint32__;
+    uint64_t *t_uint64 = &p_target->basic_types.uint64__;
+
+    switch (target_type) {
+
+    case cx_int:
+    {
+        switch (expr_type) {
+        case cx_int:
+        {
+            *t_int ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_int ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_int ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_int ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_int ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_int ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_int ^= mem->uint64__;
+        }
+            break;
+        default:break;
+        }
+    }
+        break;
+    case cx_char:
+    {
+        switch (expr_type) {
+        case cx_int:
+        {
+            *t_char ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_char ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_char ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_char ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_char ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_char ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_char ^= mem->uint64__;
+        }
+            break;
+        default:break;
+        }
+    }
+        break;
+    case cx_wchar:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_wchar ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_wchar ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_wchar ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_wchar ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_wchar ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_wchar ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_wchar ^= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint8:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint8 ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint8 ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint8 ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint8 ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint8 ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint8 ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint8 ^= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint16:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint16 ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint16 ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint16 ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint16 ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint16 ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint16 ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint16 ^= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint32:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint32 ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint32 ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint32 ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint32 ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint32 ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint32 ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint32 ^= mem->uint64__;
+        }
+            break;
+        default:
+            break;
+        }
+    }
+        break;
+    case cx_uint64:
+    {
+        switch (expr_type) {
+
+        case cx_int:
+        {
+            *t_uint64 ^= mem->int__;
+        }
+            break;
+        case cx_char:
+        {
+            *t_uint64 ^= mem->char__;
+        }
+            break;
+        case cx_wchar:
+        {
+            *t_uint64 ^= mem->wchar__;
+        }
+            break;
+        case cx_uint8:
+        {
+            *t_uint64 ^= mem->uint8__;
+        }
+            break;
+        case cx_uint16:
+        {
+            *t_uint64 ^= mem->uint16__;
+        }
+            break;
+        case cx_uint32:
+        {
+            *t_uint64 ^= mem->uint32__;
+        }
+            break;
+        case cx_uint64:
+        {
+            *t_uint64 ^= mem->uint64__;
         }
             break;
         default:
