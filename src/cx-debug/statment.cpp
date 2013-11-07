@@ -19,38 +19,38 @@ void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
     }
 
     switch (token) {
-    case tc_identifier:
-    {
-        if (p_node->defn.how == dc_function) {
-            execute_subroutine_call(p_node);
-        } else {
-            execute_assignment(p_node);
+        case tc_identifier:
+        {
+            if (p_node->defn.how == dc_function) {
+                execute_subroutine_call(p_node);
+            } else {
+                execute_assignment(p_node);
+            }
         }
-    }
-        break;
-    case tc_DO: execute_DO(p_function_id);
-        break;
-    case tc_WHILE: execute_WHILE(p_function_id);
-        break;
-    case tc_IF: execute_IF(p_function_id);
-        break;
-    case tc_FOR: execute_FOR(p_function_id);
-        break;
-    case tc_SWITCH: //parse_SWITCH();
-        break;
-    case tc_CASE:
-    case tc_DEFAULT://parse_case_label();
-        break;
-    case tc_BREAK:
-        get_token();
-        break_loop = true;
-        break;
-    case tc_left_bracket: execute_compound(p_function_id);
-        break;
-    case tc_RETURN: execute_RETURN(p_function_id);
-        break;
-    default:
-        break;
+            break;
+        case tc_DO: execute_DO(p_function_id);
+            break;
+        case tc_WHILE: execute_WHILE(p_function_id);
+            break;
+        case tc_IF: execute_IF(p_function_id);
+            break;
+        case tc_FOR: execute_FOR(p_function_id);
+            break;
+        case tc_SWITCH: //parse_SWITCH();
+            break;
+        case tc_CASE:
+        case tc_DEFAULT://parse_case_label();
+            break;
+        case tc_BREAK:
+            get_token();
+            break_loop = true;
+            break;
+        case tc_left_bracket: execute_compound(p_function_id);
+            break;
+        case tc_RETURN: execute_RETURN(p_function_id);
+            break;
+        default:
+            break;
     }
 }
 

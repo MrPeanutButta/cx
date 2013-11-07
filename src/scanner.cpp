@@ -97,20 +97,20 @@ cx_token * cx_text_scanner::get(void) {
 
     // Determine the token class, based on the current character.
     switch (char_code_map[p_text_in_buffer->current_char()]) {
-    case cc_letter: p_token = &word_token;
-        break;
-    case cc_digit: p_token = &number_token;
-        break;
-    case cc_double_quote: p_token = &string_token;
-        break;
-    case cc_quote: p_token = &char_token;
-        break;
-    case cc_special: p_token = &special_token;
-        break;
-    case cc_end_of_file: p_token = &eof_token;
-        break;
-    default: p_token = &error_token;
-        break;
+        case cc_letter: p_token = &word_token;
+            break;
+        case cc_digit: p_token = &number_token;
+            break;
+        case cc_double_quote: p_token = &string_token;
+            break;
+        case cc_quote: p_token = &char_token;
+            break;
+        case cc_special: p_token = &special_token;
+            break;
+        case cc_end_of_file: p_token = &eof_token;
+            break;
+        default: p_token = &error_token;
+            break;
     }
 
     // Extract a token of that class, and return a pointer to it.

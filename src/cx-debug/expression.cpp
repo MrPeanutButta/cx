@@ -64,31 +64,31 @@ cx_executor::execute_expression(void) {
 
             switch (op) {
 
-            case tc_equal_equal:
-                push(value1 == value2);
-                break;
+                case tc_equal_equal:
+                    push(value1 == value2);
+                    break;
 
-            case tc_not_equal:
-                push(value1 != value2);
-                break;
+                case tc_not_equal:
+                    push(value1 != value2);
+                    break;
 
-            case tc_lessthan:
-                push(value1 < value2);
-                break;
+                case tc_lessthan:
+                    push(value1 < value2);
+                    break;
 
-            case tc_greaterthan:
-                push(value1 > value2);
-                break;
+                case tc_greaterthan:
+                    push(value1 > value2);
+                    break;
 
-            case tc_lessthan_equal:
-                push(value1 <= value2);
-                break;
+                case tc_lessthan_equal:
+                    push(value1 <= value2);
+                    break;
 
-            case tc_greaterthan_equal:
-                push(value1 >= value2);
-                break;
-            default:
-                break;
+                case tc_greaterthan_equal:
+                    push(value1 >= value2);
+                    break;
+                default:
+                    break;
 
             }
         } else if ((p_operand1_type == p_float_type) ||
@@ -109,31 +109,31 @@ cx_executor::execute_expression(void) {
 
             switch (op) {
 
-            case tc_equal_equal:
-                push(value1 == value2);
-                break;
+                case tc_equal_equal:
+                    push(value1 == value2);
+                    break;
 
-            case tc_not_equal:
-                push(value1 != value2);
-                break;
+                case tc_not_equal:
+                    push(value1 != value2);
+                    break;
 
-            case tc_lessthan:
-                push(value1 < value2);
-                break;
+                case tc_lessthan:
+                    push(value1 < value2);
+                    break;
 
-            case tc_greaterthan:
-                push(value1 > value2);
-                break;
+                case tc_greaterthan:
+                    push(value1 > value2);
+                    break;
 
-            case tc_lessthan_equal:
-                push(value1 <= value2);
-                break;
+                case tc_lessthan_equal:
+                    push(value1 <= value2);
+                    break;
 
-            case tc_greaterthan_equal:
-                push(value1 >= value2);
-                break;
-            default:
-                break;
+                case tc_greaterthan_equal:
+                    push(value1 >= value2);
+                    break;
+                default:
+                    break;
             }
         } else {
 
@@ -147,20 +147,20 @@ cx_executor::execute_expression(void) {
             int cmp = strncmp(addr1, addr2, p_operand1_type->size);
 
             switch (op) {
-            case tc_equal_equal: push(cmp == 0);
-                break;
-            case tc_not_equal: push(cmp != 0);
-                break;
-            case tc_lessthan: push(cmp < 0);
-                break;
-            case tc_greaterthan: push(cmp > 0);
-                break;
-            case tc_lessthan_equal: push(cmp <= 0);
-                break;
-            case tc_greaterthan_equal: push(cmp >= 0);
-                break;
-            default:
-                break;
+                case tc_equal_equal: push(cmp == 0);
+                    break;
+                case tc_not_equal: push(cmp != 0);
+                    break;
+                case tc_lessthan: push(cmp < 0);
+                    break;
+                case tc_greaterthan: push(cmp > 0);
+                    break;
+                case tc_lessthan_equal: push(cmp <= 0);
+                    break;
+                case tc_greaterthan_equal: push(cmp >= 0);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -193,31 +193,31 @@ cx_executor::execute_simple_expression(void) {
     p_result_type = execute_term();
 
     switch (unary_op) {
-    case tc_minus:
-    {
-        if (p_result_type == p_float_type) {
-            float f = top()->basic_types.float__;
-            pop();
+        case tc_minus:
+        {
+            if (p_result_type == p_float_type) {
+                float f = top()->basic_types.float__;
+                pop();
 
-            push(-f);
-        } else {
+                push(-f);
+            } else {
+                int i = top()->basic_types.int__;
+                pop();
+
+                push(-i);
+            }
+        }
+            break;
+        case tc_bit_NOT:
+        {
             int i = top()->basic_types.int__;
             pop();
 
-            push(-i);
+            push(~(i));
         }
-    }
-        break;
-    case tc_bit_NOT:
-    {
-        int i = top()->basic_types.int__;
-        pop();
-
-        push(~(i));
-    }
-        break;
-    default:
-        break;
+            break;
+        default:
+            break;
     }
 
     // Loop to execute subsequent additive operators and terms.
@@ -229,139 +229,139 @@ cx_executor::execute_simple_expression(void) {
         p_operand_type = execute_term()->base_type();
 
         switch (op) {
-        case tc_plus:
-        case tc_minus:
-        {
-            if ((p_result_type == p_integer_type) &&
-                    (p_operand_type == p_integer_type)) {
+            case tc_plus:
+            case tc_minus:
+            {
+                if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_integer_type)) {
 
-                // integer +|- integer
-                int value2 = top()->basic_types.int__;
-                pop();
-                int value1 = top()->basic_types.int__;
-                pop();
+                    // integer +|- integer
+                    int value2 = top()->basic_types.int__;
+                    pop();
+                    int value1 = top()->basic_types.int__;
+                    pop();
 
-                push(op == tc_plus ? value1 + value2
-                        : value1 - value2);
-                p_result_type = p_integer_type;
-            } else if ((p_result_type == p_integer_type) &&
-                    (p_operand_type == p_char_type)) {
+                    push(op == tc_plus ? value1 + value2
+                            : value1 - value2);
+                    p_result_type = p_integer_type;
+                } else if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_char_type)) {
 
-                int value2 = top()->basic_types.int__;
-                pop();
-                char value1 = top()->basic_types.char__;
-                pop();
+                    int value2 = top()->basic_types.int__;
+                    pop();
+                    char value1 = top()->basic_types.char__;
+                    pop();
 
-                push(op == tc_plus ? value1 + value2
-                        : value1 - value2);
-                p_result_type = p_integer_type;
-            } else if ((p_result_type == p_char_type) &&
-                    (p_operand_type == p_integer_type)) {
+                    push(op == tc_plus ? value1 + value2
+                            : value1 - value2);
+                    p_result_type = p_integer_type;
+                } else if ((p_result_type == p_char_type) &&
+                        (p_operand_type == p_integer_type)) {
 
-                char value2 = top()->basic_types.char__;
-                pop();
-                int value1 = top()->basic_types.int__;
-                pop();
+                    char value2 = top()->basic_types.char__;
+                    pop();
+                    int value1 = top()->basic_types.int__;
+                    pop();
 
-                push(op == tc_plus ? value1 + value2
-                        : value1 - value2);
-                p_result_type = p_char_type;
-            } else {
+                    push(op == tc_plus ? value1 + value2
+                            : value1 - value2);
+                    p_result_type = p_char_type;
+                } else {
 
-                // real    +|- real
-                // real    +|- integer
-                // integer +|- real
-                float value2 = p_operand_type == p_float_type ? top()->basic_types.float__
-                        : top()->basic_types.int__;
+                    // real    +|- real
+                    // real    +|- integer
+                    // integer +|- real
+                    float value2 = p_operand_type == p_float_type ? top()->basic_types.float__
+                            : top()->basic_types.int__;
 
-                pop();
+                    pop();
 
-                float value1 = p_result_type == p_float_type ? top()->basic_types.float__
-                        : top()->basic_types.int__;
+                    float value1 = p_result_type == p_float_type ? top()->basic_types.float__
+                            : top()->basic_types.int__;
 
-                pop();
+                    pop();
 
-                push(op == tc_plus ? value1 + value2
-                        : value1 - value2);
-                p_result_type = p_float_type;
+                    push(op == tc_plus ? value1 + value2
+                            : value1 - value2);
+                    p_result_type = p_float_type;
+                }
+
             }
+                break;
+            case tc_bit_leftshift:
+            {
+                // bit left__ shift
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
-        }
-            break;
-        case tc_bit_leftshift:
-        {
-            // bit left__ shift
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
+                push(value1 << value2);
+                p_result_type = p_integer_type;
+            }
+                break;
+            case tc_bit_rightshift:
+            {
+                // bit right__ shift
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
-            push(value1 << value2);
-            p_result_type = p_integer_type;
-        }
-            break;
-        case tc_bit_rightshift:
-        {
-            // bit right__ shift
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
+                push(value1 >> value2);
+                p_result_type = p_integer_type;
+            }
+                break;
+            case tc_bit_AND:
+            {
+                // bit and
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
-            push(value1 >> value2);
-            p_result_type = p_integer_type;
-        }
-            break;
-        case tc_bit_AND:
-        {
-            // bit and
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
+                push(value1 & value2);
+                p_result_type = p_integer_type;
+            }
+                break;
+            case tc_bit_XOR:
+            {
+                // bit XOR
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
-            push(value1 & value2);
-            p_result_type = p_integer_type;
-        }
-            break;
-        case tc_bit_XOR:
-        {
-            // bit XOR
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
+                push(value1 ^ value2);
+                p_result_type = p_integer_type;
+            }
+                break;
+            case tc_bit_OR:
+            {
+                // bit OR
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
-            push(value1 ^ value2);
-            p_result_type = p_integer_type;
-        }
-            break;
-        case tc_bit_OR:
-        {
-            // bit OR
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
+                push(value1 | value2);
+                p_result_type = p_integer_type;
+            }
+                break;
+            case tc_logic_OR:
+            {
+                // boolean OR boolean
+                int value2 = top()->basic_types.int__;
+                pop();
+                int value1 = top()->basic_types.int__;
+                pop();
 
-            push(value1 | value2);
-            p_result_type = p_integer_type;
-        }
-            break;
-        case tc_logic_OR:
-        {
-            // boolean OR boolean
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
-
-            push(value1 || value2);
-            p_result_type = p_boolean_type;
-        }
-            break;
-        default:
-            break;
+                push(value1 || value2);
+                p_result_type = p_boolean_type;
+            }
+                break;
+            default:
+                break;
         }
     }
 
@@ -393,111 +393,111 @@ cx_executor::execute_term(void) {
         //        bool div_zero_flag = false;
 
         switch (op) {
-        case tc_star:
-            if ((p_result_type == p_integer_type) &&
-                    (p_operand_type == p_integer_type)) {
+            case tc_star:
+                if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_integer_type)) {
 
-                // integer * integer
+                    // integer * integer
+                    int value2 = top()->basic_types.int__;
+                    pop();
+                    int value1 = top()->basic_types.int__;
+                    pop();
+
+                    push(value1 * value2);
+                    p_result_type = p_integer_type;
+                } else {
+
+                    // real    * real
+                    // real    * integer
+                    // integer * real
+                    float value2 = p_operand_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    float value1 = p_result_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    push(value1 * value2);
+                    p_result_type = p_float_type;
+                }
+                break;
+            case tc_divide:
+            {
+
+                if ((p_result_type == p_integer_type) &&
+                        (p_operand_type == p_integer_type)) {
+
+                    int value2 = p_operand_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    int value1 = p_result_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    if (value2 == 0) cx_runtime_error(rte_division_by_zero);
+
+                    push(int(value1 / value2));
+                    p_result_type = p_integer_type;
+
+                } else {
+                    float value2 = p_operand_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    float value1 = p_result_type == p_float_type
+                            ? top()->basic_types.float__
+                            : top()->basic_types.int__;
+
+                    pop();
+
+                    if (value2 == 0.0f) cx_runtime_error(rte_division_by_zero);
+
+                    push(float(value1 / value2));
+                    p_result_type = p_float_type;
+                }
+            }
+                break;
+            case tc_modulas:
+            {
+                // integer MOD integer
+                int value2 = top()->basic_types.int__;
+                pop();
+
+                int value1 = top()->basic_types.int__;
+                pop();
+
+                if (value2 == 0) cx_runtime_error(rte_division_by_zero);
+
+                push(value1 % value2);
+                p_result_type = p_integer_type;
+            }
+                break;
+            case tc_logic_AND:
+            {
+                // boolean AND boolean
                 int value2 = top()->basic_types.int__;
                 pop();
                 int value1 = top()->basic_types.int__;
                 pop();
 
-                push(value1 * value2);
-                p_result_type = p_integer_type;
-            } else {
-
-                // real    * real
-                // real    * integer
-                // integer * real
-                float value2 = p_operand_type == p_float_type
-                        ? top()->basic_types.float__
-                        : top()->basic_types.int__;
-
-                pop();
-
-                float value1 = p_result_type == p_float_type
-                        ? top()->basic_types.float__
-                        : top()->basic_types.int__;
-
-                pop();
-
-                push(value1 * value2);
-                p_result_type = p_float_type;
+                push(value1 && value2);
+                p_result_type = p_boolean_type;
             }
-            break;
-        case tc_divide:
-        {
-
-            if ((p_result_type == p_integer_type) &&
-                    (p_operand_type == p_integer_type)) {
-
-                int value2 = p_operand_type == p_float_type
-                        ? top()->basic_types.float__
-                        : top()->basic_types.int__;
-
-                pop();
-
-                int value1 = p_result_type == p_float_type
-                        ? top()->basic_types.float__
-                        : top()->basic_types.int__;
-
-                pop();
-
-                if (value2 == 0) cx_runtime_error(rte_division_by_zero);
-
-                push(int(value1 / value2));
-                p_result_type = p_integer_type;
-
-            } else {
-                float value2 = p_operand_type == p_float_type
-                        ? top()->basic_types.float__
-                        : top()->basic_types.int__;
-
-                pop();
-
-                float value1 = p_result_type == p_float_type
-                        ? top()->basic_types.float__
-                        : top()->basic_types.int__;
-
-                pop();
-
-                if (value2 == 0.0f) cx_runtime_error(rte_division_by_zero);
-
-                push(float(value1 / value2));
-                p_result_type = p_float_type;
-            }
-        }
-            break;
-        case tc_modulas:
-        {
-            // integer MOD integer
-            int value2 = top()->basic_types.int__;
-            pop();
-
-            int value1 = top()->basic_types.int__;
-            pop();
-
-            if (value2 == 0) cx_runtime_error(rte_division_by_zero);
-
-            push(value1 % value2);
-            p_result_type = p_integer_type;
-        }
-            break;
-        case tc_logic_AND:
-        {
-            // boolean AND boolean
-            int value2 = top()->basic_types.int__;
-            pop();
-            int value1 = top()->basic_types.int__;
-            pop();
-
-            push(value1 && value2);
-            p_result_type = p_boolean_type;
-        }
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
         }
     }
 
@@ -517,179 +517,179 @@ cx_executor::execute_factor(void) {
     cx_symtab_node *p_id = nullptr;
 
     switch (token) {
-    case tc_identifier:
-    {
-        switch (p_node->defn.how) {
+        case tc_identifier:
+        {
+            switch (p_node->defn.how) {
 
-        case dc_function:
-            p_result_type = execute_subroutine_call(p_node);
+                case dc_function:
+                    p_result_type = execute_subroutine_call(p_node);
+                    break;
+
+                case dc_constant:
+                    p_result_type = execute_constant(p_node);
+                    break;
+                case dc_type:
+                    p_result_type = p_node->p_type;
+                    get_token();
+                    break;
+                default:
+                    if (p_node->p_type->form != fc_stream) {
+                        p_id = p_node;
+                        get_token();
+                        if (token_in(token, tokenlist_assign_ops)) {
+                            execute_assignment(p_id);
+                            p_result_type = execute_variable(p_id, false);
+                        } else {
+                            p_result_type = execute_variable(p_id, false);
+                        }
+                    } else {
+
+                        p_result_type = p_char_type;
+
+                        if (p_node == p_stdin) {
+                            // getch from rlutil
+                            push((char) cx_getch());
+                        } else {
+                            push(fgetc(p_node->p_type->stream.p_file_stream));
+                        }
+
+                        get_token();
+                    }
+
+                    break;
+            }
+        }
             break;
 
-        case dc_constant:
-            p_result_type = execute_constant(p_node);
-            break;
-        case dc_type:
+        case tc_number:
+        {
+            // push the number's integer or real value onto the stack.
+            if (p_node->p_type == p_integer_type) {
+                push(p_node->defn.constant.value.int__);
+            } else {
+                push(p_node->defn.constant.value.float__);
+            }
             p_result_type = p_node->p_type;
             get_token();
+        }
             break;
-        default:
-            if (p_node->p_type->form != fc_stream) {
-                p_id = p_node;
-                get_token();
-                if (token_in(token, tokenlist_assign_ops)) {
-                    execute_assignment(p_id);
-                    p_result_type = execute_variable(p_id, false);
-                } else {
-                    p_result_type = execute_variable(p_id, false);
-                }
+        case tc_char:
+        case tc_string:
+        {
+            //get_token();
+            /* push either a character or a string address onto the
+             * runtime stack, depending on the string length. */
+            int length = strlen(p_node->string__()) - 2; // skip quotes
+            if (length <= 1) {
+                // Character
+                push(p_node->defn.constant.value.char__);
+                p_result_type = p_char_type;
             } else {
 
-                p_result_type = p_char_type;
-
-                if (p_node == p_stdin) {
-                    // getch from rlutil
-                    push((char) cx_getch());
-                } else {
-                    push(fgetc(p_node->p_type->stream.p_file_stream));
-                }
-
-                get_token();
+                push(p_node->defn.constant.value.p_string);
+                p_result_type = p_node->p_type;
             }
 
+            get_token();
+        }
             break;
+        case tc_logic_NOT:
+        {
+            // Execute boolean factor and invert its value.
+            get_token();
+            execute_factor();
+
+            int i = !top()->basic_types.int__;
+            pop();
+
+            push(i);
+            p_result_type = p_boolean_type;
         }
-    }
-        break;
+            break;
 
-    case tc_number:
-    {
-        // push the number's integer or real value onto the stack.
-        if (p_node->p_type == p_integer_type) {
-            push(p_node->defn.constant.value.int__);
-        } else {
-            push(p_node->defn.constant.value.float__);
-        }
-        p_result_type = p_node->p_type;
-        get_token();
-    }
-        break;
-    case tc_char:
-    case tc_string:
-    {
-        //get_token();
-        /* push either a character or a string address onto the
-         * runtime stack, depending on the string length. */
-        int length = strlen(p_node->string__()) - 2; // skip quotes
-        if (length <= 1) {
-            // Character
-            push(p_node->defn.constant.value.char__);
-            p_result_type = p_char_type;
-        } else {
+        case tc_left_paren:
+        {
 
-            push(p_node->defn.constant.value.p_string);
-            p_result_type = p_node->p_type;
-        }
+            // Parenthesized subexpression:  Call execute_expression
+            //                               recursively.
+            get_token(); // first token after (
 
-        get_token();
-    }
-        break;
-    case tc_logic_NOT:
-    {
-        // Execute boolean factor and invert its value.
-        get_token();
-        execute_factor();
-
-        int i = !top()->basic_types.int__;
-        pop();
-
-        push(i);
-        p_result_type = p_boolean_type;
-    }
-        break;
-
-    case tc_left_paren:
-    {
-
-        // Parenthesized subexpression:  Call execute_expression
-        //                               recursively.
-        get_token(); // first token after (
-
-        p_result_type = execute_expression();
-
-        get_token(); // first token after )
-    }
-        break;
-    case tc_left_bracket:
-    {
-
-        get_token();
-        int num_of_elements = 0;
-        int total_size = 0;
-        //int size = 0;
-        int old_size = 0;
-        bool comma = false;
-        void *p_address = nullptr;
-        char *tmp = (char *) p_address;
-        cx_type *init_list = new cx_type(fc_array, 0, nullptr);
-
-        do {
             p_result_type = execute_expression();
 
-            total_size += p_result_type->size;
+            get_token(); // first token after )
+        }
+            break;
+        case tc_left_bracket:
+        {
 
-            p_address = realloc(p_address, old_size + p_result_type->size);
+            get_token();
+            int num_of_elements = 0;
+            int total_size = 0;
+            //int size = 0;
+            int old_size = 0;
+            bool comma = false;
+            void *p_address = nullptr;
+            char *tmp = (char *) p_address;
+            cx_type *init_list = new cx_type(fc_array, 0, nullptr);
 
-            if (p_address == nullptr) {
-                perror("realloc");
-                exit(0);
-            }
+            do {
+                p_result_type = execute_expression();
 
-            tmp = (char *) p_address;
+                total_size += p_result_type->size;
 
-            if (p_result_type->is_scalar_type()) {
-                if (p_result_type == p_integer_type) {
-                    int value = top()->basic_types.int__;
-                    memcpy(&tmp[old_size], &value, p_result_type->size);
-                } else if (p_result_type == p_float_type) {
-                    float value = top()->basic_types.float__;
-                    memcpy(&tmp[old_size], &value, p_result_type->size);
-                } else if (p_result_type == p_char_type) {
-                    char value = top()->basic_types.char__;
-                    memcpy(&tmp[old_size], &value, p_result_type->size);
+                p_address = realloc(p_address, old_size + p_result_type->size);
+
+                if (p_address == nullptr) {
+                    perror("realloc");
+                    exit(0);
                 }
-            } else {
-                void *p_source = top()->basic_types.addr__;
-                memcpy(&tmp[old_size], p_source, p_result_type->size);
-            }
 
-            pop();
-            ++num_of_elements;
-            old_size = total_size;
+                tmp = (char *) p_address;
 
-            if (token == tc_comma) {
-                comma = true;
-                get_token();
-            } else comma = false;
+                if (p_result_type->is_scalar_type()) {
+                    if (p_result_type == p_integer_type) {
+                        int value = top()->basic_types.int__;
+                        memcpy(&tmp[old_size], &value, p_result_type->size);
+                    } else if (p_result_type == p_float_type) {
+                        float value = top()->basic_types.float__;
+                        memcpy(&tmp[old_size], &value, p_result_type->size);
+                    } else if (p_result_type == p_char_type) {
+                        char value = top()->basic_types.char__;
+                        memcpy(&tmp[old_size], &value, p_result_type->size);
+                    }
+                } else {
+                    void *p_source = top()->basic_types.addr__;
+                    memcpy(&tmp[old_size], p_source, p_result_type->size);
+                }
 
-        } while (comma);
+                pop();
+                ++num_of_elements;
+                old_size = total_size;
 
-        // }
-        get_token();
-        push(p_address);
-        init_list->array.element_count = num_of_elements;
-        init_list->array.max_index = num_of_elements;
-        init_list->size = total_size;
-        set_type(init_list->array.p_element_type, p_result_type);
-        set_type(init_list->array.p_index_type, p_integer_type);
+                if (token == tc_comma) {
+                    comma = true;
+                    get_token();
+                } else comma = false;
 
-        p_result_type = init_list;
+            } while (comma);
 
-    }
-        break;
-    case tc_semicolon:
-        break;
-    default:
-        break;
+            // }
+            get_token();
+            push(p_address);
+            init_list->array.element_count = num_of_elements;
+            init_list->array.max_index = num_of_elements;
+            init_list->size = total_size;
+            set_type(init_list->array.p_element_type, p_result_type);
+            set_type(init_list->array.p_index_type, p_integer_type);
+
+            p_result_type = init_list;
+
+        }
+            break;
+        case tc_semicolon:
+            break;
+        default:
+            break;
     }
 
     return p_result_type;
@@ -743,17 +743,17 @@ cx_executor::execute_variable(const cx_symtab_node *p_id,
     do {
         switch (token) {
 
-        case tc_left_subscript:
+            case tc_left_subscript:
 
-            p_type = execute_subscripts(p_type);
+                p_type = execute_subscripts(p_type);
 
-            break;
+                break;
 
-        case tc_dot:
-            p_type = execute_field();
-            break;
+            case tc_dot:
+                p_type = execute_field();
+                break;
 
-        default: done_flag = true;
+            default: done_flag = true;
         }
     } while (!done_flag);
 
@@ -764,18 +764,14 @@ cx_executor::execute_variable(const cx_symtab_node *p_id,
     // with the data value.
     if ((!address_flag) && (p_type->is_scalar_type())) {
         if (p_type == p_float_type) {
-
             cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
             pop();
             push(t->basic_types.float__);
-
-        } else if (p_type->base_type() == p_char_type) {
-
+        } else if (p_type == p_char_type) {
             cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
             pop();
             push(t->basic_types.char__);
         } else {
-
             cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
             pop();
             push(t->basic_types.int__);

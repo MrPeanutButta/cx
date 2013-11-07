@@ -120,53 +120,53 @@ cx_token *cx_icode::get(void) {
 
     // Determine the token class, based on the token code.
     switch (token) {
-    case tc_number: p_token = &number_token;
-        break;
-    case tc_string: p_token = &string_token;
-        break;
+        case tc_number: p_token = &number_token;
+            break;
+        case tc_string: p_token = &string_token;
+            break;
 
-    case tc_identifier:
-        p_token = &word_token;
-        p_token->code__ = tc_identifier;
-        break;
+        case tc_identifier:
+            p_token = &word_token;
+            p_token->code__ = tc_identifier;
+            break;
 
-    case mc_location_marker:
-        p_token = &special_token;
-        p_token->code__ = token;
-        break;
-    default:
-        if (token < tc_IF) {
+        case mc_location_marker:
             p_token = &special_token;
             p_token->code__ = token;
-        } else {
-            p_token = &word_token; // reserved word
-            p_token->code__ = token;
-        }
-        break;
+            break;
+        default:
+            if (token < tc_IF) {
+                p_token = &special_token;
+                p_token->code__ = token;
+            } else {
+                p_token = &word_token; // reserved word
+                p_token->code__ = token;
+            }
+            break;
     }
 
     // Extract the symbol table node and set the token string.
     switch (token) {
-    case tc_identifier:
-    case tc_number:
-    case tc_char:
-    case tc_string:
-        p_node = get_symtab_node();
-        strcpy(p_token->string, p_node->string__());
-        break;
+        case tc_identifier:
+        case tc_number:
+        case tc_char:
+        case tc_string:
+            p_node = get_symtab_node();
+            strcpy(p_token->string, p_node->string__());
+            break;
 
-    case mc_location_marker:
-        p_node = nullptr;
-        p_token->string[0] = '\0';
-        break;
-    case tc_end_of_file:
-    case tc_dummy:
-        break;
-    default:
+        case mc_location_marker:
+            p_node = nullptr;
+            p_token->string[0] = '\0';
+            break;
+        case tc_end_of_file:
+        case tc_dummy:
+            break;
+        default:
 
-        p_node = nullptr;
-        strcpy(p_token->string, cx_symbol_strings[(int) code]);
-        break;
+            p_node = nullptr;
+            strcpy(p_token->string, cx_symbol_strings[(int) code]);
+            break;
     }
 
     return p_token;

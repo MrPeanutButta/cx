@@ -188,53 +188,53 @@ void cx_parser::parse_constant(cx_symtab_node *p_const_id) {
     }
 
     switch (token) {
-    case tc_number:
-        if ((p_token->type() == ty_integer) && (p_const_id->p_type == p_integer_type)) {
-            p_const_id->defn.constant.value.int__ = sign == tc_minus ?
-                    -p_token->value().int__ : p_token->value().int__;
-        } else if ((p_token->type() == ty_real) &&
-                (((p_const_id->p_type == p_float_type)))) {
+        case tc_number:
+            if ((p_token->type() == ty_integer) && (p_const_id->p_type == p_integer_type)) {
+                p_const_id->defn.constant.value.int__ = sign == tc_minus ?
+                        -p_token->value().int__ : p_token->value().int__;
+            } else if ((p_token->type() == ty_real) &&
+                    (((p_const_id->p_type == p_float_type)))) {
 
-            if (p_const_id->p_type == p_float_type) {
-                p_const_id->defn.constant.value.float__ = sign == tc_minus ?
-                        -p_token->value().float__ : p_token->value().float__;
-            } else {
-                p_const_id->defn.constant.value.double__ = sign == tc_minus ?
-                        -p_token->value().float__ : p_token->value().float__;
-            }
-        }
-
-        get_token_append();
-        break;
-
-    case tc_identifier:
-        parse_identifier_constant(p_const_id, sign);
-        break;
-    case tc_char:
-    case tc_string:
-        if (p_const_id->p_type == p_char_type) {
-            int length = strlen(p_token->string__()) - 2;
-
-            if (sign != tc_dummy) cx_error(err_invalid_constant);
-
-            if (length == 1) {
-                p_const_id->defn.constant.value.char__ = p_token->string__()[1];
-
-                //set_type(p_const_id->p_type, p_char_type);
-            } else {
-                char *p_string = new char[length];
-                copy_quoted_string(p_string, p_token->string__());
-
-                p_const_id->defn.constant.value.p_string = p_string;
-
-                //set_type(p_const_id->p_type, new cx_type(length));
+                if (p_const_id->p_type == p_float_type) {
+                    p_const_id->defn.constant.value.float__ = sign == tc_minus ?
+                            -p_token->value().float__ : p_token->value().float__;
+                } else {
+                    p_const_id->defn.constant.value.double__ = sign == tc_minus ?
+                            -p_token->value().float__ : p_token->value().float__;
+                }
             }
 
             get_token_append();
-        } else cx_error(err_invalid_type);
-        break;
-    default:
-        break;
+            break;
+
+        case tc_identifier:
+            parse_identifier_constant(p_const_id, sign);
+            break;
+        case tc_char:
+        case tc_string:
+            if (p_const_id->p_type == p_char_type) {
+                int length = strlen(p_token->string__()) - 2;
+
+                if (sign != tc_dummy) cx_error(err_invalid_constant);
+
+                if (length == 1) {
+                    p_const_id->defn.constant.value.char__ = p_token->string__()[1];
+
+                    //set_type(p_const_id->p_type, p_char_type);
+                } else {
+                    char *p_string = new char[length];
+                    copy_quoted_string(p_string, p_token->string__());
+
+                    p_const_id->defn.constant.value.p_string = p_string;
+
+                    //set_type(p_const_id->p_type, new cx_type(length));
+                }
+
+                get_token_append();
+            } else cx_error(err_invalid_type);
+            break;
+        default:
+            break;
     }
 }
 

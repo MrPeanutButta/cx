@@ -10,7 +10,7 @@
  * @param p_target_id : ptr to the symtab node being assigned some value
  *                    on the stack.
  */
-void cx_executor::execute_assignment (const cx_symtab_node *p_target_id) {
+void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
 
     cx_stack_item *p_target = nullptr; // runtime stack address of target
     cx_type *p_target_type = nullptr; // ptr to target type object
@@ -67,7 +67,6 @@ void cx_executor::execute_assignment (const cx_symtab_node *p_target_id) {
             plus_equal(p_target_id, p_target_type, execute_expression(),
                     p_target, p_target_address);
         }
-
             break;
         case tc_minus_equal:
         {
@@ -145,7 +144,7 @@ void cx_executor::execute_assignment (const cx_symtab_node *p_target_id) {
     pop();
 }
 
-void cx_executor::assign (const cx_symtab_node* p_target_id,
+void cx_executor::assign(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
         void* &p_target_address) {
 
@@ -159,7 +158,7 @@ void cx_executor::assign (const cx_symtab_node* p_target_id,
     } else if (p_target_type == p_file_type) {
 
         // location in io.cpp
-
+        file_out(p_target_id, p_expr_type);
 
     } else {
 
@@ -249,7 +248,7 @@ void cx_executor::assign (const cx_symtab_node* p_target_id,
     }
 }
 
-void cx_executor::plus_plus (cx_type* p_target_type,
+void cx_executor::plus_plus(cx_type* p_target_type,
         cx_stack_item* p_target) {
 
     cx_type_code target_type = p_target_type->type_code;
@@ -307,7 +306,7 @@ void cx_executor::plus_plus (cx_type* p_target_type,
     }
 }
 
-void cx_executor::minus_minus (cx_type* p_target_type,
+void cx_executor::minus_minus(cx_type* p_target_type,
         cx_stack_item* p_target) {
 
     cx_type_code target_type = p_target_type->type_code;
@@ -366,7 +365,7 @@ void cx_executor::minus_minus (cx_type* p_target_type,
 }
 
 void
-cx_executor::plus_equal (const cx_symtab_node* p_target_id,
+cx_executor::plus_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target, void*& p_target_address) {
 
@@ -850,7 +849,7 @@ cx_executor::plus_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::minus_equal (const cx_symtab_node* p_target_id,
+cx_executor::minus_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -1263,7 +1262,7 @@ cx_executor::minus_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::star_equal (const cx_symtab_node* p_target_id,
+cx_executor::star_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -1676,7 +1675,7 @@ cx_executor::star_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::divide_equal (const cx_symtab_node* p_target_id,
+cx_executor::divide_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -2089,7 +2088,7 @@ cx_executor::divide_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::modulas_equal (const cx_symtab_node* p_target_id,
+cx_executor::modulas_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -2378,7 +2377,7 @@ cx_executor::modulas_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::leftshift_equal (const cx_symtab_node* p_target_id,
+cx_executor::leftshift_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -2706,7 +2705,7 @@ cx_executor::leftshift_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::rightshift_equal (const cx_symtab_node* p_target_id,
+cx_executor::rightshift_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -3034,7 +3033,7 @@ cx_executor::rightshift_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::and_equal (const cx_symtab_node* p_target_id,
+cx_executor::and_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -3362,7 +3361,7 @@ cx_executor::and_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::xor_equal (const cx_symtab_node* p_target_id,
+cx_executor::xor_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -3690,7 +3689,7 @@ cx_executor::xor_equal (const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::or_equal (const cx_symtab_node* p_target_id,
+cx_executor::or_equal(const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 

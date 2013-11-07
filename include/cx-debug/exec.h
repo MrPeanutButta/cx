@@ -351,6 +351,9 @@ class cx_executor : public cx_backend {
     void minus_minus(cx_type* p_target_type,
             cx_stack_item* p_target);
 
+    void file_out(const cx_symtab_node* p_target_id,
+            const cx_type* p_expr_type);
+
     void execute_DO(cx_symtab_node *p_function_id);
     void execute_WHILE(cx_symtab_node *p_function_id);
     void execute_IF(cx_symtab_node *p_function_id);

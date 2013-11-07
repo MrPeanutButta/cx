@@ -14,7 +14,7 @@ enum cx_radix_base {
     rb_BINARY = 2,
     rb_HEXADECIMAL = 16,
     rb_OCTAL = 8
-} ;
+};
 
 /*******************
  *                 *
@@ -54,21 +54,21 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
         radix = rb_OCTAL;
         ch = buffer.get_char();
         switch (ch) {
-        case 'x':
-            radix = rb_HEXADECIMAL;
-            ch = buffer.get_char();
-            break;
-        case 'b':
-            radix = rb_BINARY;
-            ch = buffer.get_char();
-            break;
-        case '.':
-            radix = rb_DECIMAL;
-            ch = buffer.put_back_char();
-            break;
-        default:
-            ch = buffer.put_back_char();
-            break;
+            case 'x':
+                radix = rb_HEXADECIMAL;
+                ch = buffer.get_char();
+                break;
+            case 'b':
+                radix = rb_BINARY;
+                ch = buffer.get_char();
+                break;
+            case '.':
+                radix = rb_DECIMAL;
+                ch = buffer.put_back_char();
+                break;
+            default:
+                ch = buffer.put_back_char();
+                break;
         }
     }
 
@@ -191,18 +191,18 @@ int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
 int cx_number_token::char_value(const char &c) {
     if (isxdigit(c)) {
         switch (c) {
-        case 'A':
-        case 'a': return 10;
-        case 'B':
-        case 'b': return 11;
-        case 'C':
-        case 'c': return 12;
-        case 'D':
-        case 'd': return 13;
-        case 'E':
-        case 'e': return 14;
-        case 'F':
-        case 'f': return 15;
+            case 'A':
+            case 'a': return 10;
+            case 'B':
+            case 'b': return 11;
+            case 'C':
+            case 'c': return 12;
+            case 'D':
+            case 'd': return 13;
+            case 'E':
+            case 'e': return 14;
+            case 'F':
+            case 'f': return 15;
         }
     }
 

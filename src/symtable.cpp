@@ -30,16 +30,16 @@ bool xreference_flag = false; // true = cross-referencing on, false = off
 cx_define::~cx_define(void) {
     switch (how) {
 
-    case dc_program:
-    case dc_function:
+        case dc_program:
+        case dc_function:
 
-        if (routine.which == rc_declared) {
-            if (routine.p_symtab != nullptr) delete routine.p_symtab;
-            if (routine.p_icode != nullptr) delete routine.p_icode;
-        }
-        break;
+            if (routine.which == rc_declared) {
+                if (routine.p_symtab != nullptr) delete routine.p_symtab;
+                if (routine.p_icode != nullptr) delete routine.p_icode;
+            }
+            break;
 
-    default: break;
+        default: break;
     }
 }
 
@@ -122,16 +122,16 @@ void cx_symtab_node::print(void) const {
  */
 void cx_symtab_node::print_identifier(void) const {
     switch (defn.how) {
-    case dc_constant: print_constant();
-        break;
-    case dc_type: print_type();
-        break;
+        case dc_constant: print_constant();
+            break;
+        case dc_type: print_type();
+            break;
 
-    case dc_variable:
-    case dc_member: print_var_or_field();
-        break;
-    default:
-        break;
+        case dc_variable:
+        case dc_member: print_var_or_field();
+            break;
+        default:
+            break;
     }
 }
 

@@ -50,35 +50,35 @@ void cx_parser::parse_type_definitions(cx_symtab_node *p_function_id) {
  */
 cx_type *cx_parser::parse_type_spec(cx_symtab_node *p_node) {
     switch (token) {
-    case tc_identifier:
-    {
-        cx_symtab_node *p_id = find(p_token->string__());
+        case tc_identifier:
+        {
+            cx_symtab_node *p_id = find(p_token->string__());
 
-        switch (p_id->defn.how) {
-        case dc_type: return parse_identifier_type(p_id);
-        case dc_constant: return parse_subrange_type(p_id);
-        default:
-            cx_error(err_not_a_type_identifier);
-            get_token_append();
-            return (p_dummy_type);
+            switch (p_id->defn.how) {
+                case dc_type: return parse_identifier_type(p_id);
+                case dc_constant: return parse_subrange_type(p_id);
+                default:
+                    cx_error(err_not_a_type_identifier);
+                    get_token_append();
+                    return (p_dummy_type);
+            }
         }
-    }
 
-    case tc_left_bracket: return parse_enumeration_type();
+        case tc_left_bracket: return parse_enumeration_type();
 
-        /* found empty subscript.
-         * array must have initializer */
-    case tc_right_subscript: return parse_assignment(p_node);
-        //        case tcRecord: return parse_complex_type();
-    case tc_plus:
-    case tc_minus:
-    case tc_number:
-    case tc_char:
-    case tc_string: return parse_subrange_type(nullptr);
+            /* found empty subscript.
+             * array must have initializer */
+        case tc_right_subscript: return parse_assignment(p_node);
+            //        case tcRecord: return parse_complex_type();
+        case tc_plus:
+        case tc_minus:
+        case tc_number:
+        case tc_char:
+        case tc_string: return parse_subrange_type(nullptr);
 
-    default:
-        cx_error(err_invalid_type);
-        return (p_dummy_type);
+        default:
+            cx_error(err_invalid_type);
+            return (p_dummy_type);
 
     }
 }
@@ -206,60 +206,60 @@ cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit)
     }
 
     switch (token) {
-    case tc_number:
-        if (p_token->type() == ty_integer) {
-            limit = sign == tc_minus ?
-                    -p_token->value().int__ :
-                    p_token->value().int__;
+        case tc_number:
+            if (p_token->type() == ty_integer) {
+                limit = sign == tc_minus ?
+                        -p_token->value().int__ :
+                        p_token->value().int__;
 
-            p_type = p_integer_type;
+                p_type = p_integer_type;
 
-        } else cx_error(err_invalid_subrange_type);
-        break;
-    case tc_identifier:
-        if (!p_limit_id) p_limit_id = find(p_token->string__());
-
-        if (p_limit_id->defn.how == dc_undefined) {
-            p_limit_id->defn.how = dc_constant;
-            p_type = set_type(p_limit_id->p_type, p_dummy_type);
+            } else cx_error(err_invalid_subrange_type);
             break;
-        } else if ((p_limit_id->p_type == p_float_type) ||
-                (p_limit_id->p_type == p_dummy_type) ||
-                (p_limit_id->p_type->form == fc_array)) {
-            cx_error(err_invalid_subrange_type);
-        } else if (p_limit_id->defn.how == dc_constant) {
+        case tc_identifier:
+            if (!p_limit_id) p_limit_id = find(p_token->string__());
 
-            if (p_limit_id->p_type == p_integer_type) {
-                limit = sign == tc_minus
-                        ? -p_limit_id->defn.constant.value.int__
-                        : p_limit_id->defn.constant.value.int__;
-            } else if (p_limit_id->p_type == p_char_type) {
-                if (sign != tc_dummy) cx_error(err_invalid_constant);
-                limit = p_limit_id->defn.constant.value.char__;
-            } else if (p_limit_id->p_type->form == fc_enum) {
-                if (sign != tc_dummy) cx_error(err_invalid_constant);
-                limit = p_limit_id->defn.constant.value.int__;
+            if (p_limit_id->defn.how == dc_undefined) {
+                p_limit_id->defn.how = dc_constant;
+                p_type = set_type(p_limit_id->p_type, p_dummy_type);
+                break;
+            } else if ((p_limit_id->p_type == p_float_type) ||
+                    (p_limit_id->p_type == p_dummy_type) ||
+                    (p_limit_id->p_type->form == fc_array)) {
+                cx_error(err_invalid_subrange_type);
+            } else if (p_limit_id->defn.how == dc_constant) {
+
+                if (p_limit_id->p_type == p_integer_type) {
+                    limit = sign == tc_minus
+                            ? -p_limit_id->defn.constant.value.int__
+                            : p_limit_id->defn.constant.value.int__;
+                } else if (p_limit_id->p_type == p_char_type) {
+                    if (sign != tc_dummy) cx_error(err_invalid_constant);
+                    limit = p_limit_id->defn.constant.value.char__;
+                } else if (p_limit_id->p_type->form == fc_enum) {
+                    if (sign != tc_dummy) cx_error(err_invalid_constant);
+                    limit = p_limit_id->defn.constant.value.int__;
+                }
+                p_type = p_limit_id->p_type;
+            } else cx_error(err_not_a_constant_identifier);
+
+            break;
+
+        case tc_char:
+        case tc_string:
+            if (sign != tc_dummy) cx_error(err_invalid_constant);
+
+            if (strlen(p_token->string__()) != 3) {
+                cx_error(err_invalid_subrange_type);
             }
-            p_type = p_limit_id->p_type;
-        } else cx_error(err_not_a_constant_identifier);
 
-        break;
+            limit = p_token->string__()[1];
+            p_type = p_char_type;
+            break;
 
-    case tc_char:
-    case tc_string:
-        if (sign != tc_dummy) cx_error(err_invalid_constant);
-
-        if (strlen(p_token->string__()) != 3) {
-            cx_error(err_invalid_subrange_type);
-        }
-
-        limit = p_token->string__()[1];
-        p_type = p_char_type;
-        break;
-
-    default:
-        cx_error(err_missing_constant);
-        return p_type;
+        default:
+            cx_error(err_missing_constant);
+            return p_type;
     }
 
     get_token_append();

@@ -14,7 +14,7 @@
  *
  */
 
-//#include cxstdio
+#include cxstdio
 //#include cxctype
 //#include cxstring
 //#include cxmath
@@ -24,6 +24,8 @@ int main() {
 
     int i;
     char *t = "hihihihihihihihihihihihihihihi";
+    puts(t);
+
     i = 456;
     i += 2.0;
     i *= 2;
@@ -32,7 +34,9 @@ int main() {
     i = 0xFFFFFF;
     i >>= 8;
     t += " byebyebyebyebyebyebyebyebyebyebyebyebyebye";
+    puts(t);
 
+    
     //  //  long l = 444400;
     //
     //   // uint8 u = 0xff;

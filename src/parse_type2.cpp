@@ -303,47 +303,47 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
 
         // check scope and fast forward list to the end
         switch (token) {
-        case tc_PUBLIC:
-            scope = tc_PUBLIC;
-            get_token();
-            conditional_get_token(tc_colon, err_missing_colon);
-            ///p_first_id = p_complex_type->complex.MemberTable[scope]->root();
+            case tc_PUBLIC:
+                scope = tc_PUBLIC;
+                get_token();
+                conditional_get_token(tc_colon, err_missing_colon);
+                ///p_first_id = p_complex_type->complex.MemberTable[scope]->root();
 
-            offset = 0;
-            while (p_first_id) {
-                offset += p_first_id->p_type->size;
-                p_first_id = p_first_id->next__;
-            }
+                offset = 0;
+                while (p_first_id) {
+                    offset += p_first_id->p_type->size;
+                    p_first_id = p_first_id->next__;
+                }
 
-            break;
-        case tc_PRIVATE:
-            scope = tc_PRIVATE;
-            get_token();
-            conditional_get_token(tc_colon, err_missing_colon);
-            //p_first_id = p_complex_type->complex.MemberTable[scope]->root();
+                break;
+            case tc_PRIVATE:
+                scope = tc_PRIVATE;
+                get_token();
+                conditional_get_token(tc_colon, err_missing_colon);
+                //p_first_id = p_complex_type->complex.MemberTable[scope]->root();
 
-            offset = 0;
-            while (p_first_id) {
-                offset += p_first_id->p_type->size;
-                p_first_id = p_first_id->next__;
-            }
+                offset = 0;
+                while (p_first_id) {
+                    offset += p_first_id->p_type->size;
+                    p_first_id = p_first_id->next__;
+                }
 
-            break;
-        case tc_PROTECTED:
-            scope = tc_PROTECTED;
-            get_token();
-            conditional_get_token(tc_colon, err_missing_colon);
-            // p_first_id = p_complex_type->complex.MemberTable[scope]->root();
+                break;
+            case tc_PROTECTED:
+                scope = tc_PROTECTED;
+                get_token();
+                conditional_get_token(tc_colon, err_missing_colon);
+                // p_first_id = p_complex_type->complex.MemberTable[scope]->root();
 
-            offset = 0;
-            while (p_first_id) {
-                offset += p_first_id->p_type->size;
-                p_first_id = p_first_id->next__;
-            }
+                offset = 0;
+                while (p_first_id) {
+                    offset += p_first_id->p_type->size;
+                    p_first_id = p_first_id->next__;
+                }
 
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
         }
 
         //member_table = p_complex_type->complex.MemberTable[scope];
