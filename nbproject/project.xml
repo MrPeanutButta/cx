@@ -14,6 +14,10 @@
                 <sourceRootElem>src/cx-debug</sourceRootElem>
                 <sourceRootElem>include/cx-debug</sourceRootElem>
                 <sourceRootElem>src/cx-debug</sourceRootElem>
+                <sourceRootElem>include/cx-debug</sourceRootElem>
+                <sourceRootElem>src/cx-debug</sourceRootElem>
+                <sourceRootElem>include/cx-debug</sourceRootElem>
+                <sourceRootElem>src/cx-debug</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

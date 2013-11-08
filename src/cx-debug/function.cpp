@@ -186,7 +186,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 const int num_of_elements = size / p_actual_type->base_type()->size;
 
                 p_target_address = realloc(p_target_address, size);
-                memset(p_target_address, 0, size);
+                //memset(p_target_address, 0, size);
 
                 if (p_target_address == nullptr) {
                     perror("realloc");

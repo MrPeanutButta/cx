@@ -129,7 +129,6 @@ cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
         else if (p_type == p_uint16_type) push((uint16_t) 0);
         else if (p_type == p_uint32_type) push((uint32_t) 0);
         else if (p_type == p_uint64_type) push((uint64_t) 0);
-
         else if (p_type == p_boolean_type) push((bool)false);
         else if (p_type == p_char_type) push((char) '\0');
         else if (p_type->form == fc_enum) push((int) 0);

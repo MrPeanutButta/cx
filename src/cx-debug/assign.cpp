@@ -10,7 +10,7 @@
  * @param p_target_id : ptr to the symtab node being assigned some value
  *                    on the stack.
  */
-void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
+void cx_executor::execute_assignment (const cx_symtab_node *p_target_id) {
 
     cx_stack_item *p_target = nullptr; // runtime stack address of target
     cx_type *p_target_type = nullptr; // ptr to target type object
@@ -144,18 +144,470 @@ void cx_executor::execute_assignment(const cx_symtab_node *p_target_id) {
     pop();
 }
 
-void cx_executor::assign(const cx_symtab_node* p_target_id,
+void cx_executor::assign (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
         void* &p_target_address) {
 
     cx_type_code target_type = p_target_type->type_code;
     cx_type_code expr_type = p_expr_type->type_code;
 
+    mem_block *mem = &top()->basic_types;
+    int *t_int = &p_target->basic_types.int__;
+    char *t_char = &p_target->basic_types.char__;
+    wchar_t *t_wchar = &p_target->basic_types.wchar__;
+    float *t_float = &p_target->basic_types.float__;
+    bool *t_bool = &p_target->basic_types.bool__;
+    uint8_t *t_uint8 = &p_target->basic_types.uint8__;
+    uint16_t *t_uint16 = &p_target->basic_types.uint16__;
+    uint32_t *t_uint32 = &p_target->basic_types.uint32__;
+    uint64_t *t_uint64 = &p_target->basic_types.uint64__;
+
     if (p_target_type->is_scalar_type()) {
 
-        memcpy(&p_target->basic_types, &top()->basic_types, p_expr_type->size);
+        //memcpy(&p_target->basic_types, &top()->basic_types, p_expr_type->size);
+        switch (target_type) {
 
-    } else if (p_target_type == p_file_type) {
+            case cx_int:
+            {
+                switch (expr_type) {
+                    case cx_int:
+                    {
+                        *t_int = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_int = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_int = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_int = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_int = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_int = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_int = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_int = mem->uint64__;
+                    }
+                        break;
+                    default:break;
+                }
+            }
+                break;
+            case cx_bool:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_bool = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_bool = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_bool = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_bool = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_bool = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_bool = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_bool = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_bool = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            case cx_char:
+            {
+                switch (expr_type) {
+                    case cx_int:
+                    {
+                        *t_char = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_char = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_char = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_char = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_char = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_char = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_char = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_char = mem->uint64__;
+                    }
+                        break;
+                    default:break;
+                }
+            }
+                break;
+            case cx_wchar:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_wchar = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_wchar = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_wchar = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_wchar = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_wchar = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_wchar = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_wchar = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_wchar = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            case cx_float:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_float = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_float = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_float = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_float = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_float = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_float = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_float = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_float = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            case cx_uint8:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_uint8 = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_uint8 = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_uint8 = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_uint8 = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_uint8 = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_uint8 = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_uint8 = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_uint8 = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            case cx_uint16:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_uint16 = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_uint16 = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_uint16 = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_uint16 = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_uint16 = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_uint16 = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_uint16 = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_uint16 = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            case cx_uint32:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_uint32 = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_uint32 = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_uint32 = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_uint32 = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_uint32 = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_uint32 = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_uint32 = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_uint32 = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            case cx_uint64:
+            {
+                switch (expr_type) {
+
+                    case cx_int:
+                    {
+                        *t_uint64 = mem->int__;
+                    }
+                        break;
+                    case cx_char:
+                    {
+                        *t_uint64 = mem->char__;
+                    }
+                        break;
+                    case cx_wchar:
+                    {
+                        *t_uint64 = mem->wchar__;
+                    }
+                        break;
+                    case cx_float:
+                    {
+                        *t_uint64 = mem->float__;
+                    }
+                        break;
+                    case cx_uint8:
+                    {
+                        *t_uint64 = mem->uint8__;
+                    }
+                        break;
+                    case cx_uint16:
+                    {
+                        *t_uint64 = mem->uint16__;
+                    }
+                        break;
+                    case cx_uint32:
+                    {
+                        *t_uint64 = mem->uint32__;
+                    }
+                        break;
+                    case cx_uint64:
+                    {
+                        *t_uint64 = mem->uint64__;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+                break;
+            default:
+                break;
+        }
+    } else if (target_type == cx_file) {
 
         // location in io.cpp
         file_out(p_target_id, p_expr_type);
@@ -178,56 +630,47 @@ void cx_executor::assign(const cx_symtab_node* p_target_id,
             switch (expr_type) {
                 case cx_int:
                 {
-                    int value = top()->basic_types.int__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_int, sizeof (int));
                 }
                     break;
                 case cx_char:
                 {
-                    char value = top()->basic_types.char__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_char, sizeof (char));
                 }
                     break;
                 case cx_wchar:
                 {
-                    wchar_t value = top()->basic_types.wchar__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_wchar, sizeof (wchar_t));
                 }
                     break;
                 case cx_float:
                 {
-                    float value = top()->basic_types.float__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_float, sizeof (float));
                 }
                     break;
                 case cx_bool:
                 {
-                    bool value = top()->basic_types.bool__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_bool, sizeof (bool));
                 }
                     break;
                 case cx_uint8:
                 {
-                    uint8_t value = top()->basic_types.uint8__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_uint8, sizeof (uint8_t));
                 }
                     break;
                 case cx_uint16:
                 {
-                    uint16_t value = top()->basic_types.uint16__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_uint16, sizeof (uint16_t));
                 }
                     break;
                 case cx_uint32:
                 {
-                    uint32_t value = top()->basic_types.uint32__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_uint32, sizeof (uint32_t));
                 }
                     break;
                 case cx_uint64:
                 {
-                    uint64_t value = top()->basic_types.uint64__;
-                    memcpy(tmp, &value, size);
+                    memcpy(tmp, t_uint64, sizeof (uint64_t));
                 }
                     break;
                 default:
@@ -248,7 +691,7 @@ void cx_executor::assign(const cx_symtab_node* p_target_id,
     }
 }
 
-void cx_executor::plus_plus(cx_type* p_target_type,
+void cx_executor::plus_plus (cx_type* p_target_type,
         cx_stack_item* p_target) {
 
     cx_type_code target_type = p_target_type->type_code;
@@ -306,7 +749,7 @@ void cx_executor::plus_plus(cx_type* p_target_type,
     }
 }
 
-void cx_executor::minus_minus(cx_type* p_target_type,
+void cx_executor::minus_minus (cx_type* p_target_type,
         cx_stack_item* p_target) {
 
     cx_type_code target_type = p_target_type->type_code;
@@ -365,7 +808,7 @@ void cx_executor::minus_minus(cx_type* p_target_type,
 }
 
 void
-cx_executor::plus_equal(const cx_symtab_node* p_target_id,
+cx_executor::plus_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target, void*& p_target_address) {
 
@@ -849,7 +1292,7 @@ cx_executor::plus_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::minus_equal(const cx_symtab_node* p_target_id,
+cx_executor::minus_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -1262,7 +1705,7 @@ cx_executor::minus_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::star_equal(const cx_symtab_node* p_target_id,
+cx_executor::star_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -1675,7 +2118,7 @@ cx_executor::star_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::divide_equal(const cx_symtab_node* p_target_id,
+cx_executor::divide_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -2088,7 +2531,7 @@ cx_executor::divide_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::modulas_equal(const cx_symtab_node* p_target_id,
+cx_executor::modulas_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -2377,7 +2820,7 @@ cx_executor::modulas_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::leftshift_equal(const cx_symtab_node* p_target_id,
+cx_executor::leftshift_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -2705,7 +3148,7 @@ cx_executor::leftshift_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::rightshift_equal(const cx_symtab_node* p_target_id,
+cx_executor::rightshift_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -3033,7 +3476,7 @@ cx_executor::rightshift_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::and_equal(const cx_symtab_node* p_target_id,
+cx_executor::and_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -3361,7 +3804,7 @@ cx_executor::and_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::xor_equal(const cx_symtab_node* p_target_id,
+cx_executor::xor_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
@@ -3689,7 +4132,7 @@ cx_executor::xor_equal(const cx_symtab_node* p_target_id,
 }
 
 void
-cx_executor::or_equal(const cx_symtab_node* p_target_id,
+cx_executor::or_equal (const cx_symtab_node* p_target_id,
         cx_type* p_target_type, const cx_type* p_expr_type,
         cx_stack_item* p_target) {
 
