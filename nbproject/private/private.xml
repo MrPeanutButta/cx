@@ -27,16 +27,8 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/src/cx-debug/assign.cpp</file>
             <file>file:/Users/aaro3965/Dropbox/src/Cx/include/cx-debug/exec.h</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/include/icode.h</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/include/misc.h</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/src/icode.cpp</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/doc/READMEs/TODO.md</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/README.md</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/src/cx-debug/statment.cpp</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/doc/READMEs/STATUS.md</file>
+            <file>file:/Users/aaro3965/Dropbox/src/Cx/src/cx-debug/function.cpp</file>
         </group>
     </open-files>
 </project-private>

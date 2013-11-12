@@ -30,7 +30,7 @@
  * @param stream : reference to a FILE object that identifies an output stream.
  * @return ASCII code of character written. */
 
-int putc(char c, file &stream){
+char putc(char c, file &stream){
     stream = c;
     return c;
 }
@@ -43,7 +43,7 @@ int putc(char c, file &stream){
  * @param c : character to write to stdout.
  * @return ASCII code of character written. */
 
-int putchar(char c){
+char putchar(char c){
     return putc(c, stdout);
 }
 

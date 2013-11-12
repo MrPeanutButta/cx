@@ -121,12 +121,6 @@
   <sourceRootList>
     <Elem>include/cx-debug</Elem>
     <Elem>src/cx-debug</Elem>
-    <Elem>include/cx-debug</Elem>
-    <Elem>src/cx-debug</Elem>
-    <Elem>include/cx-debug</Elem>
-    <Elem>src/cx-debug</Elem>
-    <Elem>include/cx-debug</Elem>
-    <Elem>src/cx-debug</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

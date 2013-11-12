@@ -188,47 +188,47 @@ public:
     cx_runtime_stack(void);
 
     void push(const bool &value) {
-        cx_runstack.push_back(new cx_stack_item((bool)value));
-    }
+            cx_runstack.push_back(new cx_stack_item((bool)value));
+        }
 
     void push(const uint8_t &value) {
-        cx_runstack.push_back(new cx_stack_item((uint8_t) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((uint8_t) value));
+        }
 
     void push(const uint16_t &value) {
-        cx_runstack.push_back(new cx_stack_item((uint16_t) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((uint16_t) value));
+        }
 
     void push(const uint32_t &value) {
-        cx_runstack.push_back(new cx_stack_item((uint32_t) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((uint32_t) value));
+        }
 
     void push(const uint64_t &value) {
-        cx_runstack.push_back(new cx_stack_item((uint64_t) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((uint64_t) value));
+        }
 
     void push(const wchar_t &value) {
         cx_runstack.push_back(new cx_stack_item((wchar_t) value));
-    }
+        }
 
     void push(const int &value) {
-        cx_runstack.push_back(new cx_stack_item((int) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((int) value));
+        }
 
     void push(const float &value) {
-        cx_runstack.push_back(new cx_stack_item((float) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((float) value));
+        }
 
     void push(const char &value) {
-        cx_runstack.push_back(new cx_stack_item((char) value));
-    }
+            cx_runstack.push_back(new cx_stack_item((char) value));
+        }
 
     void push(void *addr) {
         cx_runstack.push_back(new cx_stack_item(addr));
-    }
+        }
 
     void push_frame(void) {
-        cx_runstack.push_back(new cx_frame_header);
+            cx_runstack.push_back(new cx_frame_header);
 
         cx_frame_header *prev = (cx_frame_header *) top();
 
@@ -257,7 +257,7 @@ public:
             if (cx_dev_debug_flag)
                 std::clog << "item not found on the stack\n";
 
-        }
+    }
     }
 
     cx_stack_item *top(void) const {
@@ -303,7 +303,7 @@ class cx_executor : public cx_backend {
     // Statements
     cx_symtab_node *enter_new(cx_symtab_node *p_function_id,
             const char *p_string);
-    cx_symtab_node *allocate_new_node(cx_symtab_node *p_function_id);
+    //cx_symtab_node *allocate_new_node(cx_symtab_node *p_function_id);
     void execute_statement(cx_symtab_node *p_function_id);
     void execute_statement_list(cx_symtab_node *p_function_id,
             cx_token_code terminator);

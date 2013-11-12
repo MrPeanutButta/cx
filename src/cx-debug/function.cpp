@@ -14,7 +14,7 @@
  *
  * @param p_function_id : ptr to the routine symtab node
  */
-void cx_executor::execute_routine(cx_symtab_node *p_function_id) {
+void cx_executor::execute_routine (cx_symtab_node *p_function_id) {
 
     enter_routine(p_function_id);
 
@@ -29,7 +29,7 @@ void cx_executor::execute_routine(cx_symtab_node *p_function_id) {
  *
  * @param p_function_id : ptr to routine name's symbol table node
  */
-void cx_executor::enter_routine(cx_symtab_node * p_function_id) {
+void cx_executor::enter_routine (cx_symtab_node * p_function_id) {
     cx_symtab_node *p_id; // ptr to local variable's symtab node
 
     trace_routine_entry(p_function_id);
@@ -52,7 +52,7 @@ void cx_executor::enter_routine(cx_symtab_node * p_function_id) {
  *
  * @param p_function_id : ptr to routine name's symbol table node
  */
-void cx_executor::exit_routine(cx_symtab_node *p_function_id) {
+void cx_executor::exit_routine (cx_symtab_node *p_function_id) {
     cx_symtab_node *p_id; // ptr to symtab node of local variable or parm
 
     trace_routine_exit(p_function_id);
@@ -78,7 +78,7 @@ void cx_executor::exit_routine(cx_symtab_node *p_function_id) {
  *
  * @return: ptr to the call's type object
  */
-cx_type *cx_executor::execute_subroutine_call(cx_symtab_node *p_function_id) {
+cx_type *cx_executor::execute_subroutine_call (cx_symtab_node *p_function_id) {
     /*return p_function_id->defn.routine.which == rc_declared
                 ? execute_declared_subroutine_call(p_function_id)
                 : execute_standard_subroutine_call(p_function_id);*/
@@ -130,7 +130,7 @@ cx_type *cx_executor::execute_declared_subroutine_call
  *
  * @param p_function_id : ptr to the subroutine name's symtab node
  */
-void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
+void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
     cx_symtab_node *p_formal_id; // ptr to formal parm's symtab node
 
     // Loop to execute each actual parameter.
@@ -225,7 +225,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
  *
  * @param p_function_id : ptr to the subroutine name's symtab node
  */
-void cx_executor::execute_RETURN(cx_symtab_node *p_function_id) {
+void cx_executor::execute_RETURN (cx_symtab_node * p_function_id) {
     execute_assignment(p_function_id);
     token = tc_dummy;
 }
