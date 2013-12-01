@@ -1,0 +1,24 @@
+/* Logical NOT testing empty array
+ */
+#include cxstdio
+
+int main () {
+
+    // not empty
+    char *array1 = "not empty";
+
+    // empty
+    char *array2;
+
+    if ((!array1) && (!array2)) {
+        puts("both arrays are empty");
+    } else if (!array1) {
+        puts("array1 is empty");
+    } else if (!array2) {
+        puts("array2 is empty");
+    } else {
+        puts("neither array is empty");
+    }
+
+    return 0;
+}

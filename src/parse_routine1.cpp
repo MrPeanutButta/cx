@@ -19,7 +19,7 @@ extern cx_symtab_node *p_program_ptr_id;
  * @param p_function_id : ptr to the function id's symbol table node.
  * @return ptr to function id's symbol table node.
  */
-cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) {
+cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id) {
     // enter the next__ nesting level and open a new scope
     // for the function.
     symtab_stack.enter_scope();
@@ -31,7 +31,7 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
     int total_parm_size; // total byte size of all parms
 
     cx_symtab_node *p_parm_list = parse_formal_parm_list(p_function_id, parm_count,
-            total_parm_size);
+                                                         total_parm_size);
 
     p_function_id->defn.routine.parm_count = parm_count;
     p_function_id->defn.routine.total_parm_size = total_parm_size;
@@ -80,7 +80,7 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
  *
  * @param p_function_id : ptr to symbol table node of function's id.
  */
-void cx_parser::parse_block(cx_symtab_node *p_function_id) {
+void cx_parser::parse_block (cx_symtab_node *p_function_id) {
     // <compound-statement> : reset the icode and append BEGIN to it,
     //                        and then parse the compound statement.
     resync(tokenlist_statement_start);

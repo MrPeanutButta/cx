@@ -43,7 +43,7 @@ cx_runtime_stack::cx_runtime_stack (void) {
  */
 cx_frame_header *
 cx_runtime_stack::push_frame_header (int old_level, int new_level,
-        cx_icode *p_icode) {
+                                     cx_icode *p_icode) {
 
     push(-1); // function return value (placeholder)
     cx_stack_item *return_value = (cx_stack_item *) top();
@@ -72,7 +72,7 @@ cx_runtime_stack::push_frame_header (int old_level, int new_level,
 
 void
 cx_runtime_stack::activate_frame (cx_frame_header *p_new_frame_base,
-        const int &location) {
+                                  const int &location) {
 
     p_frame_base = p_new_frame_base;
     p_frame_base->return_address.location->basic_types.int__ = location;
@@ -88,7 +88,7 @@ cx_runtime_stack::activate_frame (cx_frame_header *p_new_frame_base,
  */
 void
 cx_runtime_stack::pop_frame (const cx_symtab_node *p_function_id,
-        cx_icode *&p_icode) {
+                             cx_icode *&p_icode) {
 
     cx_frame_header *p_header = p_frame_base;
 
@@ -126,23 +126,19 @@ cx_runtime_stack::allocate_value (cx_symtab_node *p_id) {
         else if (p_type == p_float_type) push((float) 0.0);
         else if (p_type == p_wchar_type) push((wchar_t)'\0');
         else if (p_type == p_uint8_type) push((uint8_t) 0);
-        else if (p_type == p_uint16_type) push((uint16_t) 0);
-        else if (p_type == p_uint32_type) push((uint32_t) 0);
-        else if (p_type == p_uint64_type) push((uint64_t) 0);
         else if (p_type == p_boolean_type) push((bool)false);
         else if (p_type == p_char_type) push((char) '\0');
         else if (p_type->form == fc_enum) push((int) 0);
     } else {
 
-        if (p_type->size > 0) {
-            // Array or record
-            const int size = p_type->size;
-            void *addr = malloc(size + 1);
-            //memset(addr, 0, size);
-            push(addr);
-        } else {
-            push((void *) nullptr);
-        }
+        //        if (p_type->size > 0) {
+        //            // Array or record
+        //            const int size = p_type->size;
+        //            void *addr = malloc(size + 1);
+        //            push(addr);
+        //        } else {
+        push((void *) nullptr);
+        //}
     }
 
     /* save runstack address.
@@ -159,10 +155,9 @@ cx_runtime_stack::allocate_value (cx_symtab_node *p_id) {
  */
 void
 cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
-    return;
-           
-    if(p_id->runstack_item == nullptr) return;
-    
+
+    if (p_id->runstack_item == nullptr) return;
+
     void *addr = p_id->runstack_item->basic_types.addr__;
     cx_type_form_code form = p_id->p_type->form;
     cx_define_code def_how = p_id->defn.how;
@@ -235,7 +230,7 @@ void
 cx_executor::range_check (const cx_type *p_target_type, int value) {
 
     if ((p_target_type->form == fc_array)
-            && ((value < p_target_type->array.min_index)
+        && ((value < p_target_type->array.min_index)
             || (value > p_target_type->array.max_index))) {
         cx_runtime_error(rte_value_out_of_range);
     }

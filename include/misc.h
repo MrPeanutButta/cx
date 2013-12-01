@@ -105,17 +105,30 @@ enum cx_data_type {
 ///  cx_data_value          Data value.
 
 union cx_data_value {
-    int int__;
-    unsigned int u_int__;
-    float float__;
-    double double__;
-    char char__;
-    unsigned char u_char__;
+//    int int__;
+//    unsigned int u_int__;
+//    float float__;
+//    double double__;
+//    char char__;
+//    unsigned char u_char__;
+//
+//    bool bool__;
+//
+//    //needed???
+//    char *p_string;
+        // unsigned
+    uint8_t uint8__;
 
     bool bool__;
+    // signed
+    int int__;
+    float float__;
 
-    //needed???
-    char *p_string;
+    char char__;
+    wchar_t wchar__;
+
+    // pointer, reference, record or array
+    void *addr__;
 };
 
 typedef std::map<char, cx_char_code> cx_char_code_map;

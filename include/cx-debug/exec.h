@@ -15,16 +15,10 @@ class cx_type;
 extern bool cx_dev_debug_flag;
 
 union mem_block {
-    // basic types
-
     // unsigned
     uint8_t uint8__;
-    uint16_t uint16__;
-    uint32_t uint32__;
-    uint64_t uint64__;
 
     bool bool__;
-
     // signed
     int int__;
     float float__;
@@ -53,27 +47,6 @@ struct cx_stack_item {
 
         if (cx_dev_debug_flag)
             std::clog << "new uint8 = " << basic_types.uint8__ << std::endl;
-    }
-
-    cx_stack_item(const uint16_t &value) {
-        basic_types.uint16__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new uint16 = " << basic_types.uint16__ << std::endl;
-    }
-
-    cx_stack_item(const uint32_t &value) {
-        basic_types.uint32__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new uint32 = " << basic_types.uint32__ << std::endl;
-    }
-
-    cx_stack_item(const uint64_t &value) {
-        basic_types.uint64__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new uint64 = " << basic_types.uint64__ << std::endl;
     }
 
     cx_stack_item(const bool &value) {
@@ -177,6 +150,7 @@ struct cx_frame_header : public cx_stack_item {
 ///  cx_runtime_stack       Runtime stack class.
 
 class cx_runtime_stack {
+private:
     cx_stack cx_runstack;
 
     const cx_frame_header *p_stackbase;
@@ -188,47 +162,35 @@ public:
     cx_runtime_stack(void);
 
     void push(const bool &value) {
-            cx_runstack.push_back(new cx_stack_item((bool)value));
-        }
+        cx_runstack.push_back(new cx_stack_item((bool)value));
+    }
 
     void push(const uint8_t &value) {
-            cx_runstack.push_back(new cx_stack_item((uint8_t) value));
-        }
-
-    void push(const uint16_t &value) {
-            cx_runstack.push_back(new cx_stack_item((uint16_t) value));
-        }
-
-    void push(const uint32_t &value) {
-            cx_runstack.push_back(new cx_stack_item((uint32_t) value));
-        }
-
-    void push(const uint64_t &value) {
-            cx_runstack.push_back(new cx_stack_item((uint64_t) value));
-        }
+        cx_runstack.push_back(new cx_stack_item((uint8_t) value));
+    }
 
     void push(const wchar_t &value) {
         cx_runstack.push_back(new cx_stack_item((wchar_t) value));
-        }
+    }
 
     void push(const int &value) {
-            cx_runstack.push_back(new cx_stack_item((int) value));
-        }
+        cx_runstack.push_back(new cx_stack_item((int) value));
+    }
 
     void push(const float &value) {
-            cx_runstack.push_back(new cx_stack_item((float) value));
-        }
+        cx_runstack.push_back(new cx_stack_item((float) value));
+    }
 
     void push(const char &value) {
-            cx_runstack.push_back(new cx_stack_item((char) value));
-        }
+        cx_runstack.push_back(new cx_stack_item((char) value));
+    }
 
     void push(void *addr) {
-        cx_runstack.push_back(new cx_stack_item(addr));
-        }
+        cx_runstack.push_back(new cx_stack_item((void*) addr));
+    }
 
     void push_frame(void) {
-            cx_runstack.push_back(new cx_frame_header);
+        cx_runstack.push_back(new cx_frame_header);
 
         cx_frame_header *prev = (cx_frame_header *) top();
 
@@ -257,7 +219,7 @@ public:
             if (cx_dev_debug_flag)
                 std::clog << "item not found on the stack\n";
 
-    }
+        }
     }
 
     cx_stack_item *top(void) const {
@@ -309,11 +271,13 @@ class cx_executor : public cx_backend {
             cx_token_code terminator);
     void execute_assignment(const cx_symtab_node *p_target_id);
 
+    // assignent
     void assign(const cx_symtab_node* p_target_id,
             cx_type* p_target_type, const cx_type* p_expr_type,
             cx_stack_item* p_target,
             void* &p_target_address);
 
+    // compound assignment
     void plus_equal(const cx_symtab_node* p_target_id,
             cx_type* p_target_type, const cx_type* p_expr_type,
             cx_stack_item* p_target,
@@ -346,11 +310,47 @@ class cx_executor : public cx_backend {
             cx_type* p_target_type, const cx_type* p_expr_type,
             cx_stack_item* p_target);
 
+    // increment
     void plus_plus(cx_type* p_target_type,
             cx_stack_item* p_target);
     void minus_minus(cx_type* p_target_type,
             cx_stack_item* p_target);
 
+    // relational
+    void execute_relational(cx_token_code op, cx_type *lhs, cx_type *rhs);
+    void equal_equal(cx_type *lhs, cx_type *rhs);
+    void not_equal(cx_type *lhs, cx_type *rhs);
+    void lessthan(cx_type *lhs, cx_type *rhs);
+    void greaterthan(cx_type *lhs, cx_type *rhs);
+    void lessthan_equal(cx_type *lhs, cx_type *rhs);
+    void greaterthan_equal(cx_type *lhs, cx_type *rhs);
+
+    // unary
+    void unary_negate(cx_type *expr);
+    void unary_bit_not(cx_type *expr);
+
+    // additive
+    cx_type *execute_additive(cx_token_code op, cx_type *lhs, cx_type *rhs);
+    void plus(cx_type *lhs, cx_type *rhs);
+    void minus(cx_type *lhs, cx_type *rhs);
+    void bit_leftshift(cx_type *lhs, cx_type *rhs);
+    void bit_rightshift(cx_type *lhs, cx_type *rhs);
+    void bit_and(cx_type *lhs, cx_type *rhs);
+    void bit_xor(cx_type *lhs, cx_type *rhs);
+    void bit_or(cx_type *lhs, cx_type *rhs);
+    void logic_or(cx_type *lhs, cx_type *rhs);
+
+    // multiplicative
+    cx_type *execute_multiplicative(cx_token_code op, cx_type *lhs, cx_type *rhs);
+    void multiply(cx_type *lhs, cx_type *rhs);
+    void divide(cx_type *lhs, cx_type *rhs);
+    void modulas(cx_type *lhs, cx_type *rhs);
+    void logic_and(cx_type *lhs, cx_type *rhs);
+
+    // factors
+    cx_type *number(cx_symtab_node *num);
+    void logic_not(void);
+    
     void file_out(const cx_symtab_node* p_target_id,
             const cx_type* p_expr_type);
 
@@ -371,6 +371,7 @@ class cx_executor : public cx_backend {
     cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
     cx_type *execute_subscripts(const cx_type *p_type);
     cx_type *execute_field(void);
+    cx_type *execute_initialization_list(void);
 
     // Tracing
     void trace_routine_entry(const cx_symtab_node *p_function_id);
@@ -404,7 +405,7 @@ class cx_executor : public cx_backend {
     }
 
     void push(void *addr) {
-        run_stack.push(addr);
+        run_stack.push((void*) addr);
     }
 
     void pop(void) {

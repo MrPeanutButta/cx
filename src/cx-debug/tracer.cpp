@@ -10,7 +10,7 @@
  * 
  * @param p_function_id : ptr to the routine name's symbol table node.
  */
-void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
+void cx_executor::trace_routine_entry (const cx_symtab_node *p_function_id) {
     if (trace_routine_flag) {
         std::cout << ">> Entering routine " << p_function_id->string__() << std::endl;
     }
@@ -20,7 +20,7 @@ void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
  * 
  * @param p_function_id : ptr to the routine name's symbol table node
  */
-void cx_executor::trace_routine_exit(const cx_symtab_node *p_function_id) {
+void cx_executor::trace_routine_exit (const cx_symtab_node *p_function_id) {
     if (trace_routine_flag) {
         std::cout << ">> Exiting routine " << p_function_id->string__() << std::endl;
     }
@@ -28,7 +28,7 @@ void cx_executor::trace_routine_exit(const cx_symtab_node *p_function_id) {
 
 /** trace_statement      Trace the execution of a statement.
  */
-void cx_executor::trace_statement(void) {
+void cx_executor::trace_statement (void) {
     if (trace_statement_flag) std::cout << ">>  At " << current_line_number
             << std::endl;
 }
@@ -40,9 +40,9 @@ void cx_executor::trace_statement(void) {
  * @param p_data_value : ptr to the data value.
  * @param p_data_type  : ptr to the data's type object.
  */
-void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
-        const cx_stack_item &p_data_value,
-        const cx_type *p_data_type) {
+void cx_executor::trace_data_store (const cx_symtab_node *p_target_id,
+                                    const cx_stack_item &p_data_value,
+                                    const cx_type *p_data_type) {
     if (trace_store_flag) {
         cx_type_form_code form = p_target_id->p_type->form;
 
@@ -62,9 +62,9 @@ void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
  * @param p_data_value : ptr to the data value.
  * @param p_data_type  : ptr to the data's type object.
  */
-void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
-        const cx_stack_item &p_data_value,
-        const cx_type *p_data_type) {
+void cx_executor::trace_data_fetch (const cx_symtab_node *p_id,
+                                    const cx_stack_item &p_data_value,
+                                    const cx_type *p_data_type) {
     if (trace_fetch_flag) {
         cx_type_form_code form = p_id->p_type->form;
 
@@ -82,8 +82,8 @@ void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
  * @param p_data_value : ptr to the data value.
  * @param p_data_type  : ptr to the data's type object.
  */
-void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
-        const cx_type *p_data_type) {
+void cx_executor::trace_data_value (const cx_stack_item &p_data_value,
+                                    const cx_type *p_data_type) {
 
     if (p_data_type->form == fc_stream) return;
 
@@ -98,13 +98,7 @@ void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
     } else if (p_data_type == p_wchar_type) {
         text << '\'' << p_data_value.basic_types.wchar__ << '\'';
     } else if (p_data_type == p_uint8_type) {
-        text << p_data_value.basic_types.uint8__;
-    } else if (p_data_type == p_uint16_type) {
-        text << p_data_value.basic_types.uint16__;
-    } else if (p_data_type == p_uint32_type) {
-        text << p_data_value.basic_types.uint32__;
-    } else if (p_data_type == p_uint64_type) {
-        text << p_data_value.basic_types.uint64__;
+        text << std::oct << (unsigned short) p_data_value.basic_types.uint8__;
     } else if (p_data_type == p_boolean_type) {
         text << std::boolalpha << p_data_value.basic_types.bool__;
     } else if (p_data_type->form == fc_array) {

@@ -6,7 +6,7 @@
  *
  * @param p_function_id : function in which this statement is executed.
  */
-void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
+void cx_parser::parse_statement (cx_symtab_node *p_function_id) {
     insert_line_marker();
 
     switch (token) {
@@ -60,7 +60,7 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
  * @param p_function_id : function in which these statements are executed.
  * @param terminator : the token that terminates the list.
  */
-void cx_parser::parse_statement_list(cx_symtab_node* p_function_id, cx_token_code terminator) {
+void cx_parser::parse_statement_list (cx_symtab_node* p_function_id, cx_token_code terminator) {
 
     do {
         parse_statement(p_function_id);
@@ -77,7 +77,7 @@ void cx_parser::parse_statement_list(cx_symtab_node* p_function_id, cx_token_cod
  * @param p_target_id : ptr to target id's symbol table node
  * @return ptr to the p_target_id type object.
  */
-cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
+cx_type *cx_parser::parse_assignment (const cx_symtab_node *p_target_id) {
 
     cx_type *p_target_type = parse_variable(p_target_id);
 
@@ -92,7 +92,7 @@ cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
+void cx_parser::parse_DO (cx_symtab_node* p_function_id) {
 
 
     int break_point = put_location_marker();
@@ -117,7 +117,7 @@ void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
+void cx_parser::parse_WHILE (cx_symtab_node* p_function_id) {
 
     int break_point = put_location_marker();
 
@@ -144,7 +144,7 @@ void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
+void cx_parser::parse_IF (cx_symtab_node* p_function_id) {
 
     // Append a placeholder location marker for where to go to if
     // <expr> is false.  Remember the location of this placeholder
@@ -183,7 +183,7 @@ void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
+void cx_parser::parse_FOR (cx_symtab_node* p_function_id) {
 
     int break_point = put_location_marker();
     int statementMarker = put_location_marker();
@@ -233,7 +233,7 @@ void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_SWITCH(cx_symtab_node* p_function_id) {
+void cx_parser::parse_SWITCH (cx_symtab_node* p_function_id) {
 
     get_token_append();
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
@@ -243,8 +243,8 @@ void cx_parser::parse_SWITCH(cx_symtab_node* p_function_id) {
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
     if ((p_expr_type != p_integer_type)
-            && (p_expr_type != p_char_type)
-            && (p_expr_type->form != fc_enum)) {
+        && (p_expr_type != p_char_type)
+        && (p_expr_type->form != fc_enum)) {
         cx_error(err_incompatible_types);
     }
 
@@ -254,13 +254,13 @@ void cx_parser::parse_SWITCH(cx_symtab_node* p_function_id) {
 
 /// XXX fixme
 
-void cx_parser::parse_case_branch(cx_symtab_node* p_function_id, const cx_type *p_expr_type) {
+void cx_parser::parse_case_branch (cx_symtab_node* p_function_id, const cx_type *p_expr_type) {
     // c switch easier to parse that Pascal???
 }
 
 /// XXX fixme
 
-void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p_expr_type) {
+void cx_parser::parse_case_label (cx_symtab_node* p_function_id, const cx_type *p_expr_type) {
     get_token_append();
 
     bool sign_flag(false);
@@ -304,7 +304,7 @@ void cx_parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
+void cx_parser::parse_compound (cx_symtab_node* p_function_id) {
     get_token_append();
 
     parse_statement_list(p_function_id, tc_right_bracket);
@@ -321,10 +321,10 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_RETURN(cx_symtab_node* p_function_id) {
+void cx_parser::parse_RETURN (cx_symtab_node* p_function_id) {
     get_token_append();
 
     // expr 1
     check_assignment_type_compatible(p_function_id->p_type, parse_expression(),
-            err_incompatible_types);
+                                     err_incompatible_types);
 }

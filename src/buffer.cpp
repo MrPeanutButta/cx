@@ -35,9 +35,9 @@ int list_flag = true;
  * @param p_input_file_name : ptr to the name of the input file
  * @param ac             : abort code to use if open failed
  */
-cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name,
-        cx_abort_code ac)
-: p_file_name(new char[strlen(p_input_file_name) + 1]) {
+cx_text_in_buffer::cx_text_in_buffer (const char *p_input_file_name,
+                                      cx_abort_code ac)
+: p_file_name (new char[strlen (p_input_file_name) + 1]) {
     // Copy the input file name.
     strcpy(p_file_name, p_input_file_name);
 
@@ -57,7 +57,7 @@ cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name,
  * @return next__ character from the source file
  *          or the end-of-file character.
  */
-char cx_text_in_buffer::get_char(void) {
+char cx_text_in_buffer::get_char (void) {
     const int tab_size = 8; // size of tabs
     char ch; // character to return
 
@@ -83,7 +83,7 @@ char cx_text_in_buffer::get_char(void) {
  *
  * @return the previous character
  */
-char cx_text_in_buffer::put_back_char(void) {
+char cx_text_in_buffer::put_back_char (void) {
     --p_char;
     --input_position;
 
@@ -102,8 +102,8 @@ char cx_text_in_buffer::put_back_char(void) {
  *
  * @param p_source_file_name : ptr to name of source file
  */
-cx_source_buffer::cx_source_buffer(const char *p_source_file_name)
-: cx_text_in_buffer(p_source_file_name, abort_source_file_open_failed) {
+cx_source_buffer::cx_source_buffer (const char *p_source_file_name)
+: cx_text_in_buffer (p_source_file_name, abort_source_file_open_failed) {
     // Initialize the list file and read the first source line.
     if (list_flag) list.initialize(p_source_file_name);
     get_line();
@@ -116,7 +116,7 @@ cx_source_buffer::cx_source_buffer(const char *p_source_file_name)
  * @return first character of the source line, or the
  *          end-of-file character if at the end of the file
  */
-char cx_source_buffer::get_line(void) {
+char cx_source_buffer::get_line (void) {
     extern int current_nesting_level;
 
     // If at the end of the source file, return the end-of-file char.
@@ -134,10 +134,10 @@ char cx_source_buffer::get_line(void) {
         // if list_flag == true, list the source to stdout
         if (list_flag) {
             list.put_line(
-                    text,
-                    ++current_line_number,
-                    current_nesting_level
-                    );
+                          text,
+                          ++current_line_number,
+                          current_nesting_level
+                          );
         }
 
     }
@@ -160,7 +160,7 @@ cx_list_buffer list; // the list file buffer
 /** print_page_header     Start a new page of the list file and
  *                      print the page header.
  */
-void cx_list_buffer::print_page_header(void) {
+void cx_list_buffer::print_page_header (void) {
     const char form_feed_char = '\f';
 
     std::cout << form_feed_char << "Page " << ++page_number
@@ -176,7 +176,7 @@ void cx_list_buffer::print_page_header(void) {
  *
  * @param p_file_name : ptr to source file name (for page header)
  */
-void cx_list_buffer::initialize(const char *p_file_name) {
+void cx_list_buffer::initialize (const char *p_file_name) {
     memset(text, '\0', sizeof (text));
     page_number = 0;
 
@@ -196,7 +196,7 @@ void cx_list_buffer::initialize(const char *p_file_name) {
 
 ///  put_line         print a line of text to the list file.
 
-void cx_list_buffer::put_line(void) {
+void cx_list_buffer::put_line (void) {
     // Start a new page if the current one is full.
     if (list_flag && (line_count == max_lines_per_page)) print_page_header();
 
@@ -210,7 +210,7 @@ void cx_list_buffer::put_line(void) {
     ++line_count;
 }
 
-cx_text_out_buffer::~cx_text_out_buffer() {
+cx_text_out_buffer::~cx_text_out_buffer () {
 
 }
 

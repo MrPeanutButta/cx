@@ -8,7 +8,7 @@
  *
  * @return ptr to the expression's type object.
  */
-cx_type *cx_parser::parse_expression(void) {
+cx_type *cx_parser::parse_expression (void) {
 
     cx_type *p_result_type;
     cx_type *p_operand_type;
@@ -33,21 +33,30 @@ cx_type *cx_parser::parse_expression(void) {
  *
  * @return ptr to the simple expression's type object.
  */
-cx_type *cx_parser::parse_simple_expression(void) {
+cx_type *cx_parser::parse_simple_expression (void) {
 
     cx_type *p_result_type;
     cx_type *p_operand_type;
     cx_token_code op;
+    cx_token_code unary_op;
+
     bool unary_op_flag = false;
 
     if (token_in(token, tokenlist_unary_ops)) {
         unary_op_flag = true;
+        unary_op = token;
         get_token_append();
     }
 
     p_result_type = parse_term();
 
-    if (unary_op_flag) check_integer_or_real(p_result_type);
+    if (unary_op_flag) {
+        if (unary_op == tc_bit_NOT) {
+            check_bitwise_integer(p_result_type);
+        } else {
+            check_integer_or_real(p_result_type);
+        }
+    }
 
     while (token_in(token, tokenlist_add_ops)) {
         op = token;
@@ -62,6 +71,14 @@ cx_type *cx_parser::parse_simple_expression(void) {
                 } else if (real_operands(p_result_type, p_operand_type)) {
                     p_result_type = p_float_type;
                 } else cx_error(err_incompatible_types);
+                break;
+            case tc_bit_leftshift:
+            case tc_bit_rightshift:
+            case tc_bit_AND:
+            case tc_bit_XOR:
+            case tc_bit_OR:
+                check_bitwise_integer(p_result_type, p_operand_type);
+                p_result_type = p_integer_type;
                 break;
             case tc_logic_OR:
                 check_boolean(p_result_type, p_operand_type);
@@ -80,7 +97,7 @@ cx_type *cx_parser::parse_simple_expression(void) {
  *
  * @return ptr to the term's type object.
  */
-cx_type *cx_parser::parse_term(void) {
+cx_type *cx_parser::parse_term (void) {
 
     cx_type *p_result_type;
     cx_type *p_operand_type;
@@ -104,7 +121,7 @@ cx_type *cx_parser::parse_term(void) {
                 break;
             case tc_divide:
                 if (integer_operands(p_result_type, p_operand_type) ||
-                        real_operands(p_result_type, p_operand_type)) {
+                    real_operands(p_result_type, p_operand_type)) {
                     p_result_type = p_integer_type;
                 } else cx_error(err_incompatible_types);
                 break;
@@ -131,7 +148,7 @@ cx_type *cx_parser::parse_term(void) {
  *
  * @return ptr to the factor's type object.
  */
-cx_type *cx_parser::parse_factor(void) {
+cx_type *cx_parser::parse_factor (void) {
 
     cx_type *p_result_type = nullptr;
 
@@ -200,7 +217,7 @@ cx_type *cx_parser::parse_factor(void) {
 
             char *p_string = p_token->string__();
             cx_symtab_node *p_node = search_all(p_token->string__());
-            int length = strlen(p_string) - 2;
+            const int length = strlen(p_string) - 2;
             // '\0' == -1
             p_result_type = ((length == 1) || (length == -1)) ?
                     p_char_type : new cx_type(length);
@@ -214,13 +231,14 @@ cx_type *cx_parser::parse_factor(void) {
                 } else {
 
                     const int size = sizeof (char) * (length + 1);
-                    p_node->defn.constant.value.p_string = new char[size];
-                    memset(p_node->defn.constant.value.p_string, '\0', size);
-                    memcpy(p_node->defn.constant.value.p_string,
-                            &p_string[1], size);
+                    p_node->defn.constant.value.addr__ = new char[size];
+                    memset(p_node->defn.constant.value.addr__, '\0', size);
+                    memcpy(p_node->defn.constant.value.addr__,
+                           &p_string[1], size);
 
                     // remove the quote
-                    p_node->defn.constant.value.p_string[length] = '\0';
+                    char *t = (char *)p_node->defn.constant.value.addr__;
+                    t[length] = '\0';
 
                     p_node->p_type->form = fc_array;
                     p_node->p_type->array.element_count = length;
@@ -239,14 +257,12 @@ cx_type *cx_parser::parse_factor(void) {
         case tc_left_paren:
             get_token_append();
             p_result_type = parse_expression();
-
             conditional_get_token_append(tc_right_paren, err_missing_right_paren);
             break;
         case tc_logic_NOT:
             get_token_append();
-            check_boolean(parse_factor());
+            parse_expression();
             p_result_type = p_boolean_type;
-
             break;
         case tc_left_bracket:
         {
@@ -281,7 +297,6 @@ cx_type *cx_parser::parse_factor(void) {
 
             const int size = element_count * p_result_type->base_type()->size;
             cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
-            //p_array_type->form = fc_array;
             p_array_type->array.element_count = element_count;
             p_array_type->array.max_index = element_count;
             p_array_type->array.min_index = 0;
@@ -311,7 +326,7 @@ cx_type *cx_parser::parse_factor(void) {
  * @param p_id : variable node id.
  * @return variables type object ptr.
  */
-cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
+cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
     cx_type *p_result_type = p_id->p_type;
 
     switch (p_id->defn.how) {
@@ -356,7 +371,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 p_expr_type = parse_expression();
 
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -372,7 +387,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -382,7 +397,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -392,7 +407,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -402,7 +417,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -412,7 +427,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -422,7 +437,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -432,7 +447,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -442,7 +457,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -452,7 +467,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -462,7 +477,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 get_token_append();
                 p_expr_type = parse_expression();
                 check_assignment_type_compatible(p_result_type, p_expr_type,
-                        err_incompatible_assignment);
+                                                 err_incompatible_assignment);
 
                 p_result_type = p_expr_type;
             }
@@ -497,14 +512,14 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
  * @param p_type : ptr to the array's type object.
  * @return ptr to the array element's type object.
  */
-cx_type *cx_parser::parse_subscripts(const cx_type* p_type) {
+cx_type *cx_parser::parse_subscripts (const cx_type* p_type) {
     do {
         get_token_append();
 
         if (p_type->form == fc_array) {
             check_assignment_type_compatible(p_type->array.p_index_type,
-                    parse_expression(),
-                    err_incompatible_types);
+                                             parse_expression(),
+                                             err_incompatible_types);
 
             p_type = p_type->array.p_element_type;
         } else {
@@ -527,7 +542,7 @@ cx_type *cx_parser::parse_subscripts(const cx_type* p_type) {
  * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
-cx_type *cx_parser::parse_field(const cx_type* p_type) {
+cx_type *cx_parser::parse_field (const cx_type* p_type) {
     get_token_append();
 
     if ((token == tc_identifier) && (p_type->form == fc_complex)) {

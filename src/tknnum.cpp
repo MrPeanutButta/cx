@@ -27,7 +27,7 @@ enum cx_radix_base {
  *
  * @param buffer : ptr to text input buffer.
  */
-void cx_number_token::get(cx_text_in_buffer &buffer) {
+void cx_number_token::get (cx_text_in_buffer &buffer) {
 
     float number_value = 0.0; /* value of number ignoring
                            * the decimal point */
@@ -96,7 +96,7 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
 
             // We have a fraction part.  Accumulate it into number_value.
             if (!accumulate_value(buffer, number_value,
-                    err_invalid_fraction)) return;
+                                  err_invalid_fraction)) return;
             decimal_places = digit_count - whole_places;
         }
     }
@@ -117,7 +117,7 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
         // Accumulate the value of the number after 'E' into e_value.
         digit_count = 0;
         if (!accumulate_value(buffer, e_value,
-                err_invalid_exponent)) return;
+                              err_invalid_exponent)) return;
 
         if (exponent_sign == '-') e_value = -e_value;
     }
@@ -132,7 +132,7 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
      * and then use it to adjust the number's value. */
     exponent = int(e_value) - decimal_places;
     if ((exponent + whole_places < FLT_MIN_10_EXP) ||
-            (exponent + whole_places > FLT_MAX_10_EXP)) {
+        (exponent + whole_places > FLT_MAX_10_EXP)) {
         cx_error(err_real_out_of_range);
         return;
     }
@@ -159,8 +159,8 @@ void cx_number_token::get(cx_text_in_buffer &buffer) {
  * @param ec     : error code if failure.
  * @return true  if success false if failure.
  */
-int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
-        float &value, cx_error_code ec) {
+int cx_number_token::accumulate_value (cx_text_in_buffer &buffer,
+                                       float &value, cx_error_code ec) {
 
     const int max_digit_count = 20;
 
@@ -188,7 +188,7 @@ int cx_number_token::accumulate_value(cx_text_in_buffer &buffer,
     return true; // success
 }
 
-int cx_number_token::char_value(const char &c) {
+int cx_number_token::char_value (const char &c) {
     if (isxdigit(c)) {
         switch (c) {
             case 'A':
@@ -220,7 +220,7 @@ bool cx_number_token::is_x_digit(const char& c) {
 /** print       print the token to the list file.
  *
  */
-void cx_number_token::print(void) const {
+void cx_number_token::print (void) const {
     if (type__ == ty_integer) {
         sprintf(list.text, "\t%-18s =%d", ">> integer:",
                 value__.int__);

@@ -5,8 +5,11 @@ All TODO items will be tracked here.
 ## Assignment Operators
 Assignment, including compound assignment operators are currently being refactored in assign.cpp.
 
+## Expressions
+Need to refactor expressions for all data types.
+
 ## Reference Operator &
-Variable take the address of rigt hand side operand.
+Variable take the address of right hand side operand.
 
 ## IO
 File streams are currently being refactored in io.cpp.
@@ -21,10 +24,10 @@ Need to complete:
 * enum : needs work
 * auto : dynamic type
     + a fully dynamic type like in ruby
-* multidimentional arrays
+* multi-dimentional arrays
 * initialization lists {}
 * pass by reference
-* reference
+* reference to var or objects
 * class : basic objects
     + classes will copy inherit all contents with associated scopes.
  

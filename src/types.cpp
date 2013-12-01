@@ -4,7 +4,7 @@
 #include "types.h"
 
 const char *form_strings[] = {
-    "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
+                              "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
 // Pointers to predefined types.
@@ -12,30 +12,15 @@ cx_symtab_node *p_main_function_id = nullptr;
 cx_symtab_node *p_stdin = nullptr;
 cx_symtab_node *p_stdout = nullptr;
 cx_symtab_node *p_stderr = nullptr;
-
 cx_type *p_integer_type = nullptr;
-cx_type *p_short_type = nullptr;
-cx_type *p_long_type = nullptr;
-
 cx_type *p_uint8_type = nullptr;
-cx_type *p_uint16_type = nullptr;
-cx_type *p_uint32_type = nullptr;
-cx_type *p_uint64_type = nullptr;
-
 cx_type *p_float_type = nullptr;
-cx_type *p_double_type = nullptr;
-
 cx_type *p_boolean_type = nullptr;
-
 cx_type *p_char_type = nullptr;
 cx_type *p_wchar_type = nullptr;
-
 //cx_type *p_class_type = nullptr;
-
 cx_type *p_complex_type = nullptr;
-
 cx_type *p_file_type = nullptr;
-
 cx_type *p_dummy_type = nullptr;
 
 /** Constructors    General.
@@ -44,8 +29,8 @@ cx_type *p_dummy_type = nullptr;
  * @param s   : byte size of type.
  * @param p_id : ptr to symbol table node of type identifier.
  */
-cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
-: form(fc), size(s), p_type_id(p_id), reference_count(0) {
+cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
+: form (fc), size (s), p_type_id (p_id), reference_count (0) {
 
     switch (fc) {
         case fc_array:
@@ -72,14 +57,8 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
         type_code = cx_float;
     } else if (type_name == "bool") {
         type_code = cx_bool;
-    } else if (type_name == "uint8") {
+    } else if (type_name == "byte") {
         type_code = cx_uint8;
-    } else if (type_name == "uint16") {
-        type_code = cx_uint16;
-    } else if (type_name == "uint32") {
-        type_code = cx_uint32;
-    } else if (type_name == "uint64") {
-        type_code = cx_uint64;
     } else if (type_name == "class") {
         type_code = cx_complex;
     } else if (type_name == "file") {
@@ -87,8 +66,8 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
     }
 }
 
-cx_type::cx_type(int length, bool constant)
-: size(length), form(fc_array), reference_count(0), is_constant__(constant) {
+cx_type::cx_type (int length, bool constant)
+: size (length), form (fc_array), reference_count (0), is_constant__ (constant) {
     p_type_id = nullptr;
 
     // used for string constants only. can probably go away
@@ -106,7 +85,7 @@ cx_type::cx_type(int length, bool constant)
  *                  the symbol tables that contain their
  *                  identifiers.
  */
-cx_type::~cx_type() {
+cx_type::~cx_type () {
     switch (form) {
             /*  case fc_subrange:
                   remove_type(subrange.p_base_type);
@@ -129,7 +108,7 @@ cx_type::~cx_type() {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_type_spec(cx_verbosity_code vc) {
+void cx_type::print_type_spec (cx_verbosity_code vc) {
     sprintf(list.text, "%s, size %d bytes. type id: ", form_strings[form], size);
 
     if (p_type_id) strcat(list.text, p_type_id->string__());
@@ -159,13 +138,13 @@ void cx_type::print_type_spec(cx_verbosity_code vc) {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_enum_type(cx_verbosity_code vc) const {
+void cx_type::print_enum_type (cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
 
     list.put_line("---enum constant identifiers (value = name)---");
 
     for (cx_symtab_node *p_const_id = enumeration.p_const_ids;
-            p_const_id; p_const_id = p_const_id->next__) {
+         p_const_id; p_const_id = p_const_id->next__) {
         sprintf(list.text, "%d = %s",
                 p_const_id->defn.constant.value.int__,
                 p_const_id->string__());
@@ -179,7 +158,7 @@ void cx_type::print_enum_type(cx_verbosity_code vc) const {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_subrange_type(cx_verbosity_code vc) const {
+void cx_type::print_subrange_type (cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
     /*
         sprintf(list.text, "min value = %d, max value = %d",
@@ -198,7 +177,7 @@ void cx_type::print_subrange_type(cx_verbosity_code vc) const {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_array_type(cx_verbosity_code vc) const {
+void cx_type::print_array_type (cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
 
     sprintf(list.text, "%d elements", array.element_count);
@@ -220,7 +199,7 @@ void cx_type::print_array_type(cx_verbosity_code vc) const {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_record_type(cx_verbosity_code vc) {
+void cx_type::print_record_type (cx_verbosity_code vc) {
     if (vc == vc_terse) return;
 
     list.put_line("member identifiers (offset : name)---");
@@ -292,32 +271,20 @@ void cx_type::print_record_type(cx_verbosity_code vc) {
  *
  * @param p_symtab : ptr to symbol table.
  */
-void initialize_builtin_types(cx_symtab *p_symtab) {
+void initialize_builtin_types (cx_symtab *p_symtab) {
 
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = rc_forward;
 
-    // signed int
     cx_symtab_node *p_integer_id = p_symtab->enter("int", dc_type);
-
-    // unsigned int
-    cx_symtab_node *p_uint8_id = p_symtab->enter("uint8", dc_type);
-    cx_symtab_node *p_uint16_id = p_symtab->enter("uint16", dc_type);
-    cx_symtab_node *p_uint32_id = p_symtab->enter("uint32", dc_type);
-    cx_symtab_node *p_uint64_id = p_symtab->enter("uint64", dc_type);
-
+    cx_symtab_node *p_uint8_id = p_symtab->enter("byte", dc_type);
     cx_symtab_node *p_float_id = p_symtab->enter("float", dc_type);
-
     cx_symtab_node *p_complex_id = p_symtab->enter("class", dc_type);
-
     cx_symtab_node *p_boolean_id = p_symtab->enter("bool", dc_type);
-
     cx_symtab_node *p_char_id = p_symtab->enter("char", dc_type);
     cx_symtab_node *p_wchar_id = p_symtab->enter("wchar", dc_type);
-
     cx_symtab_node *p_false_id = p_symtab->enter("false", dc_constant);
     cx_symtab_node *p_true_id = p_symtab->enter("true", dc_constant);
-
     cx_symtab_node *p_fileId = p_symtab->enter("file", dc_type);
 
     if (!p_integer_type) {
@@ -326,18 +293,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     if (!p_uint8_type) {
         set_type(p_uint8_type, new cx_type(fc_scalar, sizeof (uint8_t), p_uint8_id));
-    }
-
-    if (!p_uint16_type) {
-        set_type(p_uint16_type, new cx_type(fc_scalar, sizeof (uint16_t), p_uint16_id));
-    }
-
-    if (!p_uint32_type) {
-        set_type(p_uint32_type, new cx_type(fc_scalar, sizeof (uint32_t), p_uint32_id));
-    }
-
-    if (!p_uint64_type) {
-        set_type(p_uint64_type, new cx_type(fc_scalar, sizeof (uint64_t), p_uint64_id));
     }
 
     if (!p_float_type) {
@@ -368,21 +323,12 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     // link each predefined type id's node to it's type object
     set_type(p_integer_id->p_type, p_integer_type);
-
     set_type(p_uint8_id->p_type, p_uint8_type);
-    set_type(p_uint16_id->p_type, p_uint16_type);
-    set_type(p_uint32_id->p_type, p_uint32_type);
-    set_type(p_uint64_id->p_type, p_uint64_type);
-
     set_type(p_float_id->p_type, p_float_type);
-
     set_type(p_boolean_id->p_type, p_boolean_type);
-
     set_type(p_char_id->p_type, p_char_type);
     set_type(p_wchar_id->p_type, p_wchar_type);
-
     set_type(p_complex_id->p_type, p_complex_type);
-
     set_type(p_fileId->p_type, p_file_type);
 
     p_boolean_type->enumeration.max = 1;
@@ -413,28 +359,20 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
 /** remove_builtin_types       Remove the predefined types.
  */
-void remove_builtin_types(void) {
+void remove_builtin_types (void) {
     remove_type(p_complex_type);
-
     remove_type(p_float_type);
-
     remove_type(p_boolean_type);
-
     remove_type(p_char_type);
     remove_type(p_wchar_type);
-
     remove_type(p_integer_type);
-
     remove_type(p_uint8_type);
-    remove_type(p_uint16_type);
-    remove_type(p_uint32_type);
-    remove_type(p_uint64_type);
 
     remove_type(p_dummy_type);
     remove_type(p_file_type);
 }
 
-void remove_type(cx_type *&p_type);
+void remove_type (cx_type *&p_type);
 
 /** set_type     Set the target type.  Increment the reference
  *              count of the source type.
@@ -443,7 +381,7 @@ void remove_type(cx_type *&p_type);
  * @param p_source_type : ptr to source type object.
  * @return ptr to source type object.
  */
-cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
+cx_type *set_type (cx_type *&p_target_type, cx_type *p_source_type) {
     if (!p_target_type) remove_type(p_target_type);
 
     ++p_source_type->reference_count;
@@ -459,7 +397,7 @@ cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
  *
  * @param p_type : ref to ptr to type object.
  */
-void remove_type(cx_type *&p_type) {
+void remove_type (cx_type *&p_type) {
     if (p_type == nullptr) return;
 
     if (--p_type->reference_count == 0) {
@@ -483,35 +421,8 @@ void remove_type(cx_type *&p_type) {
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object.
  */
-void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2) {
-    p_type1 = p_type1->base_type();
-    p_type2 = p_type2->base_type();
-
-    if ((p_type1 == p_type2) &&
-            ((p_type1->form == fc_scalar) || (p_type1->form == fc_enum))) {
-        return;
-    }
-
-    if (((p_type1 == p_integer_type) && (p_type2 == p_float_type))
-            || ((p_type2 == p_integer_type) && (p_type2 == p_float_type))) {
-        return;
-    }
-
-    if ((p_type1 == p_char_type) && (p_type2 == p_integer_type) &&
-            (p_type1->form == fc_scalar)) return;
-
-    if ((p_type1 == p_integer_type) && (p_type2 == p_char_type) &&
-            (p_type2->form == fc_scalar)) return;
-
-    if ((p_type1->form == fc_array)
-            && (p_type2->form == fc_array)
-            && (p_type1->array.p_element_type == p_char_type)
-            && (p_type2->array.p_element_type == p_char_type)
-            && (p_type1->array.element_count == p_type2->array.element_count)) {
-        return;
-    }
-
-    cx_error(err_incompatible_types);
+void check_relational_op_operands (const cx_type *p_type1, const cx_type *p_type2) {
+    check_assignment_type_compatible(p_type1, p_type2, err_incompatible_types);
 }
 
 /** check_integer_or_real  Check that the type of each operand is
@@ -521,7 +432,7 @@ void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
+void check_integer_or_real (const cx_type *p_type1, const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
 
     if ((p_type1 != p_integer_type) && (p_type1 != p_float_type)) {
@@ -537,6 +448,52 @@ void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
     }
 }
 
+void check_bitwise_integer (const cx_type *p_type1, const cx_type *p_type2) {
+    cx_type_code target_type = p_type1->base_type()->type_code;
+    cx_type_code value_type = p_type2->base_type()->type_code;
+
+    switch (target_type) {
+        case cx_int:
+        case cx_char:
+        case cx_bool:
+        case cx_wchar:
+        case cx_uint8:
+            switch (value_type) {
+                case cx_int:
+                case cx_char:
+                case cx_bool:
+                case cx_wchar:
+                case cx_uint8:
+                    return;
+                    break;
+                default:break;
+            }
+            break;
+        default:
+            break;
+    }
+
+    cx_error(err_incompatible_types);
+}
+
+void check_bitwise_integer (const cx_type *p_type1) {
+    cx_type_code target_type = p_type1->base_type()->type_code;
+
+    switch (target_type) {
+        case cx_int:
+        case cx_char:
+        case cx_bool:
+        case cx_wchar:
+        case cx_uint8:
+            return;
+            break;
+        default:
+            break;
+    }
+
+    cx_error(err_incompatible_types);
+}
+
 /** check_boolean        Check that the type of each operand is
  *                      boolean.  Flag an incompatible type
  *                      error if not.
@@ -544,9 +501,9 @@ void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_boolean(const cx_type *p_type1, const cx_type *p_type2) {
+void check_boolean (const cx_type *p_type1, const cx_type *p_type2) {
     if ((p_type1->base_type() != p_boolean_type)
-            || (p_type2 && (p_type2->base_type() != p_boolean_type))) {
+        || (p_type2 && (p_type2->base_type() != p_boolean_type))) {
         cx_error(err_incompatible_types);
     }
 }
@@ -560,46 +517,113 @@ void check_boolean(const cx_type *p_type1, const cx_type *p_type2) {
  * @param p_value_type  : ptr to the value's  type object.
  * @param ec          : error code.
  */
-void check_assignment_type_compatible(const cx_type *p_target_type,
-        const cx_type *p_value_type, cx_error_code ec) {
+void check_assignment_type_compatible (const cx_type *p_target_type,
+                                       const cx_type *p_value_type, cx_error_code ec) {
 
-    p_target_type = p_target_type->base_type();
-    p_value_type = p_value_type->base_type();
+    //    p_target_type = p_target_type->base_type();
+    //  p_value_type = p_value_type->base_type();
 
-    if ((p_target_type == p_file_type) ||
-            (p_value_type == p_file_type)) return;
+    cx_type_code target_type = p_target_type->base_type()->type_code;
+    cx_type_code value_type = p_value_type->base_type()->type_code;
 
-    if (p_target_type == p_value_type) return;
+    if (target_type == value_type) return;
+    if ((value_type == cx_file) && (target_type != cx_file)) return;
+    if ((target_type == cx_file) && (value_type != cx_file)) return;
 
-    if ((p_target_type == p_float_type)
-            && (p_value_type == p_integer_type)) return;
-
-    if ((p_target_type == p_integer_type)
-            && (p_value_type == p_char_type)) return;
-
-    if ((p_target_type == p_char_type)
-            && (p_value_type == p_integer_type)) return;
-
-    if ((p_target_type == p_float_type)
-            && (p_value_type == p_double_type)) return;
-
-    if ((p_target_type == p_double_type)
-            && (p_value_type == p_integer_type)) return;
-
-    if ((p_target_type == p_double_type)
-            && (p_value_type == p_float_type)) return;
-
-    if ((p_target_type == p_integer_type)
-            && (p_value_type == p_float_type)) return;
-
-    if ((p_target_type == p_integer_type)
-            && (p_value_type == p_double_type)) return;
-
-    if ((p_target_type->form == fc_array)
-            && (p_value_type->form == fc_array)
-            && (p_target_type->array.p_element_type == p_char_type)
-            && (p_value_type->array.p_element_type == p_char_type)) {
-        return;
+    if (p_target_type->is_scalar_type()) {
+        switch (target_type) {
+            case cx_uint8:
+                switch (value_type) {
+                    case cx_int:
+                    case cx_char:
+                    case cx_bool:
+                    case cx_float:
+                    case cx_wchar:
+                    case cx_uint8:
+                        return;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case cx_int:
+                switch (value_type) {
+                    case cx_int:
+                    case cx_char:
+                    case cx_bool:
+                    case cx_float:
+                    case cx_wchar:
+                    case cx_uint8:
+                        return;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case cx_char:
+                switch (value_type) {
+                    case cx_int:
+                    case cx_char:
+                    case cx_float:
+                    case cx_wchar:
+                    case cx_bool:
+                    case cx_uint8:
+                        return;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case cx_wchar:
+                switch (value_type) {
+                    case cx_int:
+                    case cx_char:
+                    case cx_float:
+                    case cx_wchar:
+                    case cx_bool:
+                    case cx_uint8:
+                        return;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case cx_float:
+                switch (value_type) {
+                    case cx_int:
+                    case cx_char:
+                    case cx_float:
+                    case cx_bool:
+                    case cx_wchar:
+                    case cx_uint8:
+                        return;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case cx_bool:
+                switch (value_type) {
+                    case cx_int:
+                    case cx_char:
+                    case cx_float:
+                    case cx_bool:
+                    case cx_wchar:
+                    case cx_uint8:
+                        return;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    } else if (p_target_type->form == fc_array) {
+        if (p_target_type->array.p_element_type->type_code ==
+            p_value_type->array.p_element_type->type_code) return;
+    } else {
+        if (p_target_type == p_value_type) return;
     }
 
     cx_error(ec);
@@ -612,14 +636,83 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
  * @param p_type2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool integer_operands(const cx_type *p_type1, const cx_type *p_type2) {
-    p_type1 = p_type1->base_type();
-    p_type2 = p_type2->base_type();
+bool integer_operands (const cx_type *p_type1, const cx_type *p_type2) {
 
-    return (((p_type1 == p_integer_type) && (p_type2 == p_integer_type)) ||
-            ((p_type1 == p_char_type) && (p_type2 == p_integer_type)) ||
-            ((p_type1 == p_integer_type) && (p_type2 == p_char_type)) ||
-            ((p_type1 == p_char_type) && (p_type2 == p_char_type)));
+    cx_type_code target_type = p_type1->base_type()->type_code;
+    cx_type_code value_type = p_type2->base_type()->type_code;
+
+    switch (target_type) {
+        case cx_uint8:
+            switch (value_type) {
+                case cx_int:
+                case cx_char:
+                case cx_bool:
+                case cx_wchar:
+                case cx_uint8:
+                    return true;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case cx_int:
+            switch (value_type) {
+                case cx_int:
+                case cx_char:
+                case cx_bool:
+                case cx_float:
+                case cx_wchar:
+                case cx_uint8:
+                    return true;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case cx_char:
+            switch (value_type) {
+                case cx_int:
+                case cx_char:
+                case cx_wchar:
+                case cx_bool:
+                case cx_uint8:
+                    return true;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case cx_wchar:
+            switch (value_type) {
+                case cx_int:
+                case cx_char:
+                case cx_wchar:
+                case cx_bool:
+                case cx_uint8:
+                    return true;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case cx_bool:
+            switch (value_type) {
+                case cx_int:
+                case cx_char:
+                case cx_bool:
+                case cx_wchar:
+                case cx_uint8:
+                    return true;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+
+    return false;
 }
 
 /** real_operands        Check that the types of both operands
@@ -630,17 +723,12 @@ bool integer_operands(const cx_type *p_type1, const cx_type *p_type2) {
  * @param p_type2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool real_operands(const cx_type *p_type1, const cx_type *p_type2) {
+bool real_operands (const cx_type *p_type1, const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
     p_type2 = p_type2->base_type();
 
     return (((p_type1 == p_float_type) && (p_type2 == p_float_type))
             || ((p_type1 == p_float_type) && (p_type2 == p_integer_type))
-            || ((p_type2 == p_float_type) && (p_type1 == p_integer_type))
-            || ((p_type1 == p_float_type) && (p_type2 == p_double_type))
-            || ((p_type2 == p_float_type) && (p_type1 == p_double_type))
-            || ((p_type1 == p_double_type) && (p_type2 == p_integer_type))
-            || ((p_type2 == p_double_type) && (p_type1 == p_integer_type))
-            || ((p_type1 == p_double_type) && (p_type2 == p_float_type))
-            || ((p_type2 == p_double_type) && (p_type1 == p_float_type)));
+            || ((p_type2 == p_float_type) && (p_type1 == p_integer_type)));
+
 }

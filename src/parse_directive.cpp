@@ -18,7 +18,7 @@
  *
  * @param p_function_id : ptr to the routine owning this directive call.
  */
-void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
+void cx_parser::parse_execute_directive (cx_symtab_node *p_function_id) {
 
     extern cx_symtab_node *p_program_ptr_id;
 

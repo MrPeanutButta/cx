@@ -36,8 +36,8 @@ void cx_executor::enter_routine (cx_symtab_node * p_function_id) {
 
     // Allocate the callee's local variables.
     for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
-            p_id;
-            p_id = p_id->next__) run_stack.allocate_value(p_id);
+         p_id;
+         p_id = p_id->next__) run_stack.allocate_value(p_id);
 
     // Switch to the callee's intermediate code.
     p_icode = p_function_id->defn.routine.p_icode;
@@ -59,12 +59,12 @@ void cx_executor::exit_routine (cx_symtab_node *p_function_id) {
 
     // Deallocate local parameters and variables.
     for (p_id = p_function_id->defn.routine.locals.p_parms_ids;
-            p_id;
-            p_id = p_id->next__) run_stack.deallocate_value(p_id);
+         p_id;
+         p_id = p_id->next__) run_stack.deallocate_value(p_id);
 
     for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
-            p_id;
-            p_id = p_id->next__) run_stack.deallocate_value(p_id);
+         p_id;
+         p_id = p_id->next__) run_stack.deallocate_value(p_id);
 
     // pop off the callee's stack frame and return to the caller's
     // intermediate code.
@@ -135,8 +135,8 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
 
     // Loop to execute each actual parameter.
     for (p_formal_id = p_function_id->defn.routine.locals.p_parms_ids;
-            p_formal_id;
-            p_formal_id = p_formal_id->next__) {
+         p_formal_id;
+         p_formal_id = p_formal_id->next__) {
 
         cx_type *p_formal_type = p_formal_id->p_type;
         get_token();
@@ -155,28 +155,15 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 p_formal_type->array.element_count = size;
                 p_formal_type->array.max_index = size;
 
-                p_formal_id->runstack_item = top();
-
-            } else {
-                p_formal_id->runstack_item = top();
             }
 
+            p_formal_id->runstack_item = top();
             get_token();
         }// value parameter
         else {
             cx_type *p_actual_type = execute_expression();
 
-            if ((p_formal_type == p_float_type) &&
-                    (p_actual_type->base_type() == p_integer_type)) {
-
-                // real formal := integer actual:
-                // convert integer value to real.
-                float ff = top()->basic_types.int__;
-                pop();
-
-                push(ff);
-                p_formal_id->runstack_item = top();
-            } else if (!p_formal_type->is_scalar_type()) {
+            if (!p_formal_type->is_scalar_type()) {
 
                 /* Formal parameter is an array or a record:
                  * Make a copy of the actual parameter's value. */
@@ -186,7 +173,6 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 const int num_of_elements = size / p_actual_type->base_type()->size;
 
                 p_target_address = realloc(p_target_address, size);
-                //memset(p_target_address, 0, size);
 
                 if (p_target_address == nullptr) {
                     perror("realloc");
@@ -194,21 +180,21 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 }
 
                 void *p_source = top()->basic_types.addr__;
-                memcpy(p_target_address, p_source, size);
 
+                memset(p_target_address, '\0', size + 1);
+                memcpy(p_target_address, p_source, size + 1);
+
+                char *y = (char *) p_target_address;
                 pop();
-                push(p_target_address);
+                push((void*) p_target_address);
 
                 p_formal_type->array.element_count = num_of_elements;
-                p_formal_type->array.max_index = num_of_elements;
+                p_formal_type->array.max_index = size;
                 p_formal_type->size = size;
                 p_formal_type->form = fc_array;
                 p_formal_id->runstack_item = top();
-            } else {
 
-                // Range check an integer or enumeration
-                // formal parameter.
-                range_check(p_formal_type, top()->basic_types.int__);
+            } else {
                 p_formal_id->runstack_item = top();
             }
         }

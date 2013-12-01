@@ -1,45 +1,26 @@
-
-/* Global scope is limited to the first few lines
- * of the script.
- *
- * A global scope is force by inserting the
- * compound operator before generating icode, and
- * inserting a call to main() after global scope is left.
- *
- * Kind of sloppy, but works. The only limitation is
- * globals must be at the top of the script file.
- * Maybe good for forcing global code organization??
- *
- * time to finish other statements and types :)
- *
+/* Array initialization examples
  */
+#include cxmath
 
-#include cxstdio
-//#include cxctype
-//#include cxstring
-//#include cxmath
-// global starts here
+int main () {
 
-int main() {
+    // array initialization list
+    int *b = {
+              4096,
+              4096 * 2,
+              4096 * 3,
+              4096 * 4,
+              4096 * 5
+    };
 
-    int i;
-    char *t = "hihihihihihihihihihihihihihihi";
-    puts(t);
+    //dynamic array container
+    int *sqr;
 
-    i = 456;
-    i += 2.0;
-    i *= 2;
-    i -= 200;
+    int i = 0;
+    do {
+        // allocate new int at the end of array
+        sqr += isqrt(b[i]);
+    } while (i++ < 5);
 
-    i = 0xFFFFFF;
-    i >>= 8;
-    t += " byebyebyebyebyebyebyebyebyebyebyebyebyebye";
-    puts(t);
-
-    
-    //  //  long l = 444400;
-    //
-    //   // uint8 u = 0xff;
-    //
-    return 0; //t;
+    return 0;
 }

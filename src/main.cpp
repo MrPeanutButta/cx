@@ -23,7 +23,7 @@ bool cx_dev_debug_flag = true;
 bool cx_dev_debug_flag = false;
 #endif
 
-void set_options(int argc, char **argv);
+void set_options (int argc, char **argv);
 
 /** main        main entry point
  *
@@ -31,7 +31,7 @@ void set_options(int argc, char **argv);
  * @param argv
  * @return exit status.
  */
-int main(int argc, char *argv[]) {
+int main (int argc, char *argv[]) {
 
     // Check the command line arguments.
     if (argc < 2) {
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void set_options(int argc, char **argv) {
+void set_options (int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (!strcmp("-ddev", argv[i])) cx_dev_debug_flag = true;
     }

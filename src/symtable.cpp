@@ -27,7 +27,7 @@ bool xreference_flag = false; // true = cross-referencing on, false = off
  *                  symbol table.
  *
  */
-cx_define::~cx_define(void) {
+cx_define::~cx_define (void) {
     switch (how) {
 
         case dc_program:
@@ -56,8 +56,8 @@ cx_define::~cx_define(void) {
  * @param p_str : ptr to the symbol string.
  * @param dc    : definition code.
  */
-cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
-: defn(dc) {
+cx_symtab_node::cx_symtab_node (const char *p_str, cx_define_code dc)
+: defn (dc) {
     left__ = right__ = next__ = nullptr;
     p_line_num_list = nullptr;
     p_type = nullptr;
@@ -78,7 +78,7 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
 /** Destructor      Deallocate a symbol table node.
  *
  */
-cx_symtab_node::~cx_symtab_node(void) {
+cx_symtab_node::~cx_symtab_node (void) {
     void remove_type(cx_type *&p_type);
 
     // First the subtrees (if any).
@@ -97,7 +97,7 @@ cx_symtab_node::~cx_symtab_node(void) {
  *              subtree.  For the node itself, first print its
  *              symbol string, and then its line numbers.
  */
-void cx_symtab_node::print(void) const {
+void cx_symtab_node::print (void) const {
     const int max_name_print_width = 16;
 
     // Pirst, print left__ subtree
@@ -108,7 +108,7 @@ void cx_symtab_node::print(void) const {
     sprintf(list.text, "%*s", max_name_print_width, p_string);
     if (p_line_num_list) {
         p_line_num_list->print(strlen(p_string) > max_name_print_width,
-                max_name_print_width);
+                               max_name_print_width);
     } else list.put_line();
     print_identifier();
 
@@ -120,7 +120,7 @@ void cx_symtab_node::print(void) const {
  *                          identifier's definition and type.
  *
  */
-void cx_symtab_node::print_identifier(void) const {
+void cx_symtab_node::print_identifier (void) const {
     switch (defn.how) {
         case dc_constant: print_constant();
             break;
@@ -139,7 +139,7 @@ void cx_symtab_node::print_identifier(void) const {
  *                      identifier for the cross-reference.
  *
  */
-void cx_symtab_node::print_constant(void) const {
+void cx_symtab_node::print_constant (void) const {
     extern cx_list_buffer list;
 
     list.put_line();
@@ -147,7 +147,7 @@ void cx_symtab_node::print_constant(void) const {
 
     // value
     if ((p_type == p_integer_type) ||
-            (p_type->form == fc_enum)) {
+        (p_type->form == fc_enum)) {
         sprintf(list.text, "value = %d",
                 defn.constant.value.int__);
     } else if (p_type == p_float_type) {
@@ -158,7 +158,7 @@ void cx_symtab_node::print_constant(void) const {
                 defn.constant.value.char__);
     } else if (p_type->form == fc_array) {
         sprintf(list.text, "value = '%s'",
-                defn.constant.value.p_string);
+                (char *)defn.constant.value.addr__);
     }
     list.put_line();
 
@@ -172,12 +172,12 @@ void cx_symtab_node::print_constant(void) const {
  *                          cross-reference.
  *
  */
-void cx_symtab_node::print_var_or_field(void) const {
+void cx_symtab_node::print_var_or_field (void) const {
     extern cx_list_buffer list;
 
     list.put_line();
     list.put_line(defn.how == dc_variable ? "Declared variable"
-            : "Declared record field");
+                  : "Declared record field");
 
     // type information
     if (p_type) p_type->print_type_spec(cx_type::vc_terse);
@@ -188,7 +188,7 @@ void cx_symtab_node::print_var_or_field(void) const {
  *                      identifier for the cross-reference.
  *
  */
-void cx_symtab_node::print_type(void) const {
+void cx_symtab_node::print_type (void) const {
     list.put_line();
     list.put_line("Defined type");
 
@@ -201,7 +201,7 @@ void cx_symtab_node::print_type(void) const {
  *
  * @param p_vector_nodes : vector of node ptrs.
  */
-void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
+void cx_symtab_node::convert (cx_symtab_node *p_vector_nodes[]) {
     // First, convert the left__ subtree.
     if (left__ != nullptr) left__->convert(p_vector_nodes);
 
@@ -224,7 +224,7 @@ void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
  * @param p_string : ptr to the name string to search for.
  * @return ptr to the node if found, else nullptr.
  */
-cx_symtab_node *cx_symtab::search(const char *p_string) const {
+cx_symtab_node *cx_symtab::search (const char *p_string) const {
     cx_symtab_node *p_node = root__; // ptr to symbol table node
     int comp;
 
@@ -253,7 +253,7 @@ cx_symtab_node *cx_symtab::search(const char *p_string) const {
  * @param dc      : definition code.
  * @return ptr to the node, whether existing or newly-entered.
  */
-cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
+cx_symtab_node *cx_symtab::enter (const char *p_string, cx_define_code dc) {
     cx_symtab_node *p_node; // ptr to node
     cx_symtab_node **ppNode = &root__; // ptr to ptr to node
 
@@ -283,7 +283,7 @@ cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
  * @param dc      : definition code.
  * @return ptr to symbol table node.
  */
-cx_symtab_node *cx_symtab::enter_new(const char *p_string, cx_define_code dc) {
+cx_symtab_node *cx_symtab::enter_new (const char *p_string, cx_define_code dc) {
     cx_symtab_node *p_node = search(p_string);
 
     if (!p_node) p_node = enter(p_string, dc);
@@ -297,7 +297,7 @@ cx_symtab_node *cx_symtab::enter_new(const char *p_string, cx_define_code dc) {
  *
  * @param p_vector_symtabs : vector of symbol table pointers.
  */
-void cx_symtab::convert(cx_symtab *p_vector_symtabs[]) {
+void cx_symtab::convert (cx_symtab *p_vector_symtabs[]) {
     // Point the appropriate entry of the symbol table pointer vector
     // to this symbol table.
     p_vector_symtabs[xsymtab] = this;
@@ -318,7 +318,7 @@ void cx_symtab::convert(cx_symtab *p_vector_symtabs[]) {
  *		    table, and set the others to nullptr.
  *
  */
-cx_symtab_stack::cx_symtab_stack(void) {
+cx_symtab_stack::cx_symtab_stack (void) {
     extern cx_symtab cx_global_symtab;
     void initialize_std_functions(cx_symtab * p_symtab);
 
@@ -336,7 +336,7 @@ cx_symtab_stack::cx_symtab_stack(void) {
 /** Destructor	    Remove the predefined types.
  *
  */
-cx_symtab_stack::~cx_symtab_stack(void) {
+cx_symtab_stack::~cx_symtab_stack (void) {
     remove_builtin_types();
 }
 
@@ -346,7 +346,7 @@ cx_symtab_stack::~cx_symtab_stack(void) {
  * @param p_string : ptr to name string to find.
  * @return ptr to symbol table node if found, else nullptr.
  */
-cx_symtab_node *cx_symtab_stack::search_all(const char *p_string) const {
+cx_symtab_node *cx_symtab_stack::search_all (const char *p_string) const {
     for (int i = current_nesting_level; i >= 0; --i) {
         cx_symtab_node *p_node = p_symtabs[i]->search(p_string);
         if (p_node) return p_node;
@@ -364,7 +364,7 @@ cx_symtab_node *cx_symtab_stack::search_all(const char *p_string) const {
  * @param p_string : ptr to name string to find.
  * @return ptr to symbol table node.
  */
-cx_symtab_node *cx_symtab_stack::find(const char *p_string) const {
+cx_symtab_node *cx_symtab_stack::find (const char *p_string) const {
     cx_symtab_node *p_node = search_all(p_string);
 
     if (!p_node) {
@@ -380,7 +380,7 @@ cx_symtab_node *cx_symtab_stack::find(const char *p_string) const {
  *		stack.
  *
  */
-void cx_symtab_stack::enter_scope(void) {
+void cx_symtab_stack::enter_scope (void) {
 
     // dont overwrite mains scope
     //if (current_nesting_level <= 1)++current_nesting_level;
@@ -400,7 +400,7 @@ void cx_symtab_stack::enter_scope(void) {
  *
  * @return ptr to closed scope's symbol table.
  */
-cx_symtab *cx_symtab_stack::exit_scope(void) {
+cx_symtab *cx_symtab_stack::exit_scope (void) {
     return p_symtabs[current_nesting_level--];
 }
 
@@ -413,7 +413,7 @@ cx_symtab *cx_symtab_stack::exit_scope(void) {
 /** Destructor      Deallocate a line number list.
  *
  */
-cx_line_num_list::~cx_line_num_list(void) {
+cx_line_num_list::~cx_line_num_list (void) {
     // Loop to delete each node in the list.
     while (head) {
         cx_line_num_node *p_node = head; // ptr to node to delete
@@ -427,7 +427,7 @@ cx_line_num_list::~cx_line_num_list(void) {
  *              list.
  *
  */
-void cx_line_num_list::update(void) {
+void cx_line_num_list::update (void) {
     // If the line number is already there, it'll be at the tail.
     if (tail && (tail->number == current_line_number)) return;
 
@@ -442,7 +442,7 @@ void cx_line_num_list::update(void) {
  * @param new_line_flag : if true, start a new line immediately.
  * @param indent      : amount to indent subsequent lines.
  */
-void cx_line_num_list::print(int new_line_flag, int indent) const {
+void cx_line_num_list::print (int new_line_flag, int indent) const {
     const int max_line_number_print_width = 4;
     const int max_line_numbers_per_line = 10;
 

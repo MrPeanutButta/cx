@@ -12,7 +12,7 @@
  *
  * @param p_function_id : ptr to the routine symtab node
  */
-void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
+void cx_executor::execute_statement (cx_symtab_node *p_function_id) {
     if (token != tc_left_bracket) {
         ++statement_count;
         trace_statement();
@@ -61,7 +61,7 @@ void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
  * @param p_function_id : ptr to the routine symtab node
  * @param terminator : token to terminate compound execution.
  */
-void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator) {
+void cx_executor::execute_statement_list (cx_symtab_node *p_function_id, cx_token_code terminator) {
     do {
         execute_statement(p_function_id);
 
@@ -77,7 +77,7 @@ void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token
  *
  * @param p_function_id : routine ID this statement is apart of.
  */
-void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
+void cx_executor::execute_compound (cx_symtab_node * p_function_id) {
 
     get_token();
 
@@ -97,7 +97,7 @@ void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
  *
  * @param p_function_id : routine ID this statement is apart of.
  */
-void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
+void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
     //  if
     get_token();
 
@@ -153,7 +153,7 @@ void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
  *
  * @param p_function_id
  */
-void cx_executor::execute_FOR(cx_symtab_node * p_function_id) {
+void cx_executor::execute_FOR (cx_symtab_node * p_function_id) {
 
     int condition = 0;
 

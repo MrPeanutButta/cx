@@ -5,24 +5,24 @@
 #include "icode.h"
 
 const char *cx_symbol_strings[] = {
-    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-    //operators and punctuation
-    "^", "&", "|", "~", "^=", "&=", "|=", "<<",
-    "<<=", ">>", ">>=", "-", "-=", "+", "+=", "=", "--",
-    "++", "/", "/=", "*", "*=", "<", ">", "==", "<=", ">=",
-    "!=", "%", "%=", "[", "]", "?", "#", ".*", "(", ")", "{",
-    "}", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
-    "&&", "!", "\'", "\"",
+                                   nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+                                   //operators and punctuation
+                                   "^", "&", "|", "~", "^=", "&=", "|=", "<<",
+                                   "<<=", ">>", ">>=", "-", "-=", "+", "+=", "=", "--",
+                                   "++", "/", "/=", "*", "*=", "<", ">", "==", "<=", ">=",
+                                   "!=", "%", "%=", "[", "]", "?", "#", ".*", "(", ")", "{",
+                                   "}", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
+                                   "&&", "!", "\'", "\"",
 
-    "if", "return", "continue", "friend", "go_to", "try",
-    "delete", "typeid", "do", "singed",
-    "typename", "break", "sizeof",
-    "case", "static", "unsigned", "catch", "else", "namespace",
-    "using", "new", "virtual", "explicit",
-    "noexcept", "export", "switch",
-    "extern", "operator", "template", "const",
-    "private", "this", "while", "protected", "threadlocal",
-    "for", "public", "throw", "default", "typedef", "mutable", "include"
+                                   "if", "return", "continue", "friend", "go_to", "try",
+                                   "delete", "typeid", "do", "singed",
+                                   "typename", "break", "sizeof",
+                                   "case", "static", "unsigned", "catch", "else", "namespace",
+                                   "using", "new", "virtual", "explicit",
+                                   "noexcept", "export", "switch",
+                                   "extern", "operator", "template", "const",
+                                   "private", "this", "while", "protected", "threadlocal",
+                                   "for", "public", "throw", "default", "typedef", "mutable", "include"
 };
 
 /** Copy constructor    Make a copy of the icode.  Only copy as
@@ -30,7 +30,7 @@ const char *cx_symbol_strings[] = {
  *
  * @param icode : icode to copy.
  */
-cx_icode::cx_icode(const cx_icode &icode) {
+cx_icode::cx_icode (const cx_icode &icode) {
     int length = int(icode.cursor - icode.p_code); // length of icode
 
     // Copy icode.
@@ -48,7 +48,7 @@ cx_icode::cx_icode(const cx_icode &icode) {
  *
  * @param size : number of bytes to append.
  */
-void cx_icode::check_bounds(int size) {
+void cx_icode::check_bounds (int size) {
     if (cursor + size >= &p_code[code_segment_size]) {
         cx_error(err_code_segment_overflow);
         abort_translation(abort_code_segment_overflow);
@@ -60,7 +60,7 @@ void cx_icode::check_bounds(int size) {
  *
  * @param tc : token code.
  */
-void cx_icode::put(cx_token_code tc) {
+void cx_icode::put (cx_token_code tc) {
     if (error_count > 0) return;
 
     char code = tc;
@@ -75,7 +75,7 @@ void cx_icode::put(cx_token_code tc) {
  *
  * @param p_node : ptr to symtab node
  */
-void cx_icode::put(const cx_symtab_node *p_node) {
+void cx_icode::put (const cx_symtab_node *p_node) {
     if (error_count > 0) return;
 
     short xsymtab = p_node->symtab_index();
@@ -83,9 +83,9 @@ void cx_icode::put(const cx_symtab_node *p_node) {
 
     check_bounds(2 * sizeof (short));
     memcpy((void *) cursor,
-            (const void *) &xsymtab, sizeof (short));
+           (const void *) &xsymtab, sizeof (short));
     memcpy((void *) (cursor + sizeof (short)),
-            (const void *) &xnode, sizeof (short));
+           (const void *) &xnode, sizeof (short));
     cursor += 2 * sizeof (short);
 }
 
@@ -94,7 +94,7 @@ void cx_icode::put(const cx_symtab_node *p_node) {
  *
  * @return ptr to the extracted token.
  */
-cx_token *cx_icode::get(void) {
+cx_token *cx_icode::get (void) {
     cx_token *p_token; // ptr to token to return
     char code; // token code read from the file
     cx_token_code token;
@@ -112,7 +112,7 @@ cx_token *cx_icode::get(void) {
             short number;
 
             memcpy((void *) &number, (const void *) cursor,
-                    sizeof (short));
+                   sizeof (short));
             current_line_number = number;
             cursor += sizeof (short);
         }
@@ -177,14 +177,14 @@ cx_token *cx_icode::get(void) {
  *
  * @return ptr to the symbol table node
  */
-cx_symtab_node *cx_icode::get_symtab_node(void) {
+cx_symtab_node *cx_icode::get_symtab_node (void) {
     extern cx_symtab **p_vector_symtabs;
     short xsymtab, xnode; // symbol table and node indexes
 
     memcpy((void *) &xsymtab, cursor,
-            sizeof (short));
+           sizeof (short));
     memcpy((void *) &xnode, (const void *) (cursor + sizeof (short)),
-            sizeof (short));
+           sizeof (short));
     cursor += 2 * sizeof (short);
 
     return p_vector_symtabs[xsymtab]->get(xnode);
@@ -194,7 +194,7 @@ cx_symtab_node *cx_icode::get_symtab_node(void) {
  *                      intermediate code just before the
  *                      last appended token code.
  */
-void cx_icode::insert_line_marker(void) {
+void cx_icode::insert_line_marker (void) {
     if (error_count > 0) return;
 
     // Remember the last appended token code;
@@ -222,7 +222,7 @@ void cx_icode::insert_line_marker(void) {
  *
  * @return location of the location marker's offset.
  */
-int cx_icode::put_location_marker(void) {
+int cx_icode::put_location_marker (void) {
     if (error_count > 0) return 0;
 
     // Append the location marker code.
@@ -249,11 +249,11 @@ int cx_icode::put_location_marker(void) {
  *
  * @param location : location of the offset to fix up.
  */
-void cx_icode::fixup_location_marker(int location) {
+void cx_icode::fixup_location_marker (int location) {
     // Patch in the offset of the current token's location.
     short offset = current_location() - 1;
     memcpy((void *) (p_code + location), (const void *) &offset,
-            sizeof (short));
+           sizeof (short));
 }
 
 /** get_location_marker       Extract a location marker from the
@@ -261,7 +261,7 @@ void cx_icode::fixup_location_marker(int location) {
  *
  * @return location offset.
  */
-int cx_icode::get_location_marker(void) {
+int cx_icode::get_location_marker (void) {
     short offset; // location offset
 
     // Extract the offset from the location marker.
@@ -277,7 +277,7 @@ int cx_icode::get_location_marker(void) {
  * @param value   : CASE label value
  * @param location: location of CASE branch statement
  */
-void cx_icode::put_case_item(int value, int location) {
+void cx_icode::put_case_item (int value, int location) {
     if (error_count > 0) return;
 
     short offset = location & 0xffff;
@@ -295,7 +295,7 @@ void cx_icode::put_case_item(int value, int location) {
  * @param value   : ref to CASE label value
  * @param location: ref to location of CASE branch statement
  */
-void cx_icode::get_case_item(int &value, int &location) {
+void cx_icode::get_case_item (int &value, int &location) {
     int val;
     short offset;
 

@@ -11,7 +11,7 @@
 #include <map>
 #include <cstring>
 #include "misc.h"
-#include "cx-debug/exec.h"
+#include "exec.h"
 
 struct cx_stack_item;
 
@@ -125,16 +125,6 @@ public:
     char *string__(void) const {
         return p_string;
     }
-
-    /*void rename_node(const char *p_string) {
-        if (p_string != nullptr) {
-            delete p_string;
-            p_string = nullptr;
-        }
-
-        p_string = new char[strlen(p_string)];
-        strcpy(p_string, p_string);
-    }*/
 
     short symtab_index(void) const {
         return xsymtab;

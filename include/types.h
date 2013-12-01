@@ -23,19 +23,9 @@ extern cx_symtab_node *p_stdout;
 extern cx_symtab_node *p_stderr;
 
 extern cx_type *p_integer_type;
-extern cx_type *p_short_type;
-extern cx_type *p_long_type;
-
 extern cx_type *p_uint8_type;
-extern cx_type *p_uint16_type;
-extern cx_type *p_uint32_type;
-extern cx_type *p_uint64_type;
-
 extern cx_type *p_float_type;
-extern cx_type *p_double_type;
-
 extern cx_type *p_boolean_type;
-
 extern cx_type *p_char_type;
 extern cx_type *p_wchar_type;
 
@@ -64,9 +54,6 @@ enum cx_type_code {
     cx_float,
     cx_bool,
     cx_uint8,
-    cx_uint16,
-    cx_uint32,
-    cx_uint64,
     cx_void,
     cx_complex,
     cx_file,
@@ -170,6 +157,9 @@ public:
             const cx_type *p_type2);
     friend bool real_operands(const cx_type *p_type1,
             const cx_type *p_type2);
+
+    friend void check_bitwise_integer(const cx_type *p_type1);
+    friend void check_bitwise_integer(const cx_type *p_type1, const cx_type *p_type2);
 };
 
 void initialize_builtin_types(cx_symtab *p_symtab);

@@ -2,8 +2,8 @@
 #include "common.h"
 #include "types.h"
 
-void cx_executor::file_out(const cx_symtab_node* p_target_id,
-        const cx_type* p_expr_type) {
+void cx_executor::file_out (const cx_symtab_node* p_target_id,
+                            const cx_type* p_expr_type) {
 
     cx_type_code expr_type = p_expr_type->type_code;
 
@@ -38,24 +38,6 @@ void cx_executor::file_out(const cx_symtab_node* p_target_id,
         {
             fprintf(p_target_id->p_type->stream.p_file_stream, "%u",
                     mem->uint8__);
-        }
-            break;
-        case cx_uint16:
-        {
-            fprintf(p_target_id->p_type->stream.p_file_stream, "%u",
-                    mem->uint16__);
-        }
-            break;
-        case cx_uint32:
-        {
-            fprintf(p_target_id->p_type->stream.p_file_stream, "%u",
-                    mem->uint32__);
-        }
-            break;
-        case cx_uint64:
-        {
-            fprintf(p_target_id->p_type->stream.p_file_stream, "%lu",
-                    mem->uint64__);
         }
             break;
         default:

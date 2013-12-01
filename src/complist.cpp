@@ -10,12 +10,12 @@
 #include <iostream>
 #include "complist.h"
 
-void cx_compact_list_buffer::put_blank(void) {
+void cx_compact_list_buffer::put_blank (void) {
     if (++text_length >= max_compact_text_length - 1) put_line();
     else *p_text++ = ' ';
 }
 
-void cx_compact_list_buffer::put(const char* p_string) {
+void cx_compact_list_buffer::put (const char* p_string) {
 
     int token_length(strlen(p_string));
 
@@ -29,7 +29,7 @@ void cx_compact_list_buffer::put(const char* p_string) {
 
 }
 
-void cx_compact_list_buffer::put_line(void) {
+void cx_compact_list_buffer::put_line (void) {
     if (text_length > 0) {
         *p_text = '\0';
         std::cout << text << std::endl;

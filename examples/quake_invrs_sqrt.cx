@@ -1,10 +1,11 @@
 /* from: http://betterexplained.com/articles/understanding-quakes-fast-inverse-square-root/
  *
- * for parsing and execution development only
+ * for parsing and execution development only.
+ * syntax here is not yet supported by cx.
  */
 
 
-float InvSqrt(float x) {
+float InvSqrt (float x) {
 
     float xhalf = 0.5f * x;
     int i = *(int*) &x; // store floating-point bits in integer
@@ -15,7 +16,7 @@ float InvSqrt(float x) {
 
 }
 
-int main() {
+int main () {
     float q;
 
     q = InvSqrt(4096);
