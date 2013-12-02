@@ -523,8 +523,8 @@ void check_assignment_type_compatible (const cx_type *p_target_type,
     //    p_target_type = p_target_type->base_type();
     //  p_value_type = p_value_type->base_type();
 
-    cx_type_code target_type = p_target_type->base_type()->type_code;
-    cx_type_code value_type = p_value_type->base_type()->type_code;
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code value_type = p_value_type->type_code;
 
     if (target_type == value_type) return;
     if ((value_type == cx_file) && (target_type != cx_file)) return;
@@ -620,8 +620,9 @@ void check_assignment_type_compatible (const cx_type *p_target_type,
                 break;
         }
     } else if (p_target_type->form == fc_array) {
-        if (p_target_type->array.p_element_type->type_code ==
-            p_value_type->array.p_element_type->type_code) return;
+//        if (p_target_type->base_type() ==
+//            p_value_type->array.p_element_type->type_code) return;
+        return;
     } else {
         if (p_target_type == p_value_type) return;
     }

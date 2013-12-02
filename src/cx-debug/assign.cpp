@@ -181,8 +181,8 @@ void cx_executor::assign (const cx_symtab_node* p_target_id,
 
     } else {
 
-        const int size = p_target_type->size;
-        const int num_of_elements = size / p_target_type->base_type()->size;
+        const int size = p_expr_type->size;
+        const int num_of_elements = size / p_expr_type->base_type()->size;
 
 
         p_target_address = realloc(p_target_address, size);
@@ -242,7 +242,7 @@ void cx_executor::assign (const cx_symtab_node* p_target_id,
         p_target_id->p_type->array.max_index = num_of_elements;
         p_target_id->p_type->size = (size);
         char *t = (char *) p_target_address;
-        p_target_id->runstack_item->basic_types.addr__ = p_target_address;
+        p_target->basic_types.addr__ = p_target_address;
 
     }
 }
@@ -530,7 +530,7 @@ cx_executor::plus_equal (const cx_symtab_node* p_target_id,
         }
     } else {
         const int size = p_expr_type->size;
-        const int old_size = (p_target_type->size - 1);
+        const int old_size = p_target_type->size;//(p_target_type->size == 0 ? 0 : p_target_type->size - 1);
         const int num_of_elements = (old_size + size) / p_expr_type->base_type()->size;
 
         p_target_address = realloc(p_target_address, old_size + size);

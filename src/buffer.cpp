@@ -153,22 +153,22 @@ char cx_source_buffer::get_line (void) {
  *****************/
 
 const int max_printline_length = 80;
-const int max_lines_per_page = 50;
+//const int max_lines_per_page = 50;
 
 cx_list_buffer list; // the list file buffer
 
 /** print_page_header     Start a new page of the list file and
  *                      print the page header.
  */
-void cx_list_buffer::print_page_header (void) {
-    const char form_feed_char = '\f';
-
-    std::cout << form_feed_char << "Page " << ++page_number
-            << "   " << p_source_file_name << "   " << date
-            << std::endl << std::endl;
-
-    line_count = 0;
-}
+//void cx_list_buffer::print_page_header (void) {
+//    const char form_feed_char = '\f';
+//
+//    std::cout << form_feed_char << "Page " << ++page_number
+//            << "   " << p_source_file_name << "   " << date
+//            << std::endl << std::endl;
+//
+//    line_count = 0;
+//}
 
 /** Initialize      Initialize the list buffer.  Set the date
  *                  for the page header, and print the first
@@ -178,19 +178,19 @@ void cx_list_buffer::print_page_header (void) {
  */
 void cx_list_buffer::initialize (const char *p_file_name) {
     memset(text, '\0', sizeof (text));
-    page_number = 0;
+    //page_number = 0;
 
     // Copy the input file name.
     p_source_file_name = new char[strlen(p_file_name) + 1];
     strcpy(p_source_file_name, p_file_name);
 
     // Set the date.
-    time_t timer;
-    time(&timer);
-    strcpy(date, asctime(localtime(&timer)));
-    date[strlen(date) - 1] = '\0'; // remove '\n' at end
-
-    print_page_header();
+//    time_t timer;
+//    time(&timer);
+//    strcpy(date, asctime(localtime(&timer)));
+//    date[strlen(date) - 1] = '\0'; // remove '\n' at end
+//
+//    print_page_header();
 }
 
 
@@ -198,7 +198,7 @@ void cx_list_buffer::initialize (const char *p_file_name) {
 
 void cx_list_buffer::put_line (void) {
     // Start a new page if the current one is full.
-    if (list_flag && (line_count == max_lines_per_page)) print_page_header();
+    //if (list_flag && (line_count == max_lines_per_page)) print_page_header();
 
     // Truncate the line if it's too long.
     text[max_printline_length] = '\0';

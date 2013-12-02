@@ -38,12 +38,18 @@ void cx_parser::parse_execute_directive (cx_symtab_node *p_function_id) {
             lib_path += p_token->string__();
             p_program_ptr_id->found_global_end = true;
 
+            // save current line number
+            int old_line_num = current_line_number;
+            current_line_number = 0;
+
             cx_parser *parser = new cx_parser
                     (new cx_source_buffer(lib_path.c_str()));
 
             /* true : stdlib module
              * returns nullptr */
             parser->parse(true);
+
+            current_line_number = old_line_num;
 
             delete parser;
 

@@ -75,7 +75,6 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
                                               cx_symtab_node* p_array_node) {
 
     cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
-
     cx_type *p_expr_type = nullptr;
 
     // Final element type.
@@ -95,9 +94,13 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
     p_array_type->array.element_count = max_index;
     p_array_type->array.min_index = min_index;
     p_array_type->array.max_index = max_index;
+    //p_array_node->p_type->form = fc_array;
 
     if (is_function) {
         parse_function_header(p_array_node);
+        set_type(p_array_node->p_type, p_array_type);
+//        set_type(p_array_node->p_type->array.p_element_type, p_expr_type->base_type());
+//        p_array_node->p_type->form = fc_array;
         return p_array_type;
     }
 
@@ -107,11 +110,11 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
 
         delete p_array_type;
         set_type(p_array_node->p_type->array.p_index_type, p_integer_type);
-        set_type(p_array_node->p_type->array.p_element_type, p_expr_type->array.p_element_type);
-        set_type(p_array_node->p_type, p_expr_type);
-
+        set_type(p_array_node->p_type->array.p_element_type, p_expr_type->base_type());
+        //set_type(p_array_node->p_type, p_expr_type);
+        //
         p_array_node->p_type->p_type_id = p_array_node;
-        p_array_type = p_expr_type;
+        p_array_type = p_array_node->p_type;
 
     } else {
         set_type(p_array_node->p_type, p_array_type);

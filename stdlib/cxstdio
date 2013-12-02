@@ -131,8 +131,8 @@ char *gets(){
         if(c != '\n'){
             str += c;
         }
-
     }while(c != '\n');
 
-    return (str += '\0');
+    str += '\0';
+    return str;
 }
