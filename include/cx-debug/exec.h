@@ -91,6 +91,8 @@ struct cx_stack_item {
 
     cx_stack_item(void *address) {
         basic_types.addr__ = address;
+        char *t = (char *) basic_types.addr__;
+        char *y = (char *) address;
 
         if (cx_dev_debug_flag)
             std::clog << "new ptr = " << basic_types.addr__ << std::endl;
@@ -186,6 +188,7 @@ public:
     }
 
     void push(void *addr) {
+        char *t = (char *) addr;
         cx_runstack.push_back(new cx_stack_item((void*) addr));
     }
 
@@ -331,7 +334,7 @@ class cx_executor : public cx_backend {
 
     // additive
     cx_type *execute_additive(cx_token_code op, cx_type *lhs, cx_type *rhs);
-    void plus(cx_type *lhs, cx_type *rhs);
+    cx_type *plus(cx_type *lhs, cx_type *rhs);
     void minus(cx_type *lhs, cx_type *rhs);
     void bit_leftshift(cx_type *lhs, cx_type *rhs);
     void bit_rightshift(cx_type *lhs, cx_type *rhs);
@@ -350,7 +353,7 @@ class cx_executor : public cx_backend {
     // factors
     cx_type *number(cx_symtab_node *num);
     void logic_not(void);
-    
+
     void file_out(const cx_symtab_node* p_target_id,
             const cx_type* p_expr_type);
 
@@ -405,6 +408,7 @@ class cx_executor : public cx_backend {
     }
 
     void push(void *addr) {
+        char *t = (char *) addr;
         run_stack.push((void*) addr);
     }
 

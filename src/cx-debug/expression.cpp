@@ -73,13 +73,17 @@ cx_type *cx_executor::execute_simple_expression (void) {
     // Loop to execute subsequent additive operators and terms.
     while (token_in(token, tokenlist_add_ops)) {
         op = token;
-        p_result_type = p_result_type->base_type();
+        //p_result_type = p_result_type->base_type();
 
         get_token();
-        p_operand_type = execute_term()->base_type();
+        p_operand_type = execute_expression();
 
         p_result_type = execute_additive(op, p_result_type, p_operand_type);
 
+        // delete any temp allocations
+        /*if (p_operand_type->is_temp_value) {
+            delete p_operand_type;
+        }*/
     }
 
     return p_result_type;

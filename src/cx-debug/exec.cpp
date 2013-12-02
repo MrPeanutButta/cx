@@ -215,9 +215,8 @@ cx_executor::go (cx_symtab_node *p_program_id) {
 
     if (cx_dev_debug_flag) {
         // print the executor's summary.
-        std::cout << std::endl;
-        std::cout << "Successful completion.  " << statement_count
-                << " statements executed." << std::endl;
+        std::cout << "\nSuccessful completion.  " << statement_count
+                << " statements executed.\n\n";
     }
 }
 
@@ -248,7 +247,7 @@ cx_executor::initialize_global (cx_symtab_node* p_program_id) {
     cx_frame_header *p_new_frame_base = run_stack.push_frame_header
             (0, 0, p_program_id->defn.routine.p_icode);
 
-    // Activate the new stack frame ...
+    // Activate the new stack frame
     current_nesting_level = 0;
     run_stack.activate_frame(p_new_frame_base, p_program_id->defn.routine.return_marker);
 

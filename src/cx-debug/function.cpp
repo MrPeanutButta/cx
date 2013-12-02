@@ -172,7 +172,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 void *p_target_address = nullptr;
                 const int num_of_elements = size / p_actual_type->base_type()->size;
 
-                p_target_address = realloc(p_target_address, size);
+                p_target_address = realloc(p_target_address, size + 1);
 
                 if (p_target_address == nullptr) {
                     perror("realloc");
@@ -185,6 +185,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 memcpy(p_target_address, p_source, size + 1);
 
                 char *y = (char *) p_target_address;
+                char *t = (char *) p_source;
                 pop();
                 push((void*) p_target_address);
 

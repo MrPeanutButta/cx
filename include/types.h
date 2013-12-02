@@ -21,20 +21,15 @@ extern cx_symtab_node *p_main_function_id;
 extern cx_symtab_node *p_stdin;
 extern cx_symtab_node *p_stdout;
 extern cx_symtab_node *p_stderr;
-
 extern cx_type *p_integer_type;
 extern cx_type *p_uint8_type;
 extern cx_type *p_float_type;
 extern cx_type *p_boolean_type;
 extern cx_type *p_char_type;
 extern cx_type *p_wchar_type;
-
 //cx_type *p_class_type = nullptr;
-
 extern cx_type *p_complex_type;
-
 extern cx_type *p_file_type;
-
 extern cx_type *p_dummy_type;
 
 enum cx_type_form_code {
@@ -54,7 +49,7 @@ enum cx_type_code {
     cx_float,
     cx_bool,
     cx_uint8,
-    cx_void,
+    cx_address,
     cx_complex,
     cx_file,
 };
@@ -68,6 +63,7 @@ class cx_type {
 public:
     cx_type_form_code form;
     int size;
+    bool is_temp_value;
     cx_symtab_node *p_type_id;
 
     cx_type_code type_code;

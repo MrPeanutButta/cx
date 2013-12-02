@@ -101,14 +101,6 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
         } else if (token == tc_identifier) cx_error(err_missing_comma);
 
 
-
-        // Loop to assign the offset and type to each
-        // parm id in the sublist.
-        //for (p_parm_id = p_first_id; p_parm_id; p_parm_id = p_parm_id->next__) {
-        //p_parm_id->defn.data.offset = total_size++;
-        //set_type(p_parm_id->p_type, p_parm_type);
-        //}
-
         // Link this sublist to the previous sublist.
         if (p_prev_sublist_last_id) p_prev_sublist_last_id->next__ = p_first_id;
         p_prev_sublist_last_id = p_last_id;
@@ -121,9 +113,6 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
     if (token == tc_identifier) {
         cx_error(err_missing_semicolon);
     } else while (token == tc_semicolon) get_token_append();
-    //  :
-    //resync(tokenlist_sublist_follow, tokenlist_declaration_follow);
-    //conditional_get_token(tc_colon, err_missing_colon);
 
     return p_parm_list;
 }

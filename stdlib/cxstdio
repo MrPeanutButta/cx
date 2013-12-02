@@ -127,12 +127,8 @@ char *gets(){
 
     do{
         c = getchar();
-
-        if(c != '\n'){
-            str += c;
-        }
+        if(c != '\n')str += c;
     }while(c != '\n');
 
-    str += '\0';
     return str;
 }

@@ -43,6 +43,7 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
     }
 
     std::string type_name = "dummy";
+    is_temp_value = false;
 
     if (p_type_id != nullptr)
         type_name = p_type_id->string__();
@@ -63,6 +64,8 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
         type_code = cx_complex;
     } else if (type_name == "file") {
         type_code = cx_file;
+    } else {
+        type_code = cx_address;
     }
 }
 
@@ -77,7 +80,6 @@ cx_type::cx_type (int length, bool constant)
     array.element_count = length;
 
 }
-
 /** Destructor      Delete the allocated objects according to
  *                  the form code.  Note that the objects
  *                  pointed to by enumeration.p_const_ids and by
@@ -85,11 +87,8 @@ cx_type::cx_type (int length, bool constant)
  *                  the symbol tables that contain their
  *                  identifiers.
  */
-cx_type::~cx_type () {
+cx_type::~cx_type() {
     switch (form) {
-            /*  case fc_subrange:
-                  remove_type(subrange.p_base_type);
-                  break;*/
         case fc_array:
             remove_type(array.p_index_type);
             remove_type(array.p_element_type);
