@@ -369,7 +369,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
         cx_type *temp_type = new cx_type(fc_array, size, nullptr);
         temp_type->is_temp_value = true;
 
-        //temp_type->type_code = lhs->type_code;
+        set_type(temp_type->array.p_element_type, rhs->array.p_element_type);
+        set_type(temp_type->array.p_index_type, p_integer_type);
         temp_type->array.element_count = num_of_elements;
         temp_type->array.max_index = num_of_elements;
         temp_type->size = size;
@@ -378,18 +379,19 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
         if (p_target_address == nullptr) {
             perror("malloc");
+            cx_runtime_error(rte_none);
         }
 
         memcpy(p_target_address, addr1, lhs->size);
         char *t = (char *) p_target_address;
-        memcpy(&t[lhs->size], addr2, rhs->size);
+        memcpy(&t[lhs->size], addr2, rhs->size+1);
 
         push((void *) p_target_address);
         p_result_type = temp_type;
 
         if (rhs->is_temp_value) {
-            //delete rhs;
-            //free(addr2);
+            delete rhs;
+            free(addr2);
         }
     }
 

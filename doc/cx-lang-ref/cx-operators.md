@@ -18,6 +18,34 @@ Arithmetic `+ - * / %`
 	/  division
 	%  modulo
 
+The addition operator `+` has special meaning for array types. Having an array on either side of
+this binary operator will concatenate both side of the expression into a allocated temporary value.
+Both sides of the expression must be of the same base type, e.g. an array of char elements is compatible
+with a primitive char type, or 2 arrays of int elements would also be ok. 
+
+``` cpp
+// gets() and string allocation example
+
+#include cxstdio
+
+int main () {
+
+    do{
+        puts("Please enter your name: ");
+        // read string until '\n'
+        char *in = gets();
+    }while(!in);
+    
+    char *t1 = "beep";
+    char *t2 = "-boop";
+    char *greet = "Hello " + in + ", you a bad " + t1 + t2 + " !";
+
+    puts(greet);
+
+    return 0;
+}
+```
+
 ## Assignment
 --------------------------------------
 The assignment operator assigns a value to a variable. The assignment operator

@@ -64,7 +64,11 @@ cx_type *cx_parser::parse_simple_expression (void) {
         p_operand_type = parse_term();
 
         switch (op) {
-            case tc_plus:
+            case tc_plus:{
+                check_assignment_type_compatible(p_result_type, p_operand_type, 
+                                                 err_incompatible_types);
+                break;
+            }
             case tc_minus:
                 if (integer_operands(p_result_type, p_operand_type)) {
                     p_result_type = p_integer_type;
