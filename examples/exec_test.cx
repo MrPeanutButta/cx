@@ -5,7 +5,17 @@
 
 int main () {
 
-    puts(gets() + " gets() puts() the lotion");
-    
+    do{
+        puts("Please enter your name: ");
+        // read string until '\n'
+        char *in = gets();
+    }while(!in);
+
+    char *t1 = "beep";
+    char *t2 = "-boop";
+    char *greet = "Hello " + in + ", you a bad " + t1 + t2 + " !";
+
+    puts(greet);
+
     return 0;
 }
