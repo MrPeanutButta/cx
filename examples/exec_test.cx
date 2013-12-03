@@ -2,22 +2,16 @@
 /* gets() and string allocation example
  */
 #include cxstdio
-#include cxctype
-
-int str_to_int(char *str){
-    int i=0,s=0;
-
-    while (isdigit(str[i])){
-        s = s * 10 + str[i] - '0';
-        i++;
-    }
-
-    return s;
-}
 
 int main () {
+/*
+    puts("Please enter your name: ");
+    char *in = gets();
+*/
+   char *in = "aaron";
+   char *greet = "Hello " + in + ", you a bad mother fucker!";
 
-    int a = str_to_int(i);
+   puts(greet);
 
-    return a;
+    return 0;
 }
