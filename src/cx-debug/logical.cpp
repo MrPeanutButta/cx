@@ -639,55 +639,56 @@ void cx_executor::logic_not (void) {
     get_token();
     cx_type *p_result_type = execute_expression();
 
-    switch (p_result_type->type_code) {
-        case cx_int:
-        {
-            int value = top()->basic_types.int__;
-            pop();
-            push(bool(!value));
+    if (p_result_type->is_scalar_type()) {
+        switch (p_result_type->type_code) {
+            case cx_int:
+            {
+                int value = top()->basic_types.int__;
+                pop();
+                push(bool(!value));
+            }
+                break;
+            case cx_char:
+            {
+                char value = top()->basic_types.char__;
+                pop();
+                push(bool(!value));
+            }
+                break;
+            case cx_wchar:
+            {
+                wchar_t value = top()->basic_types.wchar__;
+                pop();
+                push(bool(!value));
+            }
+                break;
+            case cx_float:
+            {
+                float value = top()->basic_types.float__;
+                pop();
+                push(bool(!value));
+            }
+                break;
+            case cx_bool:
+            {
+                bool value = top()->basic_types.bool__;
+                pop();
+                push(bool(!value));
+            }
+                break;
+            case cx_uint8:
+            {
+                uint8_t value = top()->basic_types.uint8__;
+                pop();
+                push(bool(!value));
+            }
+                break;
+            default:
+                break;
         }
-            break;
-        case cx_char:
-        {
-            char value = top()->basic_types.char__;
-            pop();
-            push(bool(!value));
-        }
-            break;
-        case cx_wchar:
-        {
-            wchar_t value = top()->basic_types.wchar__;
-            pop();
-            push(bool(!value));
-        }
-            break;
-        case cx_float:
-        {
-            float value = top()->basic_types.float__;
-            pop();
-            push(bool(!value));
-        }
-            break;
-        case cx_bool:
-        {
-            bool value = top()->basic_types.bool__;
-            pop();
-            push(bool(!value));
-        }
-            break;
-        case cx_uint8:
-        {
-            uint8_t value = top()->basic_types.uint8__;
-            pop();
-            push(bool(!value));
-        }
-            break;
-        default:
-        {
-            void *value = top()->basic_types.addr__;
-            pop();
-            push(bool(!value));
-        }
-            break;
+    } else {
+        void *value = top()->basic_types.addr__;
+        pop();
+        push(bool(!value));
     }
 }

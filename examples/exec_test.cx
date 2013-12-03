@@ -16,7 +16,6 @@ int str_to_int(char *str){
 }
 
 int main () {
-    char *i = "12345";
 
     int a = str_to_int(i);
 

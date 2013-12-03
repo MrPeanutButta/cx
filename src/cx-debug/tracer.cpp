@@ -103,7 +103,11 @@ void cx_executor::trace_data_value (const cx_stack_item &p_data_value,
         text << std::boolalpha << p_data_value.basic_types.bool__;
     } else if (p_data_type->form == fc_array) {
         if (p_data_type->array.p_element_type == p_char_type) {
-            text << '\"' << (char *) p_data_value.basic_types.addr__ << '\"';
+            if (p_data_value.basic_types.addr__ != nullptr) {
+                text << '\"' << (char *) p_data_value.basic_types.addr__ << '\"';
+            } else {
+                text << "<null>";
+            }
         } else text << "<array>";
     } else if (p_data_type->form == fc_complex) {
         text << "<complex>";
