@@ -4,14 +4,8 @@
 #include cxstdio
 
 int main () {
-/*
-    puts("Please enter your name: ");
-    char *in = gets();
-*/
-   char *in = "aaron";
-   char *greet = "Hello " + in + ", you a bad mother fucker!";
 
-   puts(greet);
-
+    puts(gets() + " gets() puts() the lotion");
+    
     return 0;
 }
