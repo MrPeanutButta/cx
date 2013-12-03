@@ -2,18 +2,25 @@
 /* gets() and string allocation example
  */
 #include cxstdio
+#include cxctype
 
 int main () {
 
     do{
         puts("Please enter your name: ");
+
         // read string until '\n'
         char *in = gets();
     }while(!in);
 
-    char *t1 = "beep";
-    char *t2 = "-boop";
-    char *greet = "Hello " + in + ", you a bad " + t1 + t2 + " !";
+    char *mf = "mutha" + "-fucka";
+
+    int i = 0;
+    do{
+        mf[i] = toupper(mf[i]);
+    }while(mf[i++] != '\0');
+
+    char *greet = "Hello " + in + ", you a bad " + mf + " !";
 
     puts(greet);
 

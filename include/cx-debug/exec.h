@@ -375,6 +375,7 @@ class cx_executor : public cx_backend {
     cx_type *execute_subscripts(const cx_type *p_type);
     cx_type *execute_field(void);
     cx_type *execute_initialization_list(void);
+    cx_type *execute_temp_rvalue(const cx_type *lhs, const cx_type *rhs);
 
     // Tracing
     void trace_routine_entry(const cx_symtab_node *p_function_id);

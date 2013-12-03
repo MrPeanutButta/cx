@@ -37,6 +37,11 @@ cx_type *cx_executor::execute_additive(cx_token_code op, cx_type* lhs, cx_type* 
     return p_result_type;
 }
 
+cx_type *cx_executor::execute_temp_rvalue(const cx_type* lhs,
+        const cx_type* rhs) {
+    return nullptr;
+}
+
 cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
     cx_type *p_result_type = lhs;
@@ -45,11 +50,11 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
         switch (rhs->type_code) {
             case cx_int:
             {
-                int value2 = top()->basic_types.int__;
-                pop();
                 switch (lhs->type_code) {
                     case cx_int:
                     {
+                        int value2 = top()->basic_types.int__;
+                        pop();
                         int value1 = top()->basic_types.int__;
                         pop();
                         push(int(value1 + value2));
@@ -57,6 +62,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_char:
                     {
+                        int value2 = top()->basic_types.int__;
+                        pop();
                         char value1 = top()->basic_types.char__;
                         pop();
                         push(char(value1 + value2));
@@ -64,6 +71,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_wchar:
                     {
+                        int value2 = top()->basic_types.int__;
+                        pop();
                         wchar_t value1 = top()->basic_types.wchar__;
                         pop();
                         push(wchar_t(value1 + value2));
@@ -71,6 +80,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_float:
                     {
+                        int value2 = top()->basic_types.int__;
+                        pop();
                         float value1 = top()->basic_types.float__;
                         pop();
                         push(float(value1 + value2));
@@ -78,6 +89,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_bool:
                     {
+                        int value2 = top()->basic_types.int__;
+                        pop();
                         bool value1 = top()->basic_types.bool__;
                         pop();
                         push(bool(value1 + value2));
@@ -85,6 +98,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_uint8:
                     {
+                        int value2 = top()->basic_types.int__;
+                        pop();
                         uint8_t value1 = top()->basic_types.uint8__;
                         pop();
                         push(uint8_t(value1 + value2));
@@ -97,11 +112,11 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
             case cx_char:
             {
-                char value2 = top()->basic_types.char__;
-                pop();
                 switch (lhs->type_code) {
                     case cx_int:
                     {
+                        char value2 = top()->basic_types.char__;
+                        pop();
                         int value1 = top()->basic_types.int__;
                         pop();
                         push(int(value1 + value2));
@@ -109,6 +124,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_char:
                     {
+                        char value2 = top()->basic_types.char__;
+                        pop();
                         char value1 = top()->basic_types.char__;
                         pop();
                         push(char(value1 + value2));
@@ -116,6 +133,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_wchar:
                     {
+                        char value2 = top()->basic_types.char__;
+                        pop();
                         wchar_t value1 = top()->basic_types.wchar__;
                         pop();
                         push(wchar_t(value1 + value2));
@@ -123,6 +142,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_float:
                     {
+                        char value2 = top()->basic_types.char__;
+                        pop();
                         float value1 = top()->basic_types.float__;
                         pop();
                         push(float(value1 + value2));
@@ -130,6 +151,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_bool:
                     {
+                        char value2 = top()->basic_types.char__;
+                        pop();
                         bool value1 = top()->basic_types.bool__;
                         pop();
                         push(bool(value1 + value2));
@@ -137,6 +160,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_uint8:
                     {
+                        char value2 = top()->basic_types.char__;
+                        pop();
                         uint8_t value1 = top()->basic_types.uint8__;
                         pop();
                         push(uint8_t(value1 + value2));
@@ -149,11 +174,11 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
             case cx_wchar:
             {
-                wchar_t value2 = top()->basic_types.int__;
-                pop();
                 switch (lhs->type_code) {
                     case cx_int:
                     {
+                        wchar_t value2 = top()->basic_types.int__;
+                        pop();
                         int value1 = top()->basic_types.int__;
                         pop();
                         push(int(value1 + value2));
@@ -161,6 +186,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_char:
                     {
+                        wchar_t value2 = top()->basic_types.int__;
+                        pop();
                         char value1 = top()->basic_types.char__;
                         pop();
                         push(char(value1 + value2));
@@ -168,6 +195,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_wchar:
                     {
+                        wchar_t value2 = top()->basic_types.int__;
+                        pop();
                         wchar_t value1 = top()->basic_types.wchar__;
                         pop();
                         push(wchar_t(value1 + value2));
@@ -175,6 +204,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_float:
                     {
+                        wchar_t value2 = top()->basic_types.int__;
+                        pop();
                         float value1 = top()->basic_types.float__;
                         pop();
                         push(float(value1 + value2));
@@ -182,6 +213,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_bool:
                     {
+                        wchar_t value2 = top()->basic_types.int__;
+                        pop();
                         bool value1 = top()->basic_types.bool__;
                         pop();
                         push(bool(value1 + value2));
@@ -189,6 +222,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_uint8:
                     {
+                        wchar_t value2 = top()->basic_types.int__;
+                        pop();
                         uint8_t value1 = top()->basic_types.uint8__;
                         pop();
                         push(uint8_t(value1 + value2));
@@ -201,11 +236,12 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
             case cx_float:
             {
-                float value2 = top()->basic_types.float__;
-                pop();
+
                 switch (lhs->type_code) {
                     case cx_int:
                     {
+                        float value2 = top()->basic_types.float__;
+                        pop();
                         int value1 = top()->basic_types.int__;
                         pop();
                         push(int(value1 + value2));
@@ -213,6 +249,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_char:
                     {
+                        float value2 = top()->basic_types.float__;
+                        pop();
                         char value1 = top()->basic_types.char__;
                         pop();
                         push(char(value1 + value2));
@@ -220,6 +258,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_wchar:
                     {
+                        float value2 = top()->basic_types.float__;
+                        pop();
                         wchar_t value1 = top()->basic_types.wchar__;
                         pop();
                         push(wchar_t(value1 + value2));
@@ -227,6 +267,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_float:
                     {
+                        float value2 = top()->basic_types.float__;
+                        pop();
                         float value1 = top()->basic_types.float__;
                         pop();
                         push(float(value1 + value2));
@@ -234,6 +276,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_bool:
                     {
+                        float value2 = top()->basic_types.float__;
+                        pop();
                         bool value1 = top()->basic_types.bool__;
                         pop();
                         push(bool(value1 + value2));
@@ -241,6 +285,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_uint8:
                     {
+                        float value2 = top()->basic_types.float__;
+                        pop();
                         uint8_t value1 = top()->basic_types.uint8__;
                         pop();
                         push(uint8_t(value1 + value2));
@@ -253,11 +299,12 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
             case cx_bool:
             {
-                bool value2 = top()->basic_types.bool__;
-                pop();
+
                 switch (lhs->type_code) {
                     case cx_int:
                     {
+                        bool value2 = top()->basic_types.bool__;
+                        pop();
                         int value1 = top()->basic_types.int__;
                         pop();
                         push(int(value1 + value2));
@@ -265,6 +312,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_char:
                     {
+                        bool value2 = top()->basic_types.bool__;
+                        pop();
                         char value1 = top()->basic_types.char__;
                         pop();
                         push(char(value1 + value2));
@@ -272,6 +321,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_wchar:
                     {
+                        bool value2 = top()->basic_types.bool__;
+                        pop();
                         wchar_t value1 = top()->basic_types.wchar__;
                         pop();
                         push(wchar_t(value1 + value2));
@@ -279,6 +330,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_float:
                     {
+                        bool value2 = top()->basic_types.bool__;
+                        pop();
                         float value1 = top()->basic_types.float__;
                         pop();
                         push(float(value1 + value2));
@@ -286,6 +339,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_bool:
                     {
+                        bool value2 = top()->basic_types.bool__;
+                        pop();
                         bool value1 = top()->basic_types.bool__;
                         pop();
                         push(bool(value1 + value2));
@@ -293,6 +348,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_uint8:
                     {
+                        bool value2 = top()->basic_types.bool__;
+                        pop();
                         uint8_t value1 = top()->basic_types.uint8__;
                         pop();
                         push(uint8_t(value1 + value2));
@@ -305,11 +362,12 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
             case cx_uint8:
             {
-                uint8_t value2 = top()->basic_types.uint8__;
-                pop();
+
                 switch (lhs->type_code) {
                     case cx_int:
                     {
+                        uint8_t value2 = top()->basic_types.uint8__;
+                        pop();
                         int value1 = top()->basic_types.int__;
                         pop();
                         push(int(value1 + value2));
@@ -317,6 +375,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_char:
                     {
+                        uint8_t value2 = top()->basic_types.uint8__;
+                        pop();
                         char value1 = top()->basic_types.char__;
                         pop();
                         push(char(value1 + value2));
@@ -324,6 +384,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_wchar:
                     {
+                        uint8_t value2 = top()->basic_types.uint8__;
+                        pop();
                         wchar_t value1 = top()->basic_types.wchar__;
                         pop();
                         push(wchar_t(value1 + value2));
@@ -331,6 +393,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_float:
                     {
+                        uint8_t value2 = top()->basic_types.uint8__;
+                        pop();
                         float value1 = top()->basic_types.float__;
                         pop();
                         push(float(value1 + value2));
@@ -338,6 +402,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_bool:
                     {
+                        uint8_t value2 = top()->basic_types.uint8__;
+                        pop();
                         bool value1 = top()->basic_types.bool__;
                         pop();
                         push(bool(value1 + value2));
@@ -345,6 +411,8 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         break;
                     case cx_uint8:
                     {
+                        uint8_t value2 = top()->basic_types.uint8__;
+                        pop();
                         uint8_t value1 = top()->basic_types.uint8__;
                         pop();
                         push(uint8_t(value1 + value2));
@@ -384,7 +452,7 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
         memcpy(p_target_address, addr1, lhs->size);
         char *t = (char *) p_target_address;
-        memcpy(&t[lhs->size], addr2, rhs->size+1);
+        memcpy(&t[lhs->size], addr2, rhs->size + 1);
 
         push((void *) p_target_address);
         p_result_type = temp_type;
