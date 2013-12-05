@@ -12,7 +12,7 @@ int main () {
     char *mft =  mf + mf;
     
     puts(mft + '!' + "another append" + gets() + "----dont be an asshole");
-    //puts('!' + '!');
+    puts("!" + "!");
 
     return 0;
 }
