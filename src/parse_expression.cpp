@@ -103,8 +103,7 @@ cx_type *cx_parser::parse_rvalue (cx_type* lhs, cx_type* rhs) {
     cx_type_code L = lhs->type_code;
     cx_type_code R = rhs->type_code;
 
-    if (((lhs->form == fc_array) || (rhs->form == fc_array)) ||
-        (((L == cx_char) || (L == cx_wchar)) && ((R == cx_char) || (R == cx_wchar)))) {
+    if ((lhs->form == fc_array) || (rhs->form == fc_array)) {
         const int size = lhs->size + rhs->size;
         const int element_count = size / (lhs->form == fc_array ?
                                           lhs->base_type()->size :

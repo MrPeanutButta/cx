@@ -16,14 +16,14 @@ int main () {
     }while(!in);
 
     char *mf = '!' + "mutha" + "-fucka" + '!';
-    char *mft = 't' + 'h' + mf + '!';
+    char *mft = mf + mf;
     
     puts(mft);
     puts(mf + ": this is why we can't have nice things");
     
     int i = 0;
     do{
-        mf[i] = toupper(mf[i]);
+        mf[i] = toupper(mft[i]);
     }while(mf[i++] != '\0');
 
     char *greet = "Hello " + in + ", you a bad " + mf + '!';

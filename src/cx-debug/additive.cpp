@@ -59,7 +59,7 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
         cx_runtime_error(rte_none);
     }
     
-    //memset(p_target_address, 0, size);
+    memset(p_target_address, 0, size);
     char *temp_val = (char *) p_target_address;
 
     if ((lhs->form == fc_array) && (rhs->form == fc_array)) {
@@ -164,7 +164,7 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
                 addr1 = top()->basic_types.addr__;
                 pop();
 
-                memcpy(temp_val, addr1, lhs->size);
+                memcpy(temp_val, addr1, lhs->size + 1);
                 memcpy(&temp_val[lhs->size], &value2, rhs->size);
             }
                 break;

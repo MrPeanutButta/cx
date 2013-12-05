@@ -181,7 +181,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
 
                 void *p_source = top()->basic_types.addr__;
 
-                memset(p_target_address, '\0', size + 1);
+                memset(p_target_address, 0, size + 1);
                 memcpy(p_target_address, p_source, size + 1);
 
                 char *y = (char *) p_target_address;
@@ -189,12 +189,10 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 pop();
                 push((void*) p_target_address);
 
-                //set_type(p_formal_type, p_actual_type);
                 set_type(p_formal_type->array.p_element_type, p_actual_type->array.p_element_type);
                 p_formal_type->array.element_count = num_of_elements;
-                p_formal_type->array.max_index = size;
+                p_formal_type->array.max_index = num_of_elements;
                 p_formal_type->size = size;
-               // p_formal_type->form = fc_array;
                 p_formal_id->runstack_item = top();
 
             } else {

@@ -187,8 +187,8 @@ void cx_executor::assign (cx_symtab_node* p_target_id,
         void *p_source = top()->basic_types.addr__;
 
         if (p_source != nullptr) {
-            p_target_address = realloc(p_target_address, size);
-            memset(p_target_address, 0, size);
+            p_target_address = realloc(p_target_address, size + 1);
+            memset(p_target_address, 0, size + 1);
 
             if (p_target_address == nullptr) {
                 perror("realloc");
