@@ -10,7 +10,7 @@
  * @param p_target_id : ptr to the symtab node being assigned some value
  *                    on the stack.
  */
-void cx_executor::execute_assignment (const cx_symtab_node *p_target_id) {
+void cx_executor::execute_assignment (cx_symtab_node *p_target_id) {
 
     cx_stack_item *p_target = nullptr; // runtime stack address of target
     cx_type *p_target_type = nullptr; // ptr to target type object
@@ -154,8 +154,8 @@ void cx_executor::execute_assignment (const cx_symtab_node *p_target_id) {
     }
 }
 
-void cx_executor::assign (const cx_symtab_node* p_target_id,
-                          cx_type* p_target_type, const cx_type* p_expr_type, cx_stack_item* p_target,
+void cx_executor::assign (cx_symtab_node* p_target_id,
+                          cx_type* p_target_type, cx_type* p_expr_type, cx_stack_item* p_target,
                           void* &p_target_address) {
 
     cx_type_code target_type = p_target_type->type_code;
@@ -188,7 +188,7 @@ void cx_executor::assign (const cx_symtab_node* p_target_id,
 
         if (p_source != nullptr) {
             p_target_address = realloc(p_target_address, size);
-            memset(p_target_address, '\0', size);
+            memset(p_target_address, 0, size);
 
             if (p_target_address == nullptr) {
                 perror("realloc");
@@ -241,16 +241,17 @@ void cx_executor::assign (const cx_symtab_node* p_target_id,
             }
         }
 
-        set_type(p_target_id->p_type->array.p_element_type, p_expr_type->array.p_element_type);
-        set_type(p_target_id->p_type->array.p_index_type, p_integer_type);
+        //remove_type(p_target_id->p_type);
+        //cx_type *new_type = new cx_type(fc_array, size, nullptr);
+        
         p_target_id->p_type->array.element_count = num_of_elements;
         p_target_id->p_type->array.max_index = num_of_elements;
         p_target_id->p_type->size = size;
 
         char *t = (char *) p_target_address;
-        p_target_id->p_type->form = fc_array;
 
         if (p_expr_type->is_temp_value) {
+            memset(p_source, 0, size);
             free(p_source);
             delete p_expr_type;
         }

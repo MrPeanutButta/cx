@@ -146,16 +146,16 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
         if (p_formal_id->defn.how == dc_reference) {
 
             const int size = p_node->p_type->size;
-            p_formal_type->form = p_node->p_type->form;
+            set_type(p_formal_type, p_node->p_type);
             execute_variable(p_node, true);
-
+/*
             if (p_formal_type->form == fc_array) {
 
                 p_formal_type->size = size;
                 p_formal_type->array.element_count = size;
                 p_formal_type->array.max_index = size;
 
-            }
+            }*/
 
             p_formal_id->runstack_item = top();
             get_token();
@@ -189,10 +189,12 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 pop();
                 push((void*) p_target_address);
 
+                //set_type(p_formal_type, p_actual_type);
+                set_type(p_formal_type->array.p_element_type, p_actual_type->array.p_element_type);
                 p_formal_type->array.element_count = num_of_elements;
                 p_formal_type->array.max_index = size;
                 p_formal_type->size = size;
-                p_formal_type->form = fc_array;
+               // p_formal_type->form = fc_array;
                 p_formal_id->runstack_item = top();
 
             } else {

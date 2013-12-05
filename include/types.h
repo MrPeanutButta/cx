@@ -17,20 +17,20 @@ class cx_symtab_node;
 class cx_symtab;
 
 // Pointers to predefined types.
-extern cx_symtab_node *p_main_function_id;
-extern cx_symtab_node *p_stdin;
-extern cx_symtab_node *p_stdout;
-extern cx_symtab_node *p_stderr;
-extern cx_type *p_integer_type;
-extern cx_type *p_uint8_type;
-extern cx_type *p_float_type;
-extern cx_type *p_boolean_type;
-extern cx_type *p_char_type;
-extern cx_type *p_wchar_type;
+extern  cx_symtab_node *p_main_function_id;
+extern  cx_symtab_node *p_stdin;
+extern  cx_symtab_node *p_stdout;
+extern  cx_symtab_node *p_stderr;
+extern  cx_type *p_integer_type;
+extern  cx_type *p_uint8_type;
+extern  cx_type *p_float_type;
+extern  cx_type *p_boolean_type;
+extern  cx_type *p_char_type;
+extern  cx_type *p_wchar_type;
 //cx_type *p_class_type = nullptr;
-extern cx_type *p_complex_type;
-extern cx_type *p_file_type;
-extern cx_type *p_dummy_type;
+extern  cx_type *p_complex_type;
+extern  cx_type *p_file_type;
+extern  cx_type *p_dummy_type;
 
 enum cx_type_form_code {
     fc_none,
@@ -61,7 +61,7 @@ class cx_type {
     bool is_constant__;
 
 public:
-    cx_type_form_code form;
+    const cx_type_form_code form;
     int size;
     bool is_temp_value;
     cx_symtab_node *p_type_id;
@@ -76,9 +76,10 @@ public:
         } enumeration;
 
         struct {
-            cx_type *p_index_type;
+            const cx_type *p_index_type;
             cx_type *p_element_type;
-            int min_index, max_index;
+            const int min_index = 0;
+            int max_index;
             int element_count;
         } array;
 

@@ -5,12 +5,12 @@
  */
 
 #include <iostream>
-#include "cx-debug/exec.h"
+#include "exec.h"
 
-extern cx_type *p_integer_type;
-extern cx_type *p_float_type;
-extern cx_type *p_boolean_type;
-extern cx_type *p_char_type;
+extern  cx_type *p_integer_type;
+extern  cx_type *p_float_type;
+extern  cx_type *p_boolean_type;
+extern  cx_type *p_char_type;
 
 /*******************
  *                 *

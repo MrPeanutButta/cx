@@ -61,20 +61,20 @@ cx_type *cx_parser::parse_simple_expression (void) {
     while (token_in(token, tokenlist_add_ops)) {
         op = token;
         get_token_append();
+
         p_operand_type = parse_term();
 
         switch (op) {
-            case tc_plus:{
-                check_assignment_type_compatible(p_result_type, p_operand_type, 
+            case tc_plus:
+                check_assignment_type_compatible(p_result_type, p_operand_type,
                                                  err_incompatible_types);
+
+                p_result_type = parse_rvalue(p_result_type, p_operand_type);
+
                 break;
-            }
             case tc_minus:
-                if (integer_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_integer_type;
-                } else if (real_operands(p_result_type, p_operand_type)) {
-                    p_result_type = p_float_type;
-                } else cx_error(err_incompatible_types);
+                check_assignment_type_compatible(p_result_type, p_operand_type,
+                                                 err_incompatible_types);
                 break;
             case tc_bit_leftshift:
             case tc_bit_rightshift:
@@ -91,6 +91,42 @@ cx_type *cx_parser::parse_simple_expression (void) {
             default:
                 break;
         }
+    }
+
+    return p_result_type;
+}
+
+cx_type *cx_parser::parse_rvalue (cx_type* lhs, cx_type* rhs) {
+    cx_type *p_result_type = lhs;
+    cx_type *p_tmp_type = nullptr;
+
+    cx_type_code L = lhs->type_code;
+    cx_type_code R = rhs->type_code;
+
+    if (((lhs->form == fc_array) || (rhs->form == fc_array)) ||
+        (((L == cx_char) || (L == cx_wchar)) && ((R == cx_char) || (R == cx_wchar)))) {
+        const int size = lhs->size + rhs->size;
+        const int element_count = size / (lhs->form == fc_array ?
+                                          lhs->base_type()->size :
+                                          rhs->base_type()->size);
+        
+        p_tmp_type = new cx_type(fc_array, size, nullptr);
+        p_tmp_type->is_temp_value = true;
+        p_tmp_type->array.element_count = element_count;
+        p_tmp_type->array.max_index = element_count;
+
+        if (lhs->form == fc_array) {
+            set_type(p_tmp_type->array.p_element_type, lhs->array.p_element_type);
+        } else {
+            set_type(p_tmp_type->array.p_element_type, rhs->array.p_element_type);
+        }
+
+        p_result_type = p_tmp_type;
+
+        if (rhs->is_temp_value) {
+            remove_type(rhs);
+        }
+        
     }
 
     return p_result_type;
@@ -216,42 +252,52 @@ cx_type *cx_parser::parse_factor (void) {
             break;
 
         case tc_char:
+        {
+            char *p_string = p_token->string__();
+            cx_symtab_node *p_node = search_all(p_token->string__());
+            const int length = strlen(p_string) - 2;
+
+            if (!p_node) {
+                p_node = enter_local(p_token->string__());
+                p_result_type = p_char_type;
+                set_type(p_node->p_type, p_char_type);
+
+                p_node->defn.constant.value.char__ = p_string[1];
+            }
+            p_result_type = p_char_type;
+            icode.put(p_node);
+            get_token_append();
+        }
+            break;
         case tc_string:
         {
 
             char *p_string = p_token->string__();
             cx_symtab_node *p_node = search_all(p_token->string__());
             const int length = strlen(p_string) - 2;
-            // '\0' == -1
-            p_result_type = ((length == 1) || (length == -1)) ?
-                    p_char_type : new cx_type(length);
 
             if (!p_node) {
                 p_node = enter_local(p_token->string__());
+                p_result_type = new cx_type(fc_array, length, nullptr);
                 set_type(p_node->p_type, p_result_type);
 
-                if (length <= 1) {
-                    p_node->defn.constant.value.char__ = p_string[1];
-                } else {
+                const int size = sizeof (char) * (length + 1);
+                p_node->defn.constant.value.addr__ = new char[size];
+                memset(p_node->defn.constant.value.addr__, '\0', size);
+                memcpy(p_node->defn.constant.value.addr__,
+                       &p_string[1], size);
 
-                    const int size = sizeof (char) * (length + 1);
-                    p_node->defn.constant.value.addr__ = new char[size];
-                    memset(p_node->defn.constant.value.addr__, '\0', size);
-                    memcpy(p_node->defn.constant.value.addr__,
-                           &p_string[1], size);
+                // remove the quote
+                char *t = (char *) p_node->defn.constant.value.addr__;
+                t[length] = '\0';
 
-                    // remove the quote
-                    char *t = (char *)p_node->defn.constant.value.addr__;
-                    t[length] = '\0';
+                p_node->p_type->array.element_count = length;
+                p_node->p_type->array.max_index = length;
+                set_type(p_node->p_type->array.p_element_type, p_char_type);
 
-                    p_node->p_type->form = fc_array;
-                    p_node->p_type->array.element_count = length;
-                    p_node->p_type->array.max_index = length;
-                    p_node->p_type->array.min_index = 0;
-                    p_node->p_type->array.p_element_type = p_char_type;
-                    p_node->p_type->array.p_index_type = p_integer_type;
-                }
             }
+
+            p_result_type = p_node->p_type;
             icode.put(p_node);
 
             get_token_append();
@@ -303,10 +349,8 @@ cx_type *cx_parser::parse_factor (void) {
             cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
             p_array_type->array.element_count = element_count;
             p_array_type->array.max_index = element_count;
-            p_array_type->array.min_index = 0;
 
             set_type(p_array_type->array.p_element_type, p_result_type);
-            set_type(p_array_type->array.p_index_type, p_integer_type);
 
             p_result_type = p_array_type;
 

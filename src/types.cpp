@@ -32,11 +32,12 @@ cx_type *p_dummy_type = nullptr;
 cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 : form (fc), size (s), p_type_id (p_id), reference_count (0) {
 
-    switch (fc) {
+    switch (form) {
         case fc_array:
             this->size = s;
-            this->form = fc_array;
-            array.p_index_type = array.p_element_type = nullptr;
+            array.p_element_type = nullptr;
+            array.element_count = 0;
+            array.p_index_type = p_integer_type;
             break;
         default:
             break;
@@ -75,7 +76,6 @@ cx_type::cx_type (int length, bool constant)
 
     // used for string constants only. can probably go away
     array.p_index_type = array.p_element_type = nullptr;
-    set_type(array.p_index_type, p_integer_type);
     set_type(array.p_element_type, p_char_type);
     array.element_count = length;
 
@@ -90,7 +90,6 @@ cx_type::cx_type (int length, bool constant)
 cx_type::~cx_type() {
     switch (form) {
         case fc_array:
-            remove_type(array.p_index_type);
             remove_type(array.p_element_type);
             break;
         case fc_complex:
@@ -184,7 +183,7 @@ void cx_type::print_array_type (cx_verbosity_code vc) const {
 
     if (array.p_index_type) {
         list.put_line("---index type---");
-        array.p_index_type->print_type_spec(vc_terse);
+        //array.p_index_type->print_type_spec(vc_terse);
     }
 
     if (array.p_element_type) {
@@ -519,8 +518,8 @@ void check_boolean (const cx_type *p_type1, const cx_type *p_type2) {
 void check_assignment_type_compatible (const cx_type *p_target_type,
                                        const cx_type *p_value_type, cx_error_code ec) {
 
-    //    p_target_type = p_target_type->base_type();
-    //  p_value_type = p_value_type->base_type();
+      p_target_type = p_target_type->base_type();
+      p_value_type = p_value_type->base_type();
 
     cx_type_code target_type = p_target_type->type_code;
     cx_type_code value_type = p_value_type->type_code;
@@ -567,6 +566,7 @@ void check_assignment_type_compatible (const cx_type *p_target_type,
                     case cx_wchar:
                     case cx_bool:
                     case cx_uint8:
+                    case cx_address:
                         return;
                         break;
                     default:

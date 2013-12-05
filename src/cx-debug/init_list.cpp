@@ -89,7 +89,6 @@ cx_type *cx_executor::execute_initialization_list (void) {
     init_list->array.max_index = num_of_elements;
     init_list->size = total_size;
     set_type(init_list->array.p_element_type, p_result_type);
-    set_type(init_list->array.p_index_type, p_integer_type);
 
     return init_list;
 }

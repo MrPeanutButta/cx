@@ -12,28 +12,28 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_bool:
@@ -47,7 +47,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 default:break;
@@ -64,28 +64,28 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_bool:
@@ -99,7 +99,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 default:break;
@@ -116,28 +116,28 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_bool:
@@ -151,7 +151,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 default:break;
@@ -168,28 +168,28 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_bool:
@@ -203,7 +203,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 default:break;
@@ -220,28 +220,28 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_bool:
@@ -255,7 +255,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 default:break;
@@ -272,28 +272,28 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 case cx_bool:
@@ -307,7 +307,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 || value2));
+                    push(bool(value1 || value2));
                 }
                     break;
                 default:break;
@@ -329,28 +329,28 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_bool:
@@ -364,7 +364,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 default:break;
@@ -381,28 +381,28 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_bool:
@@ -416,7 +416,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 default:break;
@@ -433,28 +433,28 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_bool:
@@ -468,7 +468,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 default:break;
@@ -485,28 +485,28 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_bool:
@@ -520,7 +520,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 default:break;
@@ -537,28 +537,28 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_bool:
@@ -572,7 +572,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 default:break;
@@ -589,28 +589,28 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     int value1 = top()->basic_types.int__;
                     pop();
-                    push(int(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_char:
                 {
                     char value1 = top()->basic_types.char__;
                     pop();
-                    push(char(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_wchar:
                 {
                     wchar_t value1 = top()->basic_types.wchar__;
                     pop();
-                    push(wchar_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_float:
                 {
                     float value1 = top()->basic_types.float__;
                     pop();
-                    push(float(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 case cx_bool:
@@ -624,7 +624,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
                 {
                     uint8_t value1 = top()->basic_types.uint8__;
                     pop();
-                    push(uint8_t(value1 && value2));
+                    push(bool(value1 && value2));
                 }
                     break;
                 default:break;

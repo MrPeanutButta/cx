@@ -109,12 +109,12 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
     get_token();
 
     execute_expression();
-    int condition = top()->basic_types.int__;
+    bool condition = top()->basic_types.bool__;
 
     // )
     get_token();
 
-    if (condition != 0) {
+    if (condition) {
 
         // True: { or single statement
         execute_statement(p_function_id);

@@ -27,19 +27,15 @@ cx_type *cx_parser::parse_array_type (cx_symtab_node *p_function_id,
         max_index = p_token->value().int__;
         get_token();
 
-        set_type(p_element_type->array.p_index_type, p_integer_type);
-
     } else {
         cx_type *p_index_type = parse_expression();
 
         check_assignment_type_compatible(p_integer_type, p_index_type,
                                          err_invalid_index_type);
 
-        set_type(p_element_type->array.p_index_type, p_index_type);
     }
 
     p_array_type->array.element_count = max_index;
-    p_array_type->array.min_index = min_index;
     p_array_type->array.max_index = max_index;
     p_array_type->size = min_index * p_array_type->array.p_element_type->size;
 
@@ -77,10 +73,6 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
     cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
     cx_type *p_expr_type = nullptr;
 
-    // Final element type.
-    set_type(p_array_type->array.p_element_type, p_array_node->p_type);
-    p_array_type->type_code = p_array_node->p_type->type_code;
-
     bool is_function = false;
     const bool is_expression = token_in(token, tokenlist_assign_ops);
 
@@ -88,17 +80,15 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
         (!is_expression)) get_token_append();
     else if ((token != tc_right_paren) && (!is_expression)) is_function = true;
 
-    int min_index = 0;
-    int max_index = 0;
+    p_array_type->array.element_count = 0;
+    p_array_type->array.max_index = 0;
 
-    set_type(p_array_type->array.p_index_type, p_integer_type);
-    p_array_type->array.element_count = max_index;
-    p_array_type->array.min_index = min_index;
-    p_array_type->array.max_index = max_index;
+    // element type.
+    set_type(p_array_type->array.p_element_type, p_array_node->p_type);
+    p_array_type->type_code = p_array_node->p_type->type_code;
 
     if (is_function) {
         set_type(p_array_node->p_type, p_array_type);
-        p_array_node->p_type->form = fc_array;
         p_array_node->p_type->p_type_id = p_array_node;
         parse_function_header(p_array_node);
 
@@ -107,16 +97,15 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
 
     if (is_expression) {
 
-        //p_expr_type = parse_assignment(p_array_node);
+        p_expr_type = parse_assignment(p_array_node);
 
-        delete p_array_type;
+        set_type(p_array_node->p_type->array.p_element_type, p_expr_type->base_type());
+        p_array_type->array.element_count = p_expr_type->array.element_count;
+        p_array_type->array.max_index = p_expr_type->array.max_index;
+        p_array_type->size = p_expr_type->size;
 
-        set_type(p_array_node->p_type, parse_assignment(p_array_node));
-        p_array_node->p_type->form = fc_array;
-        //set_type(p_array_node->p_type->array.p_index_type, p_integer_type);
-        //set_type(p_array_node->p_type->array.p_element_type, p_expr_type->base_type());
         p_array_node->p_type->p_type_id = p_array_node;
-        p_array_type = p_array_node->p_type;
+        set_type(p_array_node->p_type, p_array_type);
 
     } else {
         set_type(p_array_node->p_type, p_array_type);

@@ -11,7 +11,7 @@
  *
  * @return: ptr to expression's type object
  */
-cx_type *cx_executor::execute_expression (void) {
+    cx_type *cx_executor::execute_expression (void) {
     cx_type *p_operand1_type; // ptr to first  operand's type
     cx_type *p_operand2_type; // ptr to second operand's type
     cx_type *p_result_type; // ptr to result type
@@ -80,10 +80,6 @@ cx_type *cx_executor::execute_simple_expression (void) {
 
         p_result_type = execute_additive(op, p_result_type, p_operand_type);
 
-        // delete any temp allocations
-        /*if (p_operand_type->is_temp_value) {
-            delete p_operand_type;
-        }*/
     }
 
     return p_result_type;

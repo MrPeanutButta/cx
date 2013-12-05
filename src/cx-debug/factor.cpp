@@ -64,22 +64,14 @@ cx_type *cx_executor::execute_factor (void) {
             get_token();
             break;
         case tc_char:
-        case tc_string:
-        {
-            /* push either a character or a string address onto the
-             * runtime stack, depending on the string length. */
-            int length = p_node->p_type->size;
-            if (length == 1) {
-                // Character
-                push(p_node->defn.constant.value.char__);
-                p_result_type = p_char_type;
-            } else {
-                push((char*) p_node->defn.constant.value.addr__);
-                p_result_type = p_node->p_type;
-            }
-
+            push((char)p_node->defn.constant.value.char__);
+            p_result_type = p_char_type;
             get_token();
-        }
+            break;
+        case tc_string:
+            push((void*) p_node->defn.constant.value.addr__);
+            p_result_type = p_node->p_type;
+            get_token();
             break;
         case tc_logic_NOT:
             // Execute boolean factor and invert its value.
@@ -155,7 +147,7 @@ cx_type *cx_executor::execute_constant (const cx_symtab_node *p_id) {
  * @return: ptr to variable's type object
  */
 cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
-                               bool address_flag) {
+                                        bool address_flag) {
 
     cx_type *p_type = p_id->p_type;
 

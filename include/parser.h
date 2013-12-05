@@ -89,6 +89,7 @@ class cx_parser {
     //const cx_type *p_complex_type, cx_symtab_node *&p_last_id);
 
     // expressions
+    cx_type *parse_rvalue(cx_type *lhs, cx_type *rhs);
     cx_type *parse_expression(void);
     //cx_type *ParseSuffix(cx_symtab_node *p_node);
     //void ParseSizeOf(void);

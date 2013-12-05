@@ -127,7 +127,9 @@ char *gets(){
 
     do{
         c = getchar();
-        if(c != '\n')str += c;
+        // TODO: need #define directive to omit including headers twice
+        if(!iscntrl(c))str += c;
+        
     }while(c != '\n');
 
     return str;

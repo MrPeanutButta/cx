@@ -272,11 +272,11 @@ class cx_executor : public cx_backend {
     void execute_statement(cx_symtab_node *p_function_id);
     void execute_statement_list(cx_symtab_node *p_function_id,
             cx_token_code terminator);
-    void execute_assignment(const cx_symtab_node *p_target_id);
+    void execute_assignment(cx_symtab_node *p_target_id);
 
     // assignent
-    void assign(const cx_symtab_node* p_target_id,
-            cx_type* p_target_type, const cx_type* p_expr_type,
+    void assign(cx_symtab_node* p_target_id,
+            cx_type* p_target_type, cx_type* p_expr_type,
             cx_stack_item* p_target,
             void* &p_target_address);
 
@@ -375,7 +375,7 @@ class cx_executor : public cx_backend {
     cx_type *execute_subscripts(const cx_type *p_type);
     cx_type *execute_field(void);
     cx_type *execute_initialization_list(void);
-    cx_type *execute_temp_rvalue(const cx_type *lhs, const cx_type *rhs);
+    cx_type *alloc_temp_rvalue(const cx_type *lhs, cx_type *rhs);
 
     // Tracing
     void trace_routine_entry(const cx_symtab_node *p_function_id);
@@ -396,6 +396,10 @@ class cx_executor : public cx_backend {
         run_stack.push(value);
     }
 
+    void push(const bool &value) {
+        run_stack.push(value);
+    }
+        
     void push(const int &value) {
         run_stack.push(value);
     }

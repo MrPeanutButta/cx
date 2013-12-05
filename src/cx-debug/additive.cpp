@@ -1,8 +1,8 @@
 #include "exec.h"
 #include "common.h"
 
-cx_type *cx_executor::execute_additive(cx_token_code op, cx_type* lhs, cx_type* rhs) {
-    cx_type *p_result_type = lhs;
+cx_type *cx_executor::execute_additive (cx_token_code op, cx_type* lhs, cx_type* rhs) {
+    cx_type *p_result_type = rhs;
 
     switch (op) {
         case tc_plus:
@@ -28,7 +28,7 @@ cx_type *cx_executor::execute_additive(cx_token_code op, cx_type* lhs, cx_type* 
             break;
         case tc_logic_OR:
             logic_or(lhs, rhs);
-            p_result_type = p_boolean_type;
+            return p_boolean_type;
             break;
         default:
             break;
@@ -37,14 +37,205 @@ cx_type *cx_executor::execute_additive(cx_token_code op, cx_type* lhs, cx_type* 
     return p_result_type;
 }
 
-cx_type *cx_executor::execute_temp_rvalue(const cx_type* lhs,
-        const cx_type* rhs) {
-    return nullptr;
+cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
+                                         cx_type* rhs) {
+
+    void *addr1 = nullptr;
+    void *addr2 = nullptr;
+    const int size = lhs->size + rhs->size;
+    const int num_of_elements = size / lhs->base_type()->size;
+
+    cx_type *temp_type = new cx_type(fc_array, size, nullptr);
+
+    temp_type->is_temp_value = true;
+    temp_type->array.element_count = num_of_elements;
+    temp_type->array.max_index = num_of_elements;
+    temp_type->size = size;
+
+    void *p_target_address = malloc(size);
+
+    if (p_target_address == nullptr) {
+        perror("malloc");
+        cx_runtime_error(rte_none);
+    }
+    
+    //memset(p_target_address, 0, size);
+    char *temp_val = (char *) p_target_address;
+
+    if ((lhs->form == fc_array) && (rhs->form == fc_array)) {
+
+        addr2 = top()->basic_types.addr__;
+        pop();
+        char *x = (char *) addr2;
+
+        addr1 = top()->basic_types.addr__;
+        pop();
+        char *y = (char *) addr1;
+
+        set_type(temp_type->array.p_element_type, rhs->base_type());
+
+        memcpy(temp_val, addr1, lhs->size);
+        memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+
+    } else if (lhs->form != fc_array) {
+
+        set_type(temp_type->array.p_element_type, rhs->array.p_element_type);
+        addr2 = top()->basic_types.addr__;
+        pop();
+
+        switch (lhs->type_code) {
+            case cx_int:
+            {
+                int value1 = top()->basic_types.int__;
+                pop();
+
+                memcpy(temp_val, &value1, lhs->size);
+                memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+            }
+                break;
+            case cx_char:
+            {
+                char value1 = top()->basic_types.char__;
+                pop();
+
+                memcpy(temp_val, &value1, lhs->size);
+                memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+            }
+                break;
+            case cx_wchar:
+            {
+                wchar_t value1 = top()->basic_types.wchar__;
+                pop();
+
+                memcpy(temp_val, &value1, lhs->size);
+                memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+            }
+                break;
+            case cx_float:
+            {
+                float value1 = top()->basic_types.float__;
+                pop();
+
+                memcpy(temp_val, &value1, lhs->size);
+                memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+            }
+                break;
+            case cx_bool:
+            {
+                bool value1 = top()->basic_types.bool__;
+                pop();
+
+                memcpy(temp_val, &value1, lhs->size);
+                memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+            }
+                break;
+            case cx_uint8:
+            {
+                uint8_t value1 = top()->basic_types.uint8__;
+                pop();
+
+                memcpy(temp_val, &value1, lhs->size);
+                memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
+            }
+                break;
+            default:break;
+        }
+    } else if (rhs->form != fc_array) {
+        set_type(temp_type->array.p_element_type, lhs->array.p_element_type);
+
+        switch (rhs->type_code) {
+            case cx_int:
+            {
+                int value2 = top()->basic_types.int__;
+                pop();
+
+                addr1 = top()->basic_types.addr__;
+                pop();
+
+                memcpy(temp_val, addr1, lhs->size);
+                memcpy(&temp_val[lhs->size], &value2, rhs->size);
+            }
+                break;
+            case cx_char:
+            {
+                char value2 = top()->basic_types.char__;
+                pop();
+
+                addr1 = top()->basic_types.addr__;
+                pop();
+
+                memcpy(temp_val, addr1, lhs->size);
+                memcpy(&temp_val[lhs->size], &value2, rhs->size);
+            }
+                break;
+            case cx_wchar:
+            {
+                wchar_t value2 = top()->basic_types.wchar__;
+                pop();
+
+                addr1 = top()->basic_types.addr__;
+                pop();
+
+                memcpy(temp_val, addr1, lhs->size);
+                memcpy(&temp_val[lhs->size], &value2, rhs->size);
+            }
+                break;
+            case cx_float:
+            {
+                float value2 = top()->basic_types.float__;
+                pop();
+
+                addr1 = top()->basic_types.addr__;
+                pop();
+
+                memcpy(temp_val, addr1, lhs->size);
+                memcpy(&temp_val[lhs->size], &value2, rhs->size);
+            }
+                break;
+            case cx_bool:
+            {
+                bool value2 = top()->basic_types.bool__;
+                pop();
+
+                addr1 = top()->basic_types.addr__;
+                pop();
+
+                memcpy(temp_val, addr1, lhs->size);
+                memcpy(&temp_val[lhs->size], &value2, rhs->size);
+            }
+                break;
+            case cx_uint8:
+            {
+                uint8_t value2 = top()->basic_types.uint8__;
+                pop();
+
+                addr1 = top()->basic_types.addr__;
+                pop();
+
+                memcpy(temp_val, addr1, lhs->size);
+                memcpy(&temp_val[lhs->size], &value2, rhs->size);
+            }
+                break;
+            default:break;
+        }
+        
+        temp_val[size] = '\0';
+    }
+
+    if (rhs->is_temp_value) {
+        memset(addr2, 0, rhs->size);
+        free(addr2);
+        remove_type(rhs);
+    }
+
+    push((void *) p_target_address);
+
+    return temp_type;
 }
 
-cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
+cx_type *cx_executor::plus (cx_type *lhs, cx_type *rhs) {
 
-    cx_type *p_result_type = lhs;
+    cx_type *p_result_type = rhs;
 
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
@@ -105,11 +296,13 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         push(uint8_t(value1 + value2));
                     }
                         break;
+                    case cx_address:
+                        p_result_type = alloc_temp_rvalue(lhs, rhs);
+                        break;
                     default:break;
                 }
             }
                 break;
-
             case cx_char:
             {
                 switch (lhs->type_code) {
@@ -167,11 +360,13 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         push(uint8_t(value1 + value2));
                     }
                         break;
+                    case cx_address:
+                        p_result_type = alloc_temp_rvalue(lhs, rhs);
+                        break;
                     default:break;
                 }
             }
                 break;
-
             case cx_wchar:
             {
                 switch (lhs->type_code) {
@@ -229,14 +424,15 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         push(uint8_t(value1 + value2));
                     }
                         break;
+                    case cx_address:
+                        p_result_type = alloc_temp_rvalue(lhs, rhs);
+                        break;
                     default:break;
                 }
             }
                 break;
-
             case cx_float:
             {
-
                 switch (lhs->type_code) {
                     case cx_int:
                     {
@@ -292,14 +488,15 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         push(uint8_t(value1 + value2));
                     }
                         break;
+                    case cx_address:
+                        p_result_type = alloc_temp_rvalue(lhs, rhs);
+                        break;
                     default:break;
                 }
             }
                 break;
-
             case cx_bool:
             {
-
                 switch (lhs->type_code) {
                     case cx_int:
                     {
@@ -354,15 +551,16 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         pop();
                         push(uint8_t(value1 + value2));
                     }
+                        break;
+                    case cx_address:
+                        p_result_type = alloc_temp_rvalue(lhs, rhs);
                         break;
                     default:break;
                 }
             }
                 break;
-
             case cx_uint8:
             {
-
                 switch (lhs->type_code) {
                     case cx_int:
                     {
@@ -417,6 +615,9 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
                         pop();
                         push(uint8_t(value1 + value2));
                     }
+                        break;
+                    case cx_address:
+                        p_result_type = alloc_temp_rvalue(lhs, rhs);
                         break;
                     default:break;
                 }
@@ -425,48 +626,13 @@ cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
             default:break;
         }
     } else {
-        const int size = lhs->size + rhs->size;
-        const int num_of_elements = size / lhs->base_type()->size;
-
-        void *addr2 = top()->basic_types.addr__;
-        pop();
-
-        void *addr1 = top()->basic_types.addr__;
-        pop();
-
-        cx_type *temp_type = new cx_type(fc_array, size, nullptr);
-        temp_type->is_temp_value = true;
-
-        set_type(temp_type->array.p_element_type, rhs->array.p_element_type);
-        set_type(temp_type->array.p_index_type, p_integer_type);
-        temp_type->array.element_count = num_of_elements;
-        temp_type->array.max_index = num_of_elements;
-        temp_type->size = size;
-
-        void *p_target_address = malloc(size);
-
-        if (p_target_address == nullptr) {
-            perror("malloc");
-            cx_runtime_error(rte_none);
-        }
-
-        memcpy(p_target_address, addr1, lhs->size);
-        char *t = (char *) p_target_address;
-        memcpy(&t[lhs->size], addr2, rhs->size + 1);
-
-        push((void *) p_target_address);
-        p_result_type = temp_type;
-
-        if (rhs->is_temp_value) {
-            delete rhs;
-            free(addr2);
-        }
+        p_result_type = alloc_temp_rvalue(lhs, rhs);
     }
 
     return p_result_type;
 }
 
-void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
+void cx_executor::minus (cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -519,7 +685,6 @@ void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
             }
         }
             break;
-
         case cx_char:
         {
             char value2 = top()->basic_types.char__;
@@ -571,7 +736,6 @@ void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
             }
         }
             break;
-
         case cx_wchar:
         {
             wchar_t value2 = top()->basic_types.int__;
@@ -623,7 +787,6 @@ void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
             }
         }
             break;
-
         case cx_float:
         {
             float value2 = top()->basic_types.float__;
@@ -675,7 +838,6 @@ void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
             }
         }
             break;
-
         case cx_bool:
         {
             bool value2 = top()->basic_types.bool__;
@@ -727,7 +889,6 @@ void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
             }
         }
             break;
-
         case cx_uint8:
         {
             uint8_t value2 = top()->basic_types.uint8__;
@@ -783,7 +944,7 @@ void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_leftshift(cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_leftshift (cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1013,7 +1174,7 @@ void cx_executor::bit_leftshift(cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_rightshift(cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_rightshift (cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1243,7 +1404,7 @@ void cx_executor::bit_rightshift(cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_and(cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_and (cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1473,7 +1634,7 @@ void cx_executor::bit_and(cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_xor(cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_xor (cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1704,7 +1865,7 @@ void cx_executor::bit_xor(cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_or(cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_or (cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
