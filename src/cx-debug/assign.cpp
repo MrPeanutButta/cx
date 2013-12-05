@@ -238,22 +238,17 @@ void cx_executor::assign (cx_symtab_node* p_target_id,
         } else {
             if (p_source != nullptr) {
                 memcpy(p_target_address, p_source, size + 1);
+				tmp[num_of_elements] = '\0';
             }
         }
 
-        //remove_type(p_target_id->p_type);
-        //cx_type *new_type = new cx_type(fc_array, size, nullptr);
-        
         p_target_id->p_type->array.element_count = num_of_elements;
         p_target_id->p_type->array.max_index = num_of_elements;
         p_target_id->p_type->size = size;
 
-        char *t = (char *) p_target_address;
-
         if (p_expr_type->is_temp_value) {
-            memset(p_source, 0, size);
-            free(p_source);
-            delete p_expr_type;
+            memset(p_source, 0, size + 1);
+            remove_type(p_expr_type);
         }
 
         if (p_target_id->defn.how == dc_function) {
@@ -551,7 +546,7 @@ cx_executor::plus_equal (const cx_symtab_node* p_target_id,
         const int old_size = p_target_type->size;
         const int num_of_elements = (old_size + size) / p_expr_type->base_type()->size;
 
-        p_target_address = realloc(p_target_address, old_size + size);
+        p_target_address = realloc(p_target_address, old_size + size + 1);
 
         if (p_target_address == nullptr) {
             perror("realloc");
@@ -601,11 +596,13 @@ cx_executor::plus_equal (const cx_symtab_node* p_target_id,
             }
         }
 
-        char *u = (char*) p_target_address;
         p_target_id->runstack_item->basic_types.addr__ = p_target_address;
         p_target_id->p_type->array.element_count = num_of_elements;
         p_target_id->p_type->array.max_index = num_of_elements;
-        p_target_id->p_type->size += size;
+		p_target_id->p_type->size = old_size + size;
+
+		tmp[num_of_elements] = '\0';
+		
     }
 }
 

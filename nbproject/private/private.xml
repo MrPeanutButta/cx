@@ -5,7 +5,7 @@
     </code-assistance-data>
     <data xmlns="http://www.netbeans.org/ns/make-project-private/1">
         <activeConfTypeElem>1</activeConfTypeElem>
-        <activeConfIndexElem>3</activeConfIndexElem>
+        <activeConfIndexElem>2</activeConfIndexElem>
     </data>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="2">
         <file>
@@ -27,8 +27,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/include/cx-debug/exec.h</file>
-            <file>file:/Users/aaro3965/Dropbox/src/Cx/src/cx-debug/function.cpp</file>
+            <file>file:/C:/Users/aaron/Documents/GitHub/Cx/include/cx-debug/exec.h</file>
+            <file>file:/C:/Users/aaron/Documents/GitHub/Cx/src/cx-debug/assign.cpp</file>
+            <file>file:/C:/Users/aaron/Documents/GitHub/Cx/include/types.h</file>
+            <file>file:/C:/Users/aaron/Documents/GitHub/Cx/src/types.cpp</file>
+            <file>file:/C:/Users/aaron/Documents/GitHub/Cx/src/cx-debug/factor.cpp</file>
         </group>
     </open-files>
 </project-private>

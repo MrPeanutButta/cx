@@ -6,20 +6,23 @@ int main () {
 
     // array initialization list
     int *b = {
-              {4096,0, 2, 3, 4},
+              4096,
               4096 * 2,
               4096 * 3,
               4096 * 4,
               4096 * 5
     };
 
-    //dynamic array container
-    int *sqr;
+	 // sqr becomes b with a new int element appended
+    int *sqr = {0,1,2,3,4};
+	
+	// array a will contain the contents of all arrays in the expression
+	int *a = b + b;
 
     int i = 0;
     do {
-        // allocate new int at the end of array
-        sqr += isqrt({4096,0, 2, 3, 4});
+        // allocate new int, a full array, AND the i index of sqr at the end
+        sqr += isqrt(b[i]) + a + sqr[i];
     } while (i++ < 5);
 
     return 0;

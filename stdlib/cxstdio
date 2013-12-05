@@ -79,6 +79,9 @@ int puts(char *str){
 
 char getc(){
     char c = stdin;
+
+	if(c == '\r') c = '\n';
+
     return c;
 }
 
@@ -124,13 +127,16 @@ char getchar(){
 char *gets(){
     char *str;
     char c;
+	bool condition = false;
 
     do{
         c = getchar();
+		condition = ((c != '\n') && (c != '\r'));
+
         // TODO: need #define directive to omit including headers twice
-        if(!iscntrl(c))str += c;
+        if(condition)str += c;
         
-    }while(c != '\n');
+    }while(condition);
 
     return str;
 }

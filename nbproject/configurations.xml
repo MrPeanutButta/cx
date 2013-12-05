@@ -2,10 +2,15 @@
 <configurationDescriptor version="90">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="f1" displayName="Examples" projectFiles="true">
+      <itemPath>examples/array.cx</itemPath>
       <itemPath>examples/exec_test.Cx</itemPath>
-      <itemPath>examples/newton.Cx</itemPath>
-      <itemPath>examples/quake_invrs_sqrt.Cx</itemPath>
+      <itemPath>examples/exec_test.cx</itemPath>
+      <itemPath>examples/get_put.cx</itemPath>
+      <itemPath>examples/gets.cx</itemPath>
+      <itemPath>examples/logical_not.cx</itemPath>
       <itemPath>examples/radix.Cx</itemPath>
+      <itemPath>examples/radix.cx</itemPath>
+      <itemPath>examples/string.cx</itemPath>
     </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -35,14 +40,21 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="cx-debug" displayName="cx-debug" projectFiles="true">
+        <itemPath>src/cx-debug/additive.cpp</itemPath>
         <itemPath>src/cx-debug/assign.cpp</itemPath>
         <itemPath>src/cx-debug/do.cpp</itemPath>
         <itemPath>src/cx-debug/exec.cpp</itemPath>
         <itemPath>src/cx-debug/expression.cpp</itemPath>
+        <itemPath>src/cx-debug/factor.cpp</itemPath>
         <itemPath>src/cx-debug/function.cpp</itemPath>
+        <itemPath>src/cx-debug/init_list.cpp</itemPath>
         <itemPath>src/cx-debug/io.cpp</itemPath>
+        <itemPath>src/cx-debug/logical.cpp</itemPath>
+        <itemPath>src/cx-debug/multiplicative.cpp</itemPath>
+        <itemPath>src/cx-debug/relational.cpp</itemPath>
         <itemPath>src/cx-debug/statment.cpp</itemPath>
         <itemPath>src/cx-debug/tracer.cpp</itemPath>
+        <itemPath>src/cx-debug/unary.cpp</itemPath>
         <itemPath>src/cx-debug/while.cpp</itemPath>
       </logicalFolder>
       <itemPath>src/buffer.cpp</itemPath>
@@ -84,39 +96,6 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <logicalFolder name="TestFiles"
-                   displayName="Test Files"
-                   projectFiles="false"
-                   kind="TEST_LOGICAL_FOLDER">
-    </logicalFolder>
-    <logicalFolder name="ExternalFiles"
-                   displayName="Important Files"
-                   projectFiles="false"
-                   kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
-    </logicalFolder>
-    <logicalFolder name="TestFiles"
-                   displayName="Test Files"
-                   projectFiles="false"
-                   kind="TEST_LOGICAL_FOLDER">
-    </logicalFolder>
-    <logicalFolder name="ExternalFiles"
-                   displayName="Important Files"
-                   projectFiles="false"
-                   kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
-    </logicalFolder>
-    <logicalFolder name="TestFiles"
-                   displayName="Test Files"
-                   projectFiles="false"
-                   kind="TEST_LOGICAL_FOLDER">
-    </logicalFolder>
-    <logicalFolder name="ExternalFiles"
-                   displayName="Important Files"
-                   projectFiles="false"
-                   kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
-    </logicalFolder>
   </logicalFolder>
   <sourceRootList>
     <Elem>include/cx-debug</Elem>
@@ -140,13 +119,23 @@
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>
+      <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="examples/exec_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/quake_invrs_sqrt.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/get_put.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/gets.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/logical_not.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/radix.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/radix.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/string.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -182,6 +171,8 @@
       </item>
       <item path="src/complist.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/additive.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/assign.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/do.cpp" ex="false" tool="1" flavor2="0">
@@ -190,13 +181,25 @@
       </item>
       <item path="src/cx-debug/expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/factor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/function.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/init_list.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/io.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/logical.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/multiplicative.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/relational.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/statment.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/tracer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/unary.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/while.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -265,13 +268,23 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="examples/exec_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/quake_invrs_sqrt.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/get_put.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/gets.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/logical_not.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/radix.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/radix.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/string.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -307,6 +320,8 @@
       </item>
       <item path="src/complist.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/additive.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/assign.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/do.cpp" ex="false" tool="1" flavor2="0">
@@ -315,13 +330,25 @@
       </item>
       <item path="src/cx-debug/expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/factor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/function.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/init_list.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/io.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/logical.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/multiplicative.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/relational.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/statment.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/tracer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/unary.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/while.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -372,7 +399,7 @@
     </conf>
     <conf name="WinDebug" type="1">
       <toolsSet>
-        <compilerSet>CLang|CLang</compilerSet>
+        <compilerSet>default</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>true</rebuildPropChanged>
       </toolsSet>
@@ -383,16 +410,27 @@
             <pElem>include</pElem>
             <pElem>include/cx-debug</pElem>
           </incDir>
+          <commandLine>-g3</commandLine>
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>
+      <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="examples/exec_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/quake_invrs_sqrt.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/get_put.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/gets.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/logical_not.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/radix.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/radix.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/string.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -434,6 +472,8 @@
         <ccTool>
         </ccTool>
       </item>
+      <item path="src/cx-debug/additive.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/assign.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/do.cpp" ex="false" tool="1" flavor2="0">
@@ -442,13 +482,25 @@
       </item>
       <item path="src/cx-debug/expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/factor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/function.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/init_list.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/io.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/logical.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/multiplicative.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/relational.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/statment.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/tracer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/unary.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/while.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -550,13 +602,23 @@
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>
+      <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="examples/exec_test.Cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/newton.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/quake_invrs_sqrt.Cx" ex="false" tool="3" flavor2="0">
+      <item path="examples/get_put.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/gets.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/logical_not.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/radix.Cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/radix.cx" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="examples/string.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -598,6 +660,8 @@
         <ccTool>
         </ccTool>
       </item>
+      <item path="src/cx-debug/additive.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/assign.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/do.cpp" ex="false" tool="1" flavor2="0">
@@ -606,13 +670,25 @@
       </item>
       <item path="src/cx-debug/expression.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/factor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/function.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/cx-debug/init_list.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/cx-debug/io.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/logical.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/multiplicative.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/relational.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/statment.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/tracer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/cx-debug/unary.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/cx-debug/while.cpp" ex="false" tool="1" flavor2="0">
       </item>

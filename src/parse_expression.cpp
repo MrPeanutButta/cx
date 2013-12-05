@@ -100,9 +100,6 @@ cx_type *cx_parser::parse_rvalue (cx_type* lhs, cx_type* rhs) {
     cx_type *p_result_type = lhs;
     cx_type *p_tmp_type = nullptr;
 
-    cx_type_code L = lhs->type_code;
-    cx_type_code R = rhs->type_code;
-
     if ((lhs->form == fc_array) || (rhs->form == fc_array)) {
         const int size = lhs->size + rhs->size;
         const int element_count = size / (lhs->form == fc_array ?
@@ -113,6 +110,7 @@ cx_type *cx_parser::parse_rvalue (cx_type* lhs, cx_type* rhs) {
         p_tmp_type->is_temp_value = true;
         p_tmp_type->array.element_count = element_count;
         p_tmp_type->array.max_index = element_count;
+		p_tmp_type->type_code = rhs->base_type()->type_code;
 
         if (lhs->form == fc_array) {
             set_type(p_tmp_type->array.p_element_type, lhs->array.p_element_type);
@@ -348,9 +346,9 @@ cx_type *cx_parser::parse_factor (void) {
             cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
             p_array_type->array.element_count = element_count;
             p_array_type->array.max_index = element_count;
+			p_array_type->is_temp_value = true;
 
-            set_type(p_array_type->array.p_element_type, p_result_type);
-
+			set_type(p_array_type->array.p_element_type, p_result_type);
             p_result_type = p_array_type;
 
         }

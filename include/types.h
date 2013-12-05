@@ -78,7 +78,7 @@ public:
         struct {
             const cx_type *p_index_type;
             cx_type *p_element_type;
-            const int min_index = 0;
+            int min_index;
             int max_index;
             int element_count;
         } array;

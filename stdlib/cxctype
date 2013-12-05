@@ -164,7 +164,8 @@ char tolower(char c){
  * @return true if control character, false if not. */
 
 bool iscntrl(char c){
-    return (((c >= 0) && (c <= 31)) || (c == 127));
+	// need c == '\r' in windows
+    return ((((c >= 0) && (c <= 31)) || (c == 127)) || (c == '\r'));
 }
 
 /* isprint - Check if character is printable

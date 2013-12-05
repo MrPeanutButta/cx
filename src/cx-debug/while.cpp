@@ -11,7 +11,7 @@ void cx_executor::execute_WHILE (cx_symtab_node * p_function_id) {
 
     int break_point;
     int at_loop_start = current_location();
-    int condition = 0;
+    bool condition = false;
 
     do {
 
@@ -21,10 +21,10 @@ void cx_executor::execute_WHILE (cx_symtab_node * p_function_id) {
 
         get_token(); //  (
         execute_expression();
-        condition = top()->basic_types.int__;
+        condition = top()->basic_types.bool__;
         pop();
         get_token(); //  )
-        if (condition != 0) {
+        if (condition) {
             execute_statement(p_function_id);
 
             if (break_loop) {

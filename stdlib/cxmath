@@ -19,8 +19,7 @@ int isqrt(int num) {
     int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
 
     // "bit" starts at the highest power of four <= the argument.
-    while (bit > num)
-        bit >>= 2;
+    while (bit > num) bit >>= 2;
 
     while (bit != 0) {
         if (num >= res + bit) {

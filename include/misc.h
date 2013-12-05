@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <cstdint>
 
 ///  cx_char_code           Character codes.
 

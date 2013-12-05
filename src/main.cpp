@@ -59,7 +59,7 @@ int main (int argc, char *argv[]) {
 #ifdef __CX_PROFILE_EXECUTION__
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
-    std::std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::std::endl;
+    std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
 #endif
 
     delete p_parser;
@@ -84,7 +84,8 @@ int main (int argc, char *argv[]) {
 #ifdef __CX_PROFILE_EXECUTION__
         t2 = high_resolution_clock::now();
         time_span = duration_cast < duration<double >> (t2 - t1);
-        std::std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::std::endl;
+        std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+		std::cin.get();
 #endif
 
         delete[] p_vector_symtabs;

@@ -1,10 +1,28 @@
 
 /* gets() and string allocation example
+ * 
+ * If there is an array on either side of the binaray operator '+',
+ * a new rvalue is allocted and the array or arrays are concantenated
+ * in the order they appear in the expression.
+ *
+ * Example:
+ * char c = 'c';
+ * char *a = "array1";
+ * char *b = "array2";
+ *
+ * c + a == "carray1";
+ * a + c == "array1c";
+ *
+ * a + b == "array1array2";
+ * b + a == "array2array1";
+ * c + a + b + c + a + b + c == "carray1array2carray1array2c";
+ *
+ * This behavior exists for all arrays of primitive types.
+ *
  */
 
 #include cxctype
 #include cxstdio
-//
 
 int main () {
 

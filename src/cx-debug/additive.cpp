@@ -43,23 +43,25 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
     void *addr1 = nullptr;
     void *addr2 = nullptr;
     const int size = lhs->size + rhs->size;
-    const int num_of_elements = size / lhs->base_type()->size;
+    const int num_of_elements = size / rhs->base_type()->size;
 
     cx_type *temp_type = new cx_type(fc_array, size, nullptr);
 
+	set_type(temp_type->array.p_element_type, rhs->base_type());
     temp_type->is_temp_value = true;
     temp_type->array.element_count = num_of_elements;
     temp_type->array.max_index = num_of_elements;
     temp_type->size = size;
+	temp_type->type_code = rhs->base_type()->type_code;
 
-    void *p_target_address = malloc(size);
+    void *p_target_address = malloc(size + 1);
 
     if (p_target_address == nullptr) {
         perror("malloc");
         cx_runtime_error(rte_none);
     }
     
-    memset(p_target_address, 0, size);
+    memset(p_target_address, 0, size + 1);
     char *temp_val = (char *) p_target_address;
 
     if ((lhs->form == fc_array) && (rhs->form == fc_array)) {
@@ -74,12 +76,11 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
 
         set_type(temp_type->array.p_element_type, rhs->base_type());
 
-        memcpy(temp_val, addr1, lhs->size);
+        memcpy(temp_val, addr1, lhs->size + 1);
         memcpy(&temp_val[lhs->size], addr2, rhs->size + 1);
 
     } else if (lhs->form != fc_array) {
 
-        set_type(temp_type->array.p_element_type, rhs->array.p_element_type);
         addr2 = top()->basic_types.addr__;
         pop();
 
@@ -141,7 +142,6 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
             default:break;
         }
     } else if (rhs->form != fc_array) {
-        set_type(temp_type->array.p_element_type, lhs->array.p_element_type);
 
         switch (rhs->type_code) {
             case cx_int:
@@ -159,12 +159,13 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
             case cx_char:
             {
                 char value2 = top()->basic_types.char__;
+				char *u = (char *)top()->basic_types.addr__;
                 pop();
 
                 addr1 = top()->basic_types.addr__;
                 pop();
 
-                memcpy(temp_val, addr1, lhs->size + 1);
+                memcpy(temp_val, addr1, lhs->size);
                 memcpy(&temp_val[lhs->size], &value2, rhs->size);
             }
                 break;
@@ -218,16 +219,13 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
                 break;
             default:break;
         }
-        
-        temp_val[size] = '\0';
     }
 
     if (rhs->is_temp_value) {
-        memset(addr2, 0, rhs->size);
-        free(addr2);
         remove_type(rhs);
     }
 
+	temp_val[num_of_elements] = '\0';
     push((void *) p_target_address);
 
     return temp_type;
@@ -237,7 +235,7 @@ cx_type *cx_executor::plus (cx_type *lhs, cx_type *rhs) {
 
     cx_type *p_result_type = rhs;
 
-    if (rhs->form != fc_array) {
+    if ((lhs->form != fc_array) && (rhs->form != fc_array)) {
         switch (rhs->type_code) {
             case cx_int:
             {
