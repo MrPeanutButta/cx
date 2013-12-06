@@ -54,7 +54,7 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
     temp_type->size = size;
 	temp_type->type_code = rhs->base_type()->type_code;
 
-    void *p_target_address = malloc(size + 1);
+    void *p_target_address = ::malloc(size + 1);
 
     if (p_target_address == nullptr) {
         perror("malloc");

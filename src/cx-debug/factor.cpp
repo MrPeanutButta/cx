@@ -227,36 +227,34 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
  */
 cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
     // Loop to executed subscript lists enclosed in brackets.
-    while (token == tc_left_subscript) {
+	while (token == tc_left_subscript) {
 
-        // Loop to execute comma-separated subscript expressions
-        // within a subscript list.
-        do {
-            get_token(); // index
-            execute_expression();
+		// Loop to execute comma-separated subscript expressions
+		// within a subscript list.
 
-            // Evaluate and range check the subscript.
-            int value = top()->basic_types.int__;
-            pop();
+		get_token(); // index
+		execute_expression();
 
-            range_check(p_type, value);
+		// Evaluate and range check the subscript.
+		int value = top()->basic_types.int__;
+		pop();
 
-            // Modify the data address at the top of the stack.
+		range_check(p_type, value);
 
-            char *t = (char *) top()->basic_types.addr__;
-            pop();
+		// Modify the data address at the top of the stack.
 
-            push(t + (p_type->array.p_element_type->size * value));
+		char *t = (char *)top()->basic_types.addr__;
+		pop();
 
-            // Prepare for another subscript in this list.
-            if (token == tc_comma) p_type = p_type->array.p_element_type;
+		push(t + (p_type->array.p_element_type->size * value));
 
-        } while (token == tc_comma);
+		// Prepare for another subscript in this list.
+		//p_type = p_type->array.p_element_type;
 
-        // Prepare for another subscript list.
-        get_token(); // ]
-        if (token == tc_left_subscript) p_type = p_type->array.p_element_type;
-    }
+		// Prepare for another subscript list.
+		get_token(); // ]
+		if (token == tc_left_subscript) p_type = p_type->array.p_element_type;
+	}
 
     return p_type->array.p_element_type;
 }

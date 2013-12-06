@@ -2,17 +2,34 @@
 /* gets() and string allocation example
  */
 
-#include cxctype
-#include cxstdio
+//#include cxctype
+//#include cxstdio
 //
 
 int main () {
 
-    char *mf = '!' + "beep" + "-boop" + '!';
-    char *mft =  mf + mf;
-    
-    puts(mft + '!' + "another append" + gets() + "--------------------");
-    puts("!" + "!");
+	int *a = {1,2,3,4};
+	int *b = {5,6,7,8};
+	int *c = {9,10,11,12};
+
+	int *mda = {
+		a,
+		b,
+		c
+	};
+
+	int x = 0;
+	int y = 0;
+
+	while(x < 3){
+		putchar(mda[x][y]);
+		
+		if(y++ > 3){
+			y = 0;
+			x++;
+			putchar('\n');
+		}
+	}
 
     return 0;
 }

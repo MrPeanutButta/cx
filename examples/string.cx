@@ -36,6 +36,7 @@ int main () {
     char *mf = '!' + "beep" + "-boop" + '!';
     char *mft = mf + mf;
     
+
     puts(mft);
     puts(mf + ": this is why we can't have nice things");
     
@@ -45,6 +46,10 @@ int main () {
     }while(mf[i++] != '\0');
 
     char *greet = "Hello " + in + ", you a bad " + mf + '!';
+
+	char *t = "asdasdasd";
+	t += "asdasdasdasdas";
+
 
     puts(greet);
 

@@ -377,6 +377,10 @@ class cx_executor : public cx_backend {
     cx_type *execute_initialization_list(void);
     cx_type *alloc_temp_rvalue(const cx_type *lhs, cx_type *rhs);
 
+	void cx_malloc(cx_symtab_node* p_target_id,
+		cx_type* p_target_type, cx_type* p_expr_type, cx_stack_item* p_target,
+		void* &p_target_address);
+
     // Tracing
     void trace_routine_entry(const cx_symtab_node *p_function_id);
     void trace_routine_exit(const cx_symtab_node *p_function_id);

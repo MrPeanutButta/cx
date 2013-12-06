@@ -275,9 +275,9 @@ cx_type *cx_parser::parse_factor (void) {
 
             if (!p_node) {
                 p_node = enter_local(p_token->string__());
-                p_result_type = new cx_type(fc_array, length, nullptr);
-                set_type(p_node->p_type, p_result_type);
-
+				p_node->p_type = new cx_type(fc_array, length, nullptr);
+				set_type(p_node->p_type->array.p_element_type, p_char_type);
+				p_node->p_type->type_code = cx_char;
                 const int size = sizeof (char) * (length + 1);
                 p_node->defn.constant.value.addr__ = new char[size];
                 memset(p_node->defn.constant.value.addr__, '\0', size);
@@ -290,8 +290,7 @@ cx_type *cx_parser::parse_factor (void) {
 
                 p_node->p_type->array.element_count = length;
                 p_node->p_type->array.max_index = length;
-                set_type(p_node->p_type->array.p_element_type, p_char_type);
-
+                
             }
 
             p_result_type = p_node->p_type;
@@ -314,24 +313,34 @@ cx_type *cx_parser::parse_factor (void) {
         case tc_left_bracket:
         {
             get_token_append();
-            int element_count = 0;
+			int size = 0;
             bool comma = false;
             cx_type *p_prev_type = nullptr;
+			cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
 
             do {
                 p_result_type = parse_expression();
 
-                if (p_prev_type == nullptr)
-                    p_prev_type = p_result_type;
+				if (p_prev_type != nullptr){
+					// make sure we init all of the same type
+					if (p_prev_type->base_type() != p_result_type->base_type()) {
+						cx_error(err_incompatible_assignment);
+						p_result_type = p_dummy_type;
+						break;
+					}
+				}
 
-                // make sure we init all of the same type
-                if (p_prev_type != p_result_type) {
-                    cx_error(err_incompatible_assignment);
-                    p_result_type = p_dummy_type;
-                    break;
-                }
+				p_array_type->size += p_result_type->size;
+				++p_array_type->array.element_count;
+				++p_array_type->array.max_index;
+				
+				if (p_prev_type != nullptr){
+					if (p_prev_type->array.p_element_type == nullptr){
+						set_type(p_prev_type->array.p_element_type, p_result_type);
+					}
+				}
 
-                ++element_count;
+				p_prev_type = p_result_type;
 
                 if (token == tc_comma) {
                     comma = true;
@@ -341,13 +350,6 @@ cx_type *cx_parser::parse_factor (void) {
             } while (comma);
 
             conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-
-            const int size = element_count * p_result_type->base_type()->size;
-            cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
-            p_array_type->array.element_count = element_count;
-            p_array_type->array.max_index = element_count;
-			p_array_type->is_temp_value = true;
-
 			set_type(p_array_type->array.p_element_type, p_result_type);
             p_result_type = p_array_type;
 
@@ -558,25 +560,26 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
  * @return ptr to the array element's type object.
  */
 cx_type *cx_parser::parse_subscripts (const cx_type* p_type) {
-    do {
-        get_token_append();
 
-        if (p_type->form == fc_array) {
-            check_assignment_type_compatible(p_type->array.p_index_type,
-                                             parse_expression(),
-                                             err_incompatible_types);
+	cx_type *p_result_type = (cx_type *) p_type;
 
-            p_type = p_type->array.p_element_type;
-        } else {
-            cx_error(err_too_many_subscripts);
-            parse_expression();
-        }
+		get_token_append();
 
-    } while (token == tc_comma);
+		if (p_type->form == fc_array) {
+			check_assignment_type_compatible(p_type->array.p_index_type,
+				parse_expression(),
+				err_incompatible_types);
+
+			p_result_type = p_type->array.p_element_type;
+		}
+		else {
+			cx_error(err_too_many_subscripts);
+			parse_expression();
+		}
 
     conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
 
-    return (cx_type *) p_type;
+	return p_result_type;
 }
 
 /** parse_field          parse a field following a record
