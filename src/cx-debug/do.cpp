@@ -20,7 +20,7 @@ void cx_executor::execute_DO (cx_symtab_node * p_function_id) {
         break_point = get_location_marker();
         get_token();
 
-        execute_statement_list(p_function_id, tc_WHILE);
+        execute_statement(p_function_id);
 
         if (break_loop) {
             go_to(break_point);
@@ -28,7 +28,7 @@ void cx_executor::execute_DO (cx_symtab_node * p_function_id) {
             break;
         }
 
-        get_token(); //while
+		get_token(); // while
         execute_expression(); // (condition)
 
         condition = top()->basic_types.bool__;
