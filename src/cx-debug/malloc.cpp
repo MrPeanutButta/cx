@@ -11,7 +11,8 @@ void cx_executor::cx_malloc(cx_symtab_node* p_target_id,
 	cx_type_code expr_type = p_expr_type->type_code;
 
 	// array pointer and coords
-	void ****p_array = nullptr;
+	void *p_current_array = nullptr;	// pointer to current array
+	void ********p_array = nullptr;		// pointer to all allocations
 	int x = 0;
 	int y = 0;
 
