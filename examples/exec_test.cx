@@ -8,10 +8,10 @@
 
 int main () {
 
-    char *mf = '!' + "mutha" + "-fucka" + '!';
+    char *mf = '!' + "beep" + "-boop" + '!';
     char *mft =  mf + mf;
     
-    puts(mft + '!' + "another append" + gets() + "----dont be an asshole");
+    puts(mft + '!' + "another append" + gets() + "--------------------");
     puts("!" + "!");
 
     return 0;

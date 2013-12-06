@@ -33,7 +33,7 @@ int main () {
         char *in = gets();
     }while(!in);
 
-    char *mf = '!' + "mutha" + "-fucka" + '!';
+    char *mf = '!' + "beep" + "-boop" + '!';
     char *mft = mf + mf;
     
     puts(mft);
