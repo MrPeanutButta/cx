@@ -26,6 +26,7 @@ class cx_parser {
     cx_token_code token; // code of current token
     cx_symtab_stack symtab_stack;
     cx_icode icode;
+    bool is_module;
 
     const char *file_name;
     //cx_runtime_stack run_stack;
@@ -98,7 +99,7 @@ class cx_parser {
     cx_type *parse_factor(void);
     cx_type *parse_variable(const cx_symtab_node *p_id);
     cx_type *parse_subscripts(const cx_type *p_type);
-    cx_type *parse_field(const cx_type *p_type);
+    cx_type *parse_field(cx_type *p_type);
 
     // statements
     void parse_statement(cx_symtab_node* p_function_id);
@@ -142,11 +143,6 @@ class cx_parser {
         return symtab_stack.search_local(p_string);
     }
 
-    /* deprecated
-    cx_symtab_node *search_available_scopes(const char *p_string) const {
-        return symtab_stack.search_available_scopes(p_string);
-    }*/
-
     cx_symtab_node *search_all(const char *p_string) const {
         return symtab_stack.search_all(p_string);
     }
@@ -187,21 +183,16 @@ class cx_parser {
 
 public:
 
-    cx_parser(cx_text_in_buffer *p_buffer)
-    : p_scanner(new cx_text_scanner(p_buffer)) {
-
+    cx_parser(cx_text_in_buffer *p_buffer, bool std_lib_module = false)
+    : p_scanner(new cx_text_scanner(p_buffer)), is_module(std_lib_module) {
         file_name = p_buffer->file_name();
-
-        initialize_builtin_types(&cx_global_symtab);
-
     }
 
     ~cx_parser(void) {
         delete p_scanner;
-        remove_builtin_types();
     }
 
-    cx_symtab_node *parse(bool std_lib_module = false);
+    cx_symtab_node *parse(void);
 };
 
 #endif

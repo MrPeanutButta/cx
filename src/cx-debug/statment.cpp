@@ -22,7 +22,7 @@ void cx_executor::execute_statement (cx_symtab_node *p_function_id) {
         case tc_identifier:
         {
             if (p_node->defn.how == dc_function) {
-                execute_subroutine_call(p_node);
+                execute_function_call(p_node);
             } else {
                 execute_assignment(p_node);
             }

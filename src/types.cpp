@@ -2,9 +2,10 @@
 #include "buffer.h"
 #include "error.h"
 #include "types.h"
+#include "std_members.h"
 
 const char *form_strings[] = {
-    "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
+                              "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
 };
 
 // Pointers to predefined types.
@@ -29,8 +30,8 @@ cx_type *p_dummy_type = nullptr;
  * @param s   : byte size of type.
  * @param p_id : ptr to symbol table node of type identifier.
  */
-cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
-: form(fc), size(s), p_type_id(p_id), reference_count(0) {
+cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
+: form (fc), size (s), p_type_id (p_id), reference_count (0) {
 
     switch (form) {
         case fc_array:
@@ -71,8 +72,8 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id)
     }
 }
 
-cx_type::cx_type(int length, bool constant)
-: size(length), form(fc_array), reference_count(0), is_constant__(constant) {
+cx_type::cx_type (int length, bool constant)
+: size (length), form (fc_array), reference_count (0), is_constant__ (constant) {
     p_type_id = nullptr;
 
     // used for string constants only. can probably go away
@@ -89,7 +90,7 @@ cx_type::cx_type(int length, bool constant)
  *                  the symbol tables that contain their
  *                  identifiers.
  */
-cx_type::~cx_type() {
+cx_type::~cx_type () {
     switch (form) {
         case fc_array:
             remove_type(array.p_element_type);
@@ -108,7 +109,7 @@ cx_type::~cx_type() {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_type_spec(cx_verbosity_code vc) {
+void cx_type::print_type_spec (cx_verbosity_code vc) {
     sprintf(list.text, "%s, size %d bytes. type id: ", form_strings[form], size);
 
     if (p_type_id) strcat(list.text, p_type_id->string__());
@@ -138,13 +139,13 @@ void cx_type::print_type_spec(cx_verbosity_code vc) {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_enum_type(cx_verbosity_code vc) const {
+void cx_type::print_enum_type (cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
 
     list.put_line("---enum constant identifiers (value = name)---");
 
     for (cx_symtab_node *p_const_id = enumeration.p_const_ids;
-            p_const_id; p_const_id = p_const_id->next__) {
+         p_const_id; p_const_id = p_const_id->next__) {
         sprintf(list.text, "%d = %s",
                 p_const_id->defn.constant.value.int__,
                 p_const_id->string__());
@@ -158,7 +159,7 @@ void cx_type::print_enum_type(cx_verbosity_code vc) const {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_subrange_type(cx_verbosity_code vc) const {
+void cx_type::print_subrange_type (cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
     /*
         sprintf(list.text, "min value = %d, max value = %d",
@@ -177,7 +178,7 @@ void cx_type::print_subrange_type(cx_verbosity_code vc) const {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_array_type(cx_verbosity_code vc) const {
+void cx_type::print_array_type (cx_verbosity_code vc) const {
     if (vc == vc_terse) return;
 
     sprintf(list.text, "%d elements", array.element_count);
@@ -199,7 +200,7 @@ void cx_type::print_array_type(cx_verbosity_code vc) const {
  *
  * @param vc : vc_verbose or vc_terse to control the output.
  */
-void cx_type::print_record_type(cx_verbosity_code vc) {
+void cx_type::print_record_type (cx_verbosity_code vc) {
     if (vc == vc_terse) return;
 
     list.put_line("member identifiers (offset : name)---");
@@ -271,10 +272,10 @@ void cx_type::print_record_type(cx_verbosity_code vc) {
  *
  * @param p_symtab : ptr to symbol table.
  */
-void initialize_builtin_types(cx_symtab *p_symtab) {
-
+void initialize_builtin_types (cx_symtab *p_symtab) {
+    
     p_main_function_id = p_symtab->enter("main", dc_function);
-    p_main_function_id->defn.routine.which = rc_forward;
+    p_main_function_id->defn.routine.which = func_forward;
 
     cx_symtab_node *p_integer_id = p_symtab->enter("int", dc_type);
     cx_symtab_node *p_uint8_id = p_symtab->enter("byte", dc_type);
@@ -317,6 +318,7 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
 
     if (!p_file_type) {
         set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), p_fileId));
+        //p_file_type->complex.p_class_scope = std_members;
     }
 
     set_type(p_main_function_id->p_type, p_integer_type);
@@ -354,12 +356,15 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(p_stderr->p_type, p_file_type);
     p_stderr->p_type->stream.p_file_stream = stderr;
 
+    // initialize standard type members
+    init_std_members();
+    
     set_type(p_dummy_type, new cx_type(fc_none, 1, nullptr));
 }
 
 /** remove_builtin_types       Remove the predefined types.
  */
-void remove_builtin_types(void) {
+void remove_builtin_types (void) {
     remove_type(p_complex_type);
     remove_type(p_float_type);
     remove_type(p_boolean_type);
@@ -372,7 +377,7 @@ void remove_builtin_types(void) {
     remove_type(p_file_type);
 }
 
-void remove_type(cx_type *&p_type);
+void remove_type (cx_type *&p_type);
 
 /** set_type     Set the target type.  Increment the reference
  *              count of the source type.
@@ -381,7 +386,7 @@ void remove_type(cx_type *&p_type);
  * @param p_source_type : ptr to source type object.
  * @return ptr to source type object.
  */
-cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
+cx_type *set_type (cx_type *&p_target_type, cx_type *p_source_type) {
     if (!p_target_type) remove_type(p_target_type);
 
     ++p_source_type->reference_count;
@@ -397,7 +402,7 @@ cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
  *
  * @param p_type : ref to ptr to type object.
  */
-void remove_type(cx_type *&p_type) {
+void remove_type (cx_type *&p_type) {
     if (p_type == nullptr) return;
 
     if (--p_type->reference_count == 0) {
@@ -421,7 +426,7 @@ void remove_type(cx_type *&p_type) {
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object.
  */
-void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2) {
+void check_relational_op_operands (const cx_type *p_type1, const cx_type *p_type2) {
     check_assignment_type_compatible(p_type1, p_type2, err_incompatible_types);
 }
 
@@ -432,7 +437,7 @@ void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
+void check_integer_or_real (const cx_type *p_type1, const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
 
     if ((p_type1 != p_integer_type) && (p_type1 != p_float_type)) {
@@ -448,7 +453,7 @@ void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
     }
 }
 
-void check_bitwise_integer(const cx_type *p_type1, const cx_type *p_type2) {
+void check_bitwise_integer (const cx_type *p_type1, const cx_type *p_type2) {
     cx_type_code target_type = p_type1->base_type()->type_code;
     cx_type_code value_type = p_type2->base_type()->type_code;
 
@@ -476,7 +481,7 @@ void check_bitwise_integer(const cx_type *p_type1, const cx_type *p_type2) {
     cx_error(err_incompatible_types);
 }
 
-void check_bitwise_integer(const cx_type *p_type1) {
+void check_bitwise_integer (const cx_type *p_type1) {
     cx_type_code target_type = p_type1->base_type()->type_code;
 
     switch (target_type) {
@@ -501,9 +506,9 @@ void check_bitwise_integer(const cx_type *p_type1) {
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_boolean(const cx_type *p_type1, const cx_type *p_type2) {
+void check_boolean (const cx_type *p_type1, const cx_type *p_type2) {
     if ((p_type1->base_type() != p_boolean_type)
-            || (p_type2 && (p_type2->base_type() != p_boolean_type))) {
+        || (p_type2 && (p_type2->base_type() != p_boolean_type))) {
         cx_error(err_incompatible_types);
     }
 }
@@ -517,8 +522,8 @@ void check_boolean(const cx_type *p_type1, const cx_type *p_type2) {
  * @param p_value_type  : ptr to the value's  type object.
  * @param ec          : error code.
  */
-void check_assignment_type_compatible(const cx_type *p_target_type,
-        const cx_type *p_value_type, cx_error_code ec) {
+void check_assignment_type_compatible (const cx_type *p_target_type,
+                                       const cx_type *p_value_type, cx_error_code ec) {
 
     p_target_type = p_target_type->base_type();
     p_value_type = p_value_type->base_type();
@@ -638,7 +643,7 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
  * @param p_type2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool integer_operands(const cx_type *p_type1, const cx_type *p_type2) {
+bool integer_operands (const cx_type *p_type1, const cx_type *p_type2) {
 
     cx_type_code target_type = p_type1->base_type()->type_code;
     cx_type_code value_type = p_type2->base_type()->type_code;
@@ -725,7 +730,7 @@ bool integer_operands(const cx_type *p_type1, const cx_type *p_type2) {
  * @param p_type2 : ptr to the second operand's type object.
  * @return true if yes, false if no.
  */
-bool real_operands(const cx_type *p_type1, const cx_type *p_type2) {
+bool real_operands (const cx_type *p_type1, const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
     p_type2 = p_type2->base_type();
 

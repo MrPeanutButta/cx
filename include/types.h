@@ -86,7 +86,7 @@ public:
         struct {
             /* used only for internal to class.
              * connects all scopes to a single table */
-            cx_symtab *p_class_scope_symtab;
+            cx_symtab *p_class_scope;
         } complex;
 
         struct {

@@ -20,7 +20,7 @@ cx_type *cx_executor::execute_factor (void) {
             switch (p_node->defn.how) {
 
                 case dc_function:
-                    p_result_type = execute_subroutine_call(p_node);
+                    p_result_type = execute_function_call(p_node);
                     break;
 
                 case dc_constant:
@@ -64,7 +64,7 @@ cx_type *cx_executor::execute_factor (void) {
             get_token();
             break;
         case tc_char:
-            push((char)p_node->defn.constant.value.char__);
+            push((char) p_node->defn.constant.value.char__);
             p_result_type = p_char_type;
             get_token();
             break;
@@ -161,6 +161,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
     // Loop to execute any subscripts and field designators,
     // which will modify the data address at the top of the stack.
     int done_flag = false;
+    cx_type *p_prev_type = p_type;
     do {
         switch (token) {
 
@@ -171,7 +172,8 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
                 break;
 
             case tc_dot:
-                p_type = execute_field();
+                p_type = execute_field(p_prev_type);
+                p_prev_type = p_type;
                 break;
 
             default: done_flag = true;
@@ -227,34 +229,34 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
  */
 cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
     // Loop to executed subscript lists enclosed in brackets.
-	while (token == tc_left_subscript) {
+    while (token == tc_left_subscript) {
 
-		// Loop to execute comma-separated subscript expressions
-		// within a subscript list.
+        // Loop to execute comma-separated subscript expressions
+        // within a subscript list.
 
-		get_token(); // index
-		execute_expression();
+        get_token(); // index
+        execute_expression();
 
-		// Evaluate and range check the subscript.
-		int value = top()->basic_types.int__;
-		pop();
+        // Evaluate and range check the subscript.
+        int value = top()->basic_types.int__;
+        pop();
 
-		range_check(p_type, value);
+        range_check(p_type, value);
 
-		// Modify the data address at the top of the stack.
+        // Modify the data address at the top of the stack.
 
-		char *t = (char *)top()->basic_types.addr__;
-		pop();
+        char *t = (char *) top()->basic_types.addr__;
+        pop();
 
-		push(t + (p_type->array.p_element_type->size * value));
+        push(t + (p_type->array.p_element_type->size * value));
 
-		// Prepare for another subscript in this list.
-		//p_type = p_type->array.p_element_type;
+        // Prepare for another subscript in this list.
+        //p_type = p_type->array.p_element_type;
 
-		// Prepare for another subscript list.
-		get_token(); // ]
-		if (token == tc_left_subscript) p_type = p_type->array.p_element_type;
-	}
+        // Prepare for another subscript list.
+        get_token(); // ]
+        if (token == tc_left_subscript) p_type = p_type->array.p_element_type;
+    }
 
     return p_type->array.p_element_type;
 }
@@ -265,13 +267,26 @@ cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
  *
  * @return: ptr to record field's type object
  */
-cx_type *cx_executor::execute_field (void) {
+cx_type *cx_executor::execute_field (cx_type *p_type) {
     get_token();
     cx_symtab_node *p_field_id = p_node;
+    cx_type *p_result_type = nullptr;
 
-    //push(((char *) (top()->basic_types.addr__)) + p_field_id->defn.data.offset);
+    if (p_field_id->defn.how == dc_function) {
+        if (p_field_id->defn.routine.which == func_std_member) {
+            p_result_type = execute_std_member_call(p_field_id, p_type);
+        } else {
+            p_result_type = execute_function_call(p_field_id);
+        }
+    } else {
+        void *address = top()->basic_types.addr__;
+        pop();
+        push((void *) address);
+        p_field_id->runstack_item = top();
+        p_result_type = p_field_id->p_type;
+    }
 
-    get_token();
-    return p_field_id->p_type;
+    //get_token();
+    return p_result_type;
 }
 

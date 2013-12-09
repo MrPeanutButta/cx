@@ -393,6 +393,7 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
 
     //  [ or . : Loop to parse any subscripts and fields.
     int done_flag = false;
+    cx_type *p_prev_type = p_result_type;
     do {
         switch (token) {
 
@@ -401,7 +402,8 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
                 break;
 
             case tc_dot:
-                p_result_type = parse_field(p_result_type);
+                p_result_type = parse_field(p_prev_type);
+                p_prev_type = p_result_type;
                 break;
 
             default: done_flag = true;
@@ -590,25 +592,27 @@ cx_type *cx_parser::parse_subscripts (const cx_type* p_type) {
  * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
-cx_type *cx_parser::parse_field (const cx_type* p_type) {
+cx_type *cx_parser::parse_field (cx_type* p_type) {
     get_token_append();
 
-    if ((token == tc_identifier) && (p_type->form == fc_complex)) {
-        //  cx_symtab_node *p_field_id = p_type->complex.//->search(p_token->string__());
-
-        // if (!p_field_id) cx_error(err_invalid_field);
-
-        //  icode.put(p_field_id);
-
+    if (token == tc_identifier) {
+        cx_symtab_node *p_field_id = p_type->complex.p_class_scope->search(p_token->string__());
+        if (p_field_id == nullptr) cx_error(err_invalid_field);
+        
+        icode.put(p_field_id);
         get_token_append();
-
-        // return p_field_id ? p_field_id->p_type : p_dummy_type;
+        if(p_field_id->defn.how == dc_function){
+            parse_subroutine_call(p_field_id, true);
+        }
+        
+        return p_field_id != nullptr ? 
+            p_field_id->p_type : 
+            p_dummy_type;
+        
     } else {
-
         cx_error(err_invalid_field);
         get_token_append();
         return p_dummy_type;
-
     }
 
     return p_dummy_type;

@@ -14,9 +14,14 @@
 #include "exec.h"
 
 struct cx_stack_item;
+class cx_type;
+class cx_symtab_node;
+class cx_executor;
 
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
+typedef cx_type *(*f_call)(cx_executor *, const cx_symtab_node *);
+typedef cx_type *(*m_call)(cx_executor *, const cx_symtab_node *, const cx_type *);
 
 extern bool xreference_flag;
 extern int current_line_number;
@@ -40,8 +45,8 @@ enum cx_define_code {
     dc_program, dc_function
 };
 
-enum cx_routine_code {
-    rc_declared, rc_forward,
+enum cx_function_code {
+    func_declared, func_forward, func_standard, func_std_member
 };
 
 struct cx_local_ids {
@@ -64,11 +69,13 @@ public:
         } constant;
 
         struct {
-            cx_routine_code which;
+            cx_function_code which;
             int return_marker; // used for globals return location
             int parm_count;
             int total_parm_size;
             int total_local_size;
+            f_call std_function; // internal function call
+            m_call std_member;   // standard type members
             cx_local_ids locals;
             cx_symtab *p_symtab;
             cx_icode *p_icode;
@@ -248,8 +255,6 @@ class cx_symtab_stack {
     };
 
     cx_symtab *p_symtabs[max_nesting_level]; // stack of symbol table ptrs
-
-    //void InitializeMain(void);
 
 public:
     cx_symtab_stack(void);

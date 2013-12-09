@@ -389,7 +389,7 @@ void cx_parser::parse_member_decls (cx_symtab_node *p_function_id, cx_type *p_co
     } while (token != tc_right_bracket);
 
     // connect all symtabs for use within the class
-    p_complex_type->complex.p_class_scope_symtab = new cx_symtab;
+    p_complex_type->complex.p_class_scope = new cx_symtab;
     // p_complex_type->complex.p_class_scope_symtab->connect_tables(p_complex_type->complex.MemberTable);
 
     conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);

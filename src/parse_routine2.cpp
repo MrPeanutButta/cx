@@ -128,8 +128,8 @@ cx_type *cx_parser::parse_subroutine_call (const cx_symtab_node *p_function_id,
                                            bool parm_check_flag) {
     //get_token_append();
 
-    return (p_function_id->defn.routine.which == rc_declared) ||
-            (p_function_id->defn.routine.which == rc_forward)
+    return (p_function_id->defn.routine.which == func_declared) ||
+            (p_function_id->defn.routine.which == func_forward)
             ||
             !parm_check_flag
             ? parse_declared_subroutine_call(p_function_id, parm_check_flag)

@@ -2,112 +2,120 @@
 #include "common.h"
 #include "types.h"
 
+void copy_scalar (cx_stack_item* p_target,
+                  const cx_type *p_type,
+                  void *&address) {
 
-void cx_executor::cx_malloc(cx_symtab_node* p_target_id,
-	cx_type* p_target_type, cx_type* p_expr_type, 
-	cx_stack_item* p_target, void* &p_target_address){
+    int *t_int = &p_target->basic_types.int__;
+    char *t_char = &p_target->basic_types.char__;
+    wchar_t *t_wchar = &p_target->basic_types.wchar__;
+    float *t_float = &p_target->basic_types.float__;
+    bool *t_bool = &p_target->basic_types.bool__;
+    uint8_t *t_uint8 = &p_target->basic_types.uint8__;
 
-	cx_type_code target_type = p_target_type->type_code;
-	cx_type_code expr_type = p_expr_type->type_code;
+    switch (p_type->type_code) {
+        case cx_int:
+        {
+            memcpy(address, t_int, sizeof (int));
+        }
+            break;
+        case cx_char:
+        {
+            memcpy(address, t_char, sizeof (char));
+        }
+            break;
+        case cx_wchar:
+        {
+            memcpy(address, t_wchar, sizeof (wchar_t));
+        }
+            break;
+        case cx_float:
+        {
+            memcpy(address, t_float, sizeof (float));
+        }
+            break;
+        case cx_bool:
+        {
+            memcpy(address, t_bool, sizeof (bool));
+        }
+            break;
+        case cx_uint8:
+        {
+            memcpy(address, t_uint8, sizeof (uint8_t));
+        }
+            break;
+        default:break;
+    }
+}
 
-	// array pointer and coords
-	void *p_current_array = nullptr;	// pointer to current array
-	void ********p_array = nullptr;		// pointer to all allocations
-	int x = 0;
-	int y = 0;
+void copy_array (const cx_type *p_type,
+                 void *&p_target_address,
+                 void *&p_source) {
 
-	mem_block *mem = nullptr;
-	int *t_int = &p_target->basic_types.int__;
-	char *t_char = &p_target->basic_types.char__;
-	wchar_t *t_wchar = &p_target->basic_types.wchar__;
-	float *t_float = &p_target->basic_types.float__;
-	bool *t_bool = &p_target->basic_types.bool__;
-	uint8_t *t_uint8 = &p_target->basic_types.uint8__;
+    int size = p_type->size;
+    int elems = p_type->array.element_count;
 
-	const int size = p_expr_type->size;
-	const int num_of_elements = size / p_expr_type->base_type()->size;
+    memcpy(p_target_address, p_source, size + 1);
+    char *t = (char *) p_target_address;
+    char *u = (char *) p_target_address;
+}
 
-	void *p_source = nullptr;
-	
-	cx_type *tmp = p_expr_type->array.p_element_type;
+void *new_value (const cx_type *p_type, void *&address) {
 
-	while (tmp->form == fc_array){
+    void *p_values = nullptr;
+    const int num_elements = p_type->array.element_count;
+    const int size = p_type->size;
 
-		mem = &top()->basic_types;
-		p_source = top()->basic_types.addr__;
+    p_values = (void *) realloc(address, size + 1);
 
-		if (p_source != nullptr) {
-			p_target_address = realloc(p_target_address, size + 1);
-			memset(p_target_address, 0, size + 1);
+    if (p_values == nullptr) {
+        perror("cx_malloc");
+        cx_runtime_error(rte_none);
+    }
 
-			if (p_target_address == nullptr) {
-				perror("realloc");
-				cx_runtime_error(rte_none);
-			}
-		}
+    memset(p_values, 0, size + 1);
 
-		char *tmp = (char *)p_target_address;
+    return p_values;
+}
 
-		if (p_expr_type->is_scalar_type()) {
-			switch (expr_type) {
-			case cx_int:
-			{
-						   memcpy(p_target_address, t_int, sizeof (int));
-			}
-				break;
-			case cx_char:
-			{
-							memcpy(p_target_address, t_char, sizeof (char));
-			}
-				break;
-			case cx_wchar:
-			{
-							 memcpy(p_target_address, t_wchar, sizeof (wchar_t));
-			}
-				break;
-			case cx_float:
-			{
-							 memcpy(p_target_address, t_float, sizeof (float));
-			}
-				break;
-			case cx_bool:
-			{
-							memcpy(p_target_address, t_bool, sizeof (bool));
-			}
-				break;
-			case cx_uint8:
-			{
-							 memcpy(p_target_address, t_uint8, sizeof (uint8_t));
-			}
-				break;
+void cx_executor::cx_malloc (cx_symtab_node* p_target_id,
+                             cx_type* p_target_type, cx_type* p_expr_type,
+                             cx_stack_item* p_target, void* &p_target_address) {
 
-			default:
-				break;
-			}
+    cx_type_code target_type = p_target_type->type_code;
+    cx_type_code expr_type = p_expr_type->type_code;
 
-		}
-		else {
-			if (p_source != nullptr) {
-				memcpy(p_target_address, p_source, size + 1);
-				tmp[size] = '\0';
-			}
-		}
-	}
+    const int size = p_expr_type->size;
+    const int num_of_elements = size / p_expr_type->base_type()->size;
 
-	p_target_id->p_type->array.element_count = num_of_elements;
-	p_target_id->p_type->array.max_index = num_of_elements;
-	p_target_id->p_type->size = size;
+    void *p_source = nullptr;
 
-	if (p_expr_type->is_temp_value) {
-		memset(p_source, 0, size + 1);
-		remove_type(p_expr_type);
-	}
+    //const cx_type *p_element_type = p_expr_type->array.p_element_type;
+    p_source = top()->basic_types.addr__;
 
-	if (p_target_id->defn.how == dc_function) {
-		p_target->basic_types.addr__ = p_target_address;
-	}
-	else {
-		p_target_id->runstack_item->basic_types.addr__ = p_target_address;
-	}
+    if (p_source != nullptr) {
+        p_target_address = new_value(p_expr_type, p_target_address);
+    }
+
+    if (p_expr_type->is_scalar_type()) {
+        copy_scalar(p_target, p_expr_type->array.p_element_type, p_target_address);
+    } else {
+        copy_array(p_expr_type, p_target_address, p_source);
+    }
+
+    p_target_id->p_type->array.element_count = num_of_elements;
+    p_target_id->p_type->array.max_index = num_of_elements;
+    p_target_id->p_type->size = size;
+
+    if (p_expr_type->is_temp_value) {
+        memset(p_source, 0, size + 1);
+        remove_type(p_expr_type);
+    }
+
+    if (p_target_id->defn.how == dc_function) {
+        p_target->basic_types.addr__ = p_target_address;
+    } else {
+        p_target_id->runstack_item->basic_types.addr__ = p_target_address;
+    }
 
 }

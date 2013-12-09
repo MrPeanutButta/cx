@@ -15,14 +15,10 @@ class cx_type;
 extern bool cx_dev_debug_flag;
 
 union mem_block {
-    // unsigned
     uint8_t uint8__;
-
     bool bool__;
-    // signed
     int int__;
     float float__;
-
     char char__;
     wchar_t wchar__;
 
@@ -257,12 +253,12 @@ class cx_executor : public cx_backend {
 
     // Routines
     void initialize_global(cx_symtab_node *p_program_id);
-    void execute_routine(cx_symtab_node *p_function_id);
-    void enter_routine(cx_symtab_node *p_function_id);
-    void exit_routine(cx_symtab_node *p_function_id);
-    cx_type *execute_subroutine_call(cx_symtab_node *p_function_id);
-    cx_type *execute_declared_subroutine_call(cx_symtab_node *p_function_id);
-    cx_type *execute_standard_subroutine_call(cx_symtab_node *p_function_id);
+    void execute_function(cx_symtab_node *p_function_id);
+    void enter_function(cx_symtab_node *p_function_id);
+    void exit_function(cx_symtab_node *p_function_id);
+    cx_type *execute_function_call(cx_symtab_node *p_function_id);
+    cx_type *execute_decl_function_call(cx_symtab_node *p_function_id);
+    cx_type *execute_std_function_call(cx_symtab_node *p_function_id);
     void execute_actual_parameters(cx_symtab_node *p_function_id);
 
     // Statements
@@ -373,37 +369,41 @@ class cx_executor : public cx_backend {
     cx_type *execute_constant(const cx_symtab_node *p_id);
     cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
     cx_type *execute_subscripts(const cx_type *p_type);
-    cx_type *execute_field(void);
+    cx_type *execute_field(cx_type *);
     cx_type *execute_initialization_list(void);
-    cx_type *alloc_temp_rvalue(const cx_type *lhs, cx_type *rhs);
+    cx_type *execute_std_member_call(cx_symtab_node *p_function_id, cx_type *p_type);
+    
+    cx_type * alloc_temp_rvalue(const cx_type *lhs, cx_type * rhs);
 
-	void cx_malloc(cx_symtab_node* p_target_id,
-		cx_type* p_target_type, cx_type* p_expr_type, cx_stack_item* p_target,
-		void* &p_target_address);
+    void cx_malloc(cx_symtab_node* p_target_id,
+            cx_type* p_target_type, cx_type* p_expr_type, cx_stack_item* p_target,
+            void* &p_target_address);
 
     // Tracing
-    void trace_routine_entry(const cx_symtab_node *p_function_id);
-    void trace_routine_exit(const cx_symtab_node *p_function_id);
+    void trace_routine_entry(const cx_symtab_node * p_function_id);
+    void trace_routine_exit(const cx_symtab_node * p_function_id);
     void trace_statement(void);
     void trace_data_store(const cx_symtab_node *p_target_id,
             const cx_stack_item &p_data_value,
-            const cx_type *p_data_type);
+            const cx_type * p_data_type);
     void trace_data_fetch(const cx_symtab_node *p_id,
             const cx_stack_item &p_data_value,
-            const cx_type *p_data_type);
+            const cx_type * p_data_type);
     void trace_data_value(const cx_stack_item &p_data_value,
-            const cx_type *p_data_type);
+            const cx_type * p_data_type);
 
     void range_check(const cx_type *p_target_type, int value);
 
-    void push(const uint8_t &value) {
+public:
+
+    void push(const uint8_t & value) {
         run_stack.push(value);
     }
 
     void push(const bool &value) {
         run_stack.push(value);
     }
-        
+
     void push(const int &value) {
         run_stack.push(value);
     }
@@ -425,15 +425,13 @@ class cx_executor : public cx_backend {
         run_stack.pop();
     }
 
-    cx_stack_item *top(void) const {
+    cx_stack_item * top(void) const {
         return run_stack.top();
     }
 
     const cx_stack_iterator iterator_top(void) {
         return run_stack.iterator_top();
     }
-
-public:
 
     cx_executor(void) : cx_backend() {
         statement_count = 0;
@@ -448,7 +446,7 @@ public:
         break_loop = false;
     }
 
-    virtual void go(cx_symtab_node *p_program_id);
+    virtual void go(cx_symtab_node * p_program_id);
 };
 
 #endif

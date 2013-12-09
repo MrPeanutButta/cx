@@ -212,7 +212,7 @@ cx_executor::go (cx_symtab_node *p_program_id) {
     break_loop = false;
 
     initialize_global(p_program_id);
-    exit_routine(p_program_id);
+    exit_function(p_program_id);
 
     extern bool cx_dev_debug_flag;
 
@@ -254,7 +254,7 @@ cx_executor::initialize_global (cx_symtab_node* p_program_id) {
     current_nesting_level = 0;
     run_stack.activate_frame(p_new_frame_base, p_program_id->defn.routine.return_marker);
 
-    enter_routine(p_program_id);
+    enter_function(p_program_id);
     get_token();
     execute_statement(p_program_id);
 }

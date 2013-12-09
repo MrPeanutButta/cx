@@ -48,7 +48,7 @@ cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id)
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
     if (token == tc_semicolon) {
-        p_function_id->defn.routine.which = rc_forward;
+        p_function_id->defn.routine.which = func_forward;
     } else if (token == tc_left_bracket) {
 
         if (!p_program_ptr_id->found_global_end) {
@@ -63,7 +63,7 @@ cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id)
 
         }
 
-        p_function_id->defn.routine.which = rc_declared;
+        p_function_id->defn.routine.which = func_declared;
         parse_block(p_function_id);
     }
 

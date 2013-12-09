@@ -56,7 +56,8 @@ void cx_parser::parse_declarations_or_assignment (cx_symtab_node *p_function_id)
             /* if not nullptr, it's already defined.
              * check if forwarded */
             if (p_new_id != nullptr) {
-                if (p_new_id->defn.how == dc_function && p_new_id->defn.routine.which == ::rc_forward) {
+                if (p_new_id->defn.how == dc_function && 
+                    p_new_id->defn.routine.which == func_forward) {
                     get_token_append();
                     parse_function_header(p_new_id);
                 } else cx_error(err_redefined_identifier);
@@ -199,8 +200,8 @@ void cx_parser::parse_constant (cx_symtab_node *p_const_id) {
                     p_const_id->defn.constant.value.float__ = sign == tc_minus ?
                             -p_token->value().float__ : p_token->value().float__;
                 } else {
-//                    p_const_id->defn.constant.value.double__ = sign == tc_minus ?
-//                            -p_token->value().float__ : p_token->value().float__;
+                    //                    p_const_id->defn.constant.value.double__ = sign == tc_minus ?
+                    //                            -p_token->value().float__ : p_token->value().float__;
                 }
             }
 
@@ -225,7 +226,7 @@ void cx_parser::parse_constant (cx_symtab_node *p_const_id) {
                     char *p_string = new char[length];
                     copy_quoted_string(p_string, p_token->string__());
 
-                    p_const_id->defn.constant.value.addr__ = (void *)p_string;
+                    p_const_id->defn.constant.value.addr__ = (void *) p_string;
 
                     //set_type(p_const_id->p_type, new cx_type(length));
                 }

@@ -12,14 +12,14 @@ extern cx_symtab_node *p_program_ptr_id;
  *
  * @return ptr to '__cx_global__' program Id.
  */
-cx_symtab_node *cx_parser::parse (bool std_lib_module) {
+cx_symtab_node *cx_parser::parse (void) {
 
     extern bool cx_dev_debug_flag;
     cx_symtab_node *p_program_id = nullptr;
 
-    if (!std_lib_module) {
+    if (!is_module) {
         p_program_id = new cx_symtab_node("__cx_global__", dc_program);
-        p_program_id->defn.routine.which = rc_declared;
+        p_program_id->defn.routine.which = func_declared;
         p_program_id->defn.routine.parm_count = 0;
         p_program_id->defn.routine.total_parm_size = 0;
         p_program_id->defn.routine.total_local_size = 0;
@@ -41,19 +41,19 @@ cx_symtab_node *cx_parser::parse (bool std_lib_module) {
     // enter the nesting level 0 and open a new scope for the program.
     symtab_stack.set_current_symtab(&cx_global_symtab);
 
-    if (!std_lib_module) icode.put(tc_left_bracket);
+    if (!is_module) icode.put(tc_left_bracket);
     get_token_append();
 
     parse_statement_list(p_program_id, tc_end_of_file);
 
-    if (!std_lib_module) {
+    if (!is_module) {
         fixup_location_marker(p_program_id->global_finish_location);
         p_program_id->defn.routine.return_marker = put_location_marker();
     }
 
     get_token_append();
 
-    if (!std_lib_module) {
+    if (!is_module) {
         p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
 
         resync(tokenlist_program_end);

@@ -33,7 +33,7 @@ cx_define::~cx_define (void) {
         case dc_program:
         case dc_function:
 
-            if (routine.which == rc_declared) {
+            if (routine.which == func_declared) {
                 if (routine.p_symtab != nullptr) delete routine.p_symtab;
                 if (routine.p_icode != nullptr) delete routine.p_icode;
             }
@@ -70,7 +70,7 @@ cx_symtab_node::cx_symtab_node (const char *p_str, cx_define_code dc)
     // Allocate and copy the symbol string.
     p_string = new char[strlen(p_str) + 1];
     strcpy(p_string, p_str);
-
+    
     // If cross-referencing, update the line number list.
     if (xreference_flag) p_line_num_list = new cx_line_num_list;
 }
