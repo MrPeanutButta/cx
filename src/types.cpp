@@ -32,6 +32,7 @@ cx_type *p_dummy_type = nullptr;
  */
 cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 : form (fc), size (s), p_type_id (p_id), reference_count (0) {
+	next = nullptr;
 
     switch (form) {
         case fc_array:
@@ -50,6 +51,8 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 
     if (p_type_id != nullptr)
         type_name = p_type_id->string__();
+
+	complex.p_class_scope = std_members;
 
     if (type_name == "int") {
         type_code = cx_int;
@@ -75,7 +78,9 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 cx_type::cx_type (int length, bool constant)
 : size (length), form (fc_array), reference_count (0), is_constant__ (constant) {
     p_type_id = nullptr;
+	next = nullptr;
 
+	complex.p_class_scope = std_members;
     // used for string constants only. can probably go away
     array.p_index_type = array.p_element_type = nullptr;
     set_type(array.p_element_type, p_char_type);

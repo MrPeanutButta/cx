@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "common.h"
 #include "types.h"
+#include "std_members.h"
 
 /** parse_expression     parse an expression (binary relational
  *                      operators = < > <> <= and >= ).
@@ -568,7 +569,7 @@ cx_type *cx_parser::parse_subscripts (const cx_type* p_type) {
 		get_token_append();
 
 		if (p_type->form == fc_array) {
-			check_assignment_type_compatible(p_type->array.p_index_type,
+			check_assignment_type_compatible(p_integer_type,
 				parse_expression(),
 				err_incompatible_types);
 

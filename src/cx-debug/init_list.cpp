@@ -1,4 +1,5 @@
 #include "exec.h"
+#include "std_members.h"
 #include "common.h"
 
 cx_type *cx_executor::execute_initialization_list (void) {
@@ -11,13 +12,15 @@ cx_type *cx_executor::execute_initialization_list (void) {
     int old_size = 0;
     bool comma = false;
     void *p_address = nullptr;
-    char *tmp = (char *) p_address;
+	char *tmp = nullptr;
     cx_type *init_list = new cx_type(fc_array, 0, nullptr);
 
     do {
+
         p_result_type = execute_expression();
         total_size += p_result_type->size;
-        p_address = realloc(p_address, old_size + p_result_type->size);
+        
+		p_address = realloc(p_address, old_size + p_result_type->size);
 
         if (p_address == nullptr) {
             perror("realloc");

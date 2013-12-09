@@ -1,5 +1,6 @@
 #include "common.h"
 #include "parser.h"
+#include "std_members.h"
 
 /** parse_array_type      parse an array type specification.
  *
@@ -93,20 +94,15 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
         parse_function_header(p_array_node);
 
         return p_array_type;
-    }
+    } 
+	
+	if (is_expression) {
 
-    if (is_expression) {
-
-        p_expr_type = parse_assignment(p_array_node);
+        p_expr_type = parse_assignment(p_array_node);	
 		remove_type(p_array_type);
 
         set_type(p_array_node->p_type, p_expr_type);
-        //p_array_type->array.element_count = p_expr_type->array.element_count;
-        //p_array_type->array.max_index = p_expr_type->array.max_index;
-        //p_array_type->size = p_expr_type->size;
-
-        p_array_node->p_type->p_type_id = p_array_node;
-        //set_type(p_array_node->p_type, p_array_type);
+		p_array_node->p_type->p_type_id = p_array_node;
 		p_array_type = p_array_node->p_type;
     } else {
         set_type(p_array_node->p_type, p_array_type);

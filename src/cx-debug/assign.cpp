@@ -1,6 +1,7 @@
 #include "exec.h"
 #include "common.h"
 #include "types.h"
+#include "std_members.h"
 
 /** execute_assignment 	Execute assignment.
  *

@@ -65,8 +65,9 @@ public:
     int size;
     bool is_temp_value;
     cx_symtab_node *p_type_id;
-
     cx_type_code type_code;
+	// if multidimension array point to next element
+	cx_type *next;
 
     union {
 

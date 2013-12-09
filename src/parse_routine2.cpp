@@ -74,11 +74,9 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
         get_token_append();
 
         if (is_array) {
-
             set_type(p_parm_id->p_type, p_parm_type);
-            parse_unksize_array_type(p_function_id,
+            cx_type *p_res = parse_unksize_array_type(p_function_id,
                                      p_parm_id);
-
         } else {
             set_type(p_parm_id->p_type, p_parm_type);
         }
@@ -146,7 +144,12 @@ cx_type *cx_parser::parse_subroutine_call (const cx_symtab_node *p_function_id,
 cx_type *cx_parser::parse_declared_subroutine_call
 (const cx_symtab_node *p_function_id,
  int parm_check_flag) {
-    parse_actual_parm_list(p_function_id, parm_check_flag);
+
+	if (token == tc_left_paren){
+		parse_actual_parm_list(p_function_id, parm_check_flag);
+		//get_token_append();
+	}
+
     return p_function_id->p_type;
 }
 
@@ -176,9 +179,8 @@ void cx_parser::parse_actual_parm_list (const cx_symtab_node *p_function_id,
         //  ( or ,
         get_token_append();
 
-        if (token == tc_right_paren && p_function_id->defn.routine.parm_count == 0) {
-            get_token_append();
-            return;
+        if (token == tc_right_paren && (p_function_id->defn.routine.parm_count == 0)) {
+			break;
         }
 
         parse_actual_parm(p_formal_id, parm_check_flag);
@@ -212,9 +214,9 @@ void cx_parser::parse_actual_parm (const cx_symtab_node *p_formal_id,
     /* If we've already run out of formal parameter,
      * we have an error.  Go into error recovery mode and
      * parse the actual parameter anyway. */
-    if (!p_formal_id) {
+    if (p_formal_id == nullptr) {
+		parse_expression();
         cx_error(err_wrong_number_of_parms);
-        parse_expression();
         return;
     }
 

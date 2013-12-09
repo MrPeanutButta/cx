@@ -56,8 +56,7 @@ void copy_array (const cx_type *p_type,
     int elems = p_type->array.element_count;
 
     memcpy(p_target_address, p_source, size + 1);
-    char *t = (char *) p_target_address;
-    char *u = (char *) p_target_address;
+
 }
 
 void *new_value (const cx_type *p_type, void *&address) {

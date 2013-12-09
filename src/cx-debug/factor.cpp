@@ -1,6 +1,7 @@
 #include "exec.h"
 #include "common.h"
 #include "rlutil.h"
+#include "std_members.h"
 
 /** execute_factor       Execute a factor (identifier, number,
  *                      string, NOT <factor>, or parenthesized
@@ -164,20 +165,17 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
     cx_type *p_prev_type = p_type;
     do {
         switch (token) {
-
             case tc_left_subscript:
-
-                p_type = execute_subscripts(p_type);
-
+				p_type = execute_subscripts(p_type);
                 break;
 
             case tc_dot:
                 p_type = execute_field(p_prev_type);
-                p_prev_type = p_type;
                 break;
-
             default: done_flag = true;
         }
+
+		p_prev_type = p_type;
     } while (!done_flag);
 
     // If address_flag is false, and the data is not an array

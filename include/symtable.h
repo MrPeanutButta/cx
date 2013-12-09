@@ -46,7 +46,7 @@ enum cx_define_code {
 };
 
 enum cx_function_code {
-    func_declared, func_forward, func_standard, func_std_member
+    func_declared, func_forward, func_standard, func_std_member, func_std_iterator
 };
 
 struct cx_local_ids {
