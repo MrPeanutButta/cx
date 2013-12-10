@@ -100,7 +100,8 @@ class cx_parser {
     cx_type *parse_variable(const cx_symtab_node *p_id);
     cx_type *parse_subscripts(const cx_type *p_type);
     cx_type *parse_field(cx_type *p_type);
-
+    cx_type *parse_iterator(cx_symtab_node *p_iterator);
+    
     // statements
     void parse_statement(cx_symtab_node* p_function_id);
     cx_type *parse_assignment(const cx_symtab_node* p_target_id);

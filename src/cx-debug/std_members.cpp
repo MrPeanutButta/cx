@@ -17,9 +17,11 @@ void init_std_members(void){
 	p_char_type->complex.p_class_scope = std_members;
 	p_wchar_type->complex.p_class_scope = std_members;
 
+    // only for internal use, all each members are user defined function blocks
 	cx_symtab_node *p_each_id = std_members->enter("each", dc_function);
+    p_each_id->defn.routine.iterator.postfix = 0;
 	p_each_id->defn.routine.std_member = &cx_std_members::each;
-	p_each_id->defn.routine.parm_count = 1;
+	p_each_id->defn.routine.parm_count = 0;
 	p_each_id->defn.routine.total_parm_size = 0;
 	p_each_id->defn.routine.locals.p_parms_ids = nullptr;
 	p_each_id->defn.routine.locals.p_constant_ids = nullptr;

@@ -70,12 +70,20 @@ public:
 
         struct {
             cx_function_code which;
+
             int return_marker; // used for globals return location
+
+            struct {
+                int at_loop_start; // for iterators
+                int current_iteration; // each indexer to determine which each call
+                int postfix;
+            } iterator;
+
             int parm_count;
             int total_parm_size;
             int total_local_size;
             f_call std_function; // internal function call
-            m_call std_member;   // standard type members
+            m_call std_member; // standard type members
             cx_local_ids locals;
             cx_symtab *p_symtab;
             cx_icode *p_icode;

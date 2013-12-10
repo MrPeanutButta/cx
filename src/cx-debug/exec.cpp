@@ -130,15 +130,7 @@ cx_runtime_stack::allocate_value (cx_symtab_node *p_id) {
         else if (p_type == p_char_type) push((char) '\0');
         else if (p_type->form == fc_enum) push((int) 0);
     } else {
-
-        //        if (p_type->size > 0) {
-        //            // Array or record
-        //            const int size = p_type->size;
-        //            void *addr = malloc(size + 1);
-        //            push(addr);
-        //        } else {
         push((void *) nullptr);
-        //}
     }
 
     /* save runstack address.

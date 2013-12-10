@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <sstream>
 #include "parser.h"
 #include "common.h"
 #include "types.h"
@@ -106,12 +107,12 @@ cx_type *cx_parser::parse_rvalue (cx_type* lhs, cx_type* rhs) {
         const int element_count = size / (lhs->form == fc_array ?
                                           lhs->base_type()->size :
                                           rhs->base_type()->size);
-        
+
         p_tmp_type = new cx_type(fc_array, size, nullptr);
         p_tmp_type->is_temp_value = true;
         p_tmp_type->array.element_count = element_count;
         p_tmp_type->array.max_index = element_count;
-		p_tmp_type->type_code = rhs->base_type()->type_code;
+        p_tmp_type->type_code = rhs->base_type()->type_code;
 
         if (lhs->form == fc_array) {
             set_type(p_tmp_type->array.p_element_type, lhs->array.p_element_type);
@@ -124,7 +125,7 @@ cx_type *cx_parser::parse_rvalue (cx_type* lhs, cx_type* rhs) {
         if (rhs->is_temp_value) {
             remove_type(rhs);
         }
-        
+
     }
 
     return p_result_type;
@@ -276,9 +277,9 @@ cx_type *cx_parser::parse_factor (void) {
 
             if (!p_node) {
                 p_node = enter_local(p_token->string__());
-				p_node->p_type = new cx_type(fc_array, length, nullptr);
-				set_type(p_node->p_type->array.p_element_type, p_char_type);
-				p_node->p_type->type_code = cx_char;
+                p_node->p_type = new cx_type(fc_array, length, nullptr);
+                set_type(p_node->p_type->array.p_element_type, p_char_type);
+                p_node->p_type->type_code = cx_char;
                 const int size = sizeof (char) * (length + 1);
                 p_node->defn.constant.value.addr__ = new char[size];
                 memset(p_node->defn.constant.value.addr__, '\0', size);
@@ -291,7 +292,7 @@ cx_type *cx_parser::parse_factor (void) {
 
                 p_node->p_type->array.element_count = length;
                 p_node->p_type->array.max_index = length;
-                
+
             }
 
             p_result_type = p_node->p_type;
@@ -314,34 +315,34 @@ cx_type *cx_parser::parse_factor (void) {
         case tc_left_bracket:
         {
             get_token_append();
-			int size = 0;
+            int size = 0;
             bool comma = false;
             cx_type *p_prev_type = nullptr;
-			cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
+            cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
 
             do {
                 p_result_type = parse_expression();
 
-				if (p_prev_type != nullptr){
-					// make sure we init all of the same type
-					if (p_prev_type->base_type() != p_result_type->base_type()) {
-						cx_error(err_incompatible_assignment);
-						p_result_type = p_dummy_type;
-						break;
-					}
-				}
+                if (p_prev_type != nullptr) {
+                    // make sure we init all of the same type
+                    if (p_prev_type->base_type() != p_result_type->base_type()) {
+                        cx_error(err_incompatible_assignment);
+                        p_result_type = p_dummy_type;
+                        break;
+                    }
+                }
 
-				p_array_type->size += p_result_type->size;
-				++p_array_type->array.element_count;
-				++p_array_type->array.max_index;
-				
-				if (p_prev_type != nullptr){
-					if (p_prev_type->array.p_element_type == nullptr){
-						set_type(p_prev_type->array.p_element_type, p_result_type);
-					}
-				}
+                p_array_type->size += p_result_type->size;
+                ++p_array_type->array.element_count;
+                ++p_array_type->array.max_index;
 
-				p_prev_type = p_result_type;
+                if (p_prev_type != nullptr) {
+                    if (p_prev_type->array.p_element_type == nullptr) {
+                        set_type(p_prev_type->array.p_element_type, p_result_type);
+                    }
+                }
+
+                p_prev_type = p_result_type;
 
                 if (token == tc_comma) {
                     comma = true;
@@ -351,7 +352,7 @@ cx_type *cx_parser::parse_factor (void) {
             } while (comma);
 
             conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-			set_type(p_array_type->array.p_element_type, p_result_type);
+            set_type(p_array_type->array.p_element_type, p_result_type);
             p_result_type = p_array_type;
 
         }
@@ -534,6 +535,7 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
                 break;
             case tc_comma:
             case tc_semicolon:
+            case tc_RETURN:
                 break;
                 break;
             case tc_identifier:
@@ -564,25 +566,33 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
  */
 cx_type *cx_parser::parse_subscripts (const cx_type* p_type) {
 
-	cx_type *p_result_type = (cx_type *) p_type;
+    cx_type *p_result_type = (cx_type *) p_type;
 
-		get_token_append();
+    get_token_append();
 
-		if (p_type->form == fc_array) {
-			check_assignment_type_compatible(p_integer_type,
-				parse_expression(),
-				err_incompatible_types);
+    if (p_type->form == fc_array) {
+        check_assignment_type_compatible(p_integer_type,
+                                         parse_expression(),
+                                         err_incompatible_types);
 
-			p_result_type = p_type->array.p_element_type;
-		}
-		else {
-			cx_error(err_too_many_subscripts);
-			parse_expression();
-		}
+        p_result_type = p_type->array.p_element_type;
+    } else {
+        cx_error(err_too_many_subscripts);
+        parse_expression();
+    }
 
     conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
 
-	return p_result_type;
+    return p_result_type;
+}
+
+std::string unique_name (const std::string &prefix, const int &postfix) {
+    std::stringstream ss;
+    ss.clear();
+
+    ss << prefix << "_" << postfix << '\0';
+
+    return ss.str();
 }
 
 /** parse_field          parse a field following a record
@@ -599,17 +609,43 @@ cx_type *cx_parser::parse_field (cx_type* p_type) {
     if (token == tc_identifier) {
         cx_symtab_node *p_field_id = p_type->complex.p_class_scope->search(p_token->string__());
         if (p_field_id == nullptr) cx_error(err_invalid_field);
-        
-        icode.put(p_field_id);
-        get_token_append();
-        if(p_field_id->defn.how == dc_function){
-            parse_subroutine_call(p_field_id, true);
+
+        if (p_field_id->defn.routine.which == func_std_iterator) {
+            std::string name = unique_name(p_field_id->string__(),
+                                           p_field_id->defn.routine.iterator.postfix++);
+
+            cx_symtab_node *p_it_id = std_members->enter(name.c_str(), dc_function);
+            p_it_id->defn.routine.which = func_std_iterator;
+            p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
+            p_it_id->defn.routine.parm_count = 0;
+            p_it_id->defn.routine.total_parm_size = 0;
+            p_it_id->defn.routine.locals.p_parms_ids = nullptr;
+            p_it_id->defn.routine.locals.p_constant_ids = nullptr;
+            p_it_id->defn.routine.locals.p_type_ids = nullptr;
+            p_it_id->defn.routine.locals.p_variable_ids = nullptr;
+            p_it_id->defn.routine.locals.p_function_ids = nullptr;
+            set_type(p_it_id->p_type, p_type->base_type());
+            
+            icode.put(p_it_id); // put unique name
+            get_token_append();
+            parse_function_header(p_it_id);
+            
+            return p_it_id->p_type;
+            
+        } else {
+
+            icode.put(p_field_id);
+            get_token_append();
+
+            if (p_field_id->defn.how == dc_function) {
+                parse_subroutine_call(p_field_id, true);
+            }
+
+            return p_field_id != nullptr ?
+                    p_field_id->p_type :
+                    p_dummy_type;
         }
-        
-        return p_field_id != nullptr ? 
-            p_field_id->p_type : 
-            p_dummy_type;
-        
+
     } else {
         cx_error(err_invalid_field);
         get_token_append();

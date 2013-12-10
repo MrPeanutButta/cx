@@ -273,7 +273,7 @@ cx_type *cx_executor::execute_field (cx_type *p_type) {
     if (p_field_id->defn.how == dc_function) {
         if (p_field_id->defn.routine.which == func_std_member) {
             p_result_type = execute_std_member_call(p_field_id, p_type);
-        } else {
+        }else {
             p_result_type = execute_function_call(p_field_id);
         }
     } else {

@@ -47,7 +47,13 @@ cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id)
     //  )
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
-    if (token == tc_semicolon) {
+    if(p_function_id->defn.routine.which == func_std_iterator){
+        //icode.reset();
+        //parse_block(p_function_id);
+        ///p_function_id->defn.routine.p_icode = new cx_icode(icode);
+        p_function_id->defn.routine.which = func_std_member;
+        
+    } else if (token == tc_semicolon) {
         p_function_id->defn.routine.which = func_forward;
     } else if (token == tc_left_bracket) {
 
