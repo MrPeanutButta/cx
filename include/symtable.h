@@ -75,7 +75,8 @@ public:
 
             struct {
                 cx_symtab_node *p_node;
-                int at_loop_start; // for iterators
+                int	loop_start; // icode positions
+				int loop_end;
                 int current_iteration; // each indexer to determine which each call
                 int postfix;
             } iterator;

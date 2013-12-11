@@ -21,6 +21,7 @@ void cx_executor::execute_assignment (cx_symtab_node *p_target_id) {
 
     if (p_target_id->defn.how == dc_function) {
         p_target_type = p_target_id->p_type;
+		if (p_target_type == p_void_type) return;
         p_target = run_stack.get_value_address(p_target_id);
     }/* Assignment to variable or formal parameter.
       * execute_variable leaves the target address on
@@ -28,6 +29,8 @@ void cx_executor::execute_assignment (cx_symtab_node *p_target_id) {
     else if ((p_target_id->defn.how != dc_type)) {
         if (!token_in(token, tokenlist_assign_ops))get_token();
         p_target_type = execute_variable(p_target_id, true);
+		
+		//if ((p_target_id->defn.routine.which == func_std_iterator)) return;
 
         if (p_target_type->form != fc_stream) {
             if (!p_target_type->is_scalar_type()) {

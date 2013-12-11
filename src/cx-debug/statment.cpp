@@ -24,7 +24,15 @@ void cx_executor::execute_statement (cx_symtab_node *p_function_id) {
             if (p_node->defn.how == dc_function) {
                 execute_function_call(p_node);
             } else {
-                execute_assignment(p_node);
+				cx_symtab_node *p_var = p_node;
+				get_token();
+				if (token_in(token, tokenlist_assign_ops)){
+					execute_assignment(p_var);
+				}
+				else {
+					execute_variable(p_var, false);
+					pop();
+				}
             }
         }
             break;

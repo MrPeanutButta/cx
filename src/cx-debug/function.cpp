@@ -21,45 +21,56 @@ void cx_executor::execute_function (cx_symtab_node *p_function_id) {
     exit_function(p_function_id);
 }
 
-void cx_executor::execute_iterator (cx_symtab_node* p_function_id) {
-    int old_level = current_nesting_level; // level of caller
-    int new_level = p_function_id->level + 1; // level of callee's locals
+void cx_executor::execute_iterator(cx_symtab_node* p_function_id) {
+	int old_level = current_nesting_level; // level of caller
+	int new_level = p_function_id->level + 1; // level of callee's locals
+	cx_symtab_node *p_formal_id = p_function_id->defn.routine.locals.p_parms_ids;
+	int *iteration = &p_function_id->defn.routine.iterator.current_iteration;
+	const int end = p_function_id->defn.routine.iterator.p_node->p_type->array.element_count;
+	int loop_start = p_function_id->defn.routine.iterator.loop_start;
+	const int size = p_function_id->defn.routine.iterator.p_node->p_type->array.p_element_type->size;
 
-    // Set up a new stack frame for the callee.
-    //    cx_frame_header *p_new_frame_base = run_stack.push_frame_header
-    //            (old_level, new_level, p_icode);
-    execute_variable(p_function_id->defn.routine.iterator.p_node, true);
+	int index = p_function_id->defn.routine.iterator.current_iteration = 0;
+	cx_symtab_node *p_var = p_function_id->defn.routine.iterator.p_node;
 
-    int size = p_function_id->defn.routine.iterator.p_node->p_type->array.p_element_type->size;
-    int index = p_function_id->defn.routine.iterator.current_iteration;
-    cx_symtab_node *p_var = p_function_id->defn.routine.iterator.p_node;
+	get_token();
 
-    char *addr = (char *) top()->basic_types.addr__;
-    pop();
+	if (token == tc_left_paren) {
+		execute_iterator_params(p_function_id);
+	}
 
-    push(addr + (size * index));
-    // push actual parameter values onto the stack.
-    get_token();
+	//  )
+	get_token();
+	current_nesting_level = new_level;
+	enter_iterator(p_function_id);
 
-    if (token == tc_left_paren) {
-        execute_iterator_params(p_function_id);
-    }
+	char *addr = (char *)p_var->runstack_item->basic_types.addr__;
+	while (*iteration < end){
 
-    //  )
-    get_token();
+		// push actual parameter values onto the stack.
+		push(addr + (size * (*iteration)));
+		
+		p_formal_id->runstack_item = (cx_stack_item *)top()->basic_types.addr__;
 
-    // Activate the new stack frame ...
-    current_nesting_level = new_level;
-    //run_stack.activate_frame(p_new_frame_base, current_location() - 1);
+		++*iteration;
+		execute_statement(p_function_id);
+		//pop();
+		go_to(loop_start);
+		while(token != tc_dummy)get_token();
+		while(token == tc_dummy)get_token();
+		pop();
+	}
 
-    // ... and execute the callee.
-    enter_iterator(p_function_id);
-    execute_statement(p_function_id);
-    exit_function(p_function_id);
 
-    // Return to the caller.  Restore the current token.
-    current_nesting_level = old_level;
-    get_token();
+	exit_function(p_function_id);
+	pop(); // pop off param
+
+	// Return to the caller.  Restore the current token.
+	current_nesting_level = old_level;
+	go_to(p_function_id->defn.routine.iterator.loop_end);
+	while (token != tc_dummy)get_token();
+	while (token == tc_dummy)get_token();
+
 }
 
 void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
@@ -76,13 +87,10 @@ void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
     /* Reference parameter: execute_variable will leave the actual
      * parameter's address on top of the stack. */
     if (p_formal_id->defn.how == dc_reference) {
-
-        //execute_variable(p_var_node, true);
-        p_formal_id->runstack_item = top();
+		p_formal_id->runstack_item = p_var_node->runstack_item;
         get_token();
     }// value parameter
     else {
-        //cx_type *p_actual_type = execute_variable(p_var_node, false);
 
         if (!p_formal_type->is_scalar_type()) {
 
@@ -207,7 +215,9 @@ void cx_executor::exit_function (cx_symtab_node *p_function_id) {
 
     // pop off the callee's stack frame and return to the caller's
     // intermediate code.
-    run_stack.pop_frame(p_function_id, p_icode);
+	if (p_function_id->defn.routine.which != func_std_iterator){
+		run_stack.pop_frame(p_function_id, p_icode);
+	}
 }
 
 /** execute_subroutine_call	Execute a call to a procedure or
@@ -231,8 +241,6 @@ cx_type *cx_executor::execute_function_call (cx_symtab_node *p_function_id) {
             p_result_type = (*p_function_id->defn.routine.std_member)
                     (this, p_function_id, p_function_id->p_type);
 
-            while (token != tc_dummy)get_token();
-            while (token == tc_dummy)get_token();
             //@TODO need error out, may be forwarded but no function body
             break;
     }
@@ -364,7 +372,30 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 p_formal_id->runstack_item = top();
 
             } else {
-                p_formal_id->runstack_item = top();
+				/*cx_stack_item *t = (cx_stack_item *)top()->basic_types.addr__;
+				pop();
+				switch (p_formal_id->p_type->type_code) {
+				case cx_uint8:
+					push((uint8_t)t->basic_types.uint8__);
+					break;
+				case cx_int:
+					push((int)t->basic_types.int__);
+					break;
+				case cx_char:
+					push((char)t->basic_types.char__);
+					break;
+				case cx_bool:
+					push((bool)t->basic_types.bool__);
+					break;
+				case cx_float:
+					push((float)t->basic_types.float__);
+					break;
+				case cx_wchar:
+					push((wchar_t)t->basic_types.wchar__);
+					break;
+				default: break;
+				}*/
+				p_formal_id->runstack_item = top();
             }
         }
     }

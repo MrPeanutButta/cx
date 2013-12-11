@@ -23,6 +23,7 @@ cx_type *p_wchar_type = nullptr;
 cx_type *p_complex_type = nullptr;
 cx_type *p_file_type = nullptr;
 cx_type *p_dummy_type = nullptr;
+cx_type *p_void_type = nullptr;
 
 /** Constructors    General.
  *
@@ -68,8 +69,10 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
         type_code = cx_uint8;
     } else if (type_name == "class") {
         type_code = cx_complex;
-    } else if (type_name == "file") {
-        type_code = cx_file;
+	}else if (type_name == "file") {
+		type_code = cx_file;
+	}else if (type_name == "void"){
+		type_code = cx_void;
     } else {
         type_code = cx_address;
     }
@@ -291,7 +294,13 @@ void initialize_builtin_types (cx_symtab *p_symtab) {
     cx_symtab_node *p_wchar_id = p_symtab->enter("wchar", dc_type);
     cx_symtab_node *p_false_id = p_symtab->enter("false", dc_constant);
     cx_symtab_node *p_true_id = p_symtab->enter("true", dc_constant);
-    cx_symtab_node *p_fileId = p_symtab->enter("file", dc_type);
+    cx_symtab_node *p_file_id = p_symtab->enter("file", dc_type);
+	cx_symtab_node *p_void_id = p_symtab->enter("void", dc_type);
+
+	// only used for functions with no return value
+	if (!p_void_type) {
+		set_type(p_void_type, new cx_type(fc_none, 0, p_void_id));
+	}
 
     if (!p_integer_type) {
         set_type(p_integer_type, new cx_type(fc_scalar, sizeof (int), p_integer_id));
@@ -318,12 +327,11 @@ void initialize_builtin_types (cx_symtab *p_symtab) {
     }
 
     if (!p_complex_type) {
-        set_type(p_complex_type, new cx_type(fc_complex, sizeof (cx_type), p_complex_id));
+        set_type(p_complex_type, new cx_type(fc_complex, 0, p_complex_id));
     }
 
     if (!p_file_type) {
-        set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), p_fileId));
-        //p_file_type->complex.p_class_scope = std_members;
+        set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), p_file_id));
     }
 
     set_type(p_main_function_id->p_type, p_integer_type);
@@ -336,7 +344,7 @@ void initialize_builtin_types (cx_symtab *p_symtab) {
     set_type(p_char_id->p_type, p_char_type);
     set_type(p_wchar_id->p_type, p_wchar_type);
     set_type(p_complex_id->p_type, p_complex_type);
-    set_type(p_fileId->p_type, p_file_type);
+    set_type(p_file_id->p_type, p_file_type);
 
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = p_false_id;
@@ -530,7 +538,7 @@ void check_boolean (const cx_type *p_type1, const cx_type *p_type2) {
 void check_assignment_type_compatible (const cx_type *p_target_type,
                                        const cx_type *p_value_type, cx_error_code ec) {
 
-    p_target_type = p_target_type->base_type();
+	p_target_type = p_target_type->base_type();
     p_value_type = p_value_type->base_type();
 
     cx_type_code target_type = p_target_type->type_code;

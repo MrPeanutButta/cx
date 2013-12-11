@@ -17,8 +17,25 @@ int main () {
     a.each(int b){
         puts(b.to_str);
     }
-    
 
+	char *t = "this is just a test";
+
+	t.each(char a){
+		puts(a.to_str);
+	}
+
+	/* es borked
+	char *o = {
+	{t},
+	{t},
+	{t}
+	};
+
+	o.each(char *s){
+		puts(s);
+	}*/
+    
+	//error, out of scope
     //b = 'a';
 
     return 0;

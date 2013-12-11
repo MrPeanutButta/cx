@@ -325,11 +325,8 @@ cx_type *cx_parser::parse_factor (void) {
 
                 if (p_prev_type != nullptr) {
                     // make sure we init all of the same type
-                    if (p_prev_type->base_type() != p_result_type->base_type()) {
-                        cx_error(err_incompatible_assignment);
-                        p_result_type = p_dummy_type;
-                        break;
-                    }
+					check_assignment_type_compatible(p_prev_type, p_result_type,
+							err_incompatible_types);
                 }
 
                 p_array_type->size += p_result_type->size;
@@ -615,7 +612,7 @@ cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) 
 
             cx_symtab_node *p_it_id = std_members->enter(name.c_str(), dc_function);
             p_it_id->defn.routine.iterator.p_node = (cx_symtab_node *)p_node;
-            set_type(p_it_id->p_type, p_type->base_type());
+			set_type(p_it_id->p_type, p_type->base_type());
             p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
             
             return parse_iterator(p_it_id);

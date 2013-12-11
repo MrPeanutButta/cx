@@ -264,6 +264,7 @@ public:
     cx_type *execute_decl_function_call(cx_symtab_node *p_function_id);
     cx_type *execute_std_function_call(cx_symtab_node *p_function_id);
     void execute_actual_parameters(cx_symtab_node *p_function_id);
+	cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
 private:
     // Statements
     cx_symtab_node *enter_new(cx_symtab_node *p_function_id,
@@ -371,8 +372,7 @@ private:
     cx_type *execute_term(void);
     cx_type *execute_factor(void);
     cx_type *execute_constant(const cx_symtab_node *p_id);
-    cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
-    cx_type *execute_subscripts(const cx_type *p_type);
+	cx_type *execute_subscripts(const cx_type *p_type);
     cx_type *execute_field(cx_type *);
     cx_type *execute_initialization_list(void);
     cx_type *execute_std_member_call(cx_symtab_node *p_function_id, cx_type *p_type);

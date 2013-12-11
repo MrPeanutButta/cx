@@ -27,6 +27,7 @@ extern  cx_type *p_float_type;
 extern  cx_type *p_boolean_type;
 extern  cx_type *p_char_type;
 extern  cx_type *p_wchar_type;
+extern  cx_type *p_void_type;
 //cx_type *p_class_type = nullptr;
 extern  cx_type *p_complex_type;
 extern  cx_type *p_file_type;
@@ -52,6 +53,7 @@ enum cx_type_code {
     cx_address,
     cx_complex,
     cx_file,
+	cx_void
 };
 
 extern const char *form_strings[];
