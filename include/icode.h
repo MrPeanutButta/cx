@@ -5,9 +5,6 @@
 #include "token.h"
 #include "scanner.h"
 
-//const cx_token_code mc_line_marker = ((cx_token_code) 127);
-//const cx_token_code mc_location_marker = ((cx_token_code) 126);
-
 class cx_symtab_node;
 
 ///  cx_icode      Intermediate code subclass of cx_scanner.
@@ -20,6 +17,10 @@ class cx_icode : public cx_scanner {
 
     char *p_code; // ptr to the code segment
     char *cursor; // ptr to current code location
+    
+    char *prev_code;    // for resuming
+    char *prev_cursor;  // resuming
+    
     cx_symtab_node *p_node; // ptr to extracted symbol table node
 
     void check_bounds(int size);
@@ -31,9 +32,19 @@ public:
     cx_icode(void) {
         p_code = cursor = new char[code_segment_size];
     }
+    
+    void pause(void){
+        prev_code = p_code;
+        prev_cursor = cursor;
+    }
+    
+    void resume(void){
+        p_code = prev_code;
+        cursor = prev_cursor;
+    }
 
     ~cx_icode(void) {
-        //if (p_code != nullptr) delete[] p_code;
+        if (p_code != nullptr) delete[] p_code;
     }
 
     // append to already existing icode

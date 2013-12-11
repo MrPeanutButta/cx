@@ -21,7 +21,7 @@ class cx_executor;
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
 typedef cx_type *(*f_call)(cx_executor *, const cx_symtab_node *);
-typedef cx_type *(*m_call)(cx_executor *, const cx_symtab_node *, const cx_type *);
+typedef cx_type *(*m_call)(cx_executor *, cx_symtab_node *, const cx_type *);
 
 extern bool xreference_flag;
 extern int current_line_number;
@@ -74,6 +74,7 @@ public:
             int return_marker; // used for globals return location
 
             struct {
+                cx_symtab_node *p_node;
                 int at_loop_start; // for iterators
                 int current_iteration; // each indexer to determine which each call
                 int postfix;

@@ -284,7 +284,6 @@ cx_type *cx_executor::execute_field (cx_type *p_type) {
         p_result_type = p_field_id->p_type;
     }
 
-    //get_token();
     return p_result_type;
 }
 

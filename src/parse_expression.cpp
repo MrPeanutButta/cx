@@ -404,7 +404,7 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
                 break;
 
             case tc_dot:
-                p_result_type = parse_field(p_prev_type);
+                p_result_type = parse_field(p_id, p_prev_type);
                 p_prev_type = p_result_type;
                 break;
 
@@ -537,7 +537,6 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
             case tc_semicolon:
             case tc_RETURN:
                 break;
-                break;
             case tc_identifier:
                 get_token_append();
                 p_expr_type = p_result_type;
@@ -550,7 +549,7 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
 
     while (token_in(token, tokenlist_subscript_or_field_start)) {
         p_result_type = token == tc_left_subscript ? parse_subscripts(p_result_type)
-                : parse_field(p_result_type);
+                : parse_field(p_id, p_result_type);
     }
 
     return p_result_type;
@@ -603,7 +602,7 @@ std::string unique_name (const std::string &prefix, const int &postfix) {
  * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
-cx_type *cx_parser::parse_field (cx_type* p_type) {
+cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) {
     get_token_append();
 
     if (token == tc_identifier) {
@@ -615,23 +614,12 @@ cx_type *cx_parser::parse_field (cx_type* p_type) {
                                            p_field_id->defn.routine.iterator.postfix++);
 
             cx_symtab_node *p_it_id = std_members->enter(name.c_str(), dc_function);
-            p_it_id->defn.routine.which = func_std_iterator;
-            p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
-            p_it_id->defn.routine.parm_count = 0;
-            p_it_id->defn.routine.total_parm_size = 0;
-            p_it_id->defn.routine.locals.p_parms_ids = nullptr;
-            p_it_id->defn.routine.locals.p_constant_ids = nullptr;
-            p_it_id->defn.routine.locals.p_type_ids = nullptr;
-            p_it_id->defn.routine.locals.p_variable_ids = nullptr;
-            p_it_id->defn.routine.locals.p_function_ids = nullptr;
+            p_it_id->defn.routine.iterator.p_node = (cx_symtab_node *)p_node;
             set_type(p_it_id->p_type, p_type->base_type());
+            p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
             
-            icode.put(p_it_id); // put unique name
-            get_token_append();
-            parse_function_header(p_it_id);
-            
-            return p_it_id->p_type;
-            
+            return parse_iterator(p_it_id);
+
         } else {
 
             icode.put(p_field_id);
@@ -653,4 +641,23 @@ cx_type *cx_parser::parse_field (cx_type* p_type) {
     }
 
     return p_dummy_type;
+}
+
+cx_type *cx_parser::parse_iterator (cx_symtab_node* p_iterator) {
+
+    p_iterator->defn.routine.which = func_std_iterator;
+    p_iterator->defn.routine.parm_count = 0;
+    p_iterator->defn.routine.total_parm_size = 0;
+    p_iterator->defn.routine.locals.p_parms_ids = nullptr;
+    p_iterator->defn.routine.locals.p_constant_ids = nullptr;
+    p_iterator->defn.routine.locals.p_type_ids = nullptr;
+    p_iterator->defn.routine.locals.p_variable_ids = nullptr;
+    p_iterator->defn.routine.locals.p_function_ids = nullptr;
+    //
+    
+    icode.put(p_iterator); // put unique name
+    get_token_append();
+    parse_function_header(p_iterator);
+
+    return p_iterator->p_type;
 }

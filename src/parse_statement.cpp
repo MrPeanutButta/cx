@@ -66,6 +66,7 @@ void cx_parser::parse_statement_list (cx_symtab_node* p_function_id, cx_token_co
         parse_statement(p_function_id);
         while (token == tc_semicolon)get_token_append();
     } while ((token != terminator) && (token != tc_end_of_file));
+
 }
 
 /** parse_assignment         parse an assignment statement.
@@ -309,8 +310,10 @@ void cx_parser::parse_compound (cx_symtab_node* p_function_id) {
 
     parse_statement_list(p_function_id, tc_right_bracket);
 
+    if ((p_function_id->defn.routine.which == func_std_iterator)) return;
+        
+    
     conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-
 }
 
 /** parse_RETURN         parse return statements.

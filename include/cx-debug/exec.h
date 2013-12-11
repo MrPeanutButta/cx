@@ -253,14 +253,18 @@ class cx_executor : public cx_backend {
 
     // Routines
     void initialize_global(cx_symtab_node *p_program_id);
+public:
     void execute_function(cx_symtab_node *p_function_id);
     void enter_function(cx_symtab_node *p_function_id);
+    void execute_iterator(cx_symtab_node *p_function_id);
+    void enter_iterator(cx_symtab_node *p_function_id);
+    void execute_iterator_params (cx_symtab_node* p_function_id);
     void exit_function(cx_symtab_node *p_function_id);
     cx_type *execute_function_call(cx_symtab_node *p_function_id);
     cx_type *execute_decl_function_call(cx_symtab_node *p_function_id);
     cx_type *execute_std_function_call(cx_symtab_node *p_function_id);
     void execute_actual_parameters(cx_symtab_node *p_function_id);
-
+private:
     // Statements
     cx_symtab_node *enter_new(cx_symtab_node *p_function_id,
             const char *p_string);
@@ -396,6 +400,18 @@ class cx_executor : public cx_backend {
 
 public:
 
+    void get_next_token(void){
+        get_token();
+    }
+    
+    int location(void)const{
+        return current_location();
+    }
+    
+    void goto_location(int location) {
+        go_to(location);
+    }
+    
     void push(const uint8_t & value) {
         run_stack.push(value);
     }

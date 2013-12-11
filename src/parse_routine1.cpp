@@ -23,7 +23,6 @@ cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id)
     // enter the next__ nesting level and open a new scope
     // for the function.
     symtab_stack.enter_scope();
-
     //  (
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
@@ -47,15 +46,12 @@ cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id)
     //  )
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
-    if(p_function_id->defn.routine.which == func_std_iterator){
-        //icode.reset();
-        //parse_block(p_function_id);
-        ///p_function_id->defn.routine.p_icode = new cx_icode(icode);
-        p_function_id->defn.routine.which = func_std_member;
-        
+    if ((p_function_id->defn.routine.which == func_std_iterator)) {
+        parse_iterator_block(p_function_id);
     } else if (token == tc_semicolon) {
         p_function_id->defn.routine.which = func_forward;
-    } else if (token == tc_left_bracket) {
+    } else if ((token == tc_left_bracket) ||
+               (p_function_id->defn.routine.which == func_std_iterator)) {
 
         if (!p_program_ptr_id->found_global_end) {
             p_program_ptr_id->found_global_end = true;
@@ -66,14 +62,12 @@ cx_symtab_node *cx_parser::parse_function_header (cx_symtab_node *p_function_id)
 
             // Set the program's icode.
             p_program_ptr_id->defn.routine.p_icode = new cx_icode(icode);
-
         }
 
         p_function_id->defn.routine.which = func_declared;
         parse_block(p_function_id);
+        p_function_id->defn.routine.p_symtab = symtab_stack.exit_scope();
     }
-
-    p_function_id->defn.routine.p_symtab = symtab_stack.exit_scope();
 
     return p_function_id;
 }
@@ -97,4 +91,25 @@ void cx_parser::parse_block (cx_symtab_node *p_function_id) {
 
     // Set the program's or routine's icode.
     p_function_id->defn.routine.p_icode = new cx_icode(icode);
+}
+
+void cx_parser::parse_iterator_block (cx_symtab_node *p_function_id) {
+    bool is_block = (token == tc_left_bracket);
+
+    resync(tokenlist_statement_start);
+
+    //    icode.pause();
+    //    p_function_id->defn.routine.p_icode = new cx_icode;
+    p_function_id->defn.routine.iterator.at_loop_start = icode.current_location();
+    parse_statement(p_function_id);
+
+    //    p_function_id->defn.routine.p_icode = new cx_icode(icode);
+    p_function_id->defn.routine.p_symtab = symtab_stack.exit_scope();
+    //    icode.resume();
+
+    if (is_block) {
+        conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+    } else {
+        conditional_get_token_append(tc_semicolon, err_missing_semicolon);
+    }
 }
