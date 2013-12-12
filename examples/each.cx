@@ -20,13 +20,14 @@ int main () {
     char *str;
 
     // is always pass by reference OK for .each?
+
     t.each(char m) {
         str += puts(m.to_str).to_str;
         m = toupper(m);
         puts(m.to_str + ": isupper m = " + isupper(m).to_str);
     }
 
-    puts(t);    // should now be uppercase
+    puts(t); // should now be uppercase
     puts(str); // should be all 1's because puts returns 1 char length
 
     return 0;

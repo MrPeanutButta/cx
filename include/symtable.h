@@ -73,8 +73,12 @@ public:
 
             int return_marker; // used for globals return location
 
+            // pointer to node, that this node is a member of
             struct {
                 cx_symtab_node *p_node;
+            } member_of;
+            
+            struct {
                 int	loop_start; // icode positions
 				int loop_end;
                 int current_iteration; // each indexer to determine which each call

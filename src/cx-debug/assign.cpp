@@ -21,7 +21,7 @@ void cx_executor::execute_assignment (cx_symtab_node *p_target_id) {
 
     if (p_target_id->defn.how == dc_function) {
         p_target_type = p_target_id->p_type;
-		if (p_target_type == p_void_type) return;
+        if (p_target_type == p_void_type) return;
         p_target = run_stack.get_value_address(p_target_id);
     }/* Assignment to variable or formal parameter.
       * execute_variable leaves the target address on
@@ -29,8 +29,6 @@ void cx_executor::execute_assignment (cx_symtab_node *p_target_id) {
     else if ((p_target_id->defn.how != dc_type)) {
         if (!token_in(token, tokenlist_assign_ops))get_token();
         p_target_type = execute_variable(p_target_id, true);
-		
-		//if ((p_target_id->defn.routine.which == func_std_iterator)) return;
 
         if (p_target_type->form != fc_stream) {
             if (!p_target_type->is_scalar_type()) {
@@ -166,13 +164,13 @@ void cx_executor::assign (cx_symtab_node* p_target_id,
 
         memcpy(&p_target->basic_types, &top()->basic_types, p_target_type->size);
 
-	} else if (p_target_type->type_code == cx_file) {
+    } else if (p_target_type->type_code == cx_file) {
 
         // location in io.cpp
         file_out(p_target_id, p_expr_type);
 
     } else {
-		cx_malloc(p_target_id, p_target_type, p_expr_type, p_target, p_target_address);
+        cx_malloc(p_target_id, p_target_type, p_expr_type, p_target, p_target_address);
     }
 }
 
@@ -269,7 +267,7 @@ cx_executor::plus_equal (const cx_symtab_node* p_target_id,
                          cx_type* p_target_type, const cx_type* p_expr_type,
                          cx_stack_item* p_target, void*& p_target_address) {
 
-	cx_type_code target_type = p_target_type->type_code;
+    cx_type_code target_type = p_target_type->type_code;
     cx_type_code expr_type = p_expr_type->type_code;
 
     mem_block *mem = &top()->basic_types;
@@ -515,10 +513,10 @@ cx_executor::plus_equal (const cx_symtab_node* p_target_id,
         p_target_id->runstack_item->basic_types.addr__ = p_target_address;
         p_target_id->p_type->array.element_count = num_of_elements;
         p_target_id->p_type->array.max_index = num_of_elements;
-		p_target_id->p_type->size = old_size + size;
+        p_target_id->p_type->size = old_size + size;
 
-		tmp[num_of_elements] = '\0';
-		
+        tmp[num_of_elements] = '\0';
+
     }
 }
 

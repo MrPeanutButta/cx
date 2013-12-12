@@ -205,6 +205,9 @@ cx_type *cx_parser::parse_factor (void) {
                 case dc_function:
                     get_token_append();
                     p_result_type = parse_subroutine_call(p_node, true);
+                    if (token == tc_dot) {
+                        p_result_type = parse_variable(p_node);
+                    }
                     break;
                 case dc_constant:
                     get_token_append();
@@ -325,8 +328,8 @@ cx_type *cx_parser::parse_factor (void) {
 
                 if (p_prev_type != nullptr) {
                     // make sure we init all of the same type
-					check_assignment_type_compatible(p_prev_type, p_result_type,
-							err_incompatible_types);
+                    check_assignment_type_compatible(p_prev_type, p_result_type,
+                                                     err_incompatible_types);
                 }
 
                 p_array_type->size += p_result_type->size;
@@ -611,10 +614,10 @@ cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) 
                                            p_field_id->defn.routine.iterator.postfix++);
 
             cx_symtab_node *p_it_id = std_members->enter(name.c_str(), dc_function);
-            p_it_id->defn.routine.iterator.p_node = (cx_symtab_node *)p_node;
-			set_type(p_it_id->p_type, p_type->base_type());
+            p_it_id->defn.routine.member_of.p_node = (cx_symtab_node *) p_node;
+            set_type(p_it_id->p_type, p_type->base_type());
             p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
-            
+
             return parse_iterator(p_it_id);
 
         } else {
@@ -651,7 +654,7 @@ cx_type *cx_parser::parse_iterator (cx_symtab_node* p_iterator) {
     p_iterator->defn.routine.locals.p_variable_ids = nullptr;
     p_iterator->defn.routine.locals.p_function_ids = nullptr;
     //
-    
+
     icode.put(p_iterator); // put unique name
     get_token_append();
     parse_function_header(p_iterator);

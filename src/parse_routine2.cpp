@@ -42,11 +42,11 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
         // Reference or value parameter?
         if (token == tc_bit_AND) {
             parm_defined_as = dc_reference;
-            get_token_append();
+            get_token();
         } else if (token == tc_star) {
-            get_token_append();
+            get_token();
             if (token == tc_bit_AND) {
-                get_token_append();
+                get_token();
                 parm_defined_as = dc_reference;
             } else {
                 parm_defined_as = dc_value_parm;

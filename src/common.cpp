@@ -144,7 +144,7 @@ extern const cx_token_code tokenlist_expression_start[] = {
 
 extern const cx_token_code tokenlist_expression_follow[] = {
                                                             tc_comma, tc_right_paren, tc_right_subscript, tc_plus_plus,
-                                                            tc_minus_minus, tc_colon, tc_right_bracket, tc_DO, tc_semicolon,
+                                                            tc_minus_minus, tc_colon, tc_right_bracket, tc_semicolon, tc_dot,
                                                             tc_equal_equal, tc_not_equal, tc_lessthan, tc_greaterthan, tc_lessthan_equal, tc_greaterthan_equal,
                                                             tc_dummy
 };

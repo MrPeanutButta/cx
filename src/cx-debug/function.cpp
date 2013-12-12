@@ -26,12 +26,12 @@ void cx_executor::execute_iterator(cx_symtab_node* p_function_id) {
 	int new_level = p_function_id->level + 1; // level of callee's locals
 	cx_symtab_node *p_formal_id = p_function_id->defn.routine.locals.p_parms_ids;
 	int *iteration = &p_function_id->defn.routine.iterator.current_iteration;
-	const int end = p_function_id->defn.routine.iterator.p_node->p_type->array.element_count;
+	const int end = p_function_id->defn.routine.member_of.p_node->p_type->array.element_count;
 	int loop_start = p_function_id->defn.routine.iterator.loop_start;
-	const int size = p_function_id->defn.routine.iterator.p_node->p_type->array.p_element_type->size;
+	const int size = p_function_id->defn.routine.member_of.p_node->p_type->array.p_element_type->size;
 
 	int index = p_function_id->defn.routine.iterator.current_iteration = 0;
-	cx_symtab_node *p_var = p_function_id->defn.routine.iterator.p_node;
+	cx_symtab_node *p_var = p_function_id->defn.routine.member_of.p_node;
 
 	get_token();
 
@@ -74,8 +74,9 @@ void cx_executor::execute_iterator(cx_symtab_node* p_function_id) {
 }
 
 void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
+    
     cx_symtab_node *p_formal_id; // ptr to formal parm's symtab node
-    cx_symtab_node *p_var_node = p_function_id->defn.routine.iterator.p_node;
+    cx_symtab_node *p_var_node = p_function_id->defn.routine.member_of.p_node;
 
     cx_type *p_actual_type = p_var_node->p_type;
 
@@ -87,8 +88,7 @@ void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
     /* Reference parameter: execute_variable will leave the actual
      * parameter's address on top of the stack. */
     if (p_formal_id->defn.how == dc_reference) {
-		p_formal_id->runstack_item = p_var_node->runstack_item;
-        get_token();
+		p_formal_id->runstack_item = top();
     }// value parameter
     else {
 

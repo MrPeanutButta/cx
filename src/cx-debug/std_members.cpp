@@ -6,26 +6,27 @@
 cx_symtab *std_members = nullptr;
 
 void init_std_members (void) {
-	// initialize after basic types are init
-	struct{
-		cx_symtab_node *p_node;
-		std::string name;
-		cx_function_code code;
-		m_call member_call;
-		cx_type *p_type;
-	}type_members[] = {
-		{ nullptr, "each", func_std_iterator, &cx_std_members::each, p_void_type },
-		{ nullptr, "size", func_std_member, &cx_std_members::size, p_integer_type },
-		{ nullptr, "length", func_std_member, &cx_std_members::length, p_integer_type },
-		{ nullptr, "to_str", func_std_member, &cx_std_members::to_str, new cx_type(fc_array, 0, nullptr) },
-		{ nullptr, "to_wstr", func_std_member, &cx_std_members::to_wstr, new cx_type(fc_array, 0, nullptr) },
-		{ nullptr, "to_int", func_std_member, &cx_std_members::to_int, p_integer_type },
-		{ nullptr, "to_chr", func_std_member, &cx_std_members::to_chr, p_char_type },
-		{ nullptr, "to_flt", func_std_member, &cx_std_members::to_flt, p_float_type },
-		{ nullptr, "to_bool", func_std_member, &cx_std_members::to_bool, p_boolean_type },
-		{ nullptr, "to_wchr", func_std_member, &cx_std_members::to_wchr, p_wchar_type },
-		{ nullptr, "to_byte", func_std_member, &cx_std_members::to_byte, p_uint8_type }
-	};
+    // initialize after basic types are init
+
+    struct {
+        cx_symtab_node *p_node;
+        std::string name;
+        cx_function_code code;
+        m_call member_call;
+        cx_type *p_type;
+    } type_members[] = {
+        { nullptr, "each", func_std_iterator, &cx_std_members::each, p_void_type},
+        { nullptr, "size", func_std_member, &cx_std_members::size, p_integer_type},
+        { nullptr, "length", func_std_member, &cx_std_members::length, p_integer_type},
+        { nullptr, "to_str", func_std_member, &cx_std_members::to_str, new cx_type(fc_array, 0, nullptr)},
+        { nullptr, "to_wstr", func_std_member, &cx_std_members::to_wstr, new cx_type(fc_array, 0, nullptr)},
+        { nullptr, "to_int", func_std_member, &cx_std_members::to_int, p_integer_type},
+        { nullptr, "to_chr", func_std_member, &cx_std_members::to_chr, p_char_type},
+        { nullptr, "to_flt", func_std_member, &cx_std_members::to_flt, p_float_type},
+        { nullptr, "to_bool", func_std_member, &cx_std_members::to_bool, p_boolean_type},
+        { nullptr, "to_wchr", func_std_member, &cx_std_members::to_wchr, p_wchar_type},
+        { nullptr, "to_byte", func_std_member, &cx_std_members::to_byte, p_uint8_type}
+    };
     // allocate std member functions for basic types
     std_members = new cx_symtab;
 
@@ -36,172 +37,28 @@ void init_std_members (void) {
     p_char_type->complex.p_class_scope = std_members;
     p_wchar_type->complex.p_class_scope = std_members;
 
-	for (auto &member : type_members){
-		member.p_node = std_members->enter(member.name.c_str(), dc_function);
-		member.p_node->defn.routine.iterator.postfix = 0;
+    for (auto &member : type_members) {
+        member.p_node = std_members->enter(member.name.c_str(), dc_function);
+        member.p_node->defn.routine.iterator.postfix = 0;
+        member.p_node->defn.routine.std_member = member.member_call;
+        member.p_node->defn.routine.which = member.code;
+        member.p_node->defn.routine.parm_count = 0;
+        member.p_node->defn.routine.total_parm_size = 0;
+        member.p_node->defn.routine.locals.p_parms_ids = nullptr;
+        member.p_node->defn.routine.locals.p_constant_ids = nullptr;
+        member.p_node->defn.routine.locals.p_type_ids = nullptr;
+        member.p_node->defn.routine.locals.p_variable_ids = nullptr;
+        member.p_node->defn.routine.locals.p_function_ids = nullptr;
 
-		member.p_node->defn.routine.std_member = member.member_call;
-		member.p_node->defn.routine.which = member.code;
-		member.p_node->defn.routine.parm_count = 0;
-		member.p_node->defn.routine.total_parm_size = 0;
-		member.p_node->defn.routine.locals.p_parms_ids = nullptr;
-		member.p_node->defn.routine.locals.p_constant_ids = nullptr;
-		member.p_node->defn.routine.locals.p_type_ids = nullptr;
-		member.p_node->defn.routine.locals.p_variable_ids = nullptr;
-		member.p_node->defn.routine.locals.p_function_ids = nullptr;
+        set_type(member.p_node->p_type, member.p_type);
 
-		set_type(member.p_node->p_type, member.p_type);
+        if (member.name == "to_str") {
+            set_type(member.p_node->p_type->array.p_element_type, p_char_type);
+        } else if (member.name == "to_wstr") {
+            set_type(member.p_node->p_type->array.p_element_type, p_wchar_type);
+        }
 
-		if (member.name == "to_str"){
-			set_type(member.p_node->p_type->array.p_element_type, p_char_type);
-		}
-		else if (member.name == "to_wstr"){
-			set_type(member.p_node->p_type->array.p_element_type, p_wchar_type);
-		}
-
-	}
-	/*
-    // only for internal use, all each members are user defined function blocks
-    cx_symtab_node *p_each_id = std_members->enter("each", dc_function);
-    p_each_id->defn.routine.iterator.postfix = 0;
-    p_each_id->defn.routine.std_member = &cx_std_members::each;
-    p_each_id->defn.routine.parm_count = 0;
-    p_each_id->defn.routine.total_parm_size = 0;
-    p_each_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_each_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_each_id->defn.routine.locals.p_type_ids = nullptr;
-    p_each_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_each_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_size_id = std_members->enter("size", dc_function);
-    p_size_id->defn.routine.std_member = &cx_std_members::size;
-    p_size_id->defn.routine.parm_count = 0;
-    p_size_id->defn.routine.total_parm_size = 0;
-    p_size_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_size_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_size_id->defn.routine.locals.p_type_ids = nullptr;
-    p_size_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_size_id->defn.routine.locals.p_function_ids = nullptr;
-
-    // array length
-    cx_symtab_node *p_length_id = std_members->enter("length", dc_function);
-    p_length_id->defn.routine.std_member = &cx_std_members::length;
-    p_length_id->defn.routine.parm_count = 0;
-    p_length_id->defn.routine.total_parm_size = 0;
-    p_length_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_length_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_length_id->defn.routine.locals.p_type_ids = nullptr;
-    p_length_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_length_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_tostr_id = std_members->enter("to_str", dc_function);
-    p_tostr_id->defn.routine.std_member = &cx_std_members::to_str;
-    p_tostr_id->defn.routine.parm_count = 0;
-    p_tostr_id->defn.routine.total_parm_size = 0;
-    p_tostr_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_tostr_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_tostr_id->defn.routine.locals.p_type_ids = nullptr;
-    p_tostr_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_tostr_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_towstr_id = std_members->enter("to_wstr", dc_function);
-    p_towstr_id->defn.routine.std_member = &cx_std_members::to_wstr;
-    p_towstr_id->defn.routine.parm_count = 0;
-    p_towstr_id->defn.routine.total_parm_size = 0;
-    p_towstr_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_towstr_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_towstr_id->defn.routine.locals.p_type_ids = nullptr;
-    p_towstr_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_towstr_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_toint_id = std_members->enter("to_int", dc_function);
-    p_toint_id->defn.routine.std_member = &cx_std_members::to_int;
-    p_toint_id->defn.routine.parm_count = 0;
-    p_toint_id->defn.routine.total_parm_size = 0;
-    p_toint_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_toint_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_toint_id->defn.routine.locals.p_type_ids = nullptr;
-    p_toint_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_toint_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_tochr_id = std_members->enter("to_chr", dc_function);
-    p_tochr_id->defn.routine.std_member = &cx_std_members::to_chr;
-    p_tochr_id->defn.routine.parm_count = 0;
-    p_tochr_id->defn.routine.total_parm_size = 0;
-    p_tochr_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_tochr_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_tochr_id->defn.routine.locals.p_type_ids = nullptr;
-    p_tochr_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_tochr_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_toflt_id = std_members->enter("to_flt", dc_function);
-    p_toflt_id->defn.routine.std_member = &cx_std_members::to_flt;
-    p_toflt_id->defn.routine.parm_count = 0;
-    p_toflt_id->defn.routine.total_parm_size = 0;
-    p_toflt_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_toflt_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_toflt_id->defn.routine.locals.p_type_ids = nullptr;
-    p_toflt_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_toflt_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_tobool_id = std_members->enter("to_bool", dc_function);
-    p_tobool_id->defn.routine.std_member = &cx_std_members::to_bool;
-    p_tobool_id->defn.routine.parm_count = 0;
-    p_tobool_id->defn.routine.total_parm_size = 0;
-    p_tobool_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_tobool_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_tobool_id->defn.routine.locals.p_type_ids = nullptr;
-    p_tobool_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_tobool_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_towchr_id = std_members->enter("to_wchr", dc_function);
-    p_towchr_id->defn.routine.std_member = &cx_std_members::to_wchr;
-    p_towchr_id->defn.routine.parm_count = 0;
-    p_towchr_id->defn.routine.total_parm_size = 0;
-    p_towchr_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_towchr_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_towchr_id->defn.routine.locals.p_type_ids = nullptr;
-    p_towchr_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_towchr_id->defn.routine.locals.p_function_ids = nullptr;
-
-    cx_symtab_node *p_tobyte_id = std_members->enter("to_byte", dc_function);
-    p_tobyte_id->defn.routine.std_member = &cx_std_members::to_byte;
-    p_tobyte_id->defn.routine.parm_count = 0;
-    p_tobyte_id->defn.routine.total_parm_size = 0;
-    p_tobyte_id->defn.routine.locals.p_parms_ids = nullptr;
-    p_tobyte_id->defn.routine.locals.p_constant_ids = nullptr;
-    p_tobyte_id->defn.routine.locals.p_type_ids = nullptr;
-    p_tobyte_id->defn.routine.locals.p_variable_ids = nullptr;
-    p_tobyte_id->defn.routine.locals.p_function_ids = nullptr;
-
-    ///////
-    p_each_id->defn.routine.which = func_std_iterator;
-    p_size_id->defn.routine.which = func_std_member;
-    p_length_id->defn.routine.which = func_std_member;
-    p_tostr_id->defn.routine.which = func_std_member;
-    p_towstr_id->defn.routine.which = func_std_member;
-    p_toint_id->defn.routine.which = func_std_member;
-    p_tochr_id->defn.routine.which = func_std_member;
-    p_toflt_id->defn.routine.which = func_std_member;
-    p_tobool_id->defn.routine.which = func_std_member;
-    p_towchr_id->defn.routine.which = func_std_member;
-    p_tobyte_id->defn.routine.which = func_std_member;
-
-    // set std member return types
-    set_type(p_each_id->p_type, p_integer_type);
-    set_type(p_size_id->p_type, p_integer_type);
-    set_type(p_length_id->p_type, p_integer_type);
-
-    set_type(p_tostr_id->p_type, new cx_type(fc_array, 0, nullptr));
-    set_type(p_tostr_id->p_type->array.p_element_type, p_char_type);
-
-    set_type(p_toint_id->p_type, p_integer_type);
-    set_type(p_tochr_id->p_type, p_char_type);
-    set_type(p_toflt_id->p_type, p_float_type);
-    set_type(p_tobool_id->p_type, p_boolean_type);
-    set_type(p_towchr_id->p_type, p_wchar_type);
-    set_type(p_tobyte_id->p_type, p_uint8_type);*/
-
+    }
 }
 
 cx_type *cx_std_members::size (cx_executor* cx,
@@ -240,14 +97,13 @@ cx_type *cx_std_members::to_str (cx_executor *cx,
     std::stringstream ss;
     ss.clear();
 
-	cx_stack_item *mem = nullptr;
-	
-	//if (cx_function_id->defn.how == dc_value_parm){
-	mem = (cx_stack_item *)cx->top()->basic_types.addr__;
-	/*}
-	else {
-		mem = cx->top();
-	}*/
+    cx_stack_item *mem = nullptr;
+
+    /*if (cx_function_id->defn.routine.member_of.p_node->defn.how == dc_reference) {
+        mem = cx->top();
+    } else {*/
+        mem = (cx_stack_item *) cx->top()->basic_types.addr__;
+    //}
 
     switch (p_type->type_code) {
         case cx_int:
@@ -268,7 +124,9 @@ cx_type *cx_std_members::to_str (cx_executor *cx,
         case cx_uint8:
             ss << (int) mem->basic_types.uint8__ << '\0';
             break;
-        default:break;
+        default:
+            ss << mem->basic_types.addr__ << '\0';
+            break;
     }
 
     cx->pop();
@@ -348,11 +206,11 @@ cx_type *cx_std_members::each (cx_executor *cx,
     int loop_start = cx_function_id->defn.routine.iterator.at_loop_start;*
 
     /*for (*iteration = 0; *iteration < end; ++*iteration) {
-		cx->execute_variable(cx_function_id->defn.routine.iterator.p_node, true);*/
-        cx->execute_iterator(cx_function_id);
-        /*cx->goto_location(loop_start);
-        cx->get_next_token();
-    }*/
+        cx->execute_variable(cx_function_id->defn.routine.iterator.p_node, true);*/
+    cx->execute_iterator(cx_function_id);
+    /*cx->goto_location(loop_start);
+    cx->get_next_token();
+}*/
 
     return cx_function_id->p_type;
 }

@@ -21,7 +21,18 @@ cx_type *cx_executor::execute_factor (void) {
             switch (p_node->defn.how) {
 
                 case dc_function:
+                {
+                    cx_symtab_node *p_function = p_node;
                     p_result_type = execute_function_call(p_node);
+                    
+                    if (token == tc_dot) {                        
+                        p_function->runstack_item = top();
+                        pop();
+                        p_function->defn.how = dc_variable;
+                        p_result_type = execute_variable(p_function, false);
+                        p_function->defn.how = dc_function;
+                    }
+                }
                     break;
 
                 case dc_constant:
@@ -166,7 +177,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
     do {
         switch (token) {
             case tc_left_subscript:
-				p_type = execute_subscripts(p_type);
+                p_type = execute_subscripts(p_type);
                 break;
 
             case tc_dot:
@@ -175,7 +186,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
             default: done_flag = true;
         }
 
-		p_prev_type = p_type;
+        p_prev_type = p_type;
     } while (!done_flag);
 
     // If address_flag is false, and the data is not an array
@@ -273,7 +284,7 @@ cx_type *cx_executor::execute_field (cx_type *p_type) {
     if (p_field_id->defn.how == dc_function) {
         if (p_field_id->defn.routine.which == func_std_member) {
             p_result_type = execute_std_member_call(p_field_id, p_type);
-        }else {
+        } else {
             p_result_type = execute_function_call(p_field_id);
         }
     } else {

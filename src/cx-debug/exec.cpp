@@ -178,13 +178,11 @@ cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
  * @return    : ptr to the runtime stack item containing the
  *                 variable, parameter, or function return value
  */
-cx_stack_item *
-cx_runtime_stack::get_value_address (const cx_symtab_node *p_id) {
-    bool functionFlag = p_id->defn.how == dc_function; // true if function
+cx_stack_item *cx_runtime_stack::get_value_address (const cx_symtab_node *p_id) {
+    bool function_flag = p_id->defn.how == dc_function; // true if function
     //   else false
-    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
-
-    return functionFlag ? p_header->function_value
+    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;    
+    return function_flag ? p_header->function_value
             : p_id->runstack_item;
 }
 

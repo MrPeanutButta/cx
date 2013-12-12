@@ -13,9 +13,6 @@
 #include "symtable.h"
 #include "types.h"
 
-
-
-//extern cx_icode icode;
 extern cx_symtab cx_global_symtab;
 
 ///  cx_parser     Parser class.
@@ -27,12 +24,8 @@ class cx_parser {
     cx_symtab_stack symtab_stack;
     cx_icode icode;
     bool is_module;
-
     const char *file_name;
-    //cx_runtime_stack run_stack;
-    //cx_compact_list_buffer * const pCompact; // compact list buffer
-
-    //cx_symtab_node *ParseSubroutine(void);
+    
     cx_symtab_node *parse_function_header(cx_symtab_node *p_function_id);
 
     void parse_block(cx_symtab_node *p_function_id);
