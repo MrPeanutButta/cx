@@ -1,7 +1,7 @@
 
 /* standard type member functions example
  * 
- * var.to_str() - returns the string copy of the valuw of var
+ * var.to_str() - returns the string copy of the value of var
  * var.each(type var) - iterator for each element
  */
 
@@ -9,6 +9,14 @@
 #include cxctype
 
 int main () {
+
+	char *MD = {
+		 { "this is a test" },
+		 { "another test" },
+		 { "nope" }
+	};
+
+	puts(MD[1][2].to_str);
 
     int *a = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 

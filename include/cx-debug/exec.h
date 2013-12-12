@@ -184,7 +184,6 @@ public:
     }
 
     void push(void *addr) {
-        char *t = (char *) addr;
         cx_runstack.push_back(new cx_stack_item((void*) addr));
     }
 

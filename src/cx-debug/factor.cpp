@@ -237,35 +237,62 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
  * @return: ptr to subscripted variable's type object
  */
 cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
+
+	int x = 0;
+	int y = 0;
+	int pass = 0;
+	int size = 0;
+	cx_type *p_list_type = (cx_type *)p_type;
+	char *addr = (char *)top()->basic_types.addr__;
     // Loop to executed subscript lists enclosed in brackets.
-    while (token == tc_left_subscript) {
+	while (token == tc_left_subscript) {
+		// Loop to execute comma-separated subscript expressions
+		// within a subscript list.
 
-        // Loop to execute comma-separated subscript expressions
-        // within a subscript list.
+		get_token(); // index
+		execute_expression();
 
-        get_token(); // index
-        execute_expression();
+		// Evaluate and range check the subscript.
+		int value = top()->basic_types.int__;
+		
+		pop();
 
-        // Evaluate and range check the subscript.
-        int value = top()->basic_types.int__;
-        pop();
+		if (pass == 0){
+			x = value;
+			p_type = p_type->array.p_element_type;
+			y += (p_type->size);
+			for (int i = 0; i < x; ++i){
+				p_type = p_type->next;
+			}
+		}
+		else {
+			if (p_type->form == fc_array){
+			y += (p_type->size);
+			}
+			else{
+				y += p_type->base_type()->size;
+			}
+		}
 
-        range_check(p_type, value);
+		range_check(p_list_type, y);
 
-        // Modify the data address at the top of the stack.
+		// Modify the data address at the top of the stack.
+		pop();
 
-        char *t = (char *) top()->basic_types.addr__;
-        pop();
+		push(addr + (y));
 
-        push(t + (p_type->array.p_element_type->size * value));
+		char *o = (char *)top()->basic_types.addr__;
+		// Prepare for another subscript in this list.
+		//p_type = p_type->array.p_element_type;
 
-        // Prepare for another subscript in this list.
-        //p_type = p_type->array.p_element_type;
-
-        // Prepare for another subscript list.
-        get_token(); // ]
-        if (token == tc_left_subscript) p_type = p_type->array.p_element_type;
-    }
+		// Prepare for another subscript list.
+		get_token(); // ]
+		if (token == tc_left_subscript) {
+			//y += p_type->array.p_element_type->size;
+			p_type = p_type->array.p_element_type;
+			++pass;
+		}
+	}
 
     return p_type->array.p_element_type;
 }

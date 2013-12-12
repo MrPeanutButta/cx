@@ -81,6 +81,8 @@ public:
         struct {
             const cx_type *p_index_type;
             cx_type *p_element_type;
+			// type at current index
+			cx_type *p_index;
             int min_index;
             int max_index;
             int element_count;

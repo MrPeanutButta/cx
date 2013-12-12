@@ -318,13 +318,16 @@ cx_type *cx_parser::parse_factor (void) {
         case tc_left_bracket:
         {
             get_token_append();
-            int size = 0;
+            int total_size = 0;
+			int elem_count = 0;
             bool comma = false;
             cx_type *p_prev_type = nullptr;
-            cx_type *p_array_type = new cx_type(fc_array, size, nullptr);
+			//
+			cx_type *p_elements = nullptr;
 
             do {
                 p_result_type = parse_expression();
+				total_size += p_result_type->size;
 
                 if (p_prev_type != nullptr) {
                     // make sure we init all of the same type
@@ -332,17 +335,22 @@ cx_type *cx_parser::parse_factor (void) {
                                                      err_incompatible_types);
                 }
 
-                p_array_type->size += p_result_type->size;
-                ++p_array_type->array.element_count;
-                ++p_array_type->array.max_index;
+				if (p_result_type->form == fc_array){
+					if (p_prev_type == nullptr){
+						p_prev_type = p_result_type;
+						p_elements = p_prev_type;
+					}
+					else {
+						p_prev_type->next = p_result_type;
+						p_prev_type = p_prev_type->next;
+					}
+				}
+				else {
+					p_elements = p_result_type;
+					//p_elements->array.p_element_type = p_result_type;
+				}
 
-                if (p_prev_type != nullptr) {
-                    if (p_prev_type->array.p_element_type == nullptr) {
-                        set_type(p_prev_type->array.p_element_type, p_result_type);
-                    }
-                }
-
-                p_prev_type = p_result_type;
+				++elem_count;
 
                 if (token == tc_comma) {
                     comma = true;
@@ -352,9 +360,20 @@ cx_type *cx_parser::parse_factor (void) {
             } while (comma);
 
             conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-            set_type(p_array_type->array.p_element_type, p_result_type);
-            p_result_type = p_array_type;
 
+			cx_type *p_array_type = new cx_type(fc_array, total_size, nullptr);
+			p_array_type->array.element_count = elem_count;
+			p_array_type->array.max_index = elem_count;
+			p_array_type->array.p_element_type = p_elements;
+			p_result_type = p_array_type;
+			/*if (p_elements != nullptr){
+				set_type(p_array_type->array.p_element_type, p_elements);
+				p_result_type = p_elements;
+			}
+			else {
+				set_type(p_array_type->array.p_element_type, p_result_type);
+				p_result_type = p_array_type;
+			}*/
         }
             break;
         case tc_semicolon:
@@ -565,24 +584,40 @@ cx_type *cx_parser::parse_variable (const cx_symtab_node* p_id) {
  */
 cx_type *cx_parser::parse_subscripts (const cx_type* p_type) {
 
-    cx_type *p_result_type = (cx_type *) p_type;
+    //cx_type *p_result_type = (cx_type *) p_type;
 
-    get_token_append();
+	/*if (p_type->array.p_element_type->form == fc_array){
+		p_type = p_type->array.p_element_type;
+	}*/
 
-    if (p_type->form == fc_array) {
-        check_assignment_type_compatible(p_integer_type,
-                                         parse_expression(),
-                                         err_incompatible_types);
+	int column = 0;
 
-        p_result_type = p_type->array.p_element_type;
-    } else {
-        cx_error(err_too_many_subscripts);
-        parse_expression();
-    }
+	do{
+		get_token_append();
 
-    conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
+		if (p_type->form == fc_array) {
+			check_assignment_type_compatible(p_integer_type,
+				parse_expression(),
+				err_incompatible_types);
+		}
+		else {
+			cx_error(err_too_many_subscripts);
+			parse_expression();
+		}
 
-    return p_result_type;
+		conditional_get_token_append(tc_right_subscript, err_missing_right_subscript);
+		if (token == tc_left_subscript)++column;
+	} while (token == tc_left_subscript);
+
+	
+	cx_type *elem = (cx_type *)p_type;
+	for (int i = 0; i < column; i++){
+		if (elem->form == fc_array){
+			elem = elem->array.p_element_type;
+		}
+	}
+
+	return elem->array.p_element_type;
 }
 
 std::string unique_name (const std::string &prefix, const int &postfix) {

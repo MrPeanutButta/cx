@@ -13,7 +13,9 @@ cx_type *cx_executor::execute_initialization_list (void) {
     bool comma = false;
     void *p_address = nullptr;
 	char *tmp = nullptr;
-    cx_type *init_list = new cx_type(fc_array, 0, nullptr);
+    
+	cx_type *p_elements = nullptr;
+	cx_type *p_prev_type = nullptr;
 
     do {
 
@@ -26,6 +28,20 @@ cx_type *cx_executor::execute_initialization_list (void) {
             perror("realloc");
             exit(0);
         }
+
+		if (p_result_type->form == fc_array){
+			if (p_prev_type == nullptr){
+				p_prev_type = p_result_type;
+				p_elements = p_result_type;
+			}
+			else {
+				p_prev_type->next = p_result_type;
+				p_prev_type = p_prev_type->next;
+			}
+		}
+		else {
+			p_elements->array.p_element_type = p_result_type;
+		}
 
         tmp = (char *) p_address;
 
@@ -71,7 +87,8 @@ cx_type *cx_executor::execute_initialization_list (void) {
             }
         } else {
             void *p_source = top()->basic_types.addr__;
-            memcpy(&tmp[old_size], p_source, p_result_type->size);
+			memcpy(&tmp[old_size], p_source, total_size);
+			tmp[total_size] = '\0';
         }
 
         pop();
@@ -87,11 +104,22 @@ cx_type *cx_executor::execute_initialization_list (void) {
 
     // }
     get_token();
-    push(p_address);
-    init_list->array.element_count = num_of_elements;
-    init_list->array.max_index = num_of_elements;
-    init_list->size = total_size;
-    set_type(init_list->array.p_element_type, p_result_type);
+    push((void *)p_address);
+	cx_type *init_list = new cx_type(fc_array, total_size, nullptr);
+	//init_list->size = total_size;
+	init_list->next = p_elements;
+	init_list->array.element_count = num_of_elements;
+	init_list->array.max_index = num_of_elements;
+	init_list->array.p_element_type = p_elements->base_type();
 
-    return init_list;
+	/*if (p_elements != nullptr){
+		set_type(init_list->array.p_element_type, p_elements);
+		p_result_type = init_list;
+	}
+	else {
+		set_type(init_list->array.p_element_type, p_result_type);
+		p_result_type = init_list;
+	}*/
+
+	return init_list;
 }
