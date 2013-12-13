@@ -7,21 +7,19 @@ sharing: true
 footer: true
 ---
 ## Arithmetic
---------------------------------------
 The five arithmetical operations supported by the Cx language are:<br>
 
-Arithmetic `+ - * / %`
-
-	+  addition
-	-  subtraction
- 	*  multiplication
-	/  division
-	%  modulo
+<table><tr><th>Op</th></tr>
+<tr><td>+</td><td>Addition</td></tr>
+<tr><td>-</td><td>Subtraction</td></tr>
+<tr><td>*</td><td>Multiplication</td></tr>
+<tr><td>/</td><td>Division</td></tr>
+<tr><td>%</td><td>Modulo</td></tr>
+</table>
 
 The addition operator `+` has special meaning for array types. Having an array on either side of
 this binary operator will concatenate both side of the expression into a allocated temporary value.
-Both sides of the expression must be of the same base type, e.g. an array of char elements is compatible
-with a primitive char type, or 2 arrays of int elements would also be ok. 
+Both sides of the expression must be of the same base type, e.g. an array of char elements is compatible with a primitive char type, or 2 arrays of int elements would also be OK. 
 
 ``` cpp
 // gets() and string allocation example
@@ -47,11 +45,12 @@ int main () {
 ```
 
 ## Assignment
---------------------------------------
 The assignment operator assigns a value to a variable. The assignment operator
 has diferent behavior for primitive versus array types.
 
-Assignment `=`
+<table><tr><th>Op</th></tr>
+<tr><td>=</td><td>Assignment</td></tr>
+</table>
 
 ``` cpp
 	// Simple copy assignment
@@ -67,19 +66,28 @@ Assignment `=`
 ```
 
 ## Compound Assignment
---------------------------------------
 When we want to modify the value of a variable by performing an operation on the
 value currently stored in that variable we can use compound assignment
 operators.<br>
 
-Arithmetic 	`+= -= *= /= %=`<br>
-Bitwise 	`>>= <<= &= ^= |=`
-
-	expression              is equivalent to
-	value += increase;      value = value + increase;
-	a -= 5;                 a = a - 5;
-	a /= b;                 a = a / b;
- 	price *= units + 1;     price = price * (units + 1);
+<table><tr><th>Op</th><th>Arithmetic</th></tr>
+<tr><td>+=</td><td>Compound Addition</td></tr>
+<tr><td>-=</td><td>Compound Subtraction<td></tr>
+<tr><td>*=</td><td>Compound Multiplication</td></tr>
+<tr><td>/=</td><td>Compound Division</td></tr>
+<tr><td>%=</td><td>Compound Modulo</td></tr>
+<tr><td>>>=</td><td>Compound Shift Right</td></tr>
+<tr><td><<=</td><td>Compound Shift Left</td></tr>
+<tr><td>&=</td><td>Compound AND</td></tr>
+<tr><td>^=</td><td>Compound XOR</td></tr>
+<tr><td>|=</td><td>Compound OR</td></tr>
+</table>
+<table><tr><th>expression</th><th>is equivalent to</th></tr>
+<tr><td>value += increase;</td><td>value = value + increase;</td></tr>
+<tr><td>a -= 5;</td><td>a = a - 5;</td></tr>
+<tr><td>a /= b;</td><td>a = a / b;</td></tr>
+<tr><td>price *= units + 1;</td><td>price = price * (units + 1);</td></tr>
+</table>
 
 The `+=` operator has special uses for an array of primitive types. The following will perform
 a reallocation for `array1` and compound assign the contents of `array2`.
@@ -112,10 +120,15 @@ int main(){
 ```
 
 ## Increase and Decrease
---------------------------------------
 The increase operator (++) and the decrease operator (--) increase or
 reduce by one the value stored in a variable. They are equivalent
 to +=1 and to -=1, respectively.<br>
+
+</table>
+<table><tr><th>Op</th></tr>
+<tr><td>++</td><td>Increase</td></tr>
+<tr><td>--</td><td>Decrease</td></tr>
+</table>
 
 Increase `++`<br>
 Decrease `--`
@@ -126,7 +139,6 @@ Decrease `--`
 ```
 
 ## Relational and Equality
---------------------------------------
 In order to evaluate a comparison between two expressions we can use the
 relational and equality operators. The result of a relational operation is a
 Boolean value that can only be true or false, according to its Boolean result.<br>
@@ -147,8 +159,6 @@ Less than or equal to `<=`<br>
 ```
 
 ## Logical
---------------------------------------
-
 Not `!`<br>
 And `&&`<br>
 Or `||`
@@ -184,7 +194,6 @@ false     false           false
 ```
 
 ## Bitwise
---------------------------------------
 Bitwise operators modify variables considering the bit patterns that represent the values they store.
 
 Bitwise AND `&`<br>
