@@ -372,7 +372,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 p_formal_id->runstack_item = top();
 
             } else {
-				/*cx_stack_item *t = (cx_stack_item *)top()->basic_types.addr__;
+				cx_stack_item *t = (cx_stack_item *)top()->basic_types.addr__;
 				pop();
 				switch (p_formal_id->p_type->type_code) {
 				case cx_uint8:
@@ -394,7 +394,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
 					push((wchar_t)t->basic_types.wchar__);
 					break;
 				default: break;
-				}*/
+				}
 				p_formal_id->runstack_item = top();
             }
         }

@@ -64,7 +64,13 @@ class cx_type {
 
 public:
     const cx_type_form_code form;
+    
+    // size of the first element
     int size;
+    
+    // total size of this is a MD array
+    int total_size;
+    
     bool is_temp_value;
     cx_symtab_node *p_type_id;
     cx_type_code type_code;

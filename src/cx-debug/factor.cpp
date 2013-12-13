@@ -24,8 +24,8 @@ cx_type *cx_executor::execute_factor (void) {
                 {
                     cx_symtab_node *p_function = p_node;
                     p_result_type = execute_function_call(p_node);
-                    
-                    if (token == tc_dot) {                        
+
+                    if (token == tc_dot) {
                         p_function->runstack_item = top();
                         pop();
                         p_function->defn.how = dc_variable;
@@ -238,63 +238,67 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
  */
 cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
 
-	int x = 0;
-	int y = 0;
-	int pass = 0;
-	int size = 0;
-	cx_type *p_list_type = (cx_type *)p_type;
-	char *addr = (char *)top()->basic_types.addr__;
+    int y = 0;
+    int pass = 0;
+    int size = 0;
+    cx_type *p_list_type = (cx_type *) p_type;
+    char *addr = (char *) top()->basic_types.addr__;
+    
+    //p_type = p_type->next;//array.p_element_type;
+    
     // Loop to executed subscript lists enclosed in brackets.
-	while (token == tc_left_subscript) {
-		// Loop to execute comma-separated subscript expressions
-		// within a subscript list.
+    while (token == tc_left_subscript) {
+        // Loop to execute comma-separated subscript expressions
+        // within a subscript list.
 
-		get_token(); // index
-		execute_expression();
+        get_token(); // index
+        execute_expression();
+        //p_type = p_type->array.p_element_type;
+        
+        // Evaluate and range check the subscript.
+        int value = top()->basic_types.int__;
 
-		// Evaluate and range check the subscript.
-		int value = top()->basic_types.int__;
-		
-		pop();
+        pop();
 
-		if (pass == 0){
-			x = value;
-			p_type = p_type->array.p_element_type;
-			y += (p_type->size);
-			for (int i = 0; i < x; ++i){
-				p_type = p_type->next;
-			}
-		}
-		else {
-			if (p_type->form == fc_array){
-			y += (p_type->size);
-			}
-			else{
-				y += p_type->base_type()->size;
-			}
-		}
+        if (pass == 0) {
+            /*if (p_type->form == fc_array) {
+                //p_type = p_type->array.p_element_type;
+                p_type = p_type->array.p_element_type;
+            }*/
 
-		range_check(p_list_type, y);
+            y += (p_type->size * value);
+            for (int i = 0; i < value; ++i) {
+                p_type = p_type->next;
+            }
+        } else {
+            y += value;
+        }
 
-		// Modify the data address at the top of the stack.
-		pop();
+        int s = (y - p_type->size);
+        range_check(p_type, s);
 
-		push(addr + (y));
+        // Modify the data address at the top of the stack.
+        pop();
 
-		char *o = (char *)top()->basic_types.addr__;
-		// Prepare for another subscript in this list.
-		//p_type = p_type->array.p_element_type;
+        push(addr + (y));
 
-		// Prepare for another subscript list.
-		get_token(); // ]
-		if (token == tc_left_subscript) {
-			//y += p_type->array.p_element_type->size;
-			p_type = p_type->array.p_element_type;
-			++pass;
-		}
-	}
+        char *o = (char *) top()->basic_types.addr__;
+        // Prepare for another subscript in this list.
+        //p_type = p_type->array.p_element_type;
 
-    return p_type->array.p_element_type;
+        // Prepare for another subscript list.
+        get_token(); // ]
+        if (token == tc_left_subscript) {
+            //y += p_type->array.p_element_type->size;
+            //p_type = p_type->array.p_element_type;
+            if (p_type->array.p_element_type != nullptr) {
+                p_type = p_type->array.p_element_type;
+            }
+            ++pass;
+        }
+    }
+
+    return (cx_type *)p_type;
 }
 
 /** execute_field         Execute a field designator to modify the

@@ -107,7 +107,7 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
     } else {
         set_type(p_array_node->p_type, p_array_type);
     }
-
+    
     if (p_array_node->defn.how == dc_undefined) {
         p_array_node->defn.how = dc_variable;
     }

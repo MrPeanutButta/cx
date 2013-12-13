@@ -319,10 +319,8 @@ cx_type *cx_parser::parse_factor (void) {
         {
             get_token_append();
             int total_size = 0;
-			int elem_count = 0;
             bool comma = false;
             cx_type *p_prev_type = nullptr;
-			//
 			cx_type *p_elements = nullptr;
 
             do {
@@ -337,8 +335,7 @@ cx_type *cx_parser::parse_factor (void) {
 
 				if (p_result_type->form == fc_array){
 					if (p_prev_type == nullptr){
-						p_prev_type = p_result_type;
-						p_elements = p_prev_type;
+						p_prev_type = p_elements = p_result_type;
 					}
 					else {
 						p_prev_type->next = p_result_type;
@@ -347,10 +344,7 @@ cx_type *cx_parser::parse_factor (void) {
 				}
 				else {
 					p_elements = p_result_type;
-					//p_elements->array.p_element_type = p_result_type;
 				}
-
-				++elem_count;
 
                 if (token == tc_comma) {
                     comma = true;
@@ -360,20 +354,8 @@ cx_type *cx_parser::parse_factor (void) {
             } while (comma);
 
             conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-
-			cx_type *p_array_type = new cx_type(fc_array, total_size, nullptr);
-			p_array_type->array.element_count = elem_count;
-			p_array_type->array.max_index = elem_count;
-			p_array_type->array.p_element_type = p_elements;
-			p_result_type = p_array_type;
-			/*if (p_elements != nullptr){
-				set_type(p_array_type->array.p_element_type, p_elements);
-				p_result_type = p_elements;
-			}
-			else {
-				set_type(p_array_type->array.p_element_type, p_result_type);
-				p_result_type = p_array_type;
-			}*/
+            p_elements->total_size = total_size;
+			p_result_type = p_elements;
         }
             break;
         case tc_semicolon:

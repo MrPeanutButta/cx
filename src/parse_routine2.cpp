@@ -74,6 +74,7 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
         get_token_append();
 
         if (is_array) {
+            //set_type(p_parm_type->array.p_element_type, p_parm_type);
             set_type(p_parm_id->p_type, p_parm_type);
             cx_type *p_res = parse_unksize_array_type(p_function_id,
                                      p_parm_id);

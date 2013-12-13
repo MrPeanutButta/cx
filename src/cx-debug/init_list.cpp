@@ -7,7 +7,6 @@ cx_type *cx_executor::execute_initialization_list (void) {
     cx_type *p_result_type = nullptr;
 
     get_token();
-    int num_of_elements = 0;
     int total_size = 0;
     int old_size = 0;
     bool comma = false;
@@ -40,7 +39,7 @@ cx_type *cx_executor::execute_initialization_list (void) {
 			}
 		}
 		else {
-			p_elements->array.p_element_type = p_result_type;
+			p_elements = p_result_type;
 		}
 
         tmp = (char *) p_address;
@@ -92,7 +91,6 @@ cx_type *cx_executor::execute_initialization_list (void) {
         }
 
         pop();
-        ++num_of_elements;
         old_size = total_size;
 
         if (token == tc_comma) {
@@ -105,21 +103,6 @@ cx_type *cx_executor::execute_initialization_list (void) {
     // }
     get_token();
     push((void *)p_address);
-	cx_type *init_list = new cx_type(fc_array, total_size, nullptr);
-	//init_list->size = total_size;
-	init_list->next = p_elements;
-	init_list->array.element_count = num_of_elements;
-	init_list->array.max_index = num_of_elements;
-	init_list->array.p_element_type = p_elements->base_type();
-
-	/*if (p_elements != nullptr){
-		set_type(init_list->array.p_element_type, p_elements);
-		p_result_type = init_list;
-	}
-	else {
-		set_type(init_list->array.p_element_type, p_result_type);
-		p_result_type = init_list;
-	}*/
-
-	return init_list;
+    p_elements->total_size = total_size;
+	return p_elements;
 }
