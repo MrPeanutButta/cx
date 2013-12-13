@@ -25,10 +25,6 @@
 *.a
 
 /build/
-
 /dist/
-
-
-/nbproject/
 /Cx/
 
