@@ -128,8 +128,8 @@
     </conf>
     <conf name="MacDebug" type="1">
       <toolsSet>
-        <developmentServer>aaron@aaronhebert.net:22</developmentServer>
-        <platform>2</platform>
+        <developmentServer>localhost</developmentServer>
+        <platform>4</platform>
       </toolsSet>
       <dbx_gdbdebugger version="1">
         <gdb_pathmaps>
@@ -149,25 +149,24 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/hex.Cx</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/defn_tests.Cx</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/enum_test.Cx</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/const_tests.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/10.6.190.8/aaron-pc-Windows-x86_64/C/Users/aaron/Documents/NetBeansProjects/Cx/examples/const_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/const_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx -dev</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx -ddev</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/Documents/Cx/examples/string.cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/Documents/Cx/examples/array.cx -ddev</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/Documents/Cx/examples/exec_test.cx</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/Documents/Cx/examples/exec_test.cx -ddev</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx -ddev</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /Users/aaro3965/Documents/Cx/examples/exec_test.cx -ddev</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
-          <variable name="CX_STDLIB"
-                    value="/home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/stdlib"/>
+          <variable name="CX_STDLIB" value="/Users/aaro3965/Documents/Cx/stdlib"/>
         </environment>
       </runprofile>
     </conf>

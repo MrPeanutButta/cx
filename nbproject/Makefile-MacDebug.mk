@@ -14,15 +14,15 @@ GREP=grep
 NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
-CC=clang
-CCC=clang++
-CXX=clang++
+CC=gcc
+CCC=g++
+CXX=g++
 FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=CLang-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=GNU_1-MacOSX
+CND_DLIB_EXT=dylib
 CND_CONF=MacDebug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -48,9 +48,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/cx-debug/init_list.o \
 	${OBJECTDIR}/src/cx-debug/io.o \
 	${OBJECTDIR}/src/cx-debug/logical.o \
+	${OBJECTDIR}/src/cx-debug/malloc.o \
 	${OBJECTDIR}/src/cx-debug/multiplicative.o \
 	${OBJECTDIR}/src/cx-debug/relational.o \
 	${OBJECTDIR}/src/cx-debug/statment.o \
+	${OBJECTDIR}/src/cx-debug/std_members.o \
 	${OBJECTDIR}/src/cx-debug/tracer.o \
 	${OBJECTDIR}/src/cx-debug/unary.o \
 	${OBJECTDIR}/src/cx-debug/while.o \
@@ -163,6 +165,11 @@ ${OBJECTDIR}/src/cx-debug/logical.o: nbproject/Makefile-${CND_CONF}.mk src/cx-de
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/logical.o src/cx-debug/logical.cpp
 
+${OBJECTDIR}/src/cx-debug/malloc.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/malloc.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/malloc.o src/cx-debug/malloc.cpp
+
 ${OBJECTDIR}/src/cx-debug/multiplicative.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/multiplicative.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
 	${RM} "$@.d"
@@ -177,6 +184,11 @@ ${OBJECTDIR}/src/cx-debug/statment.o: nbproject/Makefile-${CND_CONF}.mk src/cx-d
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/statment.o src/cx-debug/statment.cpp
+
+${OBJECTDIR}/src/cx-debug/std_members.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/std_members.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/std_members.o src/cx-debug/std_members.cpp
 
 ${OBJECTDIR}/src/cx-debug/tracer.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/tracer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug

@@ -35,6 +35,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/examples/each.o \
+	${OBJECTDIR}/examples/int.to_str.o \
+	${OBJECTDIR}/examples/to_str.o \
+	${OBJECTDIR}/examples/type_size.o \
 	${OBJECTDIR}/src/buffer.o \
 	${OBJECTDIR}/src/common.o \
 	${OBJECTDIR}/src/complist.o \
@@ -48,9 +52,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/cx-debug/init_list.o \
 	${OBJECTDIR}/src/cx-debug/io.o \
 	${OBJECTDIR}/src/cx-debug/logical.o \
+	${OBJECTDIR}/src/cx-debug/malloc.o \
 	${OBJECTDIR}/src/cx-debug/multiplicative.o \
 	${OBJECTDIR}/src/cx-debug/relational.o \
 	${OBJECTDIR}/src/cx-debug/statment.o \
+	${OBJECTDIR}/src/cx-debug/std_members.o \
 	${OBJECTDIR}/src/cx-debug/tracer.o \
 	${OBJECTDIR}/src/cx-debug/unary.o \
 	${OBJECTDIR}/src/cx-debug/while.o \
@@ -97,6 +103,26 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/examples/each.o: nbproject/Makefile-${CND_CONF}.mk examples/each.cx 
+	${MKDIR} -p ${OBJECTDIR}/examples
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/examples/each.o examples/each.cx
+
+${OBJECTDIR}/examples/int.to_str.o: nbproject/Makefile-${CND_CONF}.mk examples/int.to_str.cx 
+	${MKDIR} -p ${OBJECTDIR}/examples
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/examples/int.to_str.o examples/int.to_str.cx
+
+${OBJECTDIR}/examples/to_str.o: nbproject/Makefile-${CND_CONF}.mk examples/to_str.cx 
+	${MKDIR} -p ${OBJECTDIR}/examples
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/examples/to_str.o examples/to_str.cx
+
+${OBJECTDIR}/examples/type_size.o: nbproject/Makefile-${CND_CONF}.mk examples/type_size.cx 
+	${MKDIR} -p ${OBJECTDIR}/examples
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/examples/type_size.o examples/type_size.cx
 
 ${OBJECTDIR}/src/buffer.o: nbproject/Makefile-${CND_CONF}.mk src/buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -163,6 +189,11 @@ ${OBJECTDIR}/src/cx-debug/logical.o: nbproject/Makefile-${CND_CONF}.mk src/cx-de
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/logical.o src/cx-debug/logical.cpp
 
+${OBJECTDIR}/src/cx-debug/malloc.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/malloc.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/malloc.o src/cx-debug/malloc.cpp
+
 ${OBJECTDIR}/src/cx-debug/multiplicative.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/multiplicative.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
 	${RM} "$@.d"
@@ -177,6 +208,11 @@ ${OBJECTDIR}/src/cx-debug/statment.o: nbproject/Makefile-${CND_CONF}.mk src/cx-d
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/statment.o src/cx-debug/statment.cpp
+
+${OBJECTDIR}/src/cx-debug/std_members.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/std_members.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/std_members.o src/cx-debug/std_members.cpp
 
 ${OBJECTDIR}/src/cx-debug/tracer.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/tracer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
