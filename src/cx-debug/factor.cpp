@@ -189,6 +189,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
         p_prev_type = p_type;
     } while (!done_flag);
 
+
     // If address_flag is false, and the data is not an array
     // or a record, replace the address at the top of the stack
     // with the data value.
@@ -238,67 +239,38 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
  */
 cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
 
-    int y = 0;
-    int pass = 0;
-    int size = 0;
-    cx_type *p_list_type = (cx_type *) p_type;
-    char *addr = (char *) top()->basic_types.addr__;
-    
-    //p_type = p_type->next;//array.p_element_type;
-    
+	char *addr = (char *)top()->basic_types.addr__;
+
     // Loop to executed subscript lists enclosed in brackets.
-    while (token == tc_left_subscript) {
-        // Loop to execute comma-separated subscript expressions
-        // within a subscript list.
+	while (token == tc_left_subscript) {
+		// Loop to execute comma-separated subscript expressions
+		// within a subscript list.
 
-        get_token(); // index
-        execute_expression();
-        //p_type = p_type->array.p_element_type;
-        
-        // Evaluate and range check the subscript.
-        int value = top()->basic_types.int__;
+		get_token(); // index
+		execute_expression();
 
-        pop();
+		// Evaluate and range check the subscript.
+		int value = top()->basic_types.int__;
 
-        if (pass == 0) {
-            /*if (p_type->form == fc_array) {
-                //p_type = p_type->array.p_element_type;
-                p_type = p_type->array.p_element_type;
-            }*/
+		pop();
 
-            y += (p_type->size * value);
-            for (int i = 0; i < value; ++i) {
-                p_type = p_type->next;
-            }
-        } else {
-            y += value;
-        }
+		range_check(p_type, value);
 
-        int s = (y - p_type->size);
-        range_check(p_type, s);
+		// Modify the data address at the top of the stack.
+		pop();
 
-        // Modify the data address at the top of the stack.
-        pop();
+		push(addr + (p_type->array.p_element_type->size * value));
 
-        push(addr + (y));
+		char *o = (char *)top()->basic_types.addr__;
 
-        char *o = (char *) top()->basic_types.addr__;
-        // Prepare for another subscript in this list.
-        //p_type = p_type->array.p_element_type;
+		// Prepare for another subscript list.
+		get_token(); // ]
+		if (token == tc_left_subscript) {
+			p_type = p_type->array.p_element_type;
+		}
+	}
 
-        // Prepare for another subscript list.
-        get_token(); // ]
-        if (token == tc_left_subscript) {
-            //y += p_type->array.p_element_type->size;
-            //p_type = p_type->array.p_element_type;
-            if (p_type->array.p_element_type != nullptr) {
-                p_type = p_type->array.p_element_type;
-            }
-            ++pass;
-        }
-    }
-
-    return (cx_type *)p_type;
+	return (cx_type *)p_type->array.p_element_type;
 }
 
 /** execute_field         Execute a field designator to modify the

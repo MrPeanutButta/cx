@@ -52,7 +52,7 @@ void copy_array (const cx_type *p_type,
                  void *&p_target_address,
                  void *&p_source) {
 
-    int size = p_type->total_size;
+    int size = p_type->size;
 
     memcpy(p_target_address, p_source, size + 1);
 
@@ -61,7 +61,7 @@ void copy_array (const cx_type *p_type,
 void *new_value (const cx_type *p_type, void *&address) {
 
     void *p_values = nullptr;
-    const int size = p_type->total_size;
+    const int size = p_type->size;
 
     p_values = (void *) realloc(address, size + 1);
 
@@ -82,7 +82,7 @@ void cx_executor::cx_malloc (cx_symtab_node* p_target_id,
     cx_type_code target_type = p_target_type->type_code;
     cx_type_code expr_type = p_expr_type->type_code;
 
-    const int size = p_expr_type->total_size;
+    const int size = p_expr_type->size;
     const int num_of_elements = size / p_expr_type->base_type()->size;
 
     void *p_source = nullptr;
@@ -100,19 +100,10 @@ void cx_executor::cx_malloc (cx_symtab_node* p_target_id,
     }
 
     set_type(p_target_id->p_type,p_expr_type); 
-    //p_target_id->p_type->array.element_count = num_of_elements;
-    //p_target_id->p_type->array.max_index = num_of_elements;
-    //p_target_id->p_type->size = num_of_elements * p_target_id->p_type->base_type()->size;
-
-    /*if (p_expr_type->is_temp_value) {
-        memset(p_source, 0, size + 1);
-        remove_type(p_expr_type);
-    }*/
 
     if (p_target_id->defn.how == dc_function) {
         p_target->basic_types.addr__ = p_target_address;
     } else {
         p_target_id->runstack_item->basic_types.addr__ = p_target_address;
     }
-
 }

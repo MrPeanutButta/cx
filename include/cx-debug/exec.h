@@ -272,7 +272,7 @@ private:
     void execute_statement(cx_symtab_node *p_function_id);
     void execute_statement_list(cx_symtab_node *p_function_id,
             cx_token_code terminator);
-    void execute_assignment(cx_symtab_node *p_target_id);
+	void execute_assignment(cx_symtab_node *p_target_id);
 
     // assignent
     void assign(cx_symtab_node* p_target_id,

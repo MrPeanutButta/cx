@@ -113,8 +113,6 @@ void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
             memset(p_target_address, 0, size + 1);
             memcpy(p_target_address, p_source, size + 1);
 
-            char *y = (char *) p_target_address;
-            char *t = (char *) p_source;
             pop();
             push((void*) p_target_address);
 
@@ -126,28 +124,39 @@ void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
 
         } else {
             cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
+			cx_stack_item *p_copy = new cx_stack_item;
             pop();
-            switch (p_formal_id->p_type->type_code) {
+
+			memcpy(p_copy, t, p_formal_type->size);
+			push((void *)p_copy);
+
+            /*switch (p_formal_id->p_type->type_code) {
                 case cx_uint8:
-                    push((uint8_t) t->basic_types.uint8__);
+					p_copy->basic_types.uint8__ = t->basic_types.uint8__;
+					push((uint8_t)p_copy->basic_types.uint8__);
                     break;
                 case cx_int:
-                    push((int) t->basic_types.int__);
+					p_copy->basic_types.int__ = t->basic_types.int__;
+					push((int)p_copy->basic_types.int__);
                     break;
                 case cx_char:
-                    push((char) t->basic_types.char__);
+					p_copy->basic_types.char__ = t->basic_types.char__;
+					push((char)p_copy->basic_types.char__);
                     break;
                 case cx_bool:
-                    push((bool)t->basic_types.bool__);
+					p_copy->basic_types.bool__ = t->basic_types.bool__;
+					push((bool)p_copy->basic_types.bool__);
                     break;
                 case cx_float:
-                    push((float) t->basic_types.float__);
+                    p_copy->basic_types.float__ = t->basic_types.float__;
+					push((float)p_copy->basic_types.float__);
                     break;
                 case cx_wchar:
-                    push((wchar_t)t->basic_types.wchar__);
+					p_copy->basic_types.uint8__ = t->basic_types.uint8__;
+					push((uint8_t)p_copy->basic_types.int__);
                     break;
                 default: break;
-            }
+            }*/
             p_formal_id->runstack_item = top();
         }
     }
@@ -372,7 +381,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
                 p_formal_id->runstack_item = top();
 
             } else {
-				cx_stack_item *t = (cx_stack_item *)top()->basic_types.addr__;
+				/*cx_stack_item *t = (cx_stack_item *)top()->basic_types.addr__;
 				pop();
 				switch (p_formal_id->p_type->type_code) {
 				case cx_uint8:
@@ -394,7 +403,7 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
 					push((wchar_t)t->basic_types.wchar__);
 					break;
 				default: break;
-				}
+				}*/
 				p_formal_id->runstack_item = top();
             }
         }

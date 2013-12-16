@@ -68,9 +68,6 @@ public:
     // size of the first element
     int size;
     
-    // total size of this is a MD array
-    int total_size;
-    
     bool is_temp_value;
     cx_symtab_node *p_type_id;
     cx_type_code type_code;
@@ -87,8 +84,6 @@ public:
         struct {
             const cx_type *p_index_type;
             cx_type *p_element_type;
-			// type at current index
-			cx_type *p_index;
             int min_index;
             int max_index;
             int element_count;

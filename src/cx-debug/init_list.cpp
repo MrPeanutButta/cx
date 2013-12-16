@@ -9,17 +9,18 @@ cx_type *cx_executor::execute_initialization_list (void) {
     get_token();
     int total_size = 0;
     int old_size = 0;
+	int elem_count = 0;
     bool comma = false;
     void *p_address = nullptr;
 	char *tmp = nullptr;
-    
-	cx_type *p_elements = nullptr;
+
 	cx_type *p_prev_type = nullptr;
 
     do {
 
         p_result_type = execute_expression();
-        total_size += p_result_type->size;
+		p_prev_type = p_result_type;
+		total_size += p_result_type->size;
         
 		p_address = realloc(p_address, old_size + p_result_type->size);
 
@@ -27,20 +28,6 @@ cx_type *cx_executor::execute_initialization_list (void) {
             perror("realloc");
             exit(0);
         }
-
-		if (p_result_type->form == fc_array){
-			if (p_prev_type == nullptr){
-				p_prev_type = p_result_type;
-				p_elements = p_result_type;
-			}
-			else {
-				p_prev_type->next = p_result_type;
-				p_prev_type = p_prev_type->next;
-			}
-		}
-		else {
-			p_elements = p_result_type;
-		}
 
         tmp = (char *) p_address;
 
@@ -98,11 +85,17 @@ cx_type *cx_executor::execute_initialization_list (void) {
             get_token();
         } else comma = false;
 
+		++elem_count;
     } while (comma);
 
     // }
     get_token();
     push((void *)p_address);
-    p_elements->total_size = total_size;
-	return p_elements;
+
+	cx_type *p_array_type = new cx_type(fc_array, total_size, nullptr);
+	set_type(p_array_type->array.p_element_type, p_result_type);
+	p_array_type->array.element_count = elem_count;
+	p_array_type->array.max_index = elem_count;
+
+	return p_array_type;
 }

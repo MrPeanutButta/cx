@@ -1,0 +1,51 @@
+﻿Build started 12/16/2013 3:00:15 PM.
+     1>Project "C:\Users\aaron\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\aaron\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aaron\Documents\GitHub\Cx\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\parse_expression.cpp
+         parse_expression.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\aaron\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\aaron\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\aaron\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.lib" /MACHINE:X86 Debug\buffer.obj
+         Debug\common.obj
+         Debug\complist.obj
+         Debug\additive.obj
+         Debug\assign.obj
+         Debug\do.obj
+         Debug\exec.obj
+         Debug\expression.obj
+         Debug\factor.obj
+         Debug\function.obj
+         Debug\init_list.obj
+         Debug\io.obj
+         Debug\logical.obj
+         Debug\malloc.obj
+         Debug\multiplicative.obj
+         Debug\relational.obj
+         Debug\statment.obj
+         Debug\std_members.obj
+         Debug\tracer.obj
+         Debug\unary.obj
+         Debug\while.obj
+         Debug\error.obj
+         Debug\icode.obj
+         Debug\main.obj
+         Debug\parser.obj
+         Debug\parse_declarations.obj
+         Debug\parse_directive.obj
+         Debug\parse_expression.obj
+         Debug\parse_routine1.obj
+         Debug\parse_routine2.obj
+         Debug\parse_statement.obj
+         Debug\parse_type1.obj
+         Debug\parse_type2.obj
+         Debug\scanner.obj
+         Debug\symtable.obj
+         Debug\tknnum.obj
+         Debug\tknstrsp.obj
+         Debug\tknword.obj
+         Debug\types.obj
+         cx-win32.vcxproj -> C:\Users\aaron\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe
+     1>Done Building Project "C:\Users\aaron\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.20

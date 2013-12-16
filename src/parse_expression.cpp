@@ -319,31 +319,20 @@ cx_type *cx_parser::parse_factor (void) {
         {
             get_token_append();
             int total_size = 0;
+			int elem_count = 0;
             bool comma = false;
             cx_type *p_prev_type = nullptr;
-			cx_type *p_elements = nullptr;
 
-            do {
-                p_result_type = parse_expression();
+			do {
+				p_result_type = parse_expression();
+				p_prev_type = p_result_type;
+
 				total_size += p_result_type->size;
 
-                if (p_prev_type != nullptr) {
-                    // make sure we init all of the same type
-                    check_assignment_type_compatible(p_prev_type, p_result_type,
-                                                     err_incompatible_types);
-                }
-
-				if (p_result_type->form == fc_array){
-					if (p_prev_type == nullptr){
-						p_prev_type = p_elements = p_result_type;
-					}
-					else {
-						p_prev_type->next = p_result_type;
-						p_prev_type = p_prev_type->next;
-					}
-				}
-				else {
-					p_elements = p_result_type;
+				if (p_prev_type != nullptr) {
+					// make sure we init all of the same type
+					check_assignment_type_compatible(p_prev_type, p_result_type,
+						err_incompatible_types);
 				}
 
                 if (token == tc_comma) {
@@ -351,11 +340,18 @@ cx_type *cx_parser::parse_factor (void) {
                     get_token_append();
                 } else comma = false;
 
+				++elem_count;
+
             } while (comma);
 
             conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-            p_elements->total_size = total_size;
-			p_result_type = p_elements;
+
+			cx_type *p_array_type = new cx_type(fc_array, total_size, nullptr);
+			set_type(p_array_type->array.p_element_type, p_result_type);
+			p_array_type->array.element_count = elem_count;
+			p_array_type->array.max_index = elem_count;
+
+			p_result_type = p_array_type;
         }
             break;
         case tc_semicolon:
@@ -633,6 +629,7 @@ cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) 
             cx_symtab_node *p_it_id = std_members->enter(name.c_str(), dc_function);
             p_it_id->defn.routine.member_of.p_node = (cx_symtab_node *) p_node;
             set_type(p_it_id->p_type, p_type->base_type());
+			//set_type(p_it_id->p_type, p_type);
             p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
 
             return parse_iterator(p_it_id);

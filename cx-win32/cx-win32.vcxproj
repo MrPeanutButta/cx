@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7F85A626-F7B4-4E33-A450-2C3025A97298}</ProjectGuid>
+    <RootNamespace>cxwin32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\aaron\Documents\GitHub\Cx\include\cx-debug;C:\Users\aaron\Documents\GitHub\Cx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsManaged>false</CompileAsManaged>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;__CX_PROFILE_EXECUTION__</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\backend.h" />
+    <ClInclude Include="..\include\buffer.h" />
+    <ClInclude Include="..\include\common.h" />
+    <ClInclude Include="..\include\complist.h" />
+    <ClInclude Include="..\include\cx-debug\exec.h" />
+    <ClInclude Include="..\include\cx-debug\rlutil.h" />
+    <ClInclude Include="..\include\cx-debug\std_members.h" />
+    <ClInclude Include="..\include\error.h" />
+    <ClInclude Include="..\include\icode.h" />
+    <ClInclude Include="..\include\misc.h" />
+    <ClInclude Include="..\include\parser.h" />
+    <ClInclude Include="..\include\scanner.h" />
+    <ClInclude Include="..\include\symtable.h" />
+    <ClInclude Include="..\include\token.h" />
+    <ClInclude Include="..\include\types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\buffer.cpp" />
+    <ClCompile Include="..\src\common.cpp" />
+    <ClCompile Include="..\src\complist.cpp" />
+    <ClCompile Include="..\src\cx-debug\additive.cpp" />
+    <ClCompile Include="..\src\cx-debug\assign.cpp" />
+    <ClCompile Include="..\src\cx-debug\do.cpp" />
+    <ClCompile Include="..\src\cx-debug\exec.cpp" />
+    <ClCompile Include="..\src\cx-debug\expression.cpp" />
+    <ClCompile Include="..\src\cx-debug\factor.cpp" />
+    <ClCompile Include="..\src\cx-debug\function.cpp" />
+    <ClCompile Include="..\src\cx-debug\init_list.cpp" />
+    <ClCompile Include="..\src\cx-debug\io.cpp" />
+    <ClCompile Include="..\src\cx-debug\logical.cpp" />
+    <ClCompile Include="..\src\cx-debug\malloc.cpp" />
+    <ClCompile Include="..\src\cx-debug\multiplicative.cpp" />
+    <ClCompile Include="..\src\cx-debug\relational.cpp" />
+    <ClCompile Include="..\src\cx-debug\statment.cpp" />
+    <ClCompile Include="..\src\cx-debug\std_members.cpp" />
+    <ClCompile Include="..\src\cx-debug\tracer.cpp" />
+    <ClCompile Include="..\src\cx-debug\unary.cpp" />
+    <ClCompile Include="..\src\cx-debug\while.cpp" />
+    <ClCompile Include="..\src\error.cpp" />
+    <ClCompile Include="..\src\icode.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\parser.cpp" />
+    <ClCompile Include="..\src\parse_declarations.cpp" />
+    <ClCompile Include="..\src\parse_directive.cpp" />
+    <ClCompile Include="..\src\parse_expression.cpp" />
+    <ClCompile Include="..\src\parse_routine1.cpp" />
+    <ClCompile Include="..\src\parse_routine2.cpp" />
+    <ClCompile Include="..\src\parse_statement.cpp" />
+    <ClCompile Include="..\src\parse_type1.cpp" />
+    <ClCompile Include="..\src\parse_type2.cpp" />
+    <ClCompile Include="..\src\scanner.cpp" />
+    <ClCompile Include="..\src\symtable.cpp" />
+    <ClCompile Include="..\src\tknnum.cpp" />
+    <ClCompile Include="..\src\tknstrsp.cpp" />
+    <ClCompile Include="..\src\tknword.cpp" />
+    <ClCompile Include="..\src\types.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\examples\array.cx" />
+    <None Include="..\examples\each.cx" />
+    <None Include="..\examples\exec_test.cx" />
+    <None Include="..\examples\fizzbuzz.cx" />
+    <None Include="..\examples\gets.cx" />
+    <None Include="..\examples\get_put.cx" />
+    <None Include="..\examples\int.to_str.cx" />
+    <None Include="..\examples\logical_not.cx" />
+    <None Include="..\examples\radix.cx" />
+    <None Include="..\examples\string.cx" />
+    <None Include="..\examples\to_str.cx" />
+    <None Include="..\examples\type_size.cx" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
