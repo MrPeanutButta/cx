@@ -245,5 +245,8 @@
     <None Include="..\examples\int.to_str.cx">
       <Filter>examples</Filter>
     </None>
+    <None Include="..\examples\fizzbuzz.cx">
+      <Filter>examples</Filter>
+    </None>
   </ItemGroup>
 </Project>

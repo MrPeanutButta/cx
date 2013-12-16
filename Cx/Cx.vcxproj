@@ -142,6 +142,7 @@
   <ItemGroup>
     <None Include="..\examples\array.cx" />
     <None Include="..\examples\exec_test.cx" />
+    <None Include="..\examples\fizzbuzz.cx" />
     <None Include="..\examples\gets.cx" />
     <None Include="..\examples\get_put.cx" />
     <None Include="..\examples\int.to_str.cx" />
