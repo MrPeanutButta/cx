@@ -50,7 +50,11 @@ void cx_executor::execute_iterator(cx_symtab_node* p_function_id) {
 		// push actual parameter values onto the stack.
 		push(addr + (size * (*iteration)));
 		
+        if(p_formal_id->p_type->is_scalar_type()){
 		p_formal_id->runstack_item = (cx_stack_item *)top()->basic_types.addr__;
+        } else {
+            p_formal_id->runstack_item = top();
+        }
 
 		++*iteration;
 		execute_statement(p_function_id);
@@ -75,91 +79,92 @@ void cx_executor::execute_iterator(cx_symtab_node* p_function_id) {
 
 void cx_executor::execute_iterator_params (cx_symtab_node* p_function_id) {
     
-    cx_symtab_node *p_formal_id; // ptr to formal parm's symtab node
+    cx_symtab_node *p_formal_id= p_function_id->defn.routine.locals.p_parms_ids; // ptr to formal parm's symtab node
     cx_symtab_node *p_var_node = p_function_id->defn.routine.member_of.p_node;
 
-    cx_type *p_actual_type = p_var_node->p_type;
+    cx_type *p_actual_type = p_var_node->p_type->array.p_element_type;
+ 
+    set_type(p_formal_id->p_type, p_actual_type);
 
-    p_formal_id = p_function_id->defn.routine.locals.p_parms_ids;
-
-    cx_type *p_formal_type = p_formal_id->p_type;
     get_token();
-
+    p_formal_id->runstack_item = top();
+    p_formal_id->defn.how = dc_reference;
+    char *t = (char *)top()->basic_types.addr__;
     /* Reference parameter: execute_variable will leave the actual
      * parameter's address on top of the stack. */
-    if (p_formal_id->defn.how == dc_reference) {
-		p_formal_id->runstack_item = top();
-    }// value parameter
-    else {
-
-        if (!p_formal_type->is_scalar_type()) {
-
-            /* Formal parameter is an array or a record:
-             * Make a copy of the actual parameter's value. */
-
-            const int size = p_actual_type->size;
-            void *p_target_address = nullptr;
-            const int num_of_elements = size / p_actual_type->base_type()->size;
-
-            p_target_address = realloc(p_target_address, size + 1);
-
-            if (p_target_address == nullptr) {
-                perror("realloc");
-                exit(0);
-            }
-
-            void *p_source = top()->basic_types.addr__;
-
-            memset(p_target_address, 0, size + 1);
-            memcpy(p_target_address, p_source, size + 1);
-
-            pop();
-            push((void*) p_target_address);
-
-            set_type(p_formal_type->array.p_element_type, p_actual_type->array.p_element_type);
-            p_formal_type->array.element_count = num_of_elements;
-            p_formal_type->array.max_index = num_of_elements;
-            p_formal_type->size = size;
-            p_formal_id->runstack_item = top();
-
-        } else {
-            cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
-			cx_stack_item *p_copy = new cx_stack_item;
-            pop();
-
-			memcpy(p_copy, t, p_formal_type->size);
-			push((void *)p_copy);
-
-            /*switch (p_formal_id->p_type->type_code) {
-                case cx_uint8:
-					p_copy->basic_types.uint8__ = t->basic_types.uint8__;
-					push((uint8_t)p_copy->basic_types.uint8__);
-                    break;
-                case cx_int:
-					p_copy->basic_types.int__ = t->basic_types.int__;
-					push((int)p_copy->basic_types.int__);
-                    break;
-                case cx_char:
-					p_copy->basic_types.char__ = t->basic_types.char__;
-					push((char)p_copy->basic_types.char__);
-                    break;
-                case cx_bool:
-					p_copy->basic_types.bool__ = t->basic_types.bool__;
-					push((bool)p_copy->basic_types.bool__);
-                    break;
-                case cx_float:
-                    p_copy->basic_types.float__ = t->basic_types.float__;
-					push((float)p_copy->basic_types.float__);
-                    break;
-                case cx_wchar:
-					p_copy->basic_types.uint8__ = t->basic_types.uint8__;
-					push((uint8_t)p_copy->basic_types.int__);
-                    break;
-                default: break;
-            }*/
-            p_formal_id->runstack_item = top();
-        }
-    }
+//    if (p_formal_id->defn.how == dc_reference) {
+//		p_formal_id->runstack_item = top();
+//    }// value parameter
+//    else {
+//
+//        if (!p_formal_type->is_scalar_type()) {
+//
+//            /* Formal parameter is an array or a record:
+//             * Make a copy of the actual parameter's value. */
+//
+//            const int size = p_actual_type->size;
+//            void *p_target_address = nullptr;
+//            const int num_of_elements = size / p_actual_type->base_type()->size;
+//
+//            p_target_address = realloc(p_target_address, size + 1);
+//
+//            if (p_target_address == nullptr) {
+//                perror("realloc");
+//                exit(0);
+//            }
+//
+//            void *p_source = top()->basic_types.addr__;
+//
+//            memset(p_target_address, 0, size + 1);
+//            memcpy(p_target_address, p_source, size + 1);
+//
+//            pop();
+//            push((void*) p_target_address);
+//
+//            set_type(p_formal_type->array.p_element_type, p_actual_type->array.p_element_type);
+//            p_formal_type->array.element_count = num_of_elements;
+//            p_formal_type->array.max_index = num_of_elements;
+//            p_formal_type->size = size;
+//            p_formal_id->runstack_item = top();
+//
+//        } else {
+//            cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
+//			cx_stack_item *p_copy = new cx_stack_item;
+//            pop();
+//
+//			memcpy(p_copy, t, p_formal_type->size);
+//			push((void *)p_copy);
+//
+//            /*switch (p_formal_id->p_type->type_code) {
+//                case cx_uint8:
+//					p_copy->basic_types.uint8__ = t->basic_types.uint8__;
+//					push((uint8_t)p_copy->basic_types.uint8__);
+//                    break;
+//                case cx_int:
+//					p_copy->basic_types.int__ = t->basic_types.int__;
+//					push((int)p_copy->basic_types.int__);
+//                    break;
+//                case cx_char:
+//					p_copy->basic_types.char__ = t->basic_types.char__;
+//					push((char)p_copy->basic_types.char__);
+//                    break;
+//                case cx_bool:
+//					p_copy->basic_types.bool__ = t->basic_types.bool__;
+//					push((bool)p_copy->basic_types.bool__);
+//                    break;
+//                case cx_float:
+//                    p_copy->basic_types.float__ = t->basic_types.float__;
+//					push((float)p_copy->basic_types.float__);
+//                    break;
+//                case cx_wchar:
+//					p_copy->basic_types.uint8__ = t->basic_types.uint8__;
+//					push((uint8_t)p_copy->basic_types.int__);
+//                    break;
+//                default: break;
+//            }*/
+//            p_formal_id->runstack_item = top();
+//        }
+//    }
 
     get_token();
 }
@@ -173,10 +178,6 @@ void cx_executor::enter_iterator (cx_symtab_node* p_function_id) {
     for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
          p_id;
          p_id = p_id->next__) run_stack.allocate_value(p_id);
-
-    // Switch to the callee's intermediate code.
-    //p_icode = p_function_id->defn.routine.p_icode;
-    //p_icode->reset();
 }
 
 /** enter_routine    	enter a routine:  Switch to its
@@ -333,14 +334,6 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
             const int size = p_node->p_type->size;
             set_type(p_formal_type, p_node->p_type);
             execute_variable(p_node, true);
-            /*
-                        if (p_formal_type->form == fc_array) {
-
-                            p_formal_type->size = size;
-                            p_formal_type->array.element_count = size;
-                            p_formal_type->array.max_index = size;
-
-                        }*/
 
             p_formal_id->runstack_item = top();
             get_token();
@@ -366,11 +359,11 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
 
                 void *p_source = top()->basic_types.addr__;
 
-                memset(p_target_address, 0, size + 1);
+                //memset(p_target_address, 0, size + 1);
                 memcpy(p_target_address, p_source, size + 1);
 
-                char *y = (char *) p_target_address;
-                char *t = (char *) p_source;
+                char *p_array = (char *) p_target_address;
+                p_array[size] = '\0';
                 pop();
                 push((void*) p_target_address);
 

@@ -27,7 +27,10 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/aaro3965/Documents/Cx/doc/cx-lang-ref/cx-operators.md</file>
+            <file>file:/Users/aaro3965/Documents/Cx/src/cx-debug/init_list.cpp</file>
+            <file>file:/Users/aaro3965/Documents/Cx/examples/exec_test.cx</file>
+            <file>file:/Users/aaro3965/Documents/Cx/src/cx-debug/function.cpp</file>
+            <file>file:/Users/aaro3965/Documents/Cx/src/cx-debug/factor.cpp</file>
         </group>
     </open-files>
 </project-private>
