@@ -100,7 +100,7 @@ cx_type *cx_std_members::to_str (cx_executor *cx,
     cx_stack_item *mem = nullptr;
 
     ///if (p_type->.how == dc_reference) {
-        mem = cx->top();
+       // mem = cx->top();
     //} else {
         mem = (cx_stack_item *) cx->top()->basic_types.addr__;
     //}
