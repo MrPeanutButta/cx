@@ -163,7 +163,7 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
  */
 void cx_executor::execute_FOR (cx_symtab_node * p_function_id) {
 
-    int condition = 0;
+    bool condition = false;
 
     get_token(); // for
     // get the location of where to go to if <expr> is false.
@@ -195,9 +195,9 @@ void cx_executor::execute_FOR (cx_symtab_node * p_function_id) {
             get_token(); //  ;
         } else get_token();
 
-        condition = top()->basic_types.int__;
+        condition = top()->basic_types.bool__;
         pop();
-        if (condition != 0) {
+        if (condition) {
             go_to(statement_location);
             get_token();
             execute_statement(p_function_id);

@@ -1,0 +1,145 @@
+/* Cx library to perform Input/Output operations
+ *
+ * file     : cxstdio
+ * author   : <aaron.hebert@gmail.com>
+ * desc     : Input/Output operations
+ *
+ * This library uses what are called streams to operate with physical devices
+ * such as keyboards, printers, terminals or with any other type of files
+ * supported by the system. Streams are an abstraction to interact with these
+ * in an uniform way; All streams have similar properties independently of the
+ * individual characteristics of the physical media they are associated with.
+ *
+ * Streams are handled in the (C++) cstdio library as pointers to FILE objects.
+ * A pointer to a FILE object uniquely identifies a stream, and is used as a
+ * parameter in the operations involving that stream.
+ *
+ * There also exist three standard streams: stdin, stdout and
+ * stderr, which are automatically created and opened for all programs
+ * using the library.
+ */
+
+/* putc - Write character to stream
+ * Writes a character to the stream and advances the position indicator.
+ *
+ * The character is written at the position indicated by the internal
+ * position indicator of the stream, which is then automatically
+ * advanced by one.
+ *
+ * @param c      : character to write as 'char' type.
+ * @param stream : reference to a FILE object that identifies an output stream.
+ * @return ASCII code of character written. */
+
+char putc(char c, file &stream){
+    stream = c;
+    return c;
+}
+
+/* putchar - Write character to stdout
+ * Writes a character to the standard output (stdout).
+ *
+ * It is equivalent to calling putc with stdout as second argument.
+ *
+ * @param c : character to write to stdout.
+ * @return ASCII code of character written. */
+
+char putchar(char c){
+    return putc(c, stdout);
+}
+
+/* puts - Write string to stdout
+ * Writes the copied Cx string 'str' to the standard output (stdout)
+ *
+ * The function calls 'putchar' from the address specified (str[]) until it reaches
+ * the terminating null character ('\0'). This terminating null-character is not
+ * copied to the stream.
+ *
+ * @param str : copied char array to write to stdout.
+ * @return the string length of str. */
+
+int puts(char *str){
+    int i = 0;
+
+	if(str.length == 0){
+		putchar('\n');
+		return 0;
+	}
+
+	do{
+	    putchar(str[i]);
+	}while(i++ < str.length);
+
+    putchar('\n');
+
+    return i;
+}
+
+/* getc - Get character from stdin
+ * Returns the character read from stdin. The character is returned regardless
+ * of '\n' or enter key being pressed.
+ *
+ * @return character read from stdin. */
+
+char getc(){
+    char c = stdin;
+
+	if(c == '\r') c = '\n';
+
+    return c;
+}
+
+/* fgetc - Get character from stream
+ * Returns the character currently pointed by the internal file position
+ * indicator of the specified stream. The internal file position indicator is
+ * then advanced to the next character.
+ *
+ * If the stream is at the end-of-file when called, the function returns EOF
+ * and sets the end-of-file indicator for the stream (feof).
+ *
+ * @param stream : reference to a FILE object that identifies an input stream.
+ * @return character read from stream. */
+
+char fgetc(file &stream){
+    char c = stream;
+    return c;
+}
+
+/* getchar - Get character from stdin
+ * Returns the next character from the standard input (stdin) and echo's the
+ * character to the screen.
+ *
+ * It is equivalent to calling getc, but getc will not echo the character.
+ *
+ * @return character read from stdin. */
+
+char getchar(){
+    return putchar(getc());
+}
+
+/* gets - Get string from stdin
+ * Reads characters from the standard input (stdin) and stores them as a Cx
+ * string into str until a newline character or the end-of-file is reached.
+ *
+ * The newline character, if found, is not copied into str.
+ *
+ * A terminating null character is automatically appended after the characters
+ * copied to str.
+ *
+ * @return string of characters read from stdin. */
+
+char *gets(){
+    char *str;
+    char c;
+	bool condition = false;
+
+    do{
+        c = getchar();
+		condition = ((c != '\n') && (c != '\r'));
+
+        // TODO: need #define directive to omit including headers twice
+        if(condition)str += c;
+        
+    }while(condition);
+
+    return str;
+}

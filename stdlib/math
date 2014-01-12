@@ -1,0 +1,57 @@
+/* Cx standard math functions.
+ *
+ */
+
+// Euclidean Greatest Common Divisor (GCD) algorithm
+int igcd(int x,  int y){
+	if(x == y){
+		return x;
+	}else if(x < y){
+		return igcd(x, y - x);
+	}else{
+		return igcd(x - y, y);
+	}
+}
+
+// Binary numeral system (base 2) square root (integer)
+int isqrt(int num) {
+    int res = 0;
+    int bit = 1 << 14; // The second-to-top bit is set: 1L<<30 for long
+
+    // "bit" starts at the highest power of four <= the argument.
+    while (bit > num) bit >>= 2;
+
+    while (bit != 0) {
+        if (num >= res + bit) {
+            num -= res + bit;
+            res = (res >> 1) + bit;
+        }else{
+            res >>= 1;
+        }
+
+        bit >>= 2;
+    }
+
+    return res;
+}
+
+int isqrt_approx(int val_int){
+    /*
+     * To justify the following code, prove that
+     *
+     * ((((val_int / 2^m) - b) / 2) + b) * 2^m = ((val_int - 2^m) / 2) + ((b + 1) / 2) * 2^m)
+     *
+     * where
+     *
+     * b = exponent bias
+     * m = number of mantissa bits
+     *
+     * .
+     */
+
+    val_int -= 1 << 23; // Subtract 2^m.
+    val_int >>= 1; // Divide by 2.
+    val_int += 1 << 29; // Add ((b + 1) / 2) * 2^m.
+
+    return val_int;
+}

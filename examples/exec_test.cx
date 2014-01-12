@@ -10,32 +10,9 @@
 
 int main () {
 
-	char *MD = {"nope", "test", "test"};
-
-	MD.each(char *str){
-		puts(str);
-	}
-
-	puts(MD[2]);
-
-    int *a = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-    a.each(int b) {
-        puts(b.to_str);
-    }
-
     char *t = "this is just a test";
-    char *str;
 
-    // is always pass by reference OK for .each?
-    t.each(char m) {
-        str += puts(m.to_str).to_str;
-        m = toupper(m);
-        puts(m.to_str + ": isupper m = " + isupper(m).to_str);
-    }
-
-    puts(t);    // should now be uppercase
-    puts(str); // should be all 1's because puts returns 1 char length
+    puts(t + ": string length is " + t.length.to_str + " characters long!!"); 
 
     return 0;
 }

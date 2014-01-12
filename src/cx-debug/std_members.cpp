@@ -15,7 +15,6 @@ void init_std_members (void) {
         m_call member_call;
         cx_type *p_type;
     } type_members[] = {
-        { nullptr, "each", func_std_iterator, &cx_std_members::each, p_void_type},
         { nullptr, "size", func_std_member, &cx_std_members::size, p_integer_type},
         { nullptr, "length", func_std_member, &cx_std_members::length, p_integer_type},
         { nullptr, "to_str", func_std_member, &cx_std_members::to_str, new cx_type(fc_array, 0, nullptr)},
@@ -99,11 +98,7 @@ cx_type *cx_std_members::to_str (cx_executor *cx,
 
     cx_stack_item *mem = nullptr;
 
-    ///if (p_type->.how == dc_reference) {
-       // mem = cx->top();
-    //} else {
-        mem = (cx_stack_item *) cx->top()->basic_types.addr__;
-    //}
+    mem = (cx_stack_item *) cx->top()->basic_types.addr__;
 
     switch (p_type->type_code) {
         case cx_int:
@@ -192,25 +187,6 @@ cx_type *cx_std_members::to_wchr (cx_executor *cx,
 cx_type *cx_std_members::to_byte (cx_executor *cx,
                                   cx_symtab_node *cx_function_id,
                                   const cx_type *p_type) {
-
-    return cx_function_id->p_type;
-}
-
-cx_type *cx_std_members::each (cx_executor *cx,
-                               cx_symtab_node *cx_function_id,
-                               const cx_type *p_type) {
-
-    /*int *iteration = &cx_function_id->defn.routine.iterator.current_iteration;
-    const int end = cx_function_id->defn.routine.iterator.p_node->p_type->array.element_count;
-
-    int loop_start = cx_function_id->defn.routine.iterator.at_loop_start;*
-
-    /*for (*iteration = 0; *iteration < end; ++*iteration) {
-        cx->execute_variable(cx_function_id->defn.routine.iterator.p_node, true);*/
-    cx->execute_iterator(cx_function_id);
-    /*cx->goto_location(loop_start);
-    cx->get_next_token();
-}*/
 
     return cx_function_id->p_type;
 }

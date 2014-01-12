@@ -622,20 +622,6 @@ cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) 
         cx_symtab_node *p_field_id = p_type->complex.p_class_scope->search(p_token->string__());
         if (p_field_id == nullptr) cx_error(err_invalid_field);
 
-        if (p_field_id->defn.routine.which == func_std_iterator) {
-            std::string name = unique_name(p_field_id->string__(),
-                                           p_field_id->defn.routine.iterator.postfix++);
-
-            cx_symtab_node *p_it_id = std_members->enter(name.c_str(), dc_function);
-            p_it_id->defn.routine.member_of.p_node = (cx_symtab_node *) p_node;
-            set_type(p_it_id->p_type, p_type->base_type());
-			//set_type(p_it_id->p_type, p_type);
-            p_it_id->defn.routine.std_member = p_field_id->defn.routine.std_member;
-
-            return parse_iterator(p_it_id);
-
-        } else {
-
             icode.put(p_field_id);
             get_token_append();
 
@@ -646,7 +632,6 @@ cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) 
             return p_field_id != nullptr ?
                     p_field_id->p_type :
                     p_dummy_type;
-        }
 
     } else {
         cx_error(err_invalid_field);
@@ -655,23 +640,4 @@ cx_type *cx_parser::parse_field (const cx_symtab_node *p_node, cx_type* p_type) 
     }
 
     return p_dummy_type;
-}
-
-cx_type *cx_parser::parse_iterator (cx_symtab_node* p_iterator) {
-
-    p_iterator->defn.routine.which = func_std_iterator;
-    p_iterator->defn.routine.parm_count = 0;
-    p_iterator->defn.routine.total_parm_size = 0;
-    p_iterator->defn.routine.locals.p_parms_ids = nullptr;
-    p_iterator->defn.routine.locals.p_constant_ids = nullptr;
-    p_iterator->defn.routine.locals.p_type_ids = nullptr;
-    p_iterator->defn.routine.locals.p_variable_ids = nullptr;
-    p_iterator->defn.routine.locals.p_function_ids = nullptr;
-    //
-
-    icode.put(p_iterator); // put unique name
-    get_token_append();
-    parse_function_header(p_iterator);
-
-    return p_iterator->p_type;
 }

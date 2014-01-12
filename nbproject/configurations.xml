@@ -3,7 +3,6 @@
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="f1" displayName="Examples" projectFiles="true">
       <itemPath>examples/array.cx</itemPath>
-      <itemPath>examples/each.cx</itemPath>
       <itemPath>examples/exec_test.cx</itemPath>
       <itemPath>examples/get_put.cx</itemPath>
       <itemPath>examples/gets.cx</itemPath>
@@ -125,8 +124,6 @@
         </ccTool>
       </compileType>
       <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="examples/each.cx" ex="false" tool="1" flavor2="0">
       </item>
       <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
@@ -285,8 +282,6 @@
       </compileType>
       <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="examples/each.cx" ex="false" tool="1" flavor2="0">
-      </item>
       <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
       <item path="examples/get_put.cx" ex="false" tool="3" flavor2="0">
@@ -440,8 +435,6 @@
         </ccTool>
       </compileType>
       <item path="examples/array.cx" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="examples/each.cx" ex="false" tool="1" flavor2="0">
       </item>
       <item path="examples/exec_test.cx" ex="false" tool="3" flavor2="0">
       </item>
@@ -637,20 +630,6 @@
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>
-      <item path="examples/array.cx" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="examples/exec_test.cx" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="examples/get_put.cx" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="examples/gets.cx" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="examples/logical_not.cx" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="examples/radix.cx" ex="true" tool="3" flavor2="0">
-      </item>
-      <item path="examples/string.cx" ex="true" tool="3" flavor2="0">
-      </item>
       <item path="include/backend.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/buffer.h" ex="false" tool="3" flavor2="0">

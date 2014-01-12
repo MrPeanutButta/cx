@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=None-Linux-x86
 CND_DLIB_EXT=so
 CND_CONF=WinDebug
 CND_DISTDIR=dist
@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/examples/each.o \
 	${OBJECTDIR}/examples/int.to_str.o \
 	${OBJECTDIR}/examples/to_str.o \
 	${OBJECTDIR}/examples/type_size.o \
@@ -103,11 +102,6 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
-
-${OBJECTDIR}/examples/each.o: nbproject/Makefile-${CND_CONF}.mk examples/each.cx 
-	${MKDIR} -p ${OBJECTDIR}/examples
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/examples/each.o examples/each.cx
 
 ${OBJECTDIR}/examples/int.to_str.o: nbproject/Makefile-${CND_CONF}.mk examples/int.to_str.cx 
 	${MKDIR} -p ${OBJECTDIR}/examples
