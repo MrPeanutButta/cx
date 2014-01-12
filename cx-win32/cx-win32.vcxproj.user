@@ -2,8 +2,13 @@
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommand>$(TargetPath) </LocalDebuggerCommand>
-    <LocalDebuggerCommandArguments>examples\exec_test.cx -ddev</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>C:\Users\aaron\Documents\GitHub\Cx</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>examples\fizzbuzz.cx</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommandArguments>examples\fizzbuzz.cx</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

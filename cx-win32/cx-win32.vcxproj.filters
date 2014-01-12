@@ -196,9 +196,6 @@
     <None Include="..\examples\array.cx">
       <Filter>Examples</Filter>
     </None>
-    <None Include="..\examples\each.cx">
-      <Filter>Examples</Filter>
-    </None>
     <None Include="..\examples\exec_test.cx">
       <Filter>Examples</Filter>
     </None>

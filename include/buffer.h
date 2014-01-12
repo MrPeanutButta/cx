@@ -92,12 +92,7 @@ public:
 
 class cx_list_buffer : public cx_text_out_buffer {
     char *p_source_file_name; // ptr to source file name (for page header)
-    //char date[26]; // date string for page header
-    //int page_number; // current page number
     int line_count; // count of lines in the current page
-
-    //void print_page_header(void);
-
 public:
 
     virtual ~cx_list_buffer(void) {
