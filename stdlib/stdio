@@ -60,14 +60,9 @@ char putchar(char c){
 int puts(char *str){
     int i = 0;
 
-	if(str.length == 0){
-		putchar('\n');
-		return 0;
+	if(str.length != 0){
+		for(;i < str.length; i++) putchar(str[i]);
 	}
-
-	do{
-	    putchar(str[i]);
-	}while(i++ < str.length);
 
     putchar('\n');
 

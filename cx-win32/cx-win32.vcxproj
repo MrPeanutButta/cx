@@ -142,6 +142,10 @@
     <None Include="..\examples\string.cx" />
     <None Include="..\examples\to_str.cx" />
     <None Include="..\examples\type_size.cx" />
+    <None Include="..\stdlib\ctype" />
+    <None Include="..\stdlib\math" />
+    <None Include="..\stdlib\stdio" />
+    <None Include="..\stdlib\string" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

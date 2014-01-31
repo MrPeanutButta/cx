@@ -22,6 +22,9 @@
     <Filter Include="Examples">
       <UniqueIdentifier>{74318a3e-b9fd-4d08-aba9-5d1d94ef40b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="stdlib">
+      <UniqueIdentifier>{98055e32-568a-4cf8-a6f9-d68b45024518}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\backend.h">
@@ -222,6 +225,18 @@
     </None>
     <None Include="..\examples\type_size.cx">
       <Filter>Examples</Filter>
+    </None>
+    <None Include="..\stdlib\ctype">
+      <Filter>stdlib</Filter>
+    </None>
+    <None Include="..\stdlib\math">
+      <Filter>stdlib</Filter>
+    </None>
+    <None Include="..\stdlib\stdio">
+      <Filter>stdlib</Filter>
+    </None>
+    <None Include="..\stdlib\string">
+      <Filter>stdlib</Filter>
     </None>
   </ItemGroup>
 </Project>

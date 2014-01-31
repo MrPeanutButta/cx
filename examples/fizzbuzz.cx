@@ -1,21 +1,20 @@
 #include stdio
 #include math
+#include ctype
 
 int main(){
 
     for(int i = 1; i <= 100; i++){
 
-        if (i % 3 == 0)
-            puts("Fizz");
+        if (i % 3 == 0) puts("Fizz");
 
-        if (i % 5 == 0)
-            puts("Buzz");
+        if (i % 5 == 0) puts("Buzz");
 
-        if ((i % 3 != 0) && (i % 5 != 0))
-            puts("number = " + i.to_str);
+        if ((i % 3 != 0) && (i % 5 != 0)) puts("number = " + i.to_str);
 
 		puts("the square root of " + i.to_str + " is " + isqrt(i).to_str);
 
+		puts(isdigit(i.to_str[0]).to_str);
     }
 
     return 0;

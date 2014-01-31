@@ -5,14 +5,11 @@
  * var.each(type var) - iterator for each element
  */
 
-#include cxstdio
-#include cxctype
+#include stdio
 
 int main () {
-
-    char *t = "this is just a test";
-
-    puts(t + ": string length is " + t.length.to_str + " characters long!!"); 
+	int sveta = 31;
+	puts(sveta.to_str);
 
     return 0;
 }
