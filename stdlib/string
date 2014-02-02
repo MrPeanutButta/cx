@@ -18,6 +18,8 @@
  * @param str : value copy of the string.
  * @return length of the string. */
 
+#warn "<string> This header module is deprecated."
+
 int strlen(char *str){
     int length = 0;
 

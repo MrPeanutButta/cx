@@ -60,11 +60,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_WIN32;__CX_PROFILE_EXECUTION__</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -79,6 +80,7 @@
     <ClInclude Include="..\include\complist.h" />
     <ClInclude Include="..\include\cx-debug\exec.h" />
     <ClInclude Include="..\include\cx-debug\rlutil.h" />
+    <ClInclude Include="..\include\cx-debug\cxstdio.h" />
     <ClInclude Include="..\include\cx-debug\std_members.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\icode.h" />
@@ -101,7 +103,7 @@
     <ClCompile Include="..\src\cx-debug\factor.cpp" />
     <ClCompile Include="..\src\cx-debug\function.cpp" />
     <ClCompile Include="..\src\cx-debug\init_list.cpp" />
-    <ClCompile Include="..\src\cx-debug\io.cpp" />
+    <ClCompile Include="..\src\cx-debug\cxstdio.cpp" />
     <ClCompile Include="..\src\cx-debug\logical.cpp" />
     <ClCompile Include="..\src\cx-debug\malloc.cpp" />
     <ClCompile Include="..\src\cx-debug\multiplicative.cpp" />
@@ -142,10 +144,22 @@
     <None Include="..\examples\string.cx" />
     <None Include="..\examples\to_str.cx" />
     <None Include="..\examples\type_size.cx" />
-    <None Include="..\stdlib\ctype" />
-    <None Include="..\stdlib\math" />
-    <None Include="..\stdlib\stdio" />
-    <None Include="..\stdlib\string" />
+    <ClInclude Include="..\stdlib\ctype">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\math">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\stdio">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\string">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,7 +13,7 @@ class cx_symtab;
 class cx_symtab_node;
 class cx_type;
 
-class cx_std_members {
+class cx_std_type_members {
 public:
     
     static cx_type *size(cx_executor *cx, 
@@ -62,7 +62,8 @@ public:
 };
 
 extern void init_std_members(void);
-extern cx_symtab *std_members;
+extern cx_symtab *std_type_members;
+extern cx_symtab *std_stream_members;
 
 #endif	/* STD_MEMBERS_H */
 

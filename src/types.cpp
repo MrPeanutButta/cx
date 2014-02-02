@@ -53,29 +53,41 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
     if (p_type_id != nullptr)
         type_name = p_type_id->string__();
 
-	complex.p_class_scope = std_members;
+	if (type_name != "file"){
+		complex.p_class_scope = std_type_members;
 
-    if (type_name == "int") {
-        type_code = cx_int;
-    } else if (type_name == "char") {
-        type_code = cx_char;
-    } else if (type_name == "wchar") {
-        type_code = cx_wchar;
-    } else if (type_name == "float") {
-        type_code = cx_float;
-    } else if (type_name == "bool") {
-        type_code = cx_bool;
-    } else if (type_name == "byte") {
-        type_code = cx_uint8;
-    } else if (type_name == "class") {
-        type_code = cx_complex;
-	}else if (type_name == "file") {
+		if (type_name == "int") {
+			type_code = cx_int;
+		}
+		else if (type_name == "char") {
+			type_code = cx_char;
+		}
+		else if (type_name == "wchar") {
+			type_code = cx_wchar;
+		}
+		else if (type_name == "float") {
+			type_code = cx_float;
+		}
+		else if (type_name == "bool") {
+			type_code = cx_bool;
+		}
+		else if (type_name == "byte") {
+			type_code = cx_uint8;
+		}
+		else if (type_name == "class") {
+			type_code = cx_complex;
+		}
+		else if (type_name == "void"){
+			type_code = cx_void;
+		}
+		else {
+			type_code = cx_address;
+		}
+	}
+	else {
 		type_code = cx_file;
-	}else if (type_name == "void"){
-		type_code = cx_void;
-    } else {
-        type_code = cx_address;
-    }
+		complex.p_class_scope = std_stream_members;
+	}
 }
 
 cx_type::cx_type (int length, bool constant)
@@ -83,7 +95,7 @@ cx_type::cx_type (int length, bool constant)
     p_type_id = nullptr;
 	next = nullptr;
 
-	complex.p_class_scope = std_members;
+	complex.p_class_scope = std_type_members;
     // used for string constants only. can probably go away
     array.p_index_type = array.p_element_type = nullptr;
     set_type(array.p_element_type, p_char_type);

@@ -164,11 +164,6 @@ void cx_executor::assign (cx_symtab_node* p_target_id,
 
         memcpy(&p_target->basic_types, &top()->basic_types, p_target_type->size);
 
-    } else if (p_target_type->type_code == cx_file) {
-
-        // location in io.cpp
-        file_out(p_target_id, p_expr_type);
-
     } else {
         cx_malloc(p_target_id, p_target_type, p_expr_type, p_target, p_target_address);
     }

@@ -72,6 +72,9 @@
     <ClInclude Include="..\include\cx-debug\std_members.h">
       <Filter>Header Files\cx-debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cx-debug\cxstdio.h">
+      <Filter>Header Files\cx-debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\buffer.cpp">
@@ -161,9 +164,6 @@
     <ClCompile Include="..\src\cx-debug\init_list.cpp">
       <Filter>Source Files\cx-debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cx-debug\io.cpp">
-      <Filter>Source Files\cx-debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cx-debug\logical.cpp">
       <Filter>Source Files\cx-debug</Filter>
     </ClCompile>
@@ -189,6 +189,9 @@
       <Filter>Source Files\cx-debug</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cx-debug\while.cpp">
+      <Filter>Source Files\cx-debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cx-debug\cxstdio.cpp">
       <Filter>Source Files\cx-debug</Filter>
     </ClCompile>
   </ItemGroup>

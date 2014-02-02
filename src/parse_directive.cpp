@@ -59,6 +59,21 @@ void cx_parser::parse_execute_directive (cx_symtab_node *p_function_id) {
             get_token_append();
         }
             break;
+		case tc_WARN:
+			get_token();
+			
+			if (token != tc_string){
+				cx_error(err_unexpected_token);
+			}
+
+			{
+				std::string msg = p_token->string__();
+				msg[0] = ' '; msg[msg.length() - 1] = '\0';
+				std::cerr << "warning:" << msg << std::endl;
+			}
+
+			get_token_append();
+			break;
         default:
             break;
     }

@@ -1,48 +1,10 @@
-﻿Build started 1/11/2014 5:17:37 PM.
+﻿Build started 2/2/2014 12:29:20 AM.
      1>Project "C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\aaron_000\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aaron_000\Documents\GitHub\Cx\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\buffer.cpp ..\src\common.cpp ..\src\complist.cpp "..\src\cx-debug\additive.cpp" "..\src\cx-debug\assign.cpp" "..\src\cx-debug\do.cpp" "..\src\cx-debug\exec.cpp" "..\src\cx-debug\expression.cpp" "..\src\cx-debug\factor.cpp" "..\src\cx-debug\function.cpp" "..\src\cx-debug\init_list.cpp" "..\src\cx-debug\io.cpp" "..\src\cx-debug\logical.cpp" "..\src\cx-debug\malloc.cpp" "..\src\cx-debug\multiplicative.cpp" "..\src\cx-debug\relational.cpp" "..\src\cx-debug\statment.cpp" "..\src\cx-debug\std_members.cpp" "..\src\cx-debug\tracer.cpp" "..\src\cx-debug\unary.cpp" "..\src\cx-debug\while.cpp" ..\src\error.cpp ..\src\icode.cpp ..\src\main.cpp ..\src\parse_declarations.cpp ..\src\parse_directive.cpp ..\src\parse_expression.cpp ..\src\parse_routine1.cpp ..\src\parse_routine2.cpp ..\src\parse_statement.cpp ..\src\parse_type1.cpp ..\src\parse_type2.cpp ..\src\parser.cpp ..\src\scanner.cpp ..\src\symtable.cpp ..\src\tknnum.cpp ..\src\tknstrsp.cpp ..\src\tknword.cpp ..\src\types.cpp
-         buffer.cpp
-         Generating Code...
-         Skipping... (no relevant changes detected)
-         types.cpp
-         tknword.cpp
-         tknstrsp.cpp
-         tknnum.cpp
-         symtable.cpp
-         scanner.cpp
-         parser.cpp
-         parse_type2.cpp
-         parse_type1.cpp
-         parse_statement.cpp
-         parse_routine2.cpp
-         parse_routine1.cpp
-         parse_expression.cpp
-         parse_directive.cpp
-         parse_declarations.cpp
-         main.cpp
-         icode.cpp
-         error.cpp
-         while.cpp
-         unary.cpp
-         tracer.cpp
-         std_members.cpp
-         statment.cpp
-         relational.cpp
-         multiplicative.cpp
-         malloc.cpp
-         logical.cpp
-         io.cpp
-         init_list.cpp
-         function.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\aaron_000\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aaron_000\Documents\GitHub\Cx\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "..\src\cx-debug\cxstdio.cpp" "..\src\cx-debug\factor.cpp"
          factor.cpp
-         expression.cpp
-         exec.cpp
-         do.cpp
-         assign.cpp
-         additive.cpp
-         complist.cpp
-         common.cpp
+         cxstdio.cpp
+         Generating Code...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.lib" /MACHINE:X86 Debug\buffer.obj
          Debug\common.obj
@@ -55,7 +17,7 @@
          Debug\factor.obj
          Debug\function.obj
          Debug\init_list.obj
-         Debug\io.obj
+         Debug\cxstdio.obj
          Debug\logical.obj
          Debug\malloc.obj
          Debug\multiplicative.obj
@@ -88,4 +50,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.28
+Time Elapsed 00:00:01.60

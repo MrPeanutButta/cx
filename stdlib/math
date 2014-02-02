@@ -2,6 +2,9 @@
  *
  */
 
+ #warn "<math> This header module is for development only."
+ #warn "<math> You will see a performance decrease using software interpreted math functions."
+
 // Euclidean Greatest Common Divisor (GCD) algorithm
 int igcd(int x,  int y){
 	if(x == y){

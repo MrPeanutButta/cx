@@ -43,16 +43,18 @@ cx_type *cx_executor::execute_factor (void) {
                     get_token();
                     break;
                 default:
-                    if (p_node->p_type->form != fc_stream) {
+                   // if (p_node->p_type->form != fc_stream) {
                         p_id = p_node;
                         get_token();
-                        if (token_in(token, tokenlist_assign_ops)) {
+                        
+						if (token_in(token, tokenlist_assign_ops)) {
                             execute_assignment(p_id);
                             p_result_type = execute_variable(p_id, false);
-                        } else {
-                            p_result_type = execute_variable(p_id, false);
-                        }
-                    } else {
+						}
+						else {
+							p_result_type = execute_variable(p_id, false);
+						}
+                    /*} else {
 
                         p_result_type = p_char_type;
 
@@ -64,7 +66,7 @@ cx_type *cx_executor::execute_factor (void) {
                         }
 
                         get_token();
-                    }
+                    }*/
 
                     break;
             }
@@ -163,12 +165,17 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
 
     cx_type *p_type = p_id->p_type;
 
-    if (p_type->form == fc_stream) return p_type;
+	if (p_type->form != fc_stream){
 
-    // get the variable's runtime stack address.
-    cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
-    push((p_id->defn.how == dc_reference) || (!p_type->is_scalar_type())
-         ? p_entry_id->basic_types.addr__ : p_entry_id);
+		// get the variable's runtime stack address.
+		cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
+		push((p_id->defn.how == dc_reference) || (!p_type->is_scalar_type())
+			? p_entry_id->basic_types.addr__ : p_entry_id);
+	}
+	else {
+		push((void *)p_id->p_type->stream.p_file_stream);
+		address_flag = true;
+	}
 
     // Loop to execute any subscripts and field designators,
     // which will modify the data address at the top of the stack.
@@ -193,7 +200,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
     // If address_flag is false, and the data is not an array
     // or a record, replace the address at the top of the stack
     // with the data value.
-    if ((!address_flag) && (p_type->is_scalar_type())) {
+	if ((!address_flag) && (p_type->is_scalar_type())) {
         cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
         pop();
         switch (p_type->type_code) {

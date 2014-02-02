@@ -58,15 +58,14 @@ char putchar(char c){
  * @return the string length of str. */
 
 int puts(char *str){
-    int i = 0;
 
-	if(str.length != 0){
-		for(;i < str.length; i++) putchar(str[i]);
+	if(str.length > 0){
+		for(int i = 0; i < str.length; i++) putchar(str[i]);
 	}
 
     putchar('\n');
 
-    return i;
+    return str.length;
 }
 
 /* getc - Get character from stdin
