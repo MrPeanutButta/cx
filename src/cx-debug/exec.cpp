@@ -107,8 +107,9 @@ cx_runtime_stack::pop_frame (const cx_symtab_node *p_function_id,
         // cut the stack back and leave frame header on TOS
         cx_runstack.erase(cx_runstack.begin() + start, cx_runstack.end());
 
-        if (p_function_id->defn.how != dc_function) pop();
-        if (p_function_id->defn.routine.which == func_std_iterator) pop();
+        //if (p_function_id->defn.how != dc_function) pop();
+        //if (p_function_id->defn.routine.which == func_std_iterator) pop();
+		if (p_function_id->p_type == p_void_type) pop();
 
         p_frame_base = (cx_frame_header *) p_header->dynamic_link->basic_types.addr__;
     }

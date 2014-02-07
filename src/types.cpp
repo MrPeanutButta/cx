@@ -294,6 +294,9 @@ void cx_type::print_record_type (cx_verbosity_code vc) {
  */
 void initialize_builtin_types (cx_symtab *p_symtab) {
     
+	// if main already exists this is not the parent instance
+	//if (p_main_function_id != nullptr) return;
+
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = func_forward;
 

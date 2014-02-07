@@ -97,12 +97,12 @@ public:
 
         struct {
             // file name
-            char *p_file_name;
+            //char *p_file_name;
             /* open mode(s) in the form of "wrb"
              * read, write, binary */
-            char *p_file_mode;
+            //char *p_file_mode;
             // file stream
-            FILE *p_file_stream;
+            std::fstream *p_file_stream;
         } stream;
     };
 

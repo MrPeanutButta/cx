@@ -173,7 +173,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
 			? p_entry_id->basic_types.addr__ : p_entry_id);
 	}
 	else {
-		push((void *)p_id->p_type->stream.p_file_stream);
+		push((void *)p_id);
 		address_flag = true;
 	}
 

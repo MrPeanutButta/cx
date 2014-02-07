@@ -20,6 +20,33 @@ public:
 		cx_symtab_node *cx_function_id,
 		const cx_type *p_type);
 
+	static cx_type *open(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *reopen(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *close(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *flush(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *wide(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	/*static cx_type *setbuf(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);*/
+
+	static cx_type *read(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
 };
 
 extern cx_symtab *std_stream_members;

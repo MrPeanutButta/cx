@@ -140,7 +140,9 @@
     <None Include="..\examples\get_put.cx" />
     <None Include="..\examples\int.to_str.cx" />
     <None Include="..\examples\logical_not.cx" />
+    <None Include="..\examples\open.cx" />
     <None Include="..\examples\radix.cx" />
+    <None Include="..\examples\reopen.cx" />
     <None Include="..\examples\string.cx" />
     <None Include="..\examples\to_str.cx" />
     <None Include="..\examples\type_size.cx" />

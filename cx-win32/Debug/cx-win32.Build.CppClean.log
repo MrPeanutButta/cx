@@ -31,7 +31,7 @@ c:\users\aaron_000\documents\github\cx\cx-win32\debug\expression.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\factor.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\function.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\init_list.obj
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\io.obj
+c:\users\aaron_000\documents\github\cx\cx-win32\debug\cxstdio.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\logical.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\malloc.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\multiplicative.obj
@@ -39,16 +39,12 @@ c:\users\aaron_000\documents\github\cx\cx-win32\debug\relational.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\statment.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\std_members.obj
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\tracer.obj
+c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.ilk
+c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.exe
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.pdb
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\cl.command.1.tlog
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\cl.read.1.tlog
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\cl.write.1.tlog
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.12208-cvtres.read.1.tlog
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.12208-cvtres.write.1.tlog
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.12208-rc.read.1.tlog
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.12208-rc.write.1.tlog
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.12208.read.1.tlog
-c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.12208.write.1.tlog
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.command.1.tlog
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.read.1.tlog
 c:\users\aaron_000\documents\github\cx\cx-win32\debug\cx-win32.tlog\link.write.1.tlog

@@ -1,0 +1,23 @@
+#include stdio
+
+int main () {
+
+	file outfile;
+
+	if(!outfile.open("textfile", "w"))
+		puts("error opening file");
+	else {
+
+		outfile.puts("example put string, write to file");
+		outfile.close();
+		
+		if(!outfile.reopen("textfile2", "w"))
+			puts("error reopening file");
+		else {
+			outfile.puts("example put string, reopen write to file");
+			outfile.close();
+		}
+	}
+
+    return 0;
+}

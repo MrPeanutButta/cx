@@ -1,0 +1,32 @@
+#include stdio
+
+int main () {
+
+	file outfile;
+	char *buffer1 = "length";
+	char *buffer2 = "length";
+
+	if(!outfile.open("textfile", "w"))
+		puts("error opening file");
+	else {
+
+		outfile.setbuf(buffer1);
+		outfile.puts("example put string, write to file");
+		puts(buffer1);
+		
+		outfile.close();
+		
+		if(!outfile.reopen("textfile2", "w"))
+			puts("error reopening file");
+		else {
+
+			outfile.setbuf(buffer2);
+			outfile.puts("example put string, reopen write to file");
+			puts(buffer2);
+
+			outfile.close();
+		}
+	}
+
+    return 0;
+}

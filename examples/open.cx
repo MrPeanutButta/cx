@@ -1,0 +1,15 @@
+#include stdio
+
+int main () {
+
+	file outfile;
+
+	if(!outfile.open("textfile", "w")){
+		puts("error opening file");
+	} else {
+		outfile.puts("example put string, write to file");
+		outfile.close();
+	}
+
+    return 0;
+}

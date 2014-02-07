@@ -1,15 +1,20 @@
-
-/* standard type member functions example
- * 
- * var.to_str() - returns the string copy of the value of var
- * var.each(type var) - iterator for each element
- */
-
 #include stdio
 
 int main () {
-	int sveta = 31;
-	puts(sveta.to_str);
+
+	file infile;
+	char *buffer = "test";
+	stdout.puts(buffer);
+	
+	if(!infile.open("textfile", "r"))
+		puts("error opening file");
+	else {
+	stdout.puts("\ntesttesttest\n");
+		buffer = infile.read(1,3);
+		infile.close();
+		
+		
+	}
 
     return 0;
 }

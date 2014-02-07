@@ -25,6 +25,9 @@
 *.a
 
 *.obj
+
+*.exe
+
 /build/
 /dist/
 /Cx/

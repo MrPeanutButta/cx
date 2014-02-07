@@ -11,7 +11,7 @@ File access relies on standard members of the file basic object types. Below is 
 
 ## Access
 
-### bool open(char *filename, char *mode)
+### bool file::open(char *filename, char *mode)
 (function) opens a file
 
 Opens a file indicated by `filename` and returns a Boolean indicating success or failure. `mode` is used to determine the file access mode.
@@ -123,7 +123,7 @@ int main(){
 }
 ```
    
-### bool reopen(char *filename, char *mode)
+### bool file::reopen(char *filename, char *mode)
 (function) open an existing stream with a different filename
 
 Reassigns an existing file stream to a different file identified by `filename` using specified mode. `mode` is used to determine the new file access mode. 
@@ -240,35 +240,61 @@ int main(){
 }
 ```
  
-## bool close(void)
+### bool file::close(void)
 Closes the given file stream. Any unwritten buffered data are flushed to the OS. Any unread buffered data are discarded. 
 
-Whether or not the operation succeeds, the stream is no longer associated with a file, and the buffer allocated by std::setbuf or std::setvbuf, if any, is also disassociated and deallocated if automatic allocation was used.
+Whether or not the operation succeeds, the stream is no longer associated with a file, and the buffer allocated by file::setbuf or file::setvbuf, if any, is also disassociated and deallocated if automatic allocation was used.
 
-
-flush
+### int file::flush(void)
  synchronizes an output stream with the actual file 
 (function)   
 
-wide
+### int file::wide(int mode)
  switches a file stream between wide character I/O and narrow character I/O 
-(function)   
+(function)
+
+If mode > 0, attempts to make stream wide-oriented. If mode < 0, attempts to make stream byte-oriented. If mode==0, only queries the current orientation of the stream. 
+
+ Parameters
+
+stream  -  pointer to the C I/O stream to modify or query  
+mode  -  integer value greater than zero to set the stream wide, less than zero to set the stream narrow, or zero to query only  
+
+ Return value
+
+An integer greater than zero if the stream is wide-oriented after this call, less than zero if the stream is byte-oriented after this call, and zero if the stream has no orientation.    
  
-setbuf
+### void file::setbuf(char *buffer)
  sets the buffer for a file stream 
-(function)   
+(function)
+
+Sets the internal buffer to use for I/O operations performed on the C stream stream. 
+
+If buffer is not null, equivalent to std::setvbuf(stream, buffer, _IOFBF, BUFSIZ) 
+
+If buffer is null, equivalent to std::setvbuf(stream, NULL, _IONBF, 0), which turns off buffering. 
+
+ Parameters
+
+stream  -  the file stream to set the buffer to.  
+buffer  -  pointer to a buffer for the stream to use. If NULL is supplied, the buffering is turned off. If not null, must be able to hold at least BUFSIZ characters  
+
+ Return value
+
+(none) 
+   
  
-setvbuf
+### int file::setvbuf(char *buffer, int mode, int size)
  sets the buffer and its size for a file stream 
 (function)   
 
 ## Direct input/output 
 
-read
+file::read
  reads from a file 
 (function)   
 
-write
+file::write
  writes to a file 
 (function)  
 
@@ -277,55 +303,55 @@ write
 ### Narrow character 
 
 
-getc
+file::getc
  gets a character from a file stream 
 (function)   
  
 
 
-gets
+file::gets
  gets a character string from a file stream 
 (function)   
  
 
 
-putc
+file::putc
  writes a character to a file stream 
 (function)   
  
 
 
-puts
+file::puts
  writes a character string to a file stream 
 (function)   
  
 
 
-getchar
+file::getchar
  reads a character from stdin 
 (function)   
  
 
 
-gets
+char *gets(void)
  reads a character string from stdin 
 (function)   
  
 
 
-putchar
+char putchar(char c)
  writes a character to stdout 
 (function)   
  
 
 
-puts
+int puts(char *str)
  writes a character string to stdout 
 (function)   
  
 
 
-ungetc
+file::ungetc
  puts a character back into a file stream 
 (function)   
 
@@ -334,42 +360,42 @@ Wide character
  
 
 
-getwc
+file::getwc
  gets a wide character from a file stream 
 (function)   
  
 
 
-getws
+file::getws
  gets a wide string from a file stream 
 (function)   
  
 
 
-putwc
+file::putwc
  writes a wide character to a file stream 
 (function)   
  
 
 
-putws
+file::putws
  writes a wide string to a file stream 
 (function)   
  
 
 
-getwchar
+wchar getwchar(void)
  reads a wide character from stdin 
 (function)   
  
 
 
-putwchar
+wchar putwchar(wchar wc)
  writes a wide character to stdout 
 (function)   
  
 
 
-ungetwc
+file::ungetwc
  puts a wide character back into a file stream 
 (function)  

@@ -7,10 +7,6 @@
 cx_symtab *std_type_members = nullptr;
 cx_symtab *std_stream_members = nullptr;
 
-void init_stdstream_members(void){
-
-}
-
 void init_std_members (void) {
     // initialize after basic types are init
 
@@ -37,7 +33,15 @@ void init_std_members (void) {
 		{ nullptr, mc_type, "to_bool", func_std_member, &cx_std_type_members::to_bool, p_boolean_type },
 		{ nullptr, mc_type, "to_wchr", func_std_member, &cx_std_type_members::to_wchr, p_wchar_type },
 		{ nullptr, mc_type, "to_byte", func_std_member, &cx_std_type_members::to_byte, p_uint8_type },
-		{ nullptr, mc_stream, "puts", func_std_member, &cx_stdio::puts, p_integer_type }
+		
+		// stream members
+		{ nullptr, mc_stream, "puts", func_std_member, &cx_stdio::puts, p_boolean_type },
+		{ nullptr, mc_stream, "open", func_std_member, &cx_stdio::open, p_boolean_type },
+		{ nullptr, mc_stream, "reopen", func_std_member, &cx_stdio::reopen, p_boolean_type },
+		{ nullptr, mc_stream, "close", func_std_member, &cx_stdio::close, p_boolean_type },
+		{ nullptr, mc_stream, "flush", func_std_member, &cx_stdio::flush, p_boolean_type },
+		{ nullptr, mc_stream, "wide", func_std_member, &cx_stdio::wide, p_integer_type },
+		{ nullptr, mc_stream, "read", func_std_member, &cx_stdio::read, new cx_type(fc_array, 0, nullptr) }
 	};
 
     // allocate std member functions for basic types
@@ -63,40 +67,69 @@ void init_std_members (void) {
 			mbr.p_node = std_type_members->enter(mbr.name.c_str(), dc_function);
 			mbr.p_node->defn.routine.parm_count = 0;
 			mbr.p_node->defn.routine.total_parm_size = 0;
+
 			break;
 		case mc_stream:
 			mbr.p_node = std_stream_members->enter(mbr.name.c_str(), dc_function);
 
 			if (mbr.name == "puts"){
 				mbr.p_node->defn.routine.parm_count = 1;
+
+				// char *str
 				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("str", dc_value_parm);
 				mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
 					mbr.p_node->defn.routine.locals.p_parms_ids);
-
 				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, p_char_type);
+
+			} else if ((mbr.name == "open") || (mbr.name == "reopen")){
+				mbr.p_node->defn.routine.parm_count = 2;
+				
+				// char *filename
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("filename", dc_value_parm);
+				mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
+					mbr.p_node->defn.routine.locals.p_parms_ids);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, p_char_type);
+
+				// char *mode
+				mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("mode", dc_value_parm);
+				mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type = new cx_type(fc_array, 0,
+					mbr.p_node->defn.routine.locals.p_parms_ids->next__);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type->array.p_element_type, p_char_type);
+			}
+			else if (mbr.name == "wide"){
+				mbr.p_node->defn.routine.parm_count = 1;
+				// int mode
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("mode", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+			}
+			else if (mbr.name == "read"){
+
+				mbr.p_node->defn.routine.parm_count = 2;
+				// int size
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("size", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+				// int count
+				mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("count", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, p_integer_type);
+
 			}
 
 			break;
 		default: break;
 		}
 
-		//mbr.p_node->defn.routine.iterator.postfix = 0;
+		set_type(mbr.p_node->p_type, mbr.p_type);
 		mbr.p_node->defn.routine.std_member = mbr.member_call;
 		mbr.p_node->defn.routine.which = mbr.func_code;
-		
-		/*mbr.p_node->defn.routine.locals.p_parms_ids = nullptr;
-		mbr.p_node->defn.routine.locals.p_constant_ids = nullptr;
-		mbr.p_node->defn.routine.locals.p_type_ids = nullptr;
-		mbr.p_node->defn.routine.locals.p_variable_ids = nullptr;
-		mbr.p_node->defn.routine.locals.p_function_ids = nullptr;*/
-
-		set_type(mbr.p_node->p_type, mbr.p_type);
 
 		if (mbr.name == "to_str") {
 			set_type(mbr.p_node->p_type->array.p_element_type, p_char_type);
 		}
 		else if (mbr.name == "to_wstr") {
 			set_type(mbr.p_node->p_type->array.p_element_type, p_wchar_type);
+		}
+		else if (mbr.name == "read"){
+			set_type(mbr.p_node->p_type->array.p_element_type, p_char_type);
 		}
     }
 }

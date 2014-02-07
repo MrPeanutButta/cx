@@ -202,9 +202,6 @@
     <None Include="..\examples\array.cx">
       <Filter>Examples</Filter>
     </None>
-    <None Include="..\examples\exec_test.cx">
-      <Filter>Examples</Filter>
-    </None>
     <None Include="..\examples\get_put.cx">
       <Filter>Examples</Filter>
     </None>
@@ -240,6 +237,15 @@
     </None>
     <None Include="..\stdlib\string">
       <Filter>stdlib</Filter>
+    </None>
+    <None Include="..\examples\open.cx">
+      <Filter>Examples</Filter>
+    </None>
+    <None Include="..\examples\reopen.cx">
+      <Filter>Examples</Filter>
+    </None>
+    <None Include="..\examples\exec_test.cx">
+      <Filter>Examples</Filter>
     </None>
   </ItemGroup>
 </Project>

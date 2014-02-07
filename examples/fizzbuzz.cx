@@ -1,25 +1,17 @@
-//#include stdio
-#include math
-#include ctype
-//#include string
+#include stdio
 
 int main(){
-
-	int a = 0;
+	
 
     for(int i = 1; i <= 1000; i++){
-		//a = stdout.puts("hello, world\n");
 
-        if (i % 3 == 0) stdout.puts("Fizz\n");
+        if (i % 3 == 0) puts("Fizz");
 
-        if (i % 5 == 0) stdout.puts("Buzz\n");
+        if (i % 5 == 0) puts("Buzz");
 
-        if ((i % 3 != 0) && (i % 5 != 0)) stdout.puts("number = " + i.to_str + '\n');
+        if ((i % 3 != 0) && (i % 5 != 0)) puts("number = " + i.to_str);
 
-		stdout.puts("the square root of " + i.to_str + " is " + isqrt(i).to_str + '\n');
-
-		stdout.puts(isdigit(i.to_str[0]).to_str + '\n');
-    }
+	}
 
     return 0;
 }
