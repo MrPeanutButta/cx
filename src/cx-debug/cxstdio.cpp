@@ -10,16 +10,23 @@ cx_type *cx_stdio::puts(cx_executor *cx,
 	const cx_type *p_type){
 
 	// first param as string
-	const char *_string = (const char *)cx->top()->basic_types.addr__;
+	std::string _string = (const char *)cx->top()->basic_types.addr__;
+
 	cx->pop();
 
-	// output stream
-	bool ret_val = (bool)(std::fputs(_string, ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream) != EOF);
+	// get output stream node from top of stack
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	
+	bool ret_val = (p_snode->p_type->_iostream != nullptr);
+
+	if (ret_val){
+		p_snode->p_type->_iostream->write(_string);
+		ret_val = !(p_snode->p_type->_iostream->fail());
+	}
+
 	cx->pop();
 
-	if(!ret_val) perror("puts");
-
-	// call function and push return value
+	// push return value of (!ios::fail)
 	cx->push(ret_val);
 
 	return cx_function_id->p_type;
@@ -40,7 +47,18 @@ cx_type *cx_stdio::open(cx_executor *cx,
 	cx->pop();
 
 	// open stream
-	bool ret_val = (bool) ((((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream = std::fopen(filename, mode)) != nullptr);
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	bool ret_val = true;
+
+	// alloc new streams and redirect stream buffer
+	if (p_snode->p_type->_iostream == nullptr){
+		p_snode->p_type->_iostream = new cx_iostream();
+		ret_val = p_snode->p_type->_iostream->open(filename);
+	}
+	else {
+		ret_val = p_snode->p_type->_iostream->open(filename);
+	}
+
 	cx->pop();
 
 	cx->push(ret_val);
@@ -61,11 +79,11 @@ cx_type *cx_stdio::reopen(cx_executor *cx,
 	cx->pop();
 
 	// open stream
-	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
-	stream = std::freopen(filename, mode, stream);
+//	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
+	//stream = std::freopen(filename, mode, stream);
 	cx->pop();
 
-	cx->push((bool)(stream != nullptr));
+///	cx->push((bool)(stream != nullptr));
 
 	return cx_function_id->p_type;
 }
@@ -79,7 +97,7 @@ cx_type *cx_stdio::close(cx_executor *cx,
 	cx->pop();
 
 	// attempt to close the nodes file stream
-	cx->push((bool)(std::fclose(p_node->p_type->stream.p_file_stream) != EOF));
+//	cx->push((bool)(std::fclose(p_node->p_type->stream.p_file_stream) != EOF));
 
 	return cx_function_id->p_type;
 }
@@ -95,11 +113,11 @@ cx_type *cx_stdio::flush(cx_executor *cx,
 	const cx_type *p_type){
 
 	// get node
-	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
+//	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
 	cx->pop();
 
 	// attempt to flush the nodes file stream
-	cx->push((bool)(std::fflush(stream) != EOF));
+//	cx->push((bool)(std::fflush(stream) != EOF));
 
 	return cx_function_id->p_type;
 }
@@ -117,7 +135,7 @@ cx_type *cx_stdio::wide(cx_executor *cx,
 	cx->pop();
 
 	// get stream
-	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
+//	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
 	cx->pop();
 
 	// attempt to widen the nodes file stream
@@ -159,16 +177,17 @@ cx_type *cx_stdio::read(cx_executor *cx,
 	memset(buffer, 0, (size * count) + 1);
 
 	// get stream
-	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
+//	FILE *stream = ((cx_symtab_node *)cx->top()->basic_types.addr__)->p_type->stream.p_file_stream;
 	cx->pop();
 
-	std::size_t s = fread(buffer, size, count, stream);
+//	std::size_t s = fread(buffer, size, count, stream);
 	cx->push((void *)buffer);
 
-	cx_type *p_str = new cx_type(fc_array, s * size, nullptr);
-	set_type(p_str->array.p_element_type, p_char_type);
-	p_str->array.element_count = s;
-	p_str->array.max_index = s;
+	//cx_type *p_str = new cx_type(fc_array, s * size, nullptr);
+	//set_type(p_str->array.p_element_type, p_char_type);
+	//p_str->array.element_count = s;
+	//p_str->array.max_index = s;
 
-	return p_str;
+//	return p_str;
+	return nullptr;
 }

@@ -9,6 +9,8 @@
 #define	types_h
 
 #include <cstdio>
+#include <fstream>
+
 #include "error.h"
 #include "symtable.h"
 
@@ -58,6 +60,33 @@ enum cx_type_code {
 
 extern const char *form_strings[];
 
+class cx_iostream{
+public:
+	cx_iostream(){
+		//this->p_file_stream = new std::fstream;// ;
+		//this->p_io_stream = new std::iostream(this->p_file_stream->rdbuf());
+	}
+
+	void write(const std::string &_str){
+		p_io_stream->write(_str.c_str(), _str.length());
+	}
+
+	bool open(std::string filename){
+		this->p_file_stream->open(filename.c_str(), std::ios::out);
+		this->p_io_stream = new std::iostream(this->p_file_stream->rdbuf());
+
+		return this->p_file_stream->is_open();
+	}
+
+	bool fail(void){
+		return this->p_io_stream->fail();
+	}
+
+	std::fstream *p_file_stream;
+	std::iostream *p_io_stream;
+};
+
+
 class cx_type {
     int reference_count;
     bool is_constant__;
@@ -95,15 +124,7 @@ public:
             cx_symtab *p_class_scope;
         } complex;
 
-        struct {
-            // file name
-            //char *p_file_name;
-            /* open mode(s) in the form of "wrb"
-             * read, write, binary */
-            //char *p_file_mode;
-            // file stream
-            std::fstream *p_file_stream;
-        } stream;
+		cx_iostream *_iostream;
     };
 
     //struct {

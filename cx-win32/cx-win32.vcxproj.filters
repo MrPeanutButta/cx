@@ -75,6 +75,10 @@
     <ClInclude Include="..\include\cx-debug\cxstdio.h">
       <Filter>Header Files\cx-debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\stdlib\ctype" />
+    <ClInclude Include="..\stdlib\math" />
+    <ClInclude Include="..\stdlib\stdio" />
+    <ClInclude Include="..\stdlib\string" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\buffer.cpp">
@@ -225,18 +229,6 @@
     </None>
     <None Include="..\examples\type_size.cx">
       <Filter>Examples</Filter>
-    </None>
-    <None Include="..\stdlib\ctype">
-      <Filter>stdlib</Filter>
-    </None>
-    <None Include="..\stdlib\math">
-      <Filter>stdlib</Filter>
-    </None>
-    <None Include="..\stdlib\stdio">
-      <Filter>stdlib</Filter>
-    </None>
-    <None Include="..\stdlib\string">
-      <Filter>stdlib</Filter>
     </None>
     <None Include="..\examples\open.cx">
       <Filter>Examples</Filter>
