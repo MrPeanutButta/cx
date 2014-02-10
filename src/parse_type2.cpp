@@ -351,7 +351,7 @@ void cx_parser::parse_member_decls (cx_symtab_node *p_function_id, cx_type *p_co
                 set_type(member->p_type, p_node->p_type);
 
                 // Record fields
-                member->defn.data.offset = offset;
+//                member->defn.data.offset = offset;
                 offset += p_node->p_type->size;
 
                 get_token_append();

@@ -94,14 +94,20 @@ public:
             cx_symtab *p_symtab;
             cx_icode *p_icode;
         } routine;
+		
+		struct {
+			FILE *stream;;
+		}io;
 
+		/*
         struct {
             int offset;
-        } data;
+        } data;*/
     };
 
     cx_define(cx_define_code dc) {
         how = dc;
+		io.stream = nullptr;
     }
     ~cx_define();
 };

@@ -87,7 +87,6 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 	else {
 		type_code = cx_file;
 		complex.p_class_scope = std_stream_members;
-		_iostream = nullptr;
 	}
 }
 
@@ -375,18 +374,15 @@ void initialize_builtin_types (cx_symtab *p_symtab) {
 
     p_stdout = p_symtab->enter("stdout", ::dc_variable);
     set_type(p_stdout->p_type, p_file_type);
-	p_stdout->p_type->_iostream = new cx_iostream;
-	p_stdout->p_type->_iostream->p_io_stream = new std::iostream(std::cout.rdbuf());
+	p_stdout->defn.io.stream = stdout;
 
     p_stdin = p_symtab->enter("stdin", ::dc_variable);
     set_type(p_stdin->p_type, p_file_type);
-	p_stdin->p_type->_iostream = new cx_iostream;
-	p_stdin->p_type->_iostream->p_io_stream = new std::iostream(std::cin.rdbuf());
+	p_stdin->defn.io.stream = stdin;
 
     p_stderr = p_symtab->enter("stderr", ::dc_variable);
     set_type(p_stderr->p_type, p_file_type);
-	p_stderr->p_type->_iostream = new cx_iostream;
-	p_stderr->p_type->_iostream->p_io_stream = new std::iostream(std::cerr.rdbuf());
+	p_stderr->defn.io.stream = stderr;
 
     // initialize standard type members
     init_std_members();

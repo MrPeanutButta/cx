@@ -80,7 +80,7 @@
     <ClInclude Include="..\include\complist.h" />
     <ClInclude Include="..\include\cx-debug\exec.h" />
     <ClInclude Include="..\include\cx-debug\rlutil.h" />
-    <ClInclude Include="..\include\cx-debug\cxstdio.h" />
+    <ClInclude Include="..\include\cx-debug\cx_stdio.h" />
     <ClInclude Include="..\include\cx-debug\std_members.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\icode.h" />
@@ -103,7 +103,7 @@
     <ClCompile Include="..\src\cx-debug\factor.cpp" />
     <ClCompile Include="..\src\cx-debug\function.cpp" />
     <ClCompile Include="..\src\cx-debug\init_list.cpp" />
-    <ClCompile Include="..\src\cx-debug\cxstdio.cpp" />
+    <ClCompile Include="..\src\cx-debug\cx_stdio.cpp" />
     <ClCompile Include="..\src\cx-debug\logical.cpp" />
     <ClCompile Include="..\src\cx-debug\malloc.cpp" />
     <ClCompile Include="..\src\cx-debug\multiplicative.cpp" />

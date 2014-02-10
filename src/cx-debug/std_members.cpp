@@ -1,6 +1,6 @@
 #include <sstream>
 #include "std_members.h"
-#include "cxstdio.h"
+#include "cx_stdio.h"
 #include "types.h"
 #include "symtable.h"
 
@@ -41,7 +41,8 @@ void init_std_members (void) {
 		{ nullptr, mc_stream, "close", func_std_member, &cx_stdio::close, p_boolean_type },
 		{ nullptr, mc_stream, "flush", func_std_member, &cx_stdio::flush, p_boolean_type },
 		{ nullptr, mc_stream, "wide", func_std_member, &cx_stdio::wide, p_integer_type },
-		{ nullptr, mc_stream, "read", func_std_member, &cx_stdio::read, new cx_type(fc_array, 0, nullptr) }
+		{ nullptr, mc_stream, "read", func_std_member, &cx_stdio::read, new cx_type(fc_array, 0, nullptr) },
+		{ nullptr, mc_stream, "write", func_std_member, &cx_stdio::write, p_integer_type }
 	};
 
     // allocate std member functions for basic types
@@ -103,7 +104,6 @@ void init_std_members (void) {
 				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
 			}
 			else if (mbr.name == "read"){
-
 				mbr.p_node->defn.routine.parm_count = 2;
 				// int size
 				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("size", dc_value_parm);
@@ -112,6 +112,23 @@ void init_std_members (void) {
 				mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("count", dc_value_parm);
 				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, p_integer_type);
 
+			}
+			else if (mbr.name == "write"){
+				mbr.p_node->defn.routine.parm_count = 3;
+				
+				// byte *buffer
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("buffer", dc_value_parm);
+				mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
+					mbr.p_node->defn.routine.locals.p_parms_ids);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, p_uint8_type);
+
+				// int size
+				mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("size", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, p_integer_type);
+				
+				// int count
+				mbr.p_node->defn.routine.locals.p_parms_ids->next__->next__ = new cx_symtab_node("count", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->next__->p_type, p_integer_type);
 			}
 
 			break;

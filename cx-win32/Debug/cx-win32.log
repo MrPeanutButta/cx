@@ -1,232 +1,12 @@
-﻿Build started 2/7/2014 5:27:16 PM.
-     1>Project "C:\Users\aahebert\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" on node 2 (Rebuild target(s)).
+﻿Build started 2/10/2014 2:28:30 AM.
+     1>Project "C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\aahebert\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aahebert\Documents\GitHub\Cx\include /I"C:\Users\aaron_000\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aaron_000\Documents\GitHub\Cx\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\buffer.cpp ..\src\common.cpp ..\src\complist.cpp "..\src\cx-debug\additive.cpp" "..\src\cx-debug\assign.cpp" "..\src\cx-debug\do.cpp" "..\src\cx-debug\exec.cpp" "..\src\cx-debug\expression.cpp" "..\src\cx-debug\factor.cpp" "..\src\cx-debug\function.cpp" "..\src\cx-debug\init_list.cpp" "..\src\cx-debug\cxstdio.cpp" "..\src\cx-debug\logical.cpp" "..\src\cx-debug\malloc.cpp" "..\src\cx-debug\multiplicative.cpp" "..\src\cx-debug\relational.cpp" "..\src\cx-debug\statment.cpp" "..\src\cx-debug\std_members.cpp" "..\src\cx-debug\tracer.cpp" "..\src\cx-debug\unary.cpp" "..\src\cx-debug\while.cpp" ..\src\error.cpp ..\src\icode.cpp ..\src\main.cpp ..\src\parser.cpp ..\src\parse_declarations.cpp ..\src\parse_directive.cpp ..\src\parse_expression.cpp ..\src\parse_routine1.cpp ..\src\parse_routine2.cpp ..\src\parse_statement.cpp ..\src\parse_type1.cpp ..\src\parse_type2.cpp ..\src\scanner.cpp ..\src\symtable.cpp ..\src\tknnum.cpp ..\src\tknstrsp.cpp ..\src\tknword.cpp ..\src\types.cpp
-         types.cpp
-         tknword.cpp
-         tknstrsp.cpp
-         tknnum.cpp
-         symtable.cpp
-         scanner.cpp
-         parse_type2.cpp
-         parse_type1.cpp
-         parse_statement.cpp
-         parse_routine2.cpp
-         parse_routine1.cpp
-         parse_expression.cpp
-         parse_directive.cpp
-         parse_declarations.cpp
-         parser.cpp
-         main.cpp
-         icode.cpp
-         error.cpp
-         while.cpp
-         unary.cpp
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\unary.cpp(38): warning C4804: '-' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\unary.cpp(38): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\unary.cpp(79): warning C4804: '~' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\unary.cpp(79): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-         Generating Code...
-         Compiling...
-         tracer.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\aahebert\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aahebert\Documents\GitHub\Cx\include /I"C:\Users\aaron_000\Documents\GitHub\Cx\include\cx-debug" /IC:\Users\aaron_000\Documents\GitHub\Cx\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt "..\src\cx-debug\cx_stdio.cpp" "..\src\cx-debug\std_members.cpp"
          std_members.cpp
-         statment.cpp
-         relational.cpp
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(71): warning C4805: '==' : unsafe mix of type 'bool' and type 'int' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(123): warning C4805: '==' : unsafe mix of type 'bool' and type 'char' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(175): warning C4805: '==' : unsafe mix of type 'bool' and type 'wchar_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(227): warning C4805: '==' : unsafe mix of type 'bool' and type 'float' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(251): warning C4805: '==' : unsafe mix of type 'int' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(258): warning C4805: '==' : unsafe mix of type 'char' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(265): warning C4805: '==' : unsafe mix of type 'wchar_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(272): warning C4805: '==' : unsafe mix of type 'float' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(286): warning C4805: '==' : unsafe mix of type 'uint8_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(331): warning C4805: '==' : unsafe mix of type 'bool' and type 'uint8_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(399): warning C4805: '!=' : unsafe mix of type 'bool' and type 'int' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(451): warning C4805: '!=' : unsafe mix of type 'bool' and type 'char' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(503): warning C4805: '!=' : unsafe mix of type 'bool' and type 'wchar_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(555): warning C4805: '!=' : unsafe mix of type 'bool' and type 'float' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(579): warning C4805: '!=' : unsafe mix of type 'int' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(586): warning C4805: '!=' : unsafe mix of type 'char' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(593): warning C4805: '!=' : unsafe mix of type 'wchar_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(600): warning C4805: '!=' : unsafe mix of type 'float' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(614): warning C4805: '!=' : unsafe mix of type 'uint8_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(659): warning C4805: '!=' : unsafe mix of type 'bool' and type 'uint8_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(727): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(779): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(831): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(883): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(907): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(914): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(921): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(928): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(942): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(987): warning C4804: '<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1054): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1106): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1158): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1210): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1234): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1241): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1248): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1255): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1269): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1314): warning C4804: '<=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1381): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1433): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1485): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1537): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1561): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1568): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1575): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1582): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1596): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1641): warning C4804: '>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1708): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1760): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1812): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1864): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1888): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1895): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1902): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1909): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1923): warning C4804: '>=' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\relational.cpp(1968): warning C4804: '>=' : unsafe use of type 'bool' in operation
-         multiplicative.cpp
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(68): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(120): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(172): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(224): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(276): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(328): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(388): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(388): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(443): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(443): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(498): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(498): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(553): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(553): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(580): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(587): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(594): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(601): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(608): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(608): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(615): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(663): warning C4804: '/' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(663): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(716): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(716): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(764): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(764): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(812): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(812): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(839): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(846): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(853): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(860): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(860): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(867): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(908): warning C4804: '%' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\multiplicative.cpp(908): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-         malloc.cpp
-         logical.cpp
-         cxstdio.cpp
-         init_list.cpp
-         function.cpp
-         factor.cpp
-         expression.cpp
-         exec.cpp
-         do.cpp
-         assign.cpp
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(299): warning C4244: '+=' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(332): warning C4244: '+=' : conversion from 'float' to 'char', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(366): warning C4244: '+=' : conversion from 'float' to 'wchar_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(436): warning C4244: '+=' : conversion from 'float' to 'uint8_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(556): warning C4244: '-=' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(589): warning C4244: '-=' : conversion from 'float' to 'char', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(623): warning C4244: '-=' : conversion from 'float' to 'wchar_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(693): warning C4244: '-=' : conversion from 'float' to 'uint8_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(750): warning C4244: '*=' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(783): warning C4244: '*=' : conversion from 'float' to 'char', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(817): warning C4244: '*=' : conversion from 'float' to 'wchar_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(887): warning C4244: '*=' : conversion from 'float' to 'uint8_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(944): warning C4244: '/=' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(977): warning C4244: '/=' : conversion from 'float' to 'char', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(1011): warning C4244: '/=' : conversion from 'float' to 'wchar_t', possible loss of data
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\assign.cpp(1081): warning C4244: '/=' : conversion from 'float' to 'uint8_t', possible loss of data
-         additive.cpp
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(286): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(350): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(414): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(478): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(542): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(606): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(673): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(724): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(775): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(826): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(877): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(928): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(978): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1023): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1068): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1092): warning C4804: '<<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1099): warning C4804: '<<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1106): warning C4804: '<<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1113): warning C4804: '<<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1113): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1120): warning C4804: '<<' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1158): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1208): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1253): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1298): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1322): warning C4804: '>>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1329): warning C4804: '>>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1336): warning C4804: '>>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1343): warning C4804: '>>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1343): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1350): warning C4804: '>>' : unsafe use of type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1388): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1438): warning C4805: '&' : unsafe mix of type 'bool' and type 'int' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1483): warning C4805: '&' : unsafe mix of type 'bool' and type 'char' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1528): warning C4805: '&' : unsafe mix of type 'bool' and type 'wchar_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1552): warning C4805: '&' : unsafe mix of type 'int' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1559): warning C4805: '&' : unsafe mix of type 'char' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1566): warning C4805: '&' : unsafe mix of type 'wchar_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1580): warning C4805: '&' : unsafe mix of type 'uint8_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1618): warning C4805: '&' : unsafe mix of type 'bool' and type 'uint8_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1669): warning C4805: '^' : unsafe mix of type 'bool' and type 'int' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1669): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1714): warning C4805: '^' : unsafe mix of type 'bool' and type 'char' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1714): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1759): warning C4805: '^' : unsafe mix of type 'bool' and type 'wchar_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1759): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1783): warning C4805: '^' : unsafe mix of type 'int' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1790): warning C4805: '^' : unsafe mix of type 'char' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1797): warning C4805: '^' : unsafe mix of type 'wchar_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1811): warning C4805: '^' : unsafe mix of type 'uint8_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1849): warning C4805: '^' : unsafe mix of type 'bool' and type 'uint8_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1849): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1899): warning C4805: '|' : unsafe mix of type 'bool' and type 'int' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1899): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1944): warning C4805: '|' : unsafe mix of type 'bool' and type 'char' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1944): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1989): warning C4805: '|' : unsafe mix of type 'bool' and type 'wchar_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(1989): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(2013): warning C4805: '|' : unsafe mix of type 'int' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(2020): warning C4805: '|' : unsafe mix of type 'char' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(2027): warning C4805: '|' : unsafe mix of type 'wchar_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(2041): warning C4805: '|' : unsafe mix of type 'uint8_t' and type 'bool' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(2080): warning C4805: '|' : unsafe mix of type 'bool' and type 'uint8_t' in operation
-     1>c:\users\aahebert\documents\github\cx\src\cx-debug\additive.cpp(2080): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-         complist.cpp
-         common.cpp
-         buffer.cpp
+         cx_stdio.cpp
          Generating Code...
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\aahebert\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\aahebert\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\aahebert\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.lib" /MACHINE:X86 Debug\buffer.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.lib" /MACHINE:X86 Debug\buffer.obj
          Debug\common.obj
          Debug\complist.obj
          Debug\additive.obj
@@ -237,7 +17,7 @@
          Debug\factor.obj
          Debug\function.obj
          Debug\init_list.obj
-         Debug\cxstdio.obj
+         Debug\cx_stdio.obj
          Debug\logical.obj
          Debug\malloc.obj
          Debug\multiplicative.obj
@@ -265,9 +45,9 @@
          Debug\tknstrsp.obj
          Debug\tknword.obj
          Debug\types.obj
-         cx-win32.vcxproj -> C:\Users\aahebert\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe
-     1>Done Building Project "C:\Users\aahebert\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" (Rebuild target(s)).
+         cx-win32.vcxproj -> C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\Debug\cx-win32.exe
+     1>Done Building Project "C:\Users\aaron_000\Documents\GitHub\Cx\cx-win32\cx-win32.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:27.31
+Time Elapsed 00:00:01.34

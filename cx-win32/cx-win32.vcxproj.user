@@ -5,8 +5,7 @@
     <LocalDebuggerCommandArguments>examples\exec_test.cx</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>..</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>CX_STDLIB=C:\Users\aahebert\Documents\GitHub\Cx\stdlib
-$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommandArguments>examples\fizzbuzz.cx</LocalDebuggerCommandArguments>
