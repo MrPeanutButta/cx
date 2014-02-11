@@ -19,21 +19,7 @@
  * using the library.
  */
 
-/* putc - Write character to stream
- * Writes a character to the stream and advances the position indicator.
- *
- * The character is written at the position indicated by the internal
- * position indicator of the stream, which is then automatically
- * advanced by one.
- *
- * @param c      : character to write as 'char' type.
- * @param stream : reference to a FILE object that identifies an output stream.
- * @return ASCII code of character written. */
-
-char putc(char c, file &stream){
-    stream = c;
-    return c;
-}
+// TODO: need #define directive to omit including headers twice
 
 /* putchar - Write character to stdout
  * Writes a character to the standard output (stdout).
@@ -44,7 +30,7 @@ char putc(char c, file &stream){
  * @return ASCII code of character written. */
 
 char putchar(char c){
-    return putc(c, stdout);
+    return stdout.putc(c);
 }
 
 /* puts - Write string to stdout
@@ -67,28 +53,8 @@ int puts(char *str){
  *
  * @return character read from stdin. */
 
-char getc(){
-    char c = stdin;
-
-	if(c == '\r') c = '\n';
-
-    return c;
-}
-
-/* fgetc - Get character from stream
- * Returns the character currently pointed by the internal file position
- * indicator of the specified stream. The internal file position indicator is
- * then advanced to the next character.
- *
- * If the stream is at the end-of-file when called, the function returns EOF
- * and sets the end-of-file indicator for the stream (feof).
- *
- * @param stream : reference to a FILE object that identifies an input stream.
- * @return character read from stream. */
-
-char fgetc(file &stream){
-    char c = stream;
-    return c;
+int getc(){
+    return stdin.getc;
 }
 
 /* getchar - Get character from stdin
@@ -100,7 +66,7 @@ char fgetc(file &stream){
  * @return character read from stdin. */
 
 char getchar(){
-    return putchar(getc());
+    return getc();
 }
 
 /* gets - Get string from stdin
@@ -123,7 +89,6 @@ char *gets(){
         c = getchar();
 		condition = ((c != '\n') && (c != '\r'));
 
-        // TODO: need #define directive to omit including headers twice
         if(condition)str += c;
         
     }while(condition);

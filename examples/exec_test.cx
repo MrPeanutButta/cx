@@ -8,11 +8,10 @@ int main () {
 
 	puts(buffer + ": I will now attempt to r/w to " + filename);
 	
-	if(!myfile.open(filename, "wb"))
+	if(!myfile.open(filename, "w"))
 		puts("error opening file: " + filename);
 	else {
-		//myfile.puts(buffer);
-		myfile.write(buffer, 1, 5);
+		myfile.puts(buffer);
 		myfile.close;
 	}
 
@@ -20,7 +19,7 @@ int main () {
 		puts("error opening file: " + filename);
 	else {
 		// only read 4 chars back
-		buffer = myfile.read(1, 5);
+		buffer = myfile.read(1, 4);
 		myfile.close;
 
 		puts(buffer);

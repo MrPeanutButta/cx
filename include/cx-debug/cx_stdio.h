@@ -51,6 +51,30 @@ public:
 	static cx_type *write(cx_executor *cx,
 		cx_symtab_node *cx_function_id,
 		const cx_type *p_type);
+
+	static cx_type *getc(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *gets(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *putc(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *ungetc(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *getwc_(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
+
+	static cx_type *getws_(cx_executor *cx,
+		cx_symtab_node *cx_function_id,
+		const cx_type *p_type);
 };
 
 extern cx_symtab *std_stream_members;

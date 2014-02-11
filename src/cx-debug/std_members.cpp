@@ -42,7 +42,15 @@ void init_std_members (void) {
 		{ nullptr, mc_stream, "flush", func_std_member, &cx_stdio::flush, p_boolean_type },
 		{ nullptr, mc_stream, "wide", func_std_member, &cx_stdio::wide, p_integer_type },
 		{ nullptr, mc_stream, "read", func_std_member, &cx_stdio::read, new cx_type(fc_array, 0, nullptr) },
-		{ nullptr, mc_stream, "write", func_std_member, &cx_stdio::write, p_integer_type }
+		{ nullptr, mc_stream, "write", func_std_member, &cx_stdio::write, p_integer_type },
+		{ nullptr, mc_stream, "getc", func_std_member, &cx_stdio::getc, p_integer_type },
+		{ nullptr, mc_stream, "gets", func_std_member, &cx_stdio::gets, new cx_type(fc_array, 0, nullptr) },
+		{ nullptr, mc_stream, "putc", func_std_member, &cx_stdio::putc, p_integer_type },
+		{ nullptr, mc_stream, "ungetc", func_std_member, &cx_stdio::ungetc, p_integer_type },
+
+		//wide char
+		{ nullptr, mc_stream, "getwc", func_std_member, &cx_stdio::getwc_, p_wchar_type },
+		{ nullptr, mc_stream, "getws", func_std_member, &cx_stdio::getws_, new cx_type(fc_array, 0, nullptr) }
 	};
 
     // allocate std member functions for basic types
@@ -130,7 +138,28 @@ void init_std_members (void) {
 				mbr.p_node->defn.routine.locals.p_parms_ids->next__->next__ = new cx_symtab_node("count", dc_value_parm);
 				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->next__->p_type, p_integer_type);
 			}
+			else if ((mbr.name == "gets") || (mbr.name == "getws")){
+				mbr.p_node->defn.routine.parm_count = 1;
 
+				// int count
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("count", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+			}
+			else if (mbr.name == "putc"){
+				mbr.p_node->defn.routine.parm_count = 1;
+
+				// int ch
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("ch", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+			}
+			else if (mbr.name == "ungetc"){
+				mbr.p_node->defn.routine.parm_count = 1;
+
+				// int ch
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("ch", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+			}
+			
 			break;
 		default: break;
 		}
@@ -147,6 +176,12 @@ void init_std_members (void) {
 		}
 		else if (mbr.name == "read"){
 			set_type(mbr.p_node->p_type->array.p_element_type, p_char_type);
+		}
+		else if (mbr.name == "gets") {
+			set_type(mbr.p_node->p_type->array.p_element_type, p_char_type);
+		}
+		else if (mbr.name == "getws") {
+			set_type(mbr.p_node->p_type->array.p_element_type, p_wchar_type);
 		}
     }
 }

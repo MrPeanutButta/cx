@@ -206,3 +206,119 @@ cx_type *cx_stdio::write(cx_executor *cx,
 
 	return cx_function_id->p_type;
 }
+
+cx_type *cx_stdio::getc(cx_executor *cx,
+	cx_symtab_node *cx_function_id,
+	const cx_type *p_type){
+
+	// get node
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	cx->pop();
+
+	cx->push((int)std::getc(p_snode->defn.io.stream));
+
+	return cx_function_id->p_type;
+}
+
+cx_type *cx_stdio::gets(cx_executor *cx,
+	cx_symtab_node *cx_function_id,
+	const cx_type *p_type){
+
+	// int count
+	int count = cx->top()->basic_types.int__;
+	cx->pop();
+
+	// read buffer
+	char *buffer = (char *)std::malloc(count + 1);
+	memset(buffer, 0, count + 1);
+
+	// get node
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	cx->pop();
+
+	std::fgets(buffer, count + 1, p_snode->defn.io.stream);
+	cx->push((void *)buffer);
+
+	cx_type *p_str = new cx_type(fc_array, count, nullptr);
+	set_type(p_str->array.p_element_type, p_char_type);
+	p_str->array.element_count = count;
+	p_str->array.max_index = count;
+
+	return p_str;
+}
+
+cx_type *cx_stdio::putc(cx_executor *cx,
+	cx_symtab_node *cx_function_id,
+	const cx_type *p_type){
+
+	// int ch
+	int ch = cx->top()->basic_types.int__;
+	cx->pop();
+
+	// get node
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	cx->pop();
+
+	cx->push((int)std::putc(ch, p_snode->defn.io.stream));
+
+	return cx_function_id->p_type;
+}
+
+cx_type *cx_stdio::ungetc(cx_executor *cx,
+	cx_symtab_node *cx_function_id,
+	const cx_type *p_type){
+
+	// int ch
+	int ch = cx->top()->basic_types.int__;
+	cx->pop();
+
+	// get node
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	cx->pop();
+
+	cx->push((int)std::ungetc(ch, p_snode->defn.io.stream));
+
+	return cx_function_id->p_type;
+}
+
+cx_type *cx_stdio::getwc_(cx_executor *cx,
+	cx_symtab_node *cx_function_id,
+	const cx_type *p_type){
+
+	// get node
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	cx->pop();
+
+	cx->push((wchar_t)std::fgetwc(p_snode->defn.io.stream));
+
+	return cx_function_id->p_type;
+}
+
+cx_type *cx_stdio::getws_(cx_executor *cx,
+	cx_symtab_node *cx_function_id,
+	const cx_type *p_type){
+
+	// int count
+	int count = cx->top()->basic_types.int__;
+	cx->pop();
+
+	int size = (sizeof(wchar_t) * count) + 1;
+
+	// read buffer
+	wchar_t *buffer = (wchar_t *)std::malloc(size);
+	memset(buffer, 0, size);
+
+	// get node
+	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
+	cx->pop();
+
+	std::fgetws(buffer, count + 1, p_snode->defn.io.stream);
+	cx->push((void *)buffer);
+
+	cx_type *p_wstr = new cx_type(fc_array, count, nullptr);
+	set_type(p_wstr->array.p_element_type, p_wchar_type);
+	p_wstr->array.element_count = count;
+	p_wstr->array.max_index = count;
+
+	return p_wstr;
+}

@@ -239,5 +239,11 @@
     <None Include="..\examples\exec_test.cx">
       <Filter>Examples</Filter>
     </None>
+    <None Include="..\examples\fileio.cx">
+      <Filter>Examples</Filter>
+    </None>
+    <None Include="..\examples\setbuf.cx">
+      <Filter>Examples</Filter>
+    </None>
   </ItemGroup>
 </Project>
