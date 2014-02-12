@@ -2,28 +2,11 @@
 
 int main () {
 
-	file myfile;
-	char *buffer = "test - I will write this test to a text file then read it back";
-	char *filename = "textfile";
+	char *buffer = gets();
 
-	puts(buffer + ": I will now attempt to r/w to " + filename);
-	
-	if(!myfile.open(filename, "w"))
-		puts("error opening file: " + filename);
-	else {
-		myfile.puts(buffer);
-		myfile.close;
-	}
+	int a = buffer.length;
 
-	if(!myfile.reopen(filename, "r"))
-		puts("error opening file: " + filename);
-	else {
-		// only read 4 chars back
-		buffer = myfile.read(1, 4);
-		myfile.close;
-
-		puts(buffer);
-	}
+	puts(a.to_str.size.length.to_str);
 
     return 0;
 }

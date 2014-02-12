@@ -50,7 +50,23 @@ void init_std_members (void) {
 
 		//wide char
 		{ nullptr, mc_stream, "getwc", func_std_member, &cx_stdio::getwc_, p_wchar_type },
-		{ nullptr, mc_stream, "getws", func_std_member, &cx_stdio::getws_, new cx_type(fc_array, 0, nullptr) }
+		{ nullptr, mc_stream, "getws", func_std_member, &cx_stdio::getws_, new cx_type(fc_array, 0, nullptr) },
+		{ nullptr, mc_stream, "putwc", func_std_member, &cx_stdio::putwc_, p_wchar_type },
+		{ nullptr, mc_stream, "putws", func_std_member, &cx_stdio::putws_, p_boolean_type },
+		{ nullptr, mc_stream, "ungetwc", func_std_member, &cx_stdio::ungetc, p_wchar_type },
+
+		// file positioning 
+		{ nullptr, mc_stream, "tell", func_std_member, &cx_stdio::tell, p_integer_type },
+		{ nullptr, mc_stream, "seek", func_std_member, &cx_stdio::seek, p_boolean_type },
+		{ nullptr, mc_stream, "rewind", func_std_member, &cx_stdio::rewind, p_void_type },
+
+		// error handling
+		{ nullptr, mc_stream, "clearerr", func_std_member, &cx_stdio::clearerr, p_void_type },
+		{ nullptr, mc_stream, "eof", func_std_member, &cx_stdio::eof, p_boolean_type },
+		{ nullptr, mc_stream, "error", func_std_member, &cx_stdio::error, p_boolean_type },
+
+		// operations on files 
+		{ nullptr, mc_stream, "tmpfile", func_std_member, &cx_stdio::tmpfile, p_boolean_type }
 	};
 
     // allocate std member functions for basic types
@@ -81,14 +97,20 @@ void init_std_members (void) {
 		case mc_stream:
 			mbr.p_node = std_stream_members->enter(mbr.name.c_str(), dc_function);
 
-			if (mbr.name == "puts"){
+			if ((mbr.name == "puts") || ((mbr.name == "putws"))){
 				mbr.p_node->defn.routine.parm_count = 1;
 
 				// char *str
 				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("str", dc_value_parm);
 				mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
 					mbr.p_node->defn.routine.locals.p_parms_ids);
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, p_char_type);
+
+				if (mbr.name == "puts"){
+					set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, p_char_type);
+				}
+				else {
+					set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, p_wchar_type);
+				}
 
 			} else if ((mbr.name == "open") || (mbr.name == "reopen")){
 				mbr.p_node->defn.routine.parm_count = 2;
@@ -145,19 +167,40 @@ void init_std_members (void) {
 				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("count", dc_value_parm);
 				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
 			}
-			else if (mbr.name == "putc"){
+			else if ((mbr.name == "putc") || (mbr.name == "putwc")){
 				mbr.p_node->defn.routine.parm_count = 1;
 
-				// int ch
+				// int ch or wchar_t
 				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("ch", dc_value_parm);
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+
+				if (mbr.name == "putc"){
+					set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+				}
+				else {
+					set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_wchar_type);
+				}
 			}
-			else if (mbr.name == "ungetc"){
+			else if ((mbr.name == "ungetc") || (mbr.name == "ungetwc")){
 				mbr.p_node->defn.routine.parm_count = 1;
 
 				// int ch
 				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("ch", dc_value_parm);
+
+				if (mbr.name == "ungetc"){
+					set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+				}
+				else {
+					set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_wchar_type);
+				}
+			}
+			else if (mbr.name == "seek"){
+				mbr.p_node->defn.routine.parm_count = 2;
+				// int offset
+				mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("offset", dc_value_parm);
 				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, p_integer_type);
+				// int origin
+				mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("origin", dc_value_parm);
+				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, p_integer_type);
 			}
 			
 			break;
@@ -190,9 +233,17 @@ cx_type *cx_std_type_members::size(cx_executor* cx,
                                cx_symtab_node* cx_function_id,
                                const cx_type *p_type) {
     cx->pop();
-    cx_stack_item *p_size_val = new cx_stack_item;
-    p_size_val->basic_types.int__ = p_type->size;
-    cx->push((void*) p_size_val);
+
+	if (!p_type->is_address){
+		
+		cx_stack_item *p_size_val = new cx_stack_item;
+		p_size_val->basic_types.int__ = p_type->size;
+		
+		cx->push((void*)p_size_val);
+	}
+	else {
+		cx->push((int)p_type->size);
+	}
 
     return cx_function_id->p_type;
 }
@@ -201,14 +252,20 @@ cx_type *cx_std_type_members::length(cx_executor *cx,
                                  cx_symtab_node *cx_function_id,
                                  const cx_type *p_type) {
 
-    cx->pop();
-    cx_stack_item *p_length_val = new cx_stack_item;
+	cx->pop();
 
-    p_type->form == fc_array ?
-            p_length_val->basic_types.int__ = p_type->array.element_count :
-            p_length_val->basic_types.int__ = 1;
+	if (!p_type->is_address){
+		cx_stack_item *p_length_val = new cx_stack_item;
 
-    cx->push((void *) p_length_val);
+		p_type->form == fc_array ?
+			p_length_val->basic_types.int__ = p_type->array.element_count :
+			p_length_val->basic_types.int__ = 1;
+
+		cx->push((void *)p_length_val);
+	}
+	else {
+		cx->push((int)p_type->form == fc_array ? p_type->array.element_count : 1);
+	}
 
     return cx_function_id->p_type;
 }
@@ -224,7 +281,12 @@ cx_type *cx_std_type_members::to_str(cx_executor *cx,
 
     cx_stack_item *mem = nullptr;
 
-    mem = (cx_stack_item *) cx->top()->basic_types.addr__;
+	if (!p_type->is_address){
+		mem = (cx_stack_item *)cx->top()->basic_types.addr__;
+	}
+	else {
+		mem = cx->top();
+	}
 
     switch (p_type->type_code) {
         case cx_int:
@@ -272,7 +334,61 @@ cx_type *cx_std_type_members::to_wstr(cx_executor *cx,
                                   cx_symtab_node *cx_function_id,
                                   const cx_type *p_type) {
 
-    return cx_function_id->p_type;
+	std::wstringstream ss;
+	ss.clear();
+
+	cx_stack_item *mem = nullptr;
+
+	if (p_type->is_address){
+		mem = (cx_stack_item *)cx->top()->basic_types.addr__;
+	}
+	else {
+		mem = cx->top();
+	}
+
+	switch (p_type->type_code) {
+	case cx_int:
+		ss << mem->basic_types.int__ << L'\0';
+		break;
+	case cx_char:
+		ss << mem->basic_types.char__ << L'\0';
+		break;
+	case cx_wchar:
+		ss << mem->basic_types.wchar__ << L'\0';
+		break;
+	case cx_float:
+		ss << mem->basic_types.float__ << L'\0';
+		break;
+	case cx_bool:
+		ss << (mem->basic_types.bool__ ? L"true" : L"false") << L'\0';
+		break;
+	case cx_uint8:
+		ss << (int)mem->basic_types.uint8__ << L'\0';
+		break;
+	default:
+		ss << mem->basic_types.addr__ << L'\0';
+		break;
+	}
+
+	cx->pop();
+
+	const int size = ss.str().size() - 1;
+	const int length = ss.str().length() - 1;
+
+	cx_type *p_wstr = new cx_type(fc_array, size, nullptr);
+	set_type(p_wstr->array.p_element_type, p_wchar_type);
+	p_wstr->array.element_count = length;
+	p_wstr->array.max_index = length;
+
+	wchar_t *p_to_wstr = (wchar_t *)malloc((sizeof(wchar_t) * length) + 1);
+
+	memset(p_to_wstr, 0, (sizeof(wchar_t)* length) + 1);
+
+	memcpy(p_to_wstr, ss.str().c_str(), (sizeof(wchar_t) * length) + 1);
+
+	cx->push((void *)p_to_wstr);
+
+	return p_wstr;
 }
 
 cx_type *cx_std_type_members::to_int(cx_executor *cx,

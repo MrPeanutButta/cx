@@ -18,11 +18,12 @@ int main () {
 	if(!myfile.reopen(filename, "r"))
 		puts("error opening file: " + filename);
 	else {
-		// only read 4 chars back
-		buffer = myfile.read(1, 4);
-		myfile.close;
+		while(!myfile.eof){
+			putchar(myfile.getc);
+			putchar('\n');
+		}
 
-		puts(buffer);
+		myfile.close;
 	}
 
     return 0;

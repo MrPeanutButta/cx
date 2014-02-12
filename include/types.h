@@ -66,7 +66,7 @@ class cx_type {
 
 public:
     const cx_type_form_code form;
-    
+	bool is_address;
     // size of the first element
     int size;
     

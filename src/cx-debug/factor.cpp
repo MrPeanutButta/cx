@@ -164,6 +164,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
                                         bool address_flag) {
 
     cx_type *p_type = p_id->p_type;
+	p_type->is_address = address_flag;
 
 	if (p_type->form != fc_stream){
 
