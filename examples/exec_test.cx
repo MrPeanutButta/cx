@@ -1,12 +1,12 @@
 #include stdio
 
-int main () {
+int main() {
 
-	char *buffer = gets();
+	char *buffer = getchar().to_str;
 
 	int a = buffer.length;
 
-	puts(a.size.to_str);
+	puts(buffer);
 
     return 0;
 }
