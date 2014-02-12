@@ -6,7 +6,7 @@ int main () {
 
 	int a = buffer.length;
 
-	puts(a.to_str.size.length.to_str);
+	puts(a.size.to_str);
 
     return 0;
 }

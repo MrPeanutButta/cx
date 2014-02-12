@@ -22,7 +22,6 @@
 // TODO: need #define directive to omit including headers twice
 
 /* Incomplete:
-
 	perror - displays a character string corresponding of the current error to stderr (function)
 	remove - erases a file (function)   
     rename - renames a file (function)  
