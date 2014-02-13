@@ -88,7 +88,7 @@ public:
             int parm_count;
             int total_parm_size;
             int total_local_size;
-            f_call std_function; // internal function call
+            //f_call std_function; // internal function call
             m_call std_member; // standard type members
             cx_local_ids locals;
             cx_symtab *p_symtab;

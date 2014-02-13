@@ -72,12 +72,23 @@
     <ClInclude Include="..\include\cx-debug\std_members.h">
       <Filter>Header Files\cx-debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\stdlib\ctype" />
-    <ClInclude Include="..\stdlib\math" />
-    <ClInclude Include="..\stdlib\stdio" />
-    <ClInclude Include="..\stdlib\string" />
     <ClInclude Include="..\include\cx-debug\cx_stdio.h">
       <Filter>Header Files\cx-debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cx-debug\cx_api.h">
+      <Filter>Header Files\cx-debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\ctype">
+      <Filter>stdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\math">
+      <Filter>stdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\stdio">
+      <Filter>stdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stdlib\string">
+      <Filter>stdlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

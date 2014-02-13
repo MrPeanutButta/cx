@@ -18,6 +18,16 @@ class cx_type;
 class cx_symtab_node;
 class cx_symtab;
 
+// below is for external liraries
+#include <string>
+#include <map>
+// string typr to pointer map
+typedef std::map<std::string, cx_type *> cx_datatype;
+
+
+///////
+
+
 // Pointers to predefined types.
 extern  cx_symtab_node *p_main_function_id;
 extern  cx_symtab_node *p_stdin;
@@ -34,6 +44,7 @@ extern  cx_type *p_void_type;
 extern  cx_type *p_complex_type;
 extern  cx_type *p_file_type;
 extern  cx_type *p_dummy_type;
+
 
 enum cx_type_form_code {
     fc_none,

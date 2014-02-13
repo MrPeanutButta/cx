@@ -54,7 +54,7 @@ cx_symtab_node *cx_parser::parse (void) {
     get_token_append();
 
     if (!is_module) {
-        p_program_id->defn.routine.p_symtab = &cx_global_symtab; //symtab_stack.exit_scope();
+        p_program_id->defn.routine.p_symtab = &cx_global_symtab;
 
         resync(tokenlist_program_end);
         conditional_get_token_append(tc_end_of_file, err_missing_right_bracket);

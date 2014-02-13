@@ -12,14 +12,14 @@
     <LocalDebuggerCommandArguments>examples\exec_test.cx</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>..</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>CX_STDLIB=C:\Users\aaron_000\Documents\GitHub\Cx\stdlib</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Worksation-Debug|Win32'">
     <LocalDebuggerCommand>$(TargetPath) </LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>examples\exec_test.cx</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>..</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>CX_STDLIB=C:\Users\aahebert\Documents\GitHub\Cx\stdlib</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Workstation-Release|Win32'">
     <LocalDebuggerCommand>$(TargetPath) </LocalDebuggerCommand>

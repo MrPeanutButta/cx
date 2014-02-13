@@ -94,7 +94,7 @@ enum cx_token_code {
 	tc_FOR, tc_PUBLIC, tc_THROW, tc_DEFAULT, tc_TYPEDEF, tc_MUTABLE, 
 
 	// directives
-	tc_INCLUDE, tc_WARN,
+	tc_INCLUDE, tc_WARN, tc_IMPORT,
 
     mc_location_marker = 126,
     mc_line_marker = 127

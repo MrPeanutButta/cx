@@ -25,6 +25,8 @@ cx_type *p_file_type = nullptr;
 cx_type *p_dummy_type = nullptr;
 cx_type *p_void_type = nullptr;
 
+cx_datatype cx_dt;
+
 /** Constructors    General.
  *
  * @param fc  : form code.
@@ -88,6 +90,10 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 		type_code = cx_file;
 		complex.p_class_scope = std_stream_members;
 	}
+
+	// track all types
+	cx_dt[type_name] = this;
+
 }
 
 cx_type::cx_type (int length, bool constant)

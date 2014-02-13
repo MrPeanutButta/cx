@@ -154,7 +154,7 @@ cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
 
     if (p_id->runstack_item == nullptr) return;
 
-#ifndef WIN32
+//#ifndef WIN32
     void *addr = p_id->runstack_item->basic_types.addr__;
     cx_type_form_code form = p_id->p_type->form;
     cx_define_code def_how = p_id->defn.how;
@@ -163,7 +163,7 @@ cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
 
         free(p_id->runstack_item->basic_types.addr__);
     }
-#endif
+//#endif
 
     p_id->runstack_item = nullptr;
 }

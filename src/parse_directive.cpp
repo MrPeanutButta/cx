@@ -11,6 +11,43 @@
 #include "error.h"
 #include "parser.h"
 
+#ifdef _WIN32
+#include <windows.h>
+
+void load_windows_lib(const char *lib, cx_symtab_node *p_function_id){
+	typedef void(*p_init)(cx_symtab &, cx_datatype &);
+
+	extern cx_datatype cx_dt;
+	extern cx_symtab cx_global_symtab;
+
+	HINSTANCE hinstLib;
+	p_init ProcAdd;
+	BOOL fFreeResult, fRunTimeLinkSuccess = FALSE;
+
+	std::string dll = std::string(lib) + ".dll";
+
+	// Get a handle to the DLL module.
+	hinstLib = LoadLibrary(dll.c_str());
+
+	// If the handle is valid, try to get the function address.
+	if (hinstLib != NULL)
+	{
+		ProcAdd = (p_init)GetProcAddress(hinstLib, "cx_lib_init");
+
+		// If the function address is valid, call the function.
+		if (NULL != ProcAdd)
+		{
+			fRunTimeLinkSuccess = TRUE;
+			(ProcAdd)(cx_global_symtab, cx_dt);
+		}
+		// Free the DLL module.
+
+		fFreeResult = FreeLibrary(hinstLib);
+	}
+}
+
+#endif
+
 /** parse_execute_directive      Opens an external script module
  *                      for parsing.
  *
@@ -73,6 +110,15 @@ void cx_parser::parse_execute_directive (cx_symtab_node *p_function_id) {
 			}
 
 			get_token_append();
+			break;
+		case tc_IMPORT:
+			get_token();
+
+#ifdef _WIN32
+			load_windows_lib(p_token->string__(), p_function_id);
+#else
+
+#endif
 			break;
         default:
             break;

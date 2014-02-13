@@ -7,6 +7,13 @@
 
 #ifdef __CX_PROFILE_EXECUTION__
 #include <chrono>
+
+#ifdef _WIN32
+#define _CRTDBG_MAP_ALLOC // below for leak detection on windows
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #endif
 
 #include "error.h"
@@ -81,15 +88,21 @@ int main (int argc, char *argv[]) {
 
         p_backend->go(p_program_id);
 
+		delete[] p_vector_symtabs;
+		delete p_backend;
+
 #ifdef __CX_PROFILE_EXECUTION__
         t2 = high_resolution_clock::now();
         time_span = duration_cast < duration<double >> (t2 - t1);
         std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+
+#ifdef _WIN32
+		_CrtDumpMemoryLeaks();
+#endif
+
 		std::cin.get();
 #endif
 
-        delete[] p_vector_symtabs;
-        delete p_backend;
     }
 
     return 0;

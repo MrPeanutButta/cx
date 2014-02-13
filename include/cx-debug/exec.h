@@ -158,6 +158,9 @@ private:
 
 public:
     cx_runtime_stack(void);
+	~cx_runtime_stack(void){
+		cx_runstack.clear();
+	}
 
     void push(const bool &value) {
         cx_runstack.push_back(new cx_stack_item((bool)value));
@@ -376,7 +379,7 @@ private:
     cx_type *execute_initialization_list(void);
     cx_type *execute_std_member_call(cx_symtab_node *p_function_id, cx_type *p_type);
     
-    cx_type * alloc_temp_rvalue(const cx_type *lhs, cx_type * rhs);
+    cx_type *alloc_temp_rvalue(const cx_type *lhs, cx_type * rhs);
 
     void cx_malloc(cx_symtab_node* p_target_id,
             cx_type* p_target_type, cx_type* p_expr_type, cx_stack_item* p_target,
@@ -460,6 +463,9 @@ public:
 
         break_loop = false;
     }
+
+	~cx_executor(void){
+	}
 
     virtual void go(cx_symtab_node * p_program_id);
 };

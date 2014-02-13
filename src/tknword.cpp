@@ -55,6 +55,7 @@ std::pair<std::string, cx_token_code> map_data[] = {
                                                     std::make_pair("mutable", tc_MUTABLE),
                                                     std::make_pair("include", tc_INCLUDE),
 													std::make_pair("warn", tc_WARN),
+													std::make_pair("import", tc_IMPORT),
 };
 
 

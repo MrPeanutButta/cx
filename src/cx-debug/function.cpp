@@ -86,8 +86,6 @@ cx_type *cx_executor::execute_function_call (cx_symtab_node *p_function_id) {
             p_result_type = execute_decl_function_call(p_function_id);
             break;
         case func_standard:
-            p_result_type = execute_std_function_call(p_function_id);
-            break;
         default:
             p_result_type = (*p_function_id->defn.routine.std_member)
                     (this, p_function_id, p_function_id->p_type);
@@ -236,6 +234,7 @@ void cx_executor::execute_RETURN (cx_symtab_node * p_function_id) {
     token = tc_dummy;
 }
 
+/*
 cx_type *cx_executor::execute_std_function_call (cx_symtab_node* p_function_id) {
     if (p_function_id->defn.routine.std_function != nullptr) {
         return (*p_function_id->defn.routine.std_function)(this, p_function_id);
@@ -244,4 +243,4 @@ cx_type *cx_executor::execute_std_function_call (cx_symtab_node* p_function_id) 
     }
     //@TODO need error checking
     return p_dummy_type;
-}
+}*/

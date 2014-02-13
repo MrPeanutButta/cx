@@ -104,6 +104,8 @@ L_tmpnam
   
 */
 
+#import stdio
+
 /* putchar - Write character to stdout
  * Writes a character to the standard output (stdout).
  *
