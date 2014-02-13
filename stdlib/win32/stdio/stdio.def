@@ -1,7 +1,6 @@
-; MyHook.def : Declares the module parameters for the DLL.
+; stdio.def : Declares the module parameters for the DLL.
 
 LIBRARY      "stdio"
-DESCRIPTION  "Cx Standard IO Library"
 
 EXPORTS
     ; Explicit exports can go here

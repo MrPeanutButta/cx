@@ -20,16 +20,9 @@ cx_type *cxstdio::remove(cx_executor *cx,
 	return cx_function_id->p_type;
 }
 
-STDIO_API void cx_lib_init(cx_symtab &global_symtab, cx_datatype &dt){
+STDIO_API cx_symbols cx_lib_init(void){
 
-	struct cx_stdio{
-		cx_symtab_node *p_node;
-		std::string name;
-		cx_function_code func_code;
-		m_call member_call;
-		cx_type *p_type;
-	} io[] = {
-		{ nullptr, "remove", func_standard, &cxstdio::remove, dt["bool"] }
+	return{
+		{ nullptr, "remove", func_standard, &cxstdio::remove, cx_bool } 
 	};
-		
 }

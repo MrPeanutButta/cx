@@ -11,38 +11,57 @@
 #include "error.h"
 #include "parser.h"
 
+#include "cx_api.h"
+
 #ifdef _WIN32
 #include <windows.h>
 
 void load_windows_lib(const char *lib, cx_symtab_node *p_function_id){
-	typedef void(*p_init)(cx_symtab &, cx_datatype &);
+	typedef cx_symbols (*lib_init)(void);
 
+	cx_symbols *loaded_symbols = nullptr;
 	extern cx_datatype cx_dt;
 	extern cx_symtab cx_global_symtab;
 
-	HINSTANCE hinstLib;
-	p_init ProcAdd;
-	BOOL fFreeResult, fRunTimeLinkSuccess = FALSE;
+	HINSTANCE hinst_lib;
+	lib_init init_call;
+	BOOL f_free_result, f_runtime_linksuccess = FALSE;
+
+	std::string lib_path;
+	char *env_path = getenv(__CX_STDLIB__);
+
+	if (env_path != nullptr) {
+		lib_path = env_path;
+		lib_path += "\\";
+	}
 
 	std::string dll = std::string(lib) + ".dll";
 
+	lib_path += dll;
+
 	// Get a handle to the DLL module.
-	hinstLib = LoadLibrary(dll.c_str());
+	hinst_lib = LoadLibrary(dll.c_str());
 
 	// If the handle is valid, try to get the function address.
-	if (hinstLib != NULL)
+	if (hinst_lib != NULL)
 	{
-		ProcAdd = (p_init)GetProcAddress(hinstLib, "cx_lib_init");
+		init_call = (lib_init)GetProcAddress(hinst_lib, "cx_lib_init");
 
 		// If the function address is valid, call the function.
-		if (NULL != ProcAdd)
+		if (NULL != init_call)
 		{
-			fRunTimeLinkSuccess = TRUE;
-			(ProcAdd)(cx_global_symtab, cx_dt);
+			f_runtime_linksuccess = TRUE;
+			loaded_symbols = new cx_symbols((init_call)());
 		}
 		// Free the DLL module.
 
-		fFreeResult = FreeLibrary(hinstLib);
+		f_free_result = FreeLibrary(hinst_lib);
+	}
+
+	if (loaded_symbols != nullptr){
+		//for (cx_lib &lib : loaded_symbols){
+		std::cout << loaded_symbols->at(0).name << std::endl;
+		//}
 	}
 }
 

@@ -42,6 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
+    <OutDir>..\..</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -55,7 +56,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>/DEF:"stdio.def" /D "_CRT_SECURE_NO_WARNINGS"
  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>C:\Users\aahebert\Documents\GitHub\Cx\include;C:\Users\aahebert\Documents\GitHub\Cx\include\cx-debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\aaron_000\Documents\GitHub\Cx\include\cx-debug;C:\Users\aaron_000\Documents\GitHub\Cx\include;C:\Users\aahebert\Documents\GitHub\Cx\include;C:\Users\aahebert\Documents\GitHub\Cx\include\cx-debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
