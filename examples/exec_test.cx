@@ -2,11 +2,9 @@
 
 int main() {
 
-	char *buffer = getchar().to_str;
-
-	int a = buffer.length;
-
-	puts(buffer);
+	if(!remove("textfile")){
+		puts("error removing file");
+	}
 
     return 0;
 }
