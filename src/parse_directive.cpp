@@ -12,6 +12,8 @@
 #include "parser.h"
 #include "cx_api.h"
 
+extern bool cx_dev_debug_flag;
+
 #ifdef _WIN32
 #include <windows.h>
 
@@ -65,7 +67,10 @@ cx_symbols *load_windows_lib(const char *lib, cx_symtab *p_symtab){
 	if (loaded_symbols != nullptr){
 		for (unsigned int i = 0; i < loaded_symbols->size(); ++i){
 			loaded_symbols->at(i).f_ptr = (ext_call)GetProcAddress(hinst_lib, loaded_symbols->at(i).symbol_name.c_str());
-			std::cout << loaded_symbols->at(i).name << std::endl;
+			
+			if (cx_dev_debug_flag){
+				std::cout << "imported: " << loaded_symbols->at(i).name << std::endl;
+			}
 		}
 	}
 
@@ -122,8 +127,6 @@ void load_symbols(cx_symtab *p_symtable, cx_symbols *loaded_symbols){
 		}
 	}
 
-	//cx_type *t = (loaded_symbols->at(0).f_ptr)(nullptr, p_program_ptr_id, p_integer_type);
-
 	delete loaded_symbols;
 }
 
@@ -145,7 +148,11 @@ void cx_parser::parse_execute_directive (cx_symtab_node *p_function_id) {
 
 						if (env_path != nullptr) {
 							lib_path = env_path;
+#ifdef _WIN32
+							lib_path += "\\";
+#else
 							lib_path += "/";
+#endif
 						}
 
 						get_token();

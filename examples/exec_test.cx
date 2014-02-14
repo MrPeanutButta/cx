@@ -1,9 +1,46 @@
 #include stdio
 
-int main() {
+int main () {
 
-	if(!remove("textfile")){
-		puts("error removing file");
+	file myfile;
+	char *buffer = "test - I will write this test to a text file then read it back";
+	char *filename = "textfile.txt";
+
+	puts(buffer + ": I will now attempt to r/w to " + filename);
+	
+	if(!myfile.open(filename, "w"))
+		perror("error opening file: " + filename);
+	else {
+
+		//for(int i = 0; i < 100; i++){
+			myfile.puts(buffer);
+		//}
+
+		myfile.close;
+	}
+
+	if(!myfile.reopen(filename, "r"))
+		perror("error opening file: " + filename);
+	else {
+		while(!myfile.eof){
+			putchar(myfile.getc);
+			putchar('\n');
+		}
+
+		myfile.close;
+	}
+
+	if(!rename(filename, "new_file_name")){
+		perror("unable to rename " + filename);
+	} else {
+		puts("renamed " + filename + " to new_file_name\n");
+	}
+
+	if(!remove("new_file_name")){
+		perror("remove");
+	} else {
+				puts("removed file");
+
 	}
 
     return 0;

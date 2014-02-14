@@ -165,13 +165,16 @@ cx_type *cx_executor::execute_decl_function_call
 void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
     cx_symtab_node *p_formal_id; // ptr to formal parm's symtab node
 
+	get_token();
+
     // Loop to execute each actual parameter.
     for (p_formal_id = p_function_id->defn.routine.locals.p_parms_ids;
          p_formal_id;
          p_formal_id = p_formal_id->next__) {
 
         cx_type *p_formal_type = p_formal_id->p_type;
-        get_token();
+        //get_token();
+		if (token == tc_comma) get_token();
 
         /* Reference parameter: execute_variable will leave the actual
          * parameter's address on top of the stack. */

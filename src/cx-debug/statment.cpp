@@ -114,13 +114,13 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
     get_token();
 
     // (
-    get_token();
+    //get_token();
 
     execute_expression();
     bool condition = top()->basic_types.bool__;
 
     // )
-    get_token();
+    //get_token();
 
     if (condition) {
 
@@ -128,12 +128,16 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
         execute_statement(p_function_id);
         while (token == tc_semicolon)get_token();
 
+		
         // If there is an ELSE part, jump around it.
-        if (token == tc_ELSE) {
-            get_token();
-            go_to(get_location_marker());
-            get_token(); // token following the IF statement
-        }
+       if (token == tc_ELSE) {
+		   get_token();
+			go_to(get_location_marker());
+			get_token(); // token following the IF statement
+		}
+		//else {
+		//	//get_token();
+		//}
     } else {
 
         // False: Go to the false location.
