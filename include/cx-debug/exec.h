@@ -11,8 +11,13 @@
 #include "icode.h"
 #include "backend.h"
 
-class cx_type;
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
 extern bool cx_dev_debug_flag;
+class cx_type;
 
 union mem_block {
     uint8_t uint8__;
@@ -113,6 +118,7 @@ struct cx_frame_header : public cx_stack_item {
 
         return_address.icode = orig->return_address.icode;
         return_address.location = orig->return_address.location;
+		extern bool cx_dev_debug_flag;
 
         if (cx_dev_debug_flag)
             std::clog << ">>* new (copy) stack frame element :" << this << std::endl;
@@ -454,8 +460,6 @@ public:
     cx_executor(void) : cx_backend() {
         statement_count = 0;
 
-        extern bool cx_dev_debug_flag;
-
         trace_routine_flag = cx_dev_debug_flag;
         trace_statement_flag = cx_dev_debug_flag;
         trace_store_flag = cx_dev_debug_flag;
@@ -465,6 +469,10 @@ public:
     }
 
 	~cx_executor(void){
+#ifdef _WIN32
+		extern std::vector<HINSTANCE> windows_libs;
+		for (HINSTANCE &h_lib : windows_libs) FreeLibrary(h_lib);
+#endif
 	}
 
     virtual void go(cx_symtab_node * p_program_id);

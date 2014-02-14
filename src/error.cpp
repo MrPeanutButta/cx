@@ -111,7 +111,9 @@ const char *error_messages[] = {
                                 "Unimplemented feature",
                                 "Missing (",
                                 "Missing '",
-                                "Invalid escape character"
+                                "Invalid escape character",
+								"Could not load library",
+								"No cx_lib_init in library"
 };
 
 /** cx_error       print an arrow under the error and then

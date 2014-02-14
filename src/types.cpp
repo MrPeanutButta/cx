@@ -92,7 +92,7 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 	}
 
 	// track all types
-	cx_dt[type_name] = this;
+	cx_dt[type_code] = this;
 
 }
 

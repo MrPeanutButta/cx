@@ -17,11 +17,13 @@ struct cx_stack_item;
 class cx_type;
 class cx_symtab_node;
 class cx_executor;
+class cx_runtime_stack;
 
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
 typedef cx_type *(*f_call)(cx_executor *, const cx_symtab_node *);
 typedef cx_type *(*m_call)(cx_executor *, cx_symtab_node *, const cx_type *);
+typedef cx_type *(*ext_call)(cx_runtime_stack *, cx_symtab_node *, const cx_type *);
 
 extern bool xreference_flag;
 extern int current_line_number;
@@ -46,7 +48,7 @@ enum cx_define_code {
 };
 
 enum cx_function_code {
-    func_declared, func_forward, func_standard, func_std_member, func_std_iterator
+    func_declared, func_forward, func_standard, func_std_member//, func_std_iterator
 };
 
 struct cx_local_ids {
@@ -88,7 +90,7 @@ public:
             int parm_count;
             int total_parm_size;
             int total_local_size;
-            //f_call std_function; // internal function call
+			ext_call ext_function; // external function call
             m_call std_member; // standard type members
             cx_local_ids locals;
             cx_symtab *p_symtab;

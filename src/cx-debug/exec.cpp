@@ -95,10 +95,10 @@ cx_runtime_stack::pop_frame (const cx_symtab_node *p_function_id,
     // Don't do anything if it's the bottommost stack frame.
     if (p_frame_base != p_stackbase) {
         // Return to the caller's intermediate code.
-        if (p_function_id->defn.routine.which != func_std_iterator) {
+//        if (p_function_id->defn.routine.which != func_std_iterator) {
             p_icode = (cx_icode *) p_header->return_address.icode->basic_types.addr__;
             p_icode->go_to(p_header->return_address.location->basic_types.int__);
-        }
+      //  }
 
         it_frame_base = p_header->return_address.previous_header;
 

@@ -66,9 +66,9 @@ void cx_executor::exit_function (cx_symtab_node *p_function_id) {
 
     // pop off the callee's stack frame and return to the caller's
     // intermediate code.
-	if (p_function_id->defn.routine.which != func_std_iterator){
+	//if (p_function_id->defn.routine.which != func_std_iterator){
 		run_stack.pop_frame(p_function_id, p_icode);
-	}
+	//}*/
 }
 
 /** execute_subroutine_call	Execute a call to a procedure or
@@ -86,6 +86,13 @@ cx_type *cx_executor::execute_function_call (cx_symtab_node *p_function_id) {
             p_result_type = execute_decl_function_call(p_function_id);
             break;
         case func_standard:
+			// push actual parameter values onto the stack.
+			execute_actual_parameters(p_function_id);
+			//  )
+			get_token();
+			p_result_type = (*p_function_id->defn.routine.ext_function)
+				(&this->run_stack, p_function_id, p_function_id->p_type);
+			break;
         default:
             p_result_type = (*p_function_id->defn.routine.std_member)
                     (this, p_function_id, p_function_id->p_type);

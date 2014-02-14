@@ -5,6 +5,8 @@ LIBRARY      "stdio"
 EXPORTS
     ; Explicit exports can go here
     cx_lib_init
+	cx_remove
+
     
 SECTIONS
     ; Pragma sections
