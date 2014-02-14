@@ -36,11 +36,10 @@ int main () {
 		puts("renamed " + filename + " to new_file_name\n");
 	}
 
-	if(!remove("new_file_name")){
-		perror("remove");
+	if(remove("new_file_name")){
+		puts("removed file");
 	} else {
-				puts("removed file");
-
+		perror("remove");
 	}
 
     return 0;

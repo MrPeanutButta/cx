@@ -128,7 +128,6 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
         execute_statement(p_function_id);
         while (token == tc_semicolon)get_token();
 
-		
         // If there is an ELSE part, jump around it.
        if (token == tc_ELSE) {
 		   get_token();
