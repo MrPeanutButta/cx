@@ -197,7 +197,6 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
         p_prev_type = p_type;
     } while (!done_flag);
 
-
     // If address_flag is false, and the data is not an array
     // or a record, replace the address at the top of the stack
     // with the data value.

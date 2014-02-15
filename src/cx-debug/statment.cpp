@@ -134,9 +134,6 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
 			go_to(get_location_marker());
 			get_token(); // token following the IF statement
 		}
-		//else {
-		//	//get_token();
-		//}
     } else {
 
         // False: Go to the false location.

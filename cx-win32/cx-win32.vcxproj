@@ -191,7 +191,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>cx.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Worksation-Debug|x64'">
@@ -226,7 +227,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>cx.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -270,6 +272,7 @@
     <ClInclude Include="..\include\common.h" />
     <ClInclude Include="..\include\complist.h" />
     <ClInclude Include="..\include\cx-debug\cx_api.h" />
+    <ClInclude Include="..\include\cx-debug\cx_api_types.h" />
     <ClInclude Include="..\include\cx-debug\exec.h" />
     <ClInclude Include="..\include\cx-debug\rlutil.h" />
     <ClInclude Include="..\include\cx-debug\cx_stdio.h" />

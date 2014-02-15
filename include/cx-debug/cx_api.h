@@ -31,6 +31,8 @@ enum cx_type_code {
 	cx_void
 };
 
+
+
 enum cx_define_code {
 	dc_undefined, dc_constant, dc_type, dc_variable, dc_member,
 	dc_value_parm, dc_reference, dc_pointer,
@@ -50,13 +52,13 @@ public:
 	// name of variable
 	std::string name;
 	// data type
-	cx_type_code type;
+	cx_type *type;
 	// defined as reference or value parameter
 	cx_define_code ref_or_val;
 
 	// if an array, what element type
 	struct {
-		cx_type_code element_type;
+		cx_type *element_type;
 	}array;
 
 	// next parameter
@@ -86,7 +88,8 @@ public:
 		    cx_int, cx_char, cx_wchar, cx_float, cx_bool, 
 			cx_uint8, cx_address, cx_complex, cx_file, cx_void
 	*/
-	cx_type_code return_type;
+	cx_type *return_type;
+	//cx_type_code return_type;
 
 	/* declared as
 			func_declared, func_forward, func_standard, func_std_member

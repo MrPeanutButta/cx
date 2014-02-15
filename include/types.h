@@ -47,7 +47,7 @@ enum cx_type_form_code {
 };
 
 enum cx_type_code {
-    cx_int,
+    cx_int = 0,
     cx_char,
     cx_wchar,
     cx_float,
@@ -70,7 +70,14 @@ class cx_type {
     bool is_constant__;
 
 public:
-    const cx_type_form_code form;
+
+	cx_type(){ //cx_type_form_code form_code){
+		//this->form = form_code;
+	}
+
+//    const cx_type_form_code form;
+	cx_type_form_code form;
+
 	bool is_address;
     // size of the first element
     int size;
@@ -115,7 +122,7 @@ public:
     cx_type(cx_type_form_code fc, int s, cx_symtab_node *p_id);
     cx_type(int length, bool constant = false);
 
-    ~cx_type();
+	~cx_type(){};
 
     bool is_scalar_type(void) const {
         return (form != fc_array) &&

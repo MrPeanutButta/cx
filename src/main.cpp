@@ -8,10 +8,12 @@
 #ifdef __CX_PROFILE_EXECUTION__
 #include <chrono>
 
+#ifdef _WIN32_LEAK_DETECT
 #ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC // below for leak detection on windows
 #include <stdlib.h>
 #include <crtdbg.h>
+#endif
 #endif
 
 #endif
@@ -96,8 +98,10 @@ int main (int argc, char *argv[]) {
         time_span = duration_cast < duration<double >> (t2 - t1);
         std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
+#ifdef _WIN32_LEAK_DETECT
 #ifdef _WIN32
 		_CrtDumpMemoryLeaks();
+#endif
 #endif
 
 		std::cin.get();

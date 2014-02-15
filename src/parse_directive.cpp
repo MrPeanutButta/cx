@@ -20,7 +20,21 @@ extern bool cx_dev_debug_flag;
 std::vector<HINSTANCE> windows_libs;
 
 cx_symbols *load_windows_lib(const char *lib, cx_symtab *p_symtab){
-	typedef cx_symbols(*lib_init)(void);
+
+	const cx_type *cx_types_[] = {
+		p_integer_type,
+		p_char_type,
+		p_wchar_type,
+		p_float_type,
+		p_boolean_type,
+		p_uint8_type,
+		nullptr,
+		nullptr,
+		p_file_type,
+		p_void_type
+	};
+
+	typedef cx_symbols(*lib_init)(const cx_type **);
 
 	cx_symbols *loaded_symbols = nullptr;
 
@@ -53,7 +67,7 @@ cx_symbols *load_windows_lib(const char *lib, cx_symtab *p_symtab){
 		if (nullptr != init_call){
 			f_runtime_linksuccess = true;
 			//pass our symbol table to the DLL with a map of allowed data types.
-			loaded_symbols = new cx_symbols((init_call)());
+			loaded_symbols = new cx_symbols((init_call)(cx_types_));
 		}
 		else {
 			cx_error(err_library_no_init);
@@ -81,21 +95,16 @@ cx_symbols *load_windows_lib(const char *lib, cx_symtab *p_symtab){
 
 void load_symbols(cx_symtab *p_symtable, cx_symbols *loaded_symbols){
 	extern cx_symtab_node *p_program_ptr_id;
-	extern cx_datatype cx_dt;
+//	extern cx_datatype cx_dt;
 
 	cx_symtab_node *p_node = nullptr;
 
 	for (cx_symbols::iterator it = loaded_symbols->begin(); it != loaded_symbols->end(); ++it){
 		p_node = p_symtable->enter(it->name.c_str(), it->define);
 		p_node->defn.routine.which = it->which;
+		p_node->defn.routine.ext_function = it->f_ptr;
 
-		if (it->return_type == cx_address){
-			/*set_type(p_node->p_type, new cx_type(fc_array, 0, p_node));
-			set_type(p_node->p_type->array.p_element_type, it->)*/
-		}
-		else {
-			set_type(p_node->p_type, cx_dt[it->return_type]);
-		}
+		set_type(p_node->p_type, (cx_type *)it->return_type);
 
 		if (it->parameters != nullptr){
 			
@@ -114,16 +123,14 @@ void load_symbols(cx_symtab *p_symtable, cx_symbols *loaded_symbols){
 					p_pnode = p_pnode->next__;
 				}
 
-				if (p->type == cx_address){
+				if (p->type->type_code == cx_address){
 					set_type(p_pnode->p_type, new cx_type(fc_array, 0, p_pnode));
-					set_type(p_pnode->p_type->array.p_element_type, cx_dt[p->array.element_type]);
+					set_type(p_pnode->p_type->array.p_element_type, (cx_type *)p->array.element_type);
 				}
 				else {
-					set_type(p_pnode->p_type, cx_dt[p->type]);
+					set_type(p_pnode->p_type, (cx_type *)p->type);
 				}
-			}
-
-			p_node->defn.routine.ext_function = it->f_ptr;
+			}	
 		}
 	}
 

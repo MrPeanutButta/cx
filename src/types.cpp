@@ -25,8 +25,6 @@ cx_type *p_file_type = nullptr;
 cx_type *p_dummy_type = nullptr;
 cx_type *p_void_type = nullptr;
 
-cx_datatype cx_dt;
-
 /** Constructors    General.
  *
  * @param fc  : form code.
@@ -90,10 +88,6 @@ cx_type::cx_type (cx_type_form_code fc, int s, cx_symtab_node* p_id)
 		type_code = cx_file;
 		complex.p_class_scope = std_stream_members;
 	}
-
-	// track all types
-	cx_dt[type_code] = this;
-
 }
 
 cx_type::cx_type (int length, bool constant)
@@ -116,7 +110,7 @@ cx_type::cx_type (int length, bool constant)
  *                  the symbol tables that contain their
  *                  identifiers.
  */
-cx_type::~cx_type () {
+/*cx_type::~cx_type () {
     switch (form) {
         case fc_array:
             remove_type(array.p_element_type);
@@ -128,7 +122,7 @@ cx_type::~cx_type () {
         default:
             break;
     }
-}
+}*/
 
 /** print_type_spec       print information about a type
  *                      specification for the cross-reference.
@@ -301,7 +295,6 @@ void cx_type::print_record_type (cx_verbosity_code vc) {
 void initialize_builtin_types (cx_symtab *p_symtab) {
     
 	// if main already exists this is not the parent instance
-	//if (p_main_function_id != nullptr) return;
 
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = func_forward;

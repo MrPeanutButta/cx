@@ -4,7 +4,7 @@ int main () {
 
 	file myfile;
 	char *buffer = "test - I will write this test to a text file then read it back";
-	char *filename = "textfile.txt";
+	char *filename = gets();
 
 	puts(buffer + ": I will now attempt to r/w to " + filename);
 	
@@ -12,15 +12,15 @@ int main () {
 		perror("error opening file: " + filename);
 	else {
 
-		//for(int i = 0; i < 100; i++){
+		for(int i = 0; i < 100; i++){
 			myfile.puts(buffer);
-		//}
+		}
 
 		myfile.close;
 	}
 
 	if(!myfile.reopen(filename, "r"))
-		perror("error opening file: " + filename);
+		perror("error reopening file: " + filename);
 	else {
 		while(!myfile.eof){
 			putchar(myfile.getc);

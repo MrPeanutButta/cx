@@ -90,6 +90,9 @@
     <ClInclude Include="..\stdlib\string">
       <Filter>stdlib</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cx-debug\cx_api_types.h">
+      <Filter>Header Files\cx-debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\buffer.cpp">
