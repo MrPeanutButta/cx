@@ -43,7 +43,7 @@ void init_std_members (void) {
 		{ nullptr, mc_stream, "wide", func_std_member, &cx_stdio::wide, p_integer_type },
 		{ nullptr, mc_stream, "read", func_std_member, &cx_stdio::read, new cx_type(fc_array, 0, nullptr) },
 		{ nullptr, mc_stream, "write", func_std_member, &cx_stdio::write, p_integer_type },
-		{ nullptr, mc_stream, "getc", func_std_member, &cx_stdio::getc, p_integer_type },
+		{ nullptr, mc_stream, "getc", func_std_member, &cx_stdio::getc, p_char_type },
 		{ nullptr, mc_stream, "gets", func_std_member, &cx_stdio::gets, new cx_type(fc_array, 0, nullptr) },
 		{ nullptr, mc_stream, "putc", func_std_member, &cx_stdio::putc, p_integer_type },
 		{ nullptr, mc_stream, "ungetc", func_std_member, &cx_stdio::ungetc, p_integer_type },

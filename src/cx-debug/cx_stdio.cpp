@@ -214,7 +214,9 @@ cx_type *cx_stdio::getc(cx_executor *cx,
 	cx_symtab_node *p_snode = (cx_symtab_node *)cx->top()->basic_types.addr__;
 	cx->pop();
 
-	cx->push((int)std::getc(p_snode->defn.io.stream));
+	cx_stack_item *rv = new cx_stack_item;
+	rv->basic_types.char__ = std::getc(p_snode->defn.io.stream);
+	cx->push((void *)rv);
 
 	return cx_function_id->p_type;
 }
