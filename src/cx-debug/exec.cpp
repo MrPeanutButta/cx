@@ -7,11 +7,6 @@
 #include <iostream>
 #include "exec.h"
 
-extern cx_type *p_integer_type;
-extern cx_type *p_float_type;
-extern cx_type *p_boolean_type;
-extern cx_type *p_char_type;
-
 /*******************
  *                 *
  *  Runtime Stack  *
@@ -20,7 +15,7 @@ extern cx_type *p_char_type;
 
 ///  Constructor
 
-cx_runtime_stack::cx_runtime_stack (void) {
+cx_runtime_stack::cx_runtime_stack(void) {
 
     // Initialize the program's stack frame at the bottom.
 
@@ -42,8 +37,8 @@ cx_runtime_stack::cx_runtime_stack (void) {
  * @return: ptr to the base of the callee's stack frame
  */
 cx_frame_header *
-cx_runtime_stack::push_frame_header (int old_level, int new_level,
-                                     cx_icode *p_icode) {
+cx_runtime_stack::push_frame_header(int old_level, int new_level,
+        cx_icode *p_icode) {
 
     push(-1); // function return value (placeholder)
     cx_stack_item *return_value = (cx_stack_item *) top();
@@ -71,8 +66,8 @@ cx_runtime_stack::push_frame_header (int old_level, int new_level,
  */
 
 void
-cx_runtime_stack::activate_frame (cx_frame_header *p_new_frame_base,
-                                  const int &location) {
+cx_runtime_stack::activate_frame(cx_frame_header *p_new_frame_base,
+        const int &location) {
 
     p_frame_base = p_new_frame_base;
     p_frame_base->return_address.location->basic_types.int__ = location;
@@ -87,18 +82,18 @@ cx_runtime_stack::activate_frame (cx_frame_header *p_new_frame_base,
  * @param p_icode     : ref to ptr to caller's intermediate code
  */
 void
-cx_runtime_stack::pop_frame (const cx_symtab_node *p_function_id,
-                             cx_icode *&p_icode) {
+cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
+        cx_icode *&p_icode) {
 
     cx_frame_header *p_header = p_frame_base;
 
     // Don't do anything if it's the bottommost stack frame.
     if (p_frame_base != p_stackbase) {
         // Return to the caller's intermediate code.
-//        if (p_function_id->defn.routine.which != func_std_iterator) {
-            p_icode = (cx_icode *) p_header->return_address.icode->basic_types.addr__;
-            p_icode->go_to(p_header->return_address.location->basic_types.int__);
-      //  }
+        //        if (p_function_id->defn.routine.which != func_std_iterator) {
+        p_icode = (cx_icode *) p_header->return_address.icode->basic_types.addr__;
+        p_icode->go_to(p_header->return_address.location->basic_types.int__);
+        //  }
 
         it_frame_base = p_header->return_address.previous_header;
 
@@ -109,7 +104,7 @@ cx_runtime_stack::pop_frame (const cx_symtab_node *p_function_id,
 
         //if (p_function_id->defn.how != dc_function) pop();
         //if (p_function_id->defn.routine.which == func_std_iterator) pop();
-		if (p_function_id->p_type == p_void_type) pop();
+        if (p_function_id->p_type == p_void_type) pop();
 
         p_frame_base = (cx_frame_header *) p_header->dynamic_link->basic_types.addr__;
     }
@@ -122,7 +117,8 @@ cx_runtime_stack::pop_frame (const cx_symtab_node *p_function_id,
  * @param p_id : ptr to symbol table node of variable or parm
  */
 void
-cx_runtime_stack::allocate_value (cx_symtab_node *p_id) {
+cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
+
     cx_type *p_type = p_id->p_type; // ptr to type object of value
 
     if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
@@ -150,11 +146,11 @@ cx_runtime_stack::allocate_value (cx_symtab_node *p_id) {
  * @param p_id : ptr to symbol table node of variable or parm
  */
 void
-cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
+cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
 
     if (p_id->runstack_item == nullptr) return;
 
-//#ifndef WIN32
+    //#ifndef WIN32
     void *addr = p_id->runstack_item->basic_types.addr__;
     cx_type_form_code form = p_id->p_type->form;
     cx_define_code def_how = p_id->defn.how;
@@ -163,7 +159,7 @@ cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
 
         free(p_id->runstack_item->basic_types.addr__);
     }
-//#endif
+    //#endif
 
     p_id->runstack_item = nullptr;
 }
@@ -179,10 +175,10 @@ cx_runtime_stack::deallocate_value (cx_symtab_node *p_id) {
  * @return    : ptr to the runtime stack item containing the
  *                 variable, parameter, or function return value
  */
-cx_stack_item *cx_runtime_stack::get_value_address (const cx_symtab_node *p_id) {
+cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
     bool function_flag = p_id->defn.how == dc_function; // true if function
     //   else false
-    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;    
+    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
     return function_flag ? p_header->function_value
             : p_id->runstack_item;
 }
@@ -197,7 +193,7 @@ cx_stack_item *cx_runtime_stack::get_value_address (const cx_symtab_node *p_id) 
 ///  go                  Start the executor.
 
 void
-cx_executor::go (cx_symtab_node *p_program_id) {
+cx_executor::go(cx_symtab_node *p_program_id) {
     // Initialize standard input and output.
     eof_flag = std::cin.eof();
     std::cout.setf(std::ios::fixed, std::ios::floatfield);
@@ -223,10 +219,10 @@ cx_executor::go (cx_symtab_node *p_program_id) {
  * @param value       : integer value to assign
  */
 void
-cx_executor::range_check (const cx_type *p_target_type, int value) {
+cx_executor::range_check(const cx_type *p_target_type, int value) {
 
     if ((p_target_type->form == fc_array)
-        && ((value < p_target_type->array.min_index)
+            && ((value < p_target_type->array.min_index)
             || (value > p_target_type->array.max_index))) {
         cx_runtime_error(rte_value_out_of_range);
     }
@@ -238,7 +234,7 @@ cx_executor::range_check (const cx_type *p_target_type, int value) {
  * @param p_program_id
  */
 void
-cx_executor::initialize_global (cx_symtab_node* p_program_id) {
+cx_executor::initialize_global(cx_symtab_node* p_program_id) {
 
     // Set up a new stack frame for the callee.
     cx_frame_header *p_new_frame_base = run_stack.push_frame_header

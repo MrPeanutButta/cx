@@ -20,9 +20,7 @@ class cx_symtab;
 
 // Pointers to predefined types.
 extern cx_symtab_node *p_main_function_id;
-/*extern  cx_symtab_node *p_stdin;
-extern  cx_symtab_node *p_stdout;
-extern  cx_symtab_node *p_stderr;*/
+
 extern cx_type *p_integer_type;
 extern cx_type *p_uint8_type;
 extern cx_type *p_float_type;

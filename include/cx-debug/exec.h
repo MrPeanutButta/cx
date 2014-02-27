@@ -17,8 +17,6 @@
 #include <dlfcn.h>
 #endif
 
-
-extern bool cx_dev_debug_flag;
 class cx_type;
 
 union mem_block {
@@ -47,58 +45,30 @@ struct cx_stack_item {
      * to perform a push */
     cx_stack_item(const uint8_t &value) {
         basic_types.uint8__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new uint8 = " << basic_types.uint8__ << std::endl;
     }
 
     cx_stack_item(const bool &value) {
         basic_types.bool__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new bool = " << basic_types.bool__ << std::endl;
     }
 
     cx_stack_item(const int &value) {
         basic_types.int__ = value;
-
-        if (cx_dev_debug_flag) {
-            if (value == -1) {
-                std::clog << "* return value place holder\n";
-            } else {
-                std::clog << "new int = " << basic_types.int__ << std::endl;
-            }
-        }
     }
 
     cx_stack_item(const float &value) {
         basic_types.float__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new float = " << basic_types.float__ << std::endl;
     }
 
     cx_stack_item(const char &value) {
         basic_types.char__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new char = " << basic_types.char__ << std::endl;
     }
 
     cx_stack_item(const wchar_t &value) {
         basic_types.wchar__ = value;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new wchar = " << basic_types.wchar__ << std::endl;
     }
 
     cx_stack_item(void *address) {
         basic_types.addr__ = address;
-        char *t = (char *) basic_types.addr__;
-        char *y = (char *) address;
-
-        if (cx_dev_debug_flag)
-            std::clog << "new ptr = " << basic_types.addr__ << std::endl;
     }
 
     mem_block basic_types;
@@ -120,10 +90,6 @@ struct cx_frame_header : public cx_stack_item {
 
         return_address.icode = orig->return_address.icode;
         return_address.location = orig->return_address.location;
-        extern bool cx_dev_debug_flag;
-
-        if (cx_dev_debug_flag)
-            std::clog << ">>* new (copy) stack frame element :" << this << std::endl;
     }
 
     cx_frame_header(void) {
@@ -134,9 +100,6 @@ struct cx_frame_header : public cx_stack_item {
 
         return_address.icode = new cx_stack_item;
         return_address.location = new cx_stack_item;
-
-        if (cx_dev_debug_flag)
-            std::clog << ">>* new (empty) stack frame element:" << this << std::endl;
     }
 
     cx_stack_item *function_value;
@@ -226,7 +189,6 @@ public:
             cx_runstack.erase(item);
         } else {
 
-            if (cx_dev_debug_flag)
                 std::clog << "item not found on the stack\n";
 
         }
@@ -462,11 +424,15 @@ public:
 
     cx_executor(void) : cx_backend() {
         statement_count = 0;
-
+/*
         trace_routine_flag = cx_dev_debug_flag;
         trace_statement_flag = cx_dev_debug_flag;
         trace_store_flag = cx_dev_debug_flag;
-        trace_fetch_flag = cx_dev_debug_flag;
+        trace_fetch_flag = cx_dev_debug_flag;*/
+        /*trace_routine_flag = true;
+        trace_statement_flag = true;
+        trace_store_flag = true;
+        trace_fetch_flag = true;*/
 
         break_loop = false;
     }

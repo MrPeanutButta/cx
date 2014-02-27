@@ -26,6 +26,25 @@
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/main.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/cx-debug/exec.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/cx-debug/tracer.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/parse_routine2.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/symtable.h</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/parse_declarations.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/cx-debug/cx_api.h</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/cx-debug/std_members.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/symtable.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/error.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/parse_directive.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/examples/exec_test.cx</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/buffer.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/cx-debug/exec.h</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/types.h</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/common.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/types.cpp</file>
+            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/cx-debug/assign.cpp</file>
+        </group>
     </open-files>
 </project-private>

@@ -15,6 +15,10 @@ int main () {
 	char *buffer = "I will write this test to a text file then read it back";
 	char *filename = "sometextfile";
 
+	// redirect stdout to a file
+	stdout.close;
+	stdout.reopen("test_redirect_io", "w");
+
 	puts(buffer + ": I will now attempt to r/w to " + filename);
 	
 	// attempt to open file for writing
@@ -32,11 +36,12 @@ int main () {
 	if(!myfile.reopen(filename, "r"))
 		perror("error reopening file: " + filename);
 	else {
-		
+		char c;
 		// while not end of file stream
 		while(!myfile.eof){
 			// print each char as string with newline
-			puts(myfile.getc.to_str);
+			puts(myfile.getc.size.to_str);
+
 		}
 
 		// close file

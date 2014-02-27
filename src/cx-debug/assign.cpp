@@ -12,7 +12,7 @@
  *                    on the stack.
  */
 void cx_executor::execute_assignment (cx_symtab_node *p_target_id) {
-
+    
     cx_stack_item *p_target = nullptr; // runtime stack address of target
     cx_type *p_target_type = nullptr; // ptr to target type object
     cx_type *p_expr_type = nullptr; // ptr to expression type object

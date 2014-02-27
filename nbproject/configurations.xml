@@ -129,9 +129,15 @@
             <pElem>include</pElem>
             <pElem>include/cx-debug</pElem>
           </incDir>
+          <commandLine>-g3</commandLine>
           <useLinkerLibraries>false</useLinkerLibraries>
           <warningLevel>3</warningLevel>
         </ccTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerOptionItem>-ldl</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
         <requiredProjects>
           <makeArtifact PL="stdlib/linux"
                         CT="2"

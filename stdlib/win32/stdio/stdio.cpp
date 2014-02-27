@@ -7,12 +7,11 @@
 
 #ifdef _WIN32
 #define STDIO_API __declspec(dllexport)
+#elif defined __linux__
+#define STDIO_API extern "C"
 #endif
-
-#ifdef _WIN32
 
 STDIO_API
-#endif
 cx_type *cx_puts(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -38,10 +37,8 @@ cx_type *cx_puts(cx_runtime_stack *p_stack,
 
 /* Opens a file indicated by filename and returns a file stream associated
  * with that file. mode is used to determine the file access mode. */
-#ifdef _WIN32
 
 STDIO_API
-#endif
 cx_type *cx_open(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -65,10 +62,7 @@ cx_type *cx_open(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_reopen(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -93,10 +87,7 @@ cx_type *cx_reopen(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_close(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -117,10 +108,8 @@ cx_type *cx_close(cx_runtime_stack *p_stack,
  * is of the update type, but the last I/O operation was not an output operation.
  *
  * If stream is NULL, all open streams are flushed. */
-#ifdef _WIN32
 
 STDIO_API
-#endif
 cx_type *cx_flush(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -139,10 +128,8 @@ cx_type *cx_flush(cx_runtime_stack *p_stack,
  * If mode < 0, attempts to make stream byte-oriented.
  * If mode==0, only queries the current orientation of the stream.
  */
-#ifdef _WIN32
 
 STDIO_API
-#endif
 cx_type *cx_wide(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -161,10 +148,7 @@ cx_type *cx_wide(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_read(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -189,17 +173,14 @@ cx_type *cx_read(cx_runtime_stack *p_stack,
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type(fc_array, s * size, nullptr);
-    set_type(p_str->array.p_element_type, p_char_type);
+    set_type(p_str->array.p_element_type, (cx_type *)cx_function_id->p_type->base_type());
     p_str->array.element_count = s;
     p_str->array.max_index = s;
 
     return p_str;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_write(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -225,10 +206,7 @@ cx_type *cx_write(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_getc(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -237,17 +215,12 @@ cx_type *cx_getc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    cx_stack_item *rv = new cx_stack_item;
-    rv->basic_types.char__ = std::getc(p_snode->defn.io.stream);
-    p_stack->push((void *) rv);
+	p_stack->push((char)std::getc(p_snode->defn.io.stream));
 
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_gets(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -268,17 +241,14 @@ cx_type *cx_gets(cx_runtime_stack *p_stack,
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type(fc_array, count, nullptr);
-    set_type(p_str->array.p_element_type, p_char_type);
+    set_type(p_str->array.p_element_type, (cx_type *)cx_function_id->p_type->base_type());
     p_str->array.element_count = count;
     p_str->array.max_index = count;
 
     return p_str;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_putc(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -296,10 +266,7 @@ cx_type *cx_putc(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_ungetc(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -317,10 +284,7 @@ cx_type *cx_ungetc(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_ungetwc(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -338,10 +302,7 @@ cx_type *cx_ungetwc(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_getwc(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -355,10 +316,7 @@ cx_type *cx_getwc(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_getws(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -381,17 +339,14 @@ cx_type *cx_getws(cx_runtime_stack *p_stack,
     p_stack->push((void *) buffer);
 
     cx_type *p_wstr = new cx_type(fc_array, count, nullptr);
-    set_type(p_wstr->array.p_element_type, p_wchar_type);
+    set_type(p_wstr->array.p_element_type, (cx_type *)cx_function_id->p_type->base_type());
     p_wstr->array.element_count = count;
     p_wstr->array.max_index = count;
 
     return p_wstr;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_putwc(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -409,10 +364,7 @@ cx_type *cx_putwc(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_putws(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -437,10 +389,7 @@ cx_type *cx_putws(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_tell(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -455,10 +404,7 @@ cx_type *cx_tell(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_seek(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -479,10 +425,7 @@ cx_type *cx_seek(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_rewind(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -497,10 +440,7 @@ cx_type *cx_rewind(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_clearerr(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -515,10 +455,7 @@ cx_type *cx_clearerr(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_eof(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -533,10 +470,7 @@ cx_type *cx_eof(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_error_(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -551,10 +485,7 @@ cx_type *cx_error_(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_tmpfile(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -571,10 +502,7 @@ cx_type *cx_tmpfile(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_tmpnam(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -587,17 +515,14 @@ cx_type *cx_tmpnam(cx_runtime_stack *p_stack,
     p_str->form = fc_array;
     p_str->type_code = cx_address;
     p_str->size = tmp_name.size();
-    set_type(p_str->array.p_element_type, (cx_type *) p_type->base_type());
+    set_type(p_str->array.p_element_type, (cx_type *) cx_function_id->p_type->base_type());
     p_str->array.element_count = tmp_name.length();
     p_str->array.max_index = tmp_name.length();
 
     return p_str;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_rename(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -613,10 +538,7 @@ cx_type *cx_rename(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_remove(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -629,10 +551,7 @@ cx_type *cx_remove(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 cx_type *cx_perror(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
@@ -649,10 +568,7 @@ cx_type *cx_perror(cx_runtime_stack *p_stack,
 
 //remove_type(p_file_type);
 
-#ifdef _WIN32
-
 STDIO_API
-#endif
 void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
     cx_type *p_file_type = nullptr;

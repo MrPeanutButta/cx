@@ -86,8 +86,8 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
 #elif defined __linux__
     std::string so = std::string(lib) + ".so";
     lib_path += so;
-
-    lib_handle = dlopen(lib_path.c_str(), RTLD_LAZY);
+    
+    lib_handle = dlopen(lib_path.c_str(), RTLD_NOW);
     // If the handle is valid, try to get the function address.
     if (lib_handle != nullptr) {
         init_call = (lib_init) dlsym(lib_handle, "cx_lib_init");
@@ -100,10 +100,12 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
             //pass our symbol table to the DLL with a map of allowed data types.
             (init_call) (p_symtab, cx_types_);
         } else {
+            std::cout << dlerror() << std::endl;
             cx_error(err_library_no_init);
         }
 
     } else {
+        std::cout << dlerror() << std::endl;
         cx_error(err_loading_library);
     }
 
