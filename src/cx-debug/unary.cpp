@@ -31,13 +31,6 @@ void cx_executor::unary_negate (cx_type* expr) {
             push((float) -(value));
         }
             break;
-        case cx_bool:
-        {
-            bool value = top()->basic_types.bool__;
-            pop();
-            push((bool) -(value));
-        }
-            break;
         case cx_uint8:
         {
             uint8_t value = top()->basic_types.uint8__;
@@ -70,13 +63,6 @@ void cx_executor::unary_bit_not (cx_type* expr) {
             wchar_t value = top()->basic_types.wchar__;
             pop();
             push((wchar_t) ~(value));
-        }
-            break;
-        case cx_bool:
-        {
-            bool value = top()->basic_types.bool__;
-            pop();
-            push((bool) ~(value));
         }
             break;
         case cx_uint8:

@@ -21,8 +21,8 @@ class cx_runtime_stack;
 
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
-typedef cx_type *(*f_call)(cx_executor *, const cx_symtab_node *);
-typedef cx_type *(*m_call)(cx_executor *, cx_symtab_node *, const cx_type *);
+//typedef cx_type *(*f_call)(cx_executor *, const cx_symtab_node *);
+//typedef cx_type *(*m_call)(cx_executor *, cx_symtab_node *, const cx_type *);
 typedef cx_type *(*ext_call)(cx_runtime_stack *, cx_symtab_node *, const cx_type *);
 
 extern bool xreference_flag;
@@ -76,13 +76,14 @@ public:
             int return_marker; // used for globals return location
 
             // pointer to node, that this node is a member of
+
             struct {
                 cx_symtab_node *p_node;
             } member_of;
-            
+
             struct {
-                int	loop_start; // icode positions
-				int loop_end;
+                int loop_start; // icode positions
+                int loop_end;
                 int current_iteration; // each indexer to determine which each call
                 int postfix;
             } iterator;
@@ -90,26 +91,23 @@ public:
             int parm_count;
             int total_parm_size;
             int total_local_size;
-			ext_call ext_function; // external function call
-            m_call std_member; // standard type members
+
+            ext_call ext_function; // extended function call
+
             cx_local_ids locals;
             cx_symtab *p_symtab;
             cx_icode *p_icode;
         } routine;
-		
-		struct {
-			FILE *stream;;
-		}io;
 
-		/*
         struct {
-            int offset;
-        } data;*/
+            FILE *stream;
+            ;
+        } io;
     };
 
     cx_define(cx_define_code dc) {
         how = dc;
-		io.stream = nullptr;
+        io.stream = nullptr;
     }
     ~cx_define();
 };
@@ -174,28 +172,28 @@ public:
 
 class cx_symtab {
     cx_symtab_node *root__;
-    cx_symtab_node **p_vector_nodes;
+    //cx_symtab_node **p_vector_nodes;
     short nodes_count;
-    short xsymtab;
+    //short xsymtab;
     cx_symtab *next__;
 
 public:
 
-    cx_symtab() : nodes_count(0), xsymtab(0) {
-        extern int symtab_count;
+    cx_symtab() : nodes_count(0) { //, xsymtab(0) {
+        //extern int symtab_count;
         extern cx_symtab *p_symtab_list;
 
-        root__ = nullptr;
-        p_vector_nodes = nullptr;
-        xsymtab = symtab_count++;
+        this->root__ = nullptr;
+        //      this->p_vector_nodes = nullptr;
+        //this->xsymtab = symtab_count++;
+        this->next__ = p_symtab_list;
 
-        next__ = p_symtab_list;
         p_symtab_list = this;
     }
 
     ~cx_symtab() {
         if (root__ != nullptr) delete root__;
-        if (p_vector_nodes != nullptr) delete [] p_vector_nodes;
+        //       if (p_vector_nodes != nullptr) delete [] p_vector_nodes;
     }
 
     cx_symtab_node *search(const char *p_string) const;
@@ -213,18 +211,21 @@ public:
         root__->right__ = class_symtab[tc_PRIVATE]->root__;
     }*/
 
-    cx_symtab_node *get(short xnode) const {
-        if (p_vector_nodes == nullptr) return nullptr;
-
-        return p_vector_nodes[xnode];
-    }
+    // DEPRECATED
+    //    cx_symtab_node *get(short xnode) const {
+    ////		if (nullptr == p_vector_nodes) return nullptr;
+    //
+    //        //return p_vector_nodes[xnode];
+    //		return nullptr;
+    //    }
 
     cx_symtab *next(void) const {
         return next__;
     }
 
     cx_symtab_node **node_vector(void) const {
-        return p_vector_nodes;
+        //return p_vector_nodes;
+        return nullptr;
     }
 
     int node_count(void)const {
@@ -235,7 +236,7 @@ public:
         root__->print();
     }
 
-    void convert(cx_symtab *p_vector_symtabs[]);
+    //void convert(cx_symtab *p_vector_symtabs[]);
 
 };
 

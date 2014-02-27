@@ -6,7 +6,6 @@
 #include "types.h"
 #include "icode.h"
 
-//
 extern cx_type *p_integer_type;
 extern cx_type *p_float_type;
 extern cx_type *p_char_type;
@@ -91,111 +90,6 @@ cx_symtab_node::~cx_symtab_node (void) {
     if (p_type != nullptr) remove_type(p_type);
 }
 
-/** print       print the symbol table node to the list file.
- *              First print the node's left__ subtree, then the
- *              node itself, and finally the node's right__
- *              subtree.  For the node itself, first print its
- *              symbol string, and then its line numbers.
- */
-void cx_symtab_node::print (void) const {
-    const int max_name_print_width = 16;
-
-    // Pirst, print left__ subtree
-    if (left__) left__->print();
-
-    // print the node:  first the name, then the list of line numbers,
-    //                  and then the identifier information.
-    sprintf(list.text, "%*s", max_name_print_width, p_string);
-    if (p_line_num_list) {
-        p_line_num_list->print(strlen(p_string) > max_name_print_width,
-                               max_name_print_width);
-    } else list.put_line();
-    print_identifier();
-
-    // Finally, print right__ subtree
-    if (right__) right__->print();
-}
-
-/** print_identifier        print information about an
- *                          identifier's definition and type.
- *
- */
-void cx_symtab_node::print_identifier (void) const {
-    switch (defn.how) {
-        case dc_constant: print_constant();
-            break;
-        case dc_type: print_type();
-            break;
-
-        case dc_variable:
-        case dc_member: print_var_or_field();
-            break;
-        default:
-            break;
-    }
-}
-
-/** print_constant       print information about a constant
- *                      identifier for the cross-reference.
- *
- */
-void cx_symtab_node::print_constant (void) const {
-    extern cx_list_buffer list;
-
-    list.put_line();
-    list.put_line("Defined constant");
-
-    // value
-    if ((p_type == p_integer_type) ||
-        (p_type->form == fc_enum)) {
-        sprintf(list.text, "value = %d",
-                defn.constant.value.int__);
-    } else if (p_type == p_float_type) {
-        sprintf(list.text, "value = %g",
-                defn.constant.value.float__);
-    } else if (p_type == p_char_type) {
-        sprintf(list.text, "value = '%c'",
-                defn.constant.value.char__);
-    } else if (p_type->form == fc_array) {
-        sprintf(list.text, "value = '%s'",
-                (char *)defn.constant.value.addr__);
-    }
-    list.put_line();
-
-    // type information
-    if (p_type) p_type->print_type_spec(cx_type::vc_terse);
-    list.put_line();
-}
-
-/** print_var_or_field         print information about a variable
- *                          or record field identifier for the
- *                          cross-reference.
- *
- */
-void cx_symtab_node::print_var_or_field (void) const {
-    extern cx_list_buffer list;
-
-    list.put_line();
-    list.put_line(defn.how == dc_variable ? "Declared variable"
-                  : "Declared record field");
-
-    // type information
-    if (p_type) p_type->print_type_spec(cx_type::vc_terse);
-    if ((defn.how == dc_variable) || (this->next__)) list.put_line();
-}
-
-/** print_type           print information about a type
- *                      identifier for the cross-reference.
- *
- */
-void cx_symtab_node::print_type (void) const {
-    list.put_line();
-    list.put_line("Defined type");
-
-    if (p_type) p_type->print_type_spec(cx_type::vc_verbose);
-    list.put_line();
-}
-
 /** convert     convert the symbol table node into a form
  *		suitable for the back end.
  *
@@ -268,7 +162,6 @@ cx_symtab_node *cx_symtab::enter (const char *p_string, cx_define_code dc) {
 
     // Create and insert a new node.
     p_node = new cx_symtab_node(p_string, dc); // create a new node,
-    p_node->xsymtab = xsymtab; // set its symtab and
     p_node->xnode = nodes_count++; // node indexes,
     *ppNode = p_node; // insert it, and
     return p_node; // return a ptr to it
@@ -297,7 +190,7 @@ cx_symtab_node *cx_symtab::enter_new (const char *p_string, cx_define_code dc) {
  *
  * @param p_vector_symtabs : vector of symbol table pointers.
  */
-void cx_symtab::convert (cx_symtab *p_vector_symtabs[]) {
+/*void cx_symtab::convert (cx_symtab *p_vector_symtabs[]) {
     // Point the appropriate entry of the symbol table pointer vector
     // to this symbol table.
     p_vector_symtabs[xsymtab] = this;
@@ -306,7 +199,7 @@ void cx_symtab::convert (cx_symtab *p_vector_symtabs[]) {
     // and convert the nodes.
     p_vector_nodes = new cx_symtab_node *[nodes_count];
     root__->convert(p_vector_nodes);
-}
+}*/
 
 /************************
  *		             *
@@ -320,6 +213,7 @@ void cx_symtab::convert (cx_symtab *p_vector_symtabs[]) {
  */
 cx_symtab_stack::cx_symtab_stack (void) {
     extern cx_symtab cx_global_symtab;
+	extern cx_symtab_node *p_main_function_id;
     void initialize_std_functions(cx_symtab * p_symtab);
 
     current_nesting_level = 0;
@@ -328,7 +222,9 @@ cx_symtab_stack::cx_symtab_stack (void) {
     // Initialize the global nesting level.
     p_symtabs[0] = &cx_global_symtab;
 
-    initialize_builtin_types(p_symtabs[0]);
+	if (p_main_function_id == nullptr){
+		initialize_builtin_types(&cx_global_symtab);
+	}
 
     //initialize_std_functions(p_symtabs[0]);
 }

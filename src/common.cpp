@@ -22,12 +22,7 @@ int current_line_number = 0;
  *      to the dynamic library to allow a library to add it's own symbols. - aaron
  */
 cx_symtab cx_global_symtab;
-
-// number of symtabs
-int symtab_count = 0;
-
 cx_symtab *p_symtab_list = nullptr;
-cx_symtab **p_vector_symtabs = nullptr;
 
 /// Tokens for resyncing the parser
 

@@ -7,7 +7,7 @@
 
 #ifndef CX_STDIO_H
 #define	CX_STDIO_H
-
+/*
 class cx_executor;
 class cx_symtab;
 class cx_symtab_node;
@@ -48,7 +48,7 @@ public:
 		cx_symtab_node *cx_function_id,
 		const cx_type *p_type);*/
 
-	static cx_type *read(cx_executor *cx,
+	/*static cx_type *read(cx_executor *cx,
 		cx_symtab_node *cx_function_id,
 		const cx_type *p_type);
 
@@ -115,9 +115,8 @@ public:
 	static cx_type *tmpfile(cx_executor *cx,
 		cx_symtab_node *cx_function_id,
 		const cx_type *p_type);
-};
+};*/
 
-extern cx_symtab *std_stream_members;
 
 #endif	/* CX_STDIO_H */
 

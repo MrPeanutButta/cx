@@ -74,12 +74,6 @@ int main (int argc, char *argv[]) {
     delete p_parser;
 
     if (error_count == 0) {
-        p_vector_symtabs = new cx_symtab *[symtab_count];
-        for (cx_symtab *p_st = p_symtab_list; p_st; p_st = p_st->next()) {
-            if (p_st != nullptr) {
-                if (p_st->root() != nullptr)p_st->convert(p_vector_symtabs);
-            }
-        }
 
         cx_backend *p_backend = new cx_executor;
 
@@ -89,8 +83,6 @@ int main (int argc, char *argv[]) {
 #endif
 
         p_backend->go(p_program_id);
-
-		delete[] p_vector_symtabs;
 		delete p_backend;
 
 #ifdef __CX_PROFILE_EXECUTION__
@@ -103,7 +95,6 @@ int main (int argc, char *argv[]) {
 		_CrtDumpMemoryLeaks();
 #endif
 #endif
-
 		std::cin.get();
 #endif
 

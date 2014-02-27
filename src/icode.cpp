@@ -78,15 +78,11 @@ void cx_icode::put (cx_token_code tc) {
 void cx_icode::put (const cx_symtab_node *p_node) {
     if (error_count > 0) return;
 
-    short xsymtab = p_node->symtab_index();
-    short xnode = p_node->node_index();
+	uint64_t node_addr = (uint64_t)*&p_node;
+	memcpy((void *)cursor,
+		(const void *)&node_addr, sizeof (node_addr));
 
-    check_bounds(2 * sizeof (short));
-    memcpy((void *) cursor,
-           (const void *) &xsymtab, sizeof (short));
-    memcpy((void *) (cursor + sizeof (short)),
-           (const void *) &xnode, sizeof (short));
-    cursor += 2 * sizeof (short);
+	cursor += sizeof(node_addr);
 }
 
 /** get         Extract the next__ token from the
@@ -178,16 +174,12 @@ cx_token *cx_icode::get (void) {
  * @return ptr to the symbol table node
  */
 cx_symtab_node *cx_icode::get_symtab_node (void) {
-    extern cx_symtab **p_vector_symtabs;
-    short xsymtab, xnode; // symbol table and node indexes
+	uint64_t node_addr;
 
-    memcpy((void *) &xsymtab, cursor,
-           sizeof (short));
-    memcpy((void *) &xnode, (const void *) (cursor + sizeof (short)),
-           sizeof (short));
-    cursor += 2 * sizeof (short);
+	memcpy((void *)&node_addr, cursor, sizeof (node_addr));
+	cursor += sizeof(node_addr);
 
-    return p_vector_symtabs[xsymtab]->get(xnode);
+	return ((cx_symtab_node *)*&node_addr);
 }
 
 /** insert_line_marker    Insert a line marker into the

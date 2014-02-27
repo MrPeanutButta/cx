@@ -13,6 +13,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#elif defined __linux__
+#include <dlfcn.h>
 #endif
 
 
@@ -118,7 +120,7 @@ struct cx_frame_header : public cx_stack_item {
 
         return_address.icode = orig->return_address.icode;
         return_address.location = orig->return_address.location;
-		extern bool cx_dev_debug_flag;
+        extern bool cx_dev_debug_flag;
 
         if (cx_dev_debug_flag)
             std::clog << ">>* new (copy) stack frame element :" << this << std::endl;
@@ -164,9 +166,10 @@ private:
 
 public:
     cx_runtime_stack(void);
-	~cx_runtime_stack(void){
-		cx_runstack.clear();
-	}
+
+    ~cx_runtime_stack(void) {
+        cx_runstack.clear();
+    }
 
     void push(const bool &value) {
         cx_runstack.push_back(new cx_stack_item((bool)value));
@@ -266,13 +269,13 @@ public:
     void enter_function(cx_symtab_node *p_function_id);
     void execute_iterator(cx_symtab_node *p_function_id);
     void enter_iterator(cx_symtab_node *p_function_id);
-    void execute_iterator_params (cx_symtab_node* p_function_id);
+    void execute_iterator_params(cx_symtab_node* p_function_id);
     void exit_function(cx_symtab_node *p_function_id);
     cx_type *execute_function_call(cx_symtab_node *p_function_id);
     cx_type *execute_decl_function_call(cx_symtab_node *p_function_id);
     cx_type *execute_std_function_call(cx_symtab_node *p_function_id);
     void execute_actual_parameters(cx_symtab_node *p_function_id);
-	cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
+    cx_type *execute_variable(const cx_symtab_node *p_id, bool address_flag);
 private:
     // Statements
     cx_symtab_node *enter_new(cx_symtab_node *p_function_id,
@@ -281,7 +284,7 @@ private:
     void execute_statement(cx_symtab_node *p_function_id);
     void execute_statement_list(cx_symtab_node *p_function_id,
             cx_token_code terminator);
-	void execute_assignment(cx_symtab_node *p_target_id);
+    void execute_assignment(cx_symtab_node *p_target_id);
 
     // assignent
     void assign(cx_symtab_node* p_target_id,
@@ -380,11 +383,11 @@ private:
     cx_type *execute_term(void);
     cx_type *execute_factor(void);
     cx_type *execute_constant(const cx_symtab_node *p_id);
-	cx_type *execute_subscripts(const cx_type *p_type);
+    cx_type *execute_subscripts(const cx_type *p_type);
     cx_type *execute_field(cx_type *);
     cx_type *execute_initialization_list(void);
     cx_type *execute_std_member_call(cx_symtab_node *p_function_id, cx_type *p_type);
-    
+
     cx_type *alloc_temp_rvalue(const cx_type *lhs, cx_type * rhs);
 
     void cx_malloc(cx_symtab_node* p_target_id,
@@ -408,18 +411,18 @@ private:
 
 public:
 
-    void get_next_token(void){
+    void get_next_token(void) {
         get_token();
     }
-    
-    int location(void)const{
+
+    int location(void)const {
         return current_location();
     }
-    
+
     void goto_location(int location) {
         go_to(location);
     }
-    
+
     void push(const uint8_t & value) {
         run_stack.push(value);
     }
@@ -468,12 +471,15 @@ public:
         break_loop = false;
     }
 
-	~cx_executor(void){
+    ~cx_executor(void) {
 #ifdef _WIN32
-		extern std::vector<HINSTANCE> windows_libs;
-		for (HINSTANCE &h_lib : windows_libs) FreeLibrary(h_lib);
+        extern std::vector<HINSTANCE> windows_libs;
+        for (HINSTANCE &h_lib : windows_libs) FreeLibrary(h_lib);
+#elif defined __linux__
+        extern std::vector<void *> linux_libs;
+        for (void *h_lib : linux_libs) dlclose(h_lib);
 #endif
-	}
+    }
 
     virtual void go(cx_symtab_node * p_program_id);
 };

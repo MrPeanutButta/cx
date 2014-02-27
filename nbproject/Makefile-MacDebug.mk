@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU_1-MacOSX
-CND_DLIB_EXT=dylib
+CND_PLATFORM=GNU-Linux-x86
+CND_DLIB_EXT=so
 CND_CONF=MacDebug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -40,13 +40,13 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/complist.o \
 	${OBJECTDIR}/src/cx-debug/additive.o \
 	${OBJECTDIR}/src/cx-debug/assign.o \
+	${OBJECTDIR}/src/cx-debug/cx_stdio.o \
 	${OBJECTDIR}/src/cx-debug/do.o \
 	${OBJECTDIR}/src/cx-debug/exec.o \
 	${OBJECTDIR}/src/cx-debug/expression.o \
 	${OBJECTDIR}/src/cx-debug/factor.o \
 	${OBJECTDIR}/src/cx-debug/function.o \
 	${OBJECTDIR}/src/cx-debug/init_list.o \
-	${OBJECTDIR}/src/cx-debug/io.o \
 	${OBJECTDIR}/src/cx-debug/logical.o \
 	${OBJECTDIR}/src/cx-debug/malloc.o \
 	${OBJECTDIR}/src/cx-debug/multiplicative.o \
@@ -125,6 +125,11 @@ ${OBJECTDIR}/src/cx-debug/assign.o: nbproject/Makefile-${CND_CONF}.mk src/cx-deb
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/assign.o src/cx-debug/assign.cpp
 
+${OBJECTDIR}/src/cx-debug/cx_stdio.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/cx_stdio.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/cx_stdio.o src/cx-debug/cx_stdio.cpp
+
 ${OBJECTDIR}/src/cx-debug/do.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/do.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
 	${RM} "$@.d"
@@ -154,11 +159,6 @@ ${OBJECTDIR}/src/cx-debug/init_list.o: nbproject/Makefile-${CND_CONF}.mk src/cx-
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/init_list.o src/cx-debug/init_list.cpp
-
-${OBJECTDIR}/src/cx-debug/io.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/io.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/cx-debug
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -Iinclude -Iinclude/cx-debug -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/cx-debug/io.o src/cx-debug/io.cpp
 
 ${OBJECTDIR}/src/cx-debug/logical.o: nbproject/Makefile-${CND_CONF}.mk src/cx-debug/logical.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cx-debug

@@ -2,30 +2,25 @@
 #ifndef common_h
 #define common_h
 
+#ifndef CX_DYNAMIC_API
 #include "misc.h"
 #include "symtable.h"
 #include "icode.h"
+#endif
 
 extern int current_line_number;
 extern int current_nesting_level;
 extern cx_symtab cx_global_symtab;
-extern int symtab_count;
 extern cx_symtab *p_symtab_list;
-extern cx_symtab **p_vector_symtabs;
-
 // Pointers to predefined types.
 extern  cx_symtab_node *p_main_function_id;
-extern  cx_symtab_node *p_stdin;
-extern  cx_symtab_node *p_stdout;
-extern  cx_symtab_node *p_stderr;
-
 extern  cx_type *p_integer_type;
 extern  cx_type *p_float_type;
 //extern cx_type *p_double_type;
 extern  cx_type *p_boolean_type;
 extern  cx_type *p_char_type;
 extern  cx_type *p_complex_type;
-extern  cx_type *p_file_type;
+//extern  cx_type *p_file_type;
 extern  cx_type *p_dummy_type;
 
 // tokens that can start a statement

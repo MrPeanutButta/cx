@@ -19,22 +19,21 @@ class cx_symtab_node;
 class cx_symtab;
 
 // Pointers to predefined types.
-extern  cx_symtab_node *p_main_function_id;
-extern  cx_symtab_node *p_stdin;
+extern cx_symtab_node *p_main_function_id;
+/*extern  cx_symtab_node *p_stdin;
 extern  cx_symtab_node *p_stdout;
-extern  cx_symtab_node *p_stderr;
-extern  cx_type *p_integer_type;
-extern  cx_type *p_uint8_type;
-extern  cx_type *p_float_type;
-extern  cx_type *p_boolean_type;
-extern  cx_type *p_char_type;
-extern  cx_type *p_wchar_type;
-extern  cx_type *p_void_type;
+extern  cx_symtab_node *p_stderr;*/
+extern cx_type *p_integer_type;
+extern cx_type *p_uint8_type;
+extern cx_type *p_float_type;
+extern cx_type *p_boolean_type;
+extern cx_type *p_char_type;
+extern cx_type *p_wchar_type;
+extern cx_type *p_void_type;
 //cx_type *p_class_type = nullptr;
-extern  cx_type *p_complex_type;
-extern  cx_type *p_file_type;
-extern  cx_type *p_dummy_type;
-
+extern cx_type *p_complex_type;
+//extern  cx_type *p_file_type;
+extern cx_type *p_dummy_type;
 
 enum cx_type_form_code {
     fc_none,
@@ -53,10 +52,10 @@ enum cx_type_code {
     cx_float,
     cx_bool,
     cx_uint8,
+    cx_void,
     cx_address,
     cx_complex,
-    cx_file,
-	cx_void
+    cx_file
 };
 
 // below is for external liraries
@@ -71,22 +70,22 @@ class cx_type {
 
 public:
 
-	cx_type(){ //cx_type_form_code form_code){
-		//this->form = form_code;
-	}
+    cx_type() { //cx_type_form_code form_code){
+        //this->form = form_code;
+    }
 
-//    const cx_type_form_code form;
-	cx_type_form_code form;
+    //    const cx_type_form_code form;
+    cx_type_form_code form;
 
-	bool is_address;
+    bool is_address;
     // size of the first element
     int size;
-    
+
     bool is_temp_value;
     cx_symtab_node *p_type_id;
     cx_type_code type_code;
-	// if multidimension array point to next element
-	cx_type *next;
+    // if multidimension array point to next element
+    cx_type *next;
 
     union {
 
@@ -119,10 +118,10 @@ public:
     //cx_scoped_symtab MemberTable;
     //} complex;
 
-    cx_type(cx_type_form_code fc, int s, cx_symtab_node *p_id);
+    cx_type(cx_type_form_code fc, int s, cx_symtab_node *p_id, cx_symtab *p_members = nullptr);
     cx_type(int length, bool constant = false);
 
-	~cx_type(){};
+    ~cx_type(); // {};
 
     bool is_scalar_type(void) const {
         return (form != fc_array) &&

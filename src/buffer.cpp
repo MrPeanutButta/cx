@@ -5,11 +5,14 @@
  * to read the source file and write to the list file.
  */
 
+#ifndef CX_DYNAMIC_API
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
 #include <iostream>
 #include <ctime>
+#endif
+
 #include "common.h"
 #include "buffer.h"
 

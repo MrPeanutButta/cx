@@ -126,7 +126,7 @@ char putchar(char c){
  * @param str : copied char array to write to stdout.
  * @return the string length of str. */
 
-int puts(char *str){
+bool puts(char *str){
     return stdout.puts(str + '\n');
 }
 

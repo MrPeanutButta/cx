@@ -8,7 +8,9 @@
             <cpp-extensions>cpp</cpp-extensions>
             <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects/>
+            <make-dep-projects>
+                <make-dep-project>stdlib/linux</make-dep-project>
+            </make-dep-projects>
             <sourceRootList>
                 <sourceRootElem>include/cx-debug</sourceRootElem>
                 <sourceRootElem>src/cx-debug</sourceRootElem>

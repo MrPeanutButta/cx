@@ -1,8 +1,10 @@
 #ifndef buffer_h
 #define buffer_h
 
+#ifndef CX_DYNAMIC_API
 #include <fstream>
 #include <cstdio>
+#endif
 #include <cstring>
 #include "misc.h"
 #include "error.h"

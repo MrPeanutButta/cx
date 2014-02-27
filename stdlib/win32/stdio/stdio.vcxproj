@@ -83,7 +83,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;STDIO_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -158,10 +158,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="stdio.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\buffer.cpp" />
+    <ClCompile Include="..\..\..\src\common.cpp" />
+    <ClCompile Include="..\..\..\src\cx-debug\std_members.cpp" />
+    <ClCompile Include="..\..\..\src\error.cpp" />
+    <ClCompile Include="..\..\..\src\symtable.cpp" />
+    <ClCompile Include="..\..\..\src\types.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>

@@ -23,21 +23,21 @@ CND_PACKAGE_DIR_Release=dist/Release/None-Linux-x86/package
 CND_PACKAGE_NAME_Release=cx.tar
 CND_PACKAGE_PATH_Release=dist/Release/None-Linux-x86/package/cx.tar
 # WinDebug configuration
-CND_PLATFORM_WinDebug=None-Linux-x86
-CND_ARTIFACT_DIR_WinDebug=dist/WinDebug/None-Linux-x86
+CND_PLATFORM_WinDebug=GNU-Linux-x86
+CND_ARTIFACT_DIR_WinDebug=dist/WinDebug/GNU-Linux-x86
 CND_ARTIFACT_NAME_WinDebug=cx
-CND_ARTIFACT_PATH_WinDebug=dist/WinDebug/None-Linux-x86/cx
-CND_PACKAGE_DIR_WinDebug=dist/WinDebug/None-Linux-x86/package
+CND_ARTIFACT_PATH_WinDebug=dist/WinDebug/GNU-Linux-x86/cx
+CND_PACKAGE_DIR_WinDebug=dist/WinDebug/GNU-Linux-x86/package
 CND_PACKAGE_NAME_WinDebug=cx.tar
-CND_PACKAGE_PATH_WinDebug=dist/WinDebug/None-Linux-x86/package/cx.tar
+CND_PACKAGE_PATH_WinDebug=dist/WinDebug/GNU-Linux-x86/package/cx.tar
 # MacDebug configuration
-CND_PLATFORM_MacDebug=GNU_1-MacOSX
-CND_ARTIFACT_DIR_MacDebug=dist/MacDebug/GNU_1-MacOSX
+CND_PLATFORM_MacDebug=GNU-Linux-x86
+CND_ARTIFACT_DIR_MacDebug=dist/MacDebug/GNU-Linux-x86
 CND_ARTIFACT_NAME_MacDebug=cx
-CND_ARTIFACT_PATH_MacDebug=dist/MacDebug/GNU_1-MacOSX/cx
-CND_PACKAGE_DIR_MacDebug=dist/MacDebug/GNU_1-MacOSX/package
+CND_ARTIFACT_PATH_MacDebug=dist/MacDebug/GNU-Linux-x86/cx
+CND_PACKAGE_DIR_MacDebug=dist/MacDebug/GNU-Linux-x86/package
 CND_PACKAGE_NAME_MacDebug=cx.tar
-CND_PACKAGE_PATH_MacDebug=dist/MacDebug/GNU_1-MacOSX/package/cx.tar
+CND_PACKAGE_PATH_MacDebug=dist/MacDebug/GNU-Linux-x86/package/cx.tar
 #
 # include compiler specific variables
 #
