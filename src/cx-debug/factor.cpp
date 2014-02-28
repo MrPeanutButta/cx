@@ -54,19 +54,6 @@ cx_type *cx_executor::execute_factor (void) {
 						else {
 							p_result_type = execute_variable(p_id, false);
 						}
-                    /*} else {
-
-                        p_result_type = p_char_type;
-
-                        if (p_node == p_stdin) {
-                            // getch from rlutil
-                            push((char) cx_getch());
-                        } else {
-                            push(fgetc(p_node->p_type->stream.p_file_stream));
-                        }
-
-                        get_token();
-                    }*/
 
                     break;
             }

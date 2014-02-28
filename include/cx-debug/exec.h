@@ -424,15 +424,14 @@ public:
 
     cx_executor(void) : cx_backend() {
         statement_count = 0;
-/*
+
+		extern bool cx_dev_debug_flag;
+
         trace_routine_flag = cx_dev_debug_flag;
         trace_statement_flag = cx_dev_debug_flag;
         trace_store_flag = cx_dev_debug_flag;
-        trace_fetch_flag = cx_dev_debug_flag;*/
-        /*trace_routine_flag = true;
-        trace_statement_flag = true;
-        trace_store_flag = true;
-        trace_fetch_flag = true;*/
+        trace_fetch_flag = cx_dev_debug_flag;
+
 
         break_loop = false;
     }

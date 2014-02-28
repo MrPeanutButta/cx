@@ -6,61 +6,46 @@
 
  /* still working out the details of importing symbols.
   * #include works for basic header includes */
+
 #include stdio
+
+bool redir_out(char *filename){
+	stdout.close;
+	return stdout.reopen(filename, "w");
+}
+
+char *read_file(file &infile){
+	char *str = "read: ";
+	int count = 0;
+
+	// while not end of file stream
+	while(!infile.eof){
+		// read each char
+		str += infile.getc;
+		count++;
+	}
+
+	puts("read " + count.to_str + " chars...");
+
+	return str;
+}
 
 int main () {
 
 	// file stream type
 	file myfile;
-	char *buffer = "I will write this test to a text file then read it back";
-	char *filename = "sometextfile";
 
-	// redirect stdout to a file
-	stdout.close;
-	stdout.reopen("test_redirect_io", "w");
+		// open for read
+		if(!myfile.open("sometextfile", "r"))
+			perror("error reopening file");
+		else {
 
-	puts(buffer + ": I will now attempt to r/w to " + filename);
-	
-	// attempt to open file for writing
-	if(!myfile.open(filename, "w"))
-		// give error message
-		perror("error opening file: " + filename);
-	else {
-		// write buffer to file stream
-		myfile.puts(buffer);
-		// close file
-		myfile.close;
-	}
+			// writes to output file
+			puts(read_file(myfile));
 
-	// reopen for read
-	if(!myfile.reopen(filename, "r"))
-		perror("error reopening file: " + filename);
-	else {
-		char c;
-		// while not end of file stream
-		while(!myfile.eof){
-			// print each char as string with newline
-			puts(myfile.getc.size.to_str);
-
+			// close file
+			myfile.close;
 		}
-
-		// close file
-		myfile.close;
-	}
-
-	// rename the file
-	if(!rename(filename, "new_file_name")){
-		perror("unable to rename " + filename);
-	} else {
-		puts("renamed " + filename + " to new_file_name\n");
-	}
-
-	// delete the file
-	if(remove("new_file_name")){
-		puts("removed file");
-	} else {
-		perror("remove");
-	}
 
     return 0;
 }

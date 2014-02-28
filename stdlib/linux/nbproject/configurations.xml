@@ -47,6 +47,7 @@
             <pElem>../../include/cx-debug</pElem>
             <pElem>../../include</pElem>
           </incDir>
+          <commandLine>-g3</commandLine>
         </ccTool>
         <linkerTool>
           <output>../stdio.${CND_DLIB_EXT}</output>

@@ -186,11 +186,17 @@ void cx_executor::execute_actual_parameters (cx_symtab_node *p_function_id) {
          * parameter's address on top of the stack. */
         if (p_formal_id->defn.how == dc_reference) {
 
-            const int size = p_node->p_type->size;
+            //const int size = p_node->p_type->size;
             set_type(p_formal_type, p_node->p_type);
-            execute_variable(p_node, true);
+            
+			if (p_formal_type->form == fc_stream){
+				p_formal_id->defn.io.stream = p_node->defn.io.stream;
+			}
+			else {
+				execute_variable(p_node, true);
+				p_formal_id->runstack_item = top();
+			}
 
-            p_formal_id->runstack_item = top();
             get_token();
         }// value parameter
         else {

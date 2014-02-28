@@ -60,17 +60,7 @@ void init_std_members (void) {
 cx_type *cx_std_type_members::size(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type){
     
 	p_stack->pop();
-
-	if (!p_type->is_address){
-		
-		cx_stack_item *p_size_val = new cx_stack_item;
-		p_size_val->basic_types.int__ = p_type->size;
-		
-		p_stack->push((void*)p_size_val);
-	}
-	else {
-		p_stack->push((int)p_type->size);
-	}
+	p_stack->push((int)p_type->size);
 
 	return p_node->p_type;
 }
@@ -78,19 +68,7 @@ cx_type *cx_std_type_members::size(cx_runtime_stack *p_stack, cx_symtab_node *p_
 cx_type *cx_std_type_members::length(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
 
 	p_stack->pop();
-
-	if (!p_type->is_address){
-		cx_stack_item *p_length_val = new cx_stack_item;
-
-		p_type->form == fc_array ?
-			p_length_val->basic_types.int__ = p_type->array.element_count :
-			p_length_val->basic_types.int__ = 1;
-
-		p_stack->push((void *)p_length_val);
-	}
-	else {
-		p_stack->push((int)p_type->form == fc_array ? p_type->array.element_count : 1);
-	}
+	p_stack->push((int)p_type->form == fc_array ? p_type->array.element_count : 1);
 
 	return p_node->p_type;
 }
@@ -102,14 +80,7 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack, cx_symtab_node *
     std::stringstream ss;
     ss.clear();
 
-    cx_stack_item *mem = nullptr;
-
-	if (!p_type->is_address){
-		mem = (cx_stack_item *)p_stack->top()->basic_types.addr__;
-	}
-	else {
-		mem = p_stack->top();
-	}
+	cx_stack_item *mem = (cx_stack_item *)p_stack->top()->basic_types.addr__;
 
     switch (p_type->type_code) {
         case cx_int:

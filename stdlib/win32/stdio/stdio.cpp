@@ -2,10 +2,9 @@
 //
 
 #include "cx_api.h"
-#include <string>
 #include <cstdio>
 
-#ifdef _WIN32
+#if defined _WIN32
 #define STDIO_API __declspec(dllexport)
 #elif defined __linux__
 #define STDIO_API extern "C"
@@ -30,7 +29,7 @@ cx_type *cx_puts(cx_runtime_stack *p_stack,
 
     p_stack->pop();
 
-    p_stack->push(ret_val);
+    p_stack->push((bool)ret_val);
 
     return cx_function_id->p_type;
 }
@@ -380,8 +379,7 @@ cx_type *cx_putws(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     if (ret_val) {
-        int ret = std::fputws(_wstring, p_snode->defn.io.stream);
-        p_stack->push((int) ret);
+		p_stack->push((int)std::fputws(_wstring, p_snode->defn.io.stream));
     } else {
         p_stack->push((int) EOF);
     }
