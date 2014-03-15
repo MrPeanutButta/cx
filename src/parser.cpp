@@ -3,7 +3,6 @@
 #include "buffer.h"
 #include "error.h"
 #include "parser.h"
-//#include "complist.h"
 
 extern cx_symtab_node *p_program_ptr_id;
 

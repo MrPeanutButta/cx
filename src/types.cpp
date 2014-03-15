@@ -231,7 +231,6 @@ cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
     if (!p_target_type) remove_type(p_target_type);
 
     ++p_source_type->reference_count;
-
     p_target_type = p_source_type;
 
     return p_source_type;

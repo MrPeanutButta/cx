@@ -10,6 +10,7 @@
 
 #include <map>
 #include <cstring>
+#include <string>
 #include "misc.h"
 #include "exec.h"
 
@@ -21,8 +22,6 @@ class cx_runtime_stack;
 
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
-//typedef cx_type *(*f_call)(cx_executor *, const cx_symtab_node *);
-//typedef cx_type *(*m_call)(cx_executor *, cx_symtab_node *, const cx_type *);
 typedef cx_type *(*ext_call)(cx_runtime_stack *, cx_symtab_node *, const cx_type *);
 
 extern bool xreference_flag;
@@ -101,7 +100,6 @@ public:
 
         struct {
             FILE *stream;
-            ;
         } io;
     };
 
@@ -114,7 +112,8 @@ public:
 
 class cx_symtab_node {
     cx_symtab_node *left__, *right__;
-    char *p_string;
+	std::string node_name;
+
     short xsymtab;
     short xnode;
     cx_line_num_list *p_line_num_list;
@@ -149,8 +148,8 @@ public:
         return right__;
     }
 
-    char *string__(void) const {
-        return p_string;
+    const char *string__(void) const {
+        return node_name.c_str();
     }
 
     short symtab_index(void) const {
@@ -161,8 +160,6 @@ public:
         return xnode;
     }
 
-    void convert(cx_symtab_node *p_vector_nodes[]);
-
     void print(void) const;
     void print_identifier(void) const;
     void print_constant(void) const;
@@ -172,20 +169,15 @@ public:
 
 class cx_symtab {
     cx_symtab_node *root__;
-    //cx_symtab_node **p_vector_nodes;
     short nodes_count;
-    //short xsymtab;
     cx_symtab *next__;
 
 public:
 
-    cx_symtab() : nodes_count(0) { //, xsymtab(0) {
-        //extern int symtab_count;
+    cx_symtab() : nodes_count(0) {
         extern cx_symtab *p_symtab_list;
 
         this->root__ = nullptr;
-        //      this->p_vector_nodes = nullptr;
-        //this->xsymtab = symtab_count++;
         this->next__ = p_symtab_list;
 
         p_symtab_list = this;
@@ -193,7 +185,8 @@ public:
 
     ~cx_symtab() {
         if (root__ != nullptr) delete root__;
-        //       if (p_vector_nodes != nullptr) delete [] p_vector_nodes;
+
+		root__ = nullptr;
     }
 
     cx_symtab_node *search(const char *p_string) const;
@@ -223,6 +216,7 @@ public:
         return next__;
     }
 
+	// DEPRECATED //
     cx_symtab_node **node_vector(void) const {
         //return p_vector_nodes;
         return nullptr;
@@ -235,8 +229,6 @@ public:
     void print(void) const {
         root__->print();
     }
-
-    //void convert(cx_symtab *p_vector_symtabs[]);
 
 };
 

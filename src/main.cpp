@@ -3,7 +3,9 @@
  *
  * main entry point for the Cx interpretor.
  */
+
 #include <iostream>
+#include <memory>
 
 #ifdef __CX_PROFILE_EXECUTION__
 #include <chrono>
@@ -42,63 +44,58 @@ void set_options (int argc, char **argv);
  */
 int main (int argc, char *argv[]) {
 
+	set_options(argc, argv);
+
     // Check the command line arguments.
-    if (argc < 2) {
+	if (argc < 2 ) {
         std::cerr << "usage: " << argv[0] << " <source file>" << std::endl;
         abort_translation(abort_invalid_commandline_args);
     }
 
-    set_options(argc, argv);
-
     list_flag = cx_dev_debug_flag;
     error_arrow_flag = cx_dev_debug_flag;
 
-    // Create the parser for the source file,
-    // and then parse the file.
-    cx_parser *p_parser = new cx_parser(new cx_source_buffer(argv[1]));
-
+	// Create the parser for the source file,
+	// and then parse the file.
+	std::unique_ptr<cx_parser> parser(new cx_parser(new cx_source_buffer(argv[1])));
 
 #ifdef __CX_PROFILE_EXECUTION__
-    using namespace std::chrono;
-    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+		using namespace std::chrono;
+		high_resolution_clock::time_point t1 = high_resolution_clock::now();
+#endif
+		std::unique_ptr<cx_symtab_node> program_id(parser->parse());
+
+#ifdef __CX_PROFILE_EXECUTION__
+		high_resolution_clock::time_point t2 = high_resolution_clock::now();
+		duration<double> time_span = duration_cast <duration<double >> (t2 - t1);
+		std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
+#endif
+		
+		if (error_count == 0) {
+
+			std::unique_ptr<cx_backend> backend(new cx_executor);
+
+#ifdef __CX_PROFILE_EXECUTION__
+			std::cin.get();
+			t1 = high_resolution_clock::now();
 #endif
 
-    cx_symtab_node *p_program_id = p_parser->parse();
+			backend->go(program_id.get());
 
 #ifdef __CX_PROFILE_EXECUTION__
-    high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    duration<double> time_span = duration_cast < duration<double >> (t2 - t1);
-    std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
-#endif
-
-    delete p_parser;
-
-    if (error_count == 0) {
-
-        cx_backend *p_backend = new cx_executor;
-
-#ifdef __CX_PROFILE_EXECUTION__
-        std::cin.get();
-        t1 = high_resolution_clock::now();
-#endif
-
-        p_backend->go(p_program_id);
-		delete p_backend;
-
-#ifdef __CX_PROFILE_EXECUTION__
-        t2 = high_resolution_clock::now();
-        time_span = duration_cast < duration<double >> (t2 - t1);
-        std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+			t2 = high_resolution_clock::now();
+			time_span = duration_cast <duration<double >> (t2 - t1);
+			std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
 #ifdef _WIN32_LEAK_DETECT
 #ifdef _WIN32
-		_CrtDumpMemoryLeaks();
+			_CrtDumpMemoryLeaks();
 #endif
 #endif
-		std::cin.get();
+			std::cin.get();
 #endif
 
-    }
+		}
 
     return 0;
 }

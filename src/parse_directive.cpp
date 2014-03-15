@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <memory>
 #include "common.h"
 #include "buffer.h"
 #include "error.h"
@@ -147,19 +148,28 @@ void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
 
             // save current line number
             int old_line_num = current_line_number;
-            current_line_number = 0;
+			current_line_number = 0;
 
-            /* true : stdlib module
-             * returns nullptr */
-            cx_parser *parser = new cx_parser
-                    (new cx_source_buffer(lib_path.c_str()), true);
+			/* true : stdlib module
+			 * returns nullptr */
+			{
+				cx_parser *parser = nullptr;
+				
+				try{
+					parser = new cx_parser
+						(new cx_source_buffer(lib_path.c_str()), true);
 
-            parser->parse();
+					parser->parse();
+				}
+
+				catch (...){
+
+				}
+
+				delete parser;
+			}
 
             current_line_number = old_line_num;
-
-            delete parser;
-
             icode.reset();
             icode.put(tc_left_bracket);
             p_program_ptr_id->found_global_end = false;

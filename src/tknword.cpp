@@ -16,7 +16,7 @@ std::pair<std::string, cx_token_code> map_data[] = {
                                                     std::make_pair("return", tc_RETURN),
                                                     std::make_pair("continue", tc_CONTINUE),
                                                     std::make_pair("friend", tc_FRIEND),
-                                                    std::make_pair("go_to", tc_GOTO),
+                                                    std::make_pair("goto", tc_GOTO),
                                                     std::make_pair("try", tc_TRY),
                                                     std::make_pair("delete", tc_DELETE),
                                                     std::make_pair("typeid", tc_TYPEID),
@@ -59,8 +59,7 @@ std::pair<std::string, cx_token_code> map_data[] = {
 };
 
 
-token_map cx_reserved_words (map_data,
-                             map_data + sizeof map_data / sizeof map_data[0]);
+token_map cx_reserved_words (map_data, map_data + sizeof map_data / sizeof map_data[0]);
 
 /*****************
  *               *

@@ -9,8 +9,6 @@
 #include "misc.h"
 #include "error.h"
 
-
-
 /***********
  *         *
  *  Input  *
@@ -22,14 +20,14 @@ extern int input_position;
 extern int list_flag;
 extern int level;
 
-const int max_input_buffer_size = 256;
+const int max_input_buffer_size = 1024;
 
 ///  cx_text_in_buffer       Abstract text input buffer class.
 
 class cx_text_in_buffer {
 protected:
-    std::fstream file; // input text file
-    char *const p_file_name; // ptr to the file name
+	std::ifstream file; // input text file
+    char *p_file_name; // ptr to the file name
     char text[max_input_buffer_size]; // input text buffer
     char *p_char; /* ptr to the current char
                    * in the text buffer */
@@ -107,6 +105,10 @@ public:
     void put_line(const char *p_text) {
         cx_text_out_buffer::put_line(p_text);
     }
+
+	void buffer(const char *p_text, int line_number, int nesting_level){
+		sprintf(text, "%4d %d: %s", line_number, nesting_level, p_text);
+	}
 
     void put_line(const char *p_text, int line_number, int nesting_level) {
         sprintf(text, "%4d %d: %s", line_number, nesting_level, p_text);

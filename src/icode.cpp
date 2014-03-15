@@ -78,7 +78,7 @@ void cx_icode::put (cx_token_code tc) {
 void cx_icode::put (const cx_symtab_node *p_node) {
     if (error_count > 0) return;
 
-	uint64_t node_addr = (uint64_t)*&p_node;
+	uintptr_t node_addr = (uintptr_t)*&p_node;
 	memcpy((void *)cursor,
 		(const void *)&node_addr, sizeof (node_addr));
 
@@ -174,7 +174,7 @@ cx_token *cx_icode::get (void) {
  * @return ptr to the symbol table node
  */
 cx_symtab_node *cx_icode::get_symtab_node (void) {
-	uint64_t node_addr;
+	uintptr_t node_addr;
 
 	memcpy((void *)&node_addr, cursor, sizeof (node_addr));
 	cursor += sizeof(node_addr);

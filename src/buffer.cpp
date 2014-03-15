@@ -10,6 +10,7 @@
 #include <cstring>
 #include <cerrno>
 #include <iostream>
+#include <fstream>
 #include <ctime>
 #endif
 
@@ -38,18 +39,19 @@ int list_flag = true;
  * @param p_input_file_name : ptr to the name of the input file
  * @param ac             : abort code to use if open failed
  */
-cx_text_in_buffer::cx_text_in_buffer (const char *p_input_file_name,
-                                      cx_abort_code ac)
-: p_file_name (new char[strlen (p_input_file_name) + 1]) {
-    // Copy the input file name.
-    strcpy(p_file_name, p_input_file_name);
+cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name,
+	cx_abort_code ac): p_file_name(new char[strlen(p_input_file_name) + 1]) {
 
-    // Open the input file.  Abort if failed.
-    file.open(p_file_name, std::ios::in);
-    if (!file.good()) {
-        std::cout << p_file_name << ": " << std::strerror(errno) << std::endl;
-        abort_translation(ac);
-    }
+	// Copy the input file name.
+	strcpy(p_file_name, p_input_file_name);
+
+	// Open the input file.  Abort if failed.
+	file.open(p_file_name, std::ios::in);
+
+	if (!file.good()) {
+		std::cout << p_file_name << ": " << std::strerror(errno) << std::endl;
+		abort_translation(ac);
+	}
 }
 
 /** get_char        Fetch and return the next__ character from the
@@ -126,24 +128,20 @@ char cx_source_buffer::get_line (void) {
     if (file.eof()) p_char = (char *) &eof_char;
 
         // Else read the next__ source line and print it to the list file.
-    else {
-        memset(text, '\0', sizeof (text));
+	else {
+		memset(text, '\0', sizeof (text));
 
+		file.getline(text, max_input_buffer_size);
+		p_char = text; // point to first source line char
 
-        file.getline(text, max_input_buffer_size);
+		// just buffer current line, we can display on error
+		list.buffer(
+			text,
+			++current_line_number,
+			current_nesting_level
+			);
 
-        p_char = text; // point to first source line char
-
-        // if list_flag == true, list the source to stdout
-        if (list_flag) {
-            list.put_line(
-                          text,
-                          ++current_line_number,
-                          current_nesting_level
-                          );
-        }
-
-    }
+	}
 
     input_position = 0;
     return *p_char;
@@ -180,6 +178,9 @@ cx_list_buffer list; // the list file buffer
  * @param p_file_name : ptr to source file name (for page header)
  */
 void cx_list_buffer::initialize (const char *p_file_name) {
+
+	if (p_file_name == nullptr) return;
+
     memset(text, '\0', sizeof (text));
     //page_number = 0;
 
@@ -187,13 +188,6 @@ void cx_list_buffer::initialize (const char *p_file_name) {
     p_source_file_name = new char[strlen(p_file_name) + 1];
     strcpy(p_source_file_name, p_file_name);
 
-    // Set the date.
-//    time_t timer;
-//    time(&timer);
-//    strcpy(date, asctime(localtime(&timer)));
-//    date[strlen(date) - 1] = '\0'; // remove '\n' at end
-//
-//    print_page_header();
 }
 
 

@@ -25,7 +25,8 @@ bool xreference_flag = false; // true = cross-referencing on, false = off
 cx_define::~cx_define(void) {
     switch (how) {
 
-        case dc_program:
+		// program_id is now managed unique_ptr
+        //case dc_program:
         case dc_function:
 
             if (routine.which == func_declared) {
@@ -63,11 +64,7 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
     label_index = ++asm_label_index;
 
     // Allocate and copy the symbol string.
-    p_string = new char[strlen(p_str) + 1];
-    strcpy(p_string, p_str);
-
-    // If cross-referencing, update the line number list.
-    if (xreference_flag) p_line_num_list = new cx_line_num_list;
+	node_name = p_str;
 }
 
 /** Destructor      Deallocate a symbol table node.
@@ -81,25 +78,13 @@ cx_symtab_node::~cx_symtab_node(void) {
     if (right__ != nullptr) delete right__;
 
     // Then delete this node's components.
-    if (p_string != nullptr) delete[] p_string;
     if (p_line_num_list != nullptr) delete p_line_num_list;
     if (p_type != nullptr) remove_type(p_type);
-}
 
-/** convert     convert the symbol table node into a form
- *		suitable for the back end.
- *
- * @param p_vector_nodes : vector of node ptrs.
- */
-void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
-    // First, convert the left__ subtree.
-    if (left__ != nullptr) left__->convert(p_vector_nodes);
-
-    // convert the node.
-    p_vector_nodes[xnode] = this;
-
-    // Finally, convert the right__ subtree.
-    if (right__ != nullptr) right__->convert(p_vector_nodes);
+	p_type = nullptr;
+	p_line_num_list = nullptr;
+	left__ = nullptr;
+	right__ = nullptr;
 }
 
 /******************
@@ -116,19 +101,16 @@ void cx_symtab_node::convert(cx_symtab_node *p_vector_nodes[]) {
  */
 cx_symtab_node *cx_symtab::search(const char *p_string) const {
     cx_symtab_node *p_node = root__; // ptr to symbol table node
-    int comp;
-
+	
     // Loop to search the table.
     while (p_node) {
-        comp = strcmp(p_string, p_node->p_string); // compare names
+		//int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
+		int comp = std::string(p_string).compare(p_node->node_name);
         if (comp == 0) break; // found!
 
         // Not yet found:  next__ search left__ or right__ subtree.
         p_node = comp < 0 ? p_node->left__ : p_node->right__;
     }
-
-    // If found and cross-referencing, update the line number list.
-    if (xreference_flag && (comp == 0)) p_node->p_line_num_list->update();
 
     return p_node; // ptr to node, or nullptr if not found
 }
@@ -149,7 +131,9 @@ cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
 
     // Loop to search table for insertion point.
     while ((p_node = *ppNode) != nullptr) {
-        int comp = strcmp(p_string, p_node->p_string); // compare strings
+        //int comp = strcmp(p_string, p_node->node_name.c_str()); // compare strings
+		int comp = std::string(p_string).compare(p_node->node_name);
+
         if (comp == 0) return p_node; // found!
 
         // Not yet found:  next__ search left__ or right__ subtree.
@@ -180,22 +164,6 @@ cx_symtab_node *cx_symtab::enter_new(const char *p_string, cx_define_code dc) {
 
     return p_node;
 }
-
-/** convert     convert the symbol table into a form suitable
- *		for the back end.
- *
- * @param p_vector_symtabs : vector of symbol table pointers.
- */
-/*void cx_symtab::convert (cx_symtab *p_vector_symtabs[]) {
-    // Point the appropriate entry of the symbol table pointer vector
-    // to this symbol table.
-    p_vector_symtabs[xsymtab] = this;
-
-    // Allocate the symbol table node pointer vector
-    // and convert the nodes.
-    p_vector_nodes = new cx_symtab_node *[nodes_count];
-    root__->convert(p_vector_nodes);
-}*/
 
 /************************
  *		             *
@@ -273,9 +241,6 @@ cx_symtab_node *cx_symtab_stack::find(const char *p_string) const {
  *
  */
 void cx_symtab_stack::enter_scope(void) {
-
-    // dont overwrite mains scope
-    //if (current_nesting_level <= 1)++current_nesting_level;
 
     if (++current_nesting_level > max_nesting_level) {
         cx_error(err_nesting_too_deep);

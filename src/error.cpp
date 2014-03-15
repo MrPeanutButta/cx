@@ -40,9 +40,7 @@ const char *abort_message[] = {
  */
 void abort_translation (cx_abort_code ac) {
     std::cerr << "*** fatal translator error: " << abort_message[-ac] << std::endl;
-
     std::cin.get();
-
     exit(ac);
 }
 
@@ -127,19 +125,21 @@ void cx_error (cx_error_code ec) {
     int error_position = error_arrow_offset + input_position - 1;
 
     // print the arrow pointing to the token just scanned.
-    if (error_arrow_flag) {
-        sprintf(list.text, "%*s^", error_position, " ");
-        list.put_line();
-    }
-
+	list.put_line();	// print current line info
+	sprintf(list.text, "%*s^", error_position, " ");
+    list.put_line();
+ 
     // print the error message.
     sprintf(list.text, "*** error: %s", error_messages[ec]);
     list.put_line();
 
-    if (++error_count > max_syntax_errors) {
-        list.put_line("Too many syntax errors.  Translation aborted.");
-        abort_translation(abort_too_many_syntax_errors);
-    }
+	if (++error_count > max_syntax_errors) {
+		list.put_line("Too many syntax errors.  Translation aborted.");
+		std::cin.get();
+		exit(ec);
+		//abort_translation(abort_too_many_syntax_errors);
+	}
+	
 }
 
 const char *runtime_error_messages[] = {
