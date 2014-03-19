@@ -87,8 +87,8 @@ enum cx_error_code {
     err_missing_left_paren,
     err_missing_single_quote,
     err_invalid_escape_char,
-	err_loading_library,
-	err_library_no_init
+    err_loading_library,
+    err_library_no_init
 };
 
 void cx_error(cx_error_code ec);

@@ -25,8 +25,8 @@ bool xreference_flag = false; // true = cross-referencing on, false = off
 cx_define::~cx_define(void) {
     switch (how) {
 
-		// program_id is now managed unique_ptr
-        //case dc_program:
+            // program_id is now managed unique_ptr
+            //case dc_program:
         case dc_function:
 
             if (routine.which == func_declared) {
@@ -64,7 +64,7 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
     label_index = ++asm_label_index;
 
     // Allocate and copy the symbol string.
-	node_name = p_str;
+    node_name = p_str;
 }
 
 /** Destructor      Deallocate a symbol table node.
@@ -81,10 +81,10 @@ cx_symtab_node::~cx_symtab_node(void) {
     if (p_line_num_list != nullptr) delete p_line_num_list;
     if (p_type != nullptr) remove_type(p_type);
 
-	p_type = nullptr;
-	p_line_num_list = nullptr;
-	left__ = nullptr;
-	right__ = nullptr;
+    p_type = nullptr;
+    p_line_num_list = nullptr;
+    left__ = nullptr;
+    right__ = nullptr;
 }
 
 /******************
@@ -101,11 +101,11 @@ cx_symtab_node::~cx_symtab_node(void) {
  */
 cx_symtab_node *cx_symtab::search(const char *p_string) const {
     cx_symtab_node *p_node = root__; // ptr to symbol table node
-	
+
     // Loop to search the table.
     while (p_node) {
-		//int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
-		int comp = std::string(p_string).compare(p_node->node_name);
+        //int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
+        int comp = std::string(p_string).compare(p_node->node_name);
         if (comp == 0) break; // found!
 
         // Not yet found:  next__ search left__ or right__ subtree.
@@ -132,7 +132,7 @@ cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
     // Loop to search table for insertion point.
     while ((p_node = *ppNode) != nullptr) {
         //int comp = strcmp(p_string, p_node->node_name.c_str()); // compare strings
-		int comp = std::string(p_string).compare(p_node->node_name);
+        int comp = std::string(p_string).compare(p_node->node_name);
 
         if (comp == 0) return p_node; // found!
 

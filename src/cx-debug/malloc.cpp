@@ -2,9 +2,9 @@
 #include "common.h"
 #include "types.h"
 
-void copy_scalar (cx_stack_item* p_target,
-                  const cx_type *p_type,
-                  void *&address) {
+void copy_scalar(cx_stack_item* p_target,
+        const cx_type *p_type,
+        void *&address) {
 
     int *t_int = &p_target->basic_types.int__;
     char *t_char = &p_target->basic_types.char__;
@@ -48,9 +48,9 @@ void copy_scalar (cx_stack_item* p_target,
     }
 }
 
-void copy_array (const cx_type *p_type,
-                 void *&p_target_address,
-                 void *&p_source) {
+void copy_array(const cx_type *p_type,
+        void *&p_target_address,
+        void *&p_source) {
 
     int size = p_type->size;
 
@@ -58,7 +58,7 @@ void copy_array (const cx_type *p_type,
 
 }
 
-void *new_value (const cx_type *p_type, void *&address) {
+void *new_value(const cx_type *p_type, void *&address) {
 
     void *p_values = nullptr;
     const int size = p_type->size;
@@ -75,9 +75,9 @@ void *new_value (const cx_type *p_type, void *&address) {
     return p_values;
 }
 
-void cx_executor::cx_malloc (cx_symtab_node* p_target_id,
-                             cx_type* p_target_type, cx_type* p_expr_type,
-                             cx_stack_item* p_target, void* &p_target_address) {
+void cx_executor::cx_malloc(cx_symtab_node* p_target_id,
+        cx_type* p_target_type, cx_type* p_expr_type,
+        cx_stack_item* p_target, void* &p_target_address) {
 
     cx_type_code target_type = p_target_type->type_code;
     cx_type_code expr_type = p_expr_type->type_code;
@@ -99,7 +99,7 @@ void cx_executor::cx_malloc (cx_symtab_node* p_target_id,
         copy_array(p_expr_type, p_target_address, p_source);
     }
 
-    set_type(p_target_id->p_type,p_expr_type); 
+    set_type(p_target_id->p_type, p_expr_type);
 
     if (p_target_id->defn.how == dc_function) {
         p_target->basic_types.addr__ = p_target_address;

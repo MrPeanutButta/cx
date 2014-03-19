@@ -9,7 +9,7 @@
  * @param total_size
  * @return
  */
-cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id, int &count, int &total_size) {
+cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id, int &count, int &total_size) {
 
     cx_symtab_node *p_parm_id = nullptr; // ptrs to parm symtab nodes
     cx_symtab_node *p_first_id, *p_last_id = nullptr;
@@ -77,7 +77,7 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
             //set_type(p_parm_type->array.p_element_type, p_parm_type);
             set_type(p_parm_id->p_type, p_parm_type);
             cx_type *p_res = parse_unksize_array_type(p_function_id,
-                                     p_parm_id);
+                    p_parm_id);
         } else {
             set_type(p_parm_id->p_type, p_parm_type);
         }
@@ -123,8 +123,8 @@ cx_symtab_node *cx_parser::parse_formal_parm_list (cx_symtab_node *p_function_id
  * @param parm_check_flag : true to check parameter, false not to
  * @return ptr to the subroutine's type object
  */
-cx_type *cx_parser::parse_subroutine_call (const cx_symtab_node *p_function_id,
-                                           bool parm_check_flag) {
+cx_type *cx_parser::parse_subroutine_call(const cx_symtab_node *p_function_id,
+        bool parm_check_flag) {
     //get_token_append();
 
     return (p_function_id->defn.routine.which == func_declared) ||
@@ -144,12 +144,12 @@ cx_type *cx_parser::parse_subroutine_call (const cx_symtab_node *p_function_id,
  */
 cx_type *cx_parser::parse_declared_subroutine_call
 (const cx_symtab_node *p_function_id,
- int parm_check_flag) {
+        int parm_check_flag) {
 
-	if (token == tc_left_paren){
-		parse_actual_parm_list(p_function_id, parm_check_flag);
-		//get_token_append();
-	}
+    if (token == tc_left_paren) {
+        parse_actual_parm_list(p_function_id, parm_check_flag);
+        //get_token_append();
+    }
 
     return p_function_id->p_type;
 }
@@ -161,8 +161,8 @@ cx_type *cx_parser::parse_declared_subroutine_call
  * @param p_function_id    : ptr to routine id's symbol table node.
  * @param parm_check_flag : true to check parameter, false not to.
  */
-void cx_parser::parse_actual_parm_list (const cx_symtab_node *p_function_id,
-                                        int parm_check_flag) {
+void cx_parser::parse_actual_parm_list(const cx_symtab_node *p_function_id,
+        int parm_check_flag) {
     cx_symtab_node *p_formal_id = p_function_id ? p_function_id->defn.routine.
             locals.p_parms_ids
             : nullptr;
@@ -181,7 +181,7 @@ void cx_parser::parse_actual_parm_list (const cx_symtab_node *p_function_id,
         get_token_append();
 
         if (token == tc_right_paren && (p_function_id->defn.routine.parm_count == 0)) {
-			break;
+            break;
         }
 
         parse_actual_parm(p_formal_id, parm_check_flag);
@@ -202,8 +202,8 @@ void cx_parser::parse_actual_parm_list (const cx_symtab_node *p_function_id,
  *                        id's symbol table node
  * @param parm_check_flag : true to check parameter, false not to.
  */
-void cx_parser::parse_actual_parm (const cx_symtab_node *p_formal_id,
-                                   int parm_check_flag) {
+void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
+        int parm_check_flag) {
     /* If we're not checking the actual parameters against
      * the corresponding formal parameters (as during error
      * recovery), just parse the actual parameter. */
@@ -216,7 +216,7 @@ void cx_parser::parse_actual_parm (const cx_symtab_node *p_formal_id,
      * we have an error.  Go into error recovery mode and
      * parse the actual parameter anyway. */
     if (p_formal_id == nullptr) {
-		parse_expression();
+        parse_expression();
         cx_error(err_wrong_number_of_parms);
         return;
     }
@@ -227,8 +227,8 @@ void cx_parser::parse_actual_parm (const cx_symtab_node *p_formal_id,
      *                         the formal parameter. */
     if (p_formal_id->defn.how == dc_value_parm) {
         check_assignment_type_compatible(p_formal_id->p_type,
-                                         parse_expression(),
-                                         err_incompatible_types);
+                parse_expression(),
+                err_incompatible_types);
     }/* Formal VAR parameter: The actual parameter must be a
          *                       variable of the same type as the
          *                       formal parameter. */
@@ -248,7 +248,7 @@ void cx_parser::parse_actual_parm (const cx_symtab_node *p_formal_id,
 
         get_token_append();
         if (p_formal_id->p_type->base_type()
-            != parse_variable(p_actual_id)->base_type()) {
+                != parse_variable(p_actual_id)->base_type()) {
             cx_error(err_incompatible_types);
         }
         resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);

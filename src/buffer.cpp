@@ -40,18 +40,18 @@ int list_flag = true;
  * @param ac             : abort code to use if open failed
  */
 cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name,
-	cx_abort_code ac): p_file_name(new char[strlen(p_input_file_name) + 1]) {
+        cx_abort_code ac) : p_file_name(new char[strlen(p_input_file_name) + 1]) {
 
-	// Copy the input file name.
-	strcpy(p_file_name, p_input_file_name);
+    // Copy the input file name.
+    strcpy(p_file_name, p_input_file_name);
 
-	// Open the input file.  Abort if failed.
-	file.open(p_file_name, std::ios::in);
+    // Open the input file.  Abort if failed.
+    file.open(p_file_name, std::ios::in);
 
-	if (!file.good()) {
-		std::cout << p_file_name << ": " << std::strerror(errno) << std::endl;
-		abort_translation(ac);
-	}
+    if (!file.good()) {
+        std::cout << p_file_name << ": " << std::strerror(errno) << std::endl;
+        abort_translation(ac);
+    }
 }
 
 /** get_char        Fetch and return the next__ character from the
@@ -62,7 +62,7 @@ cx_text_in_buffer::cx_text_in_buffer(const char *p_input_file_name,
  * @return next__ character from the source file
  *          or the end-of-file character.
  */
-char cx_text_in_buffer::get_char (void) {
+char cx_text_in_buffer::get_char(void) {
     const int tab_size = 8; // size of tabs
     char ch; // character to return
 
@@ -88,7 +88,7 @@ char cx_text_in_buffer::get_char (void) {
  *
  * @return the previous character
  */
-char cx_text_in_buffer::put_back_char (void) {
+char cx_text_in_buffer::put_back_char(void) {
     --p_char;
     --input_position;
 
@@ -107,8 +107,8 @@ char cx_text_in_buffer::put_back_char (void) {
  *
  * @param p_source_file_name : ptr to name of source file
  */
-cx_source_buffer::cx_source_buffer (const char *p_source_file_name)
-: cx_text_in_buffer (p_source_file_name, abort_source_file_open_failed) {
+cx_source_buffer::cx_source_buffer(const char *p_source_file_name)
+: cx_text_in_buffer(p_source_file_name, abort_source_file_open_failed) {
     // Initialize the list file and read the first source line.
     if (list_flag) list.initialize(p_source_file_name);
     get_line();
@@ -121,27 +121,27 @@ cx_source_buffer::cx_source_buffer (const char *p_source_file_name)
  * @return first character of the source line, or the
  *          end-of-file character if at the end of the file
  */
-char cx_source_buffer::get_line (void) {
+char cx_source_buffer::get_line(void) {
     extern int current_nesting_level;
 
     // If at the end of the source file, return the end-of-file char.
     if (file.eof()) p_char = (char *) &eof_char;
 
         // Else read the next__ source line and print it to the list file.
-	else {
-		memset(text, '\0', sizeof (text));
+    else {
+        memset(text, '\0', sizeof (text));
 
-		file.getline(text, max_input_buffer_size);
-		p_char = text; // point to first source line char
+        file.getline(text, max_input_buffer_size);
+        p_char = text; // point to first source line char
 
-		// just buffer current line, we can display on error
-		list.buffer(
-			text,
-			++current_line_number,
-			current_nesting_level
-			);
+        // just buffer current line, we can display on error
+        list.buffer(
+                text,
+                ++current_line_number,
+                current_nesting_level
+                );
 
-	}
+    }
 
     input_position = 0;
     return *p_char;
@@ -177,9 +177,9 @@ cx_list_buffer list; // the list file buffer
  *
  * @param p_file_name : ptr to source file name (for page header)
  */
-void cx_list_buffer::initialize (const char *p_file_name) {
+void cx_list_buffer::initialize(const char *p_file_name) {
 
-	if (p_file_name == nullptr) return;
+    if (p_file_name == nullptr) return;
 
     memset(text, '\0', sizeof (text));
     //page_number = 0;
@@ -193,7 +193,7 @@ void cx_list_buffer::initialize (const char *p_file_name) {
 
 ///  put_line         print a line of text to the list file.
 
-void cx_list_buffer::put_line (void) {
+void cx_list_buffer::put_line(void) {
     // Start a new page if the current one is full.
     //if (list_flag && (line_count == max_lines_per_page)) print_page_header();
 
@@ -207,7 +207,7 @@ void cx_list_buffer::put_line (void) {
     ++line_count;
 }
 
-cx_text_out_buffer::~cx_text_out_buffer () {
+cx_text_out_buffer::~cx_text_out_buffer() {
 
 }
 

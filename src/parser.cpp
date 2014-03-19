@@ -11,7 +11,7 @@ extern cx_symtab_node *p_program_ptr_id;
  *
  * @return ptr to '__cx_global__' program Id.
  */
-cx_symtab_node *cx_parser::parse (void) {
+cx_symtab_node *cx_parser::parse(void) {
 
     extern bool cx_dev_debug_flag;
     cx_symtab_node *p_program_id = nullptr;
@@ -79,9 +79,9 @@ cx_symtab_node *cx_parser::parse (void) {
  * @param p_list2 : token list.
  * @param p_list3 : token list.
  */
-void cx_parser::resync (const cx_token_code* p_list1,
-                        const cx_token_code* p_list2,
-                        const cx_token_code* p_list3) {
+void cx_parser::resync(const cx_token_code* p_list1,
+        const cx_token_code* p_list2,
+        const cx_token_code* p_list3) {
 
     bool errorFlag = (!token_in(token, p_list1)) &&
             (!token_in(token, p_list2)) &&
@@ -95,15 +95,15 @@ void cx_parser::resync (const cx_token_code* p_list1,
         cx_error(errorCode);
 
         while ((!token_in(token, p_list1)) &&
-               (!token_in(token, p_list2)) &&
-               (!token_in(token, p_list3)) &&
-               (token != tc_RETURN) &&
-               (token != tc_end_of_file)) {
+                (!token_in(token, p_list2)) &&
+                (!token_in(token, p_list3)) &&
+                (token != tc_RETURN) &&
+                (token != tc_end_of_file)) {
             get_token_append();
         }
 
         if ((token == tc_end_of_file) &&
-            (errorCode != err_unexpected_eof)) {
+                (errorCode != err_unexpected_eof)) {
             cx_error(err_unexpected_eof);
         }
     }

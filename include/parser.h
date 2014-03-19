@@ -25,11 +25,11 @@ class cx_parser {
     cx_icode icode;
     bool is_module;
     const char *file_name;
-    
+
     cx_symtab_node *parse_function_header(cx_symtab_node *p_function_id);
 
     void parse_block(cx_symtab_node *p_function_id);
-    void parse_iterator_block (cx_symtab_node *p_function_id);
+    void parse_iterator_block(cx_symtab_node *p_function_id);
     cx_symtab_node *parse_formal_parm_list(cx_symtab_node *p_function_id,
             int &count, int &total_size);
 
@@ -94,7 +94,7 @@ class cx_parser {
     cx_type *parse_subscripts(const cx_type *p_type);
     cx_type *parse_field(const cx_symtab_node *p_node, cx_type *p_type);
     cx_type *parse_iterator(cx_symtab_node *p_iterator);
-    
+
     // statements
     void parse_statement(cx_symtab_node* p_function_id);
     cx_type *parse_assignment(const cx_symtab_node* p_target_id);

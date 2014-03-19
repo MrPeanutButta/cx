@@ -8,7 +8,7 @@
  *
  * @param p_function_id : routine ID this statement is apart of.
  */
-void cx_executor::execute_DO (cx_symtab_node * p_function_id) {
+void cx_executor::execute_DO(cx_symtab_node * p_function_id) {
 
     int break_point;
     int at_loop_start = current_location(); // location of loop start in icode;
@@ -28,7 +28,7 @@ void cx_executor::execute_DO (cx_symtab_node * p_function_id) {
             break;
         }
 
-		get_token(); // while
+        get_token(); // while
         execute_expression(); // (condition)
 
         condition = top()->basic_types.bool__;

@@ -1,7 +1,7 @@
 #include "exec.h"
 #include "common.h"
 
-void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
+void cx_executor::logic_or(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -318,7 +318,7 @@ void cx_executor::logic_or (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
+void cx_executor::logic_and(cx_type* lhs, cx_type* rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -635,7 +635,7 @@ void cx_executor::logic_and (cx_type* lhs, cx_type* rhs) {
     }
 }
 
-void cx_executor::logic_not (void) {
+void cx_executor::logic_not(void) {
     get_token();
     cx_type *p_result_type = execute_expression();
 

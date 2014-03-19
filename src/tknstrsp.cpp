@@ -15,7 +15,7 @@
  * @param c : char following a \.
  * @return the escape char.
  */
-char cx_token::get_escape_char (const char& c) {
+char cx_token::get_escape_char(const char& c) {
     switch (c) {
         case '\'': return '\'';
         case '\"': return '\"';
@@ -46,7 +46,7 @@ char cx_token::get_escape_char (const char& c) {
  *
  * @param buffer : ptr to text input buffer.
  */
-void cx_string_token::get (cx_text_in_buffer &buffer) {
+void cx_string_token::get(cx_text_in_buffer &buffer) {
     char ch; // current character
     char *ps = string; // ptr to char in string
 
@@ -86,7 +86,7 @@ void cx_string_token::get (cx_text_in_buffer &buffer) {
  *
  * @param buffer : ptr to text input buffer.
  */
-void cx_char_token::get (cx_text_in_buffer &buffer) {
+void cx_char_token::get(cx_text_in_buffer &buffer) {
     char ch; // current character
     char *ps = string; // ptr to char in string
 
@@ -111,7 +111,7 @@ void cx_char_token::get (cx_text_in_buffer &buffer) {
     *ps = '\0';
 }
 
-void cx_char_token::print (void) const {
+void cx_char_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> char:", string);
     list.put_line();
 }
@@ -119,7 +119,7 @@ void cx_char_token::print (void) const {
 /** print       print the token to the list file.
  *
  */
-void cx_string_token::print (void) const {
+void cx_string_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> string:", string);
     list.put_line();
 }
@@ -135,7 +135,7 @@ void cx_string_token::print (void) const {
  *
  * @param buffer : ptr to text input buffer.
  */
-void cx_special_token::get (cx_text_in_buffer &buffer) {
+void cx_special_token::get(cx_text_in_buffer &buffer) {
     char ch = buffer.current_char();
     char *ps = string;
 
@@ -323,7 +323,7 @@ void cx_special_token::get (cx_text_in_buffer &buffer) {
 /** print       print the token to the list file.
  *
  */
-void cx_special_token::print (void) const {
+void cx_special_token::print(void) const {
     sprintf(list.text, "\t%-18s %-s", ">> special:", string);
     list.put_line();
 }
@@ -338,7 +338,7 @@ void cx_special_token::print (void) const {
  *
  * @param buffer : ptr to text input buffer.
  */
-void cx_error_token::get (cx_text_in_buffer &buffer) {
+void cx_error_token::get(cx_text_in_buffer &buffer) {
     string[0] = buffer.current_char();
     string[1] = '\0';
 

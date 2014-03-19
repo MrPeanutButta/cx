@@ -10,8 +10,8 @@ cx_char_code_map char_code_map; // maps a character to its code
  *
  * @param p_buffer : ptr to text input buffer to scan.
  */
-cx_text_scanner::cx_text_scanner (cx_text_in_buffer *p_buffer)
-: p_text_in_buffer (p_buffer) {
+cx_text_scanner::cx_text_scanner(cx_text_in_buffer *p_buffer)
+: p_text_in_buffer(p_buffer) {
     char i;
 
     // Initialize the character code map.
@@ -55,7 +55,7 @@ cx_text_scanner::cx_text_scanner (cx_text_in_buffer *p_buffer)
  *                      character.
  *
  */
-void cx_text_scanner::skip_whitespace (void) {
+void cx_text_scanner::skip_whitespace(void) {
     char ch = p_text_in_buffer->current_char();
 
     do {
@@ -82,7 +82,7 @@ void cx_text_scanner::skip_whitespace (void) {
             }
         }
     } while ((char_code_map[ch] == cc_white_space)
-             || (ch == '/'));
+            || (ch == '/'));
 }
 
 /** get         Extract the next__ token from the text input,
@@ -90,7 +90,7 @@ void cx_text_scanner::skip_whitespace (void) {
  *
  * @return pointer to the extracted token.
  */
-cx_token * cx_text_scanner::get (void) {
+cx_token * cx_text_scanner::get(void) {
     cx_token *p_token; // ptr to token to return
 
     skip_whitespace();

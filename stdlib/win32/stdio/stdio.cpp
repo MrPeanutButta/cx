@@ -161,7 +161,7 @@ cx_type *cx_read(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // read buffer
-    char *buffer = (char *) std::malloc((size * count) + 1);
+	unsigned char *buffer = (unsigned char *)std::malloc((size * count) + 1);
     memset(buffer, 0, (size * count) + 1);
 
     // get node
@@ -172,7 +172,7 @@ cx_type *cx_read(cx_runtime_stack *p_stack,
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type(fc_array, s * size, nullptr);
-    set_type(p_str->array.p_element_type, (cx_type *)cx_function_id->p_type->base_type());
+    set_type(p_str->array.p_element_type, (cx_type *) cx_function_id->p_type->base_type());
     p_str->array.element_count = s;
     p_str->array.max_index = s;
 
@@ -214,7 +214,7 @@ cx_type *cx_getc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-	p_stack->push((char)std::getc(p_snode->defn.io.stream));
+    p_stack->push((char) std::getc(p_snode->defn.io.stream));
 
     return cx_function_id->p_type;
 }
@@ -240,7 +240,7 @@ cx_type *cx_gets(cx_runtime_stack *p_stack,
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type(fc_array, count, nullptr);
-    set_type(p_str->array.p_element_type, (cx_type *)cx_function_id->p_type->base_type());
+    set_type(p_str->array.p_element_type, (cx_type *) cx_function_id->p_type->base_type());
     p_str->array.element_count = count;
     p_str->array.max_index = count;
 
@@ -338,7 +338,7 @@ cx_type *cx_getws(cx_runtime_stack *p_stack,
     p_stack->push((void *) buffer);
 
     cx_type *p_wstr = new cx_type(fc_array, count, nullptr);
-    set_type(p_wstr->array.p_element_type, (cx_type *)cx_function_id->p_type->base_type());
+    set_type(p_wstr->array.p_element_type, (cx_type *) cx_function_id->p_type->base_type());
     p_wstr->array.element_count = count;
     p_wstr->array.max_index = count;
 
@@ -379,7 +379,7 @@ cx_type *cx_putws(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     if (ret_val) {
-		p_stack->push((int)std::fputws(_wstring, p_snode->defn.io.stream));
+        p_stack->push((int) std::fputws(_wstring, p_snode->defn.io.stream));
     } else {
         p_stack->push((int) EOF);
     }
@@ -562,10 +562,6 @@ cx_type *cx_perror(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
-
-
-//remove_type(p_file_type);
-
 STDIO_API
 void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
@@ -735,7 +731,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
 
         if (mbr.name == "read") {
-            set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
+            set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_uint8]);
         } else if (mbr.name == "gets") {
             set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
         } else if (mbr.name == "getws") {

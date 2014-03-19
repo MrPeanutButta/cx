@@ -12,7 +12,7 @@
  *
  * @param p_function_id : ptr to the routine symtab node
  */
-void cx_executor::execute_statement (cx_symtab_node *p_function_id) {
+void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
     if (token != tc_left_bracket) {
         ++statement_count;
         trace_statement();
@@ -24,15 +24,14 @@ void cx_executor::execute_statement (cx_symtab_node *p_function_id) {
             if (p_node->defn.how == dc_function) {
                 execute_function_call(p_node);
             } else {
-				cx_symtab_node *p_var = p_node;
-				get_token();
-				if (token_in(token, tokenlist_assign_ops)){
-					execute_assignment(p_var);
-				}
-				else {
-					execute_variable(p_var, false);
-					pop();
-				}
+                cx_symtab_node *p_var = p_node;
+                get_token();
+                if (token_in(token, tokenlist_assign_ops)) {
+                    execute_assignment(p_var);
+                } else {
+                    execute_variable(p_var, false);
+                    pop();
+                }
             }
         }
             break;
@@ -69,7 +68,7 @@ void cx_executor::execute_statement (cx_symtab_node *p_function_id) {
  * @param p_function_id : ptr to the routine symtab node
  * @param terminator : token to terminate compound execution.
  */
-void cx_executor::execute_statement_list (cx_symtab_node *p_function_id, cx_token_code terminator) {
+void cx_executor::execute_statement_list(cx_symtab_node *p_function_id, cx_token_code terminator) {
     do {
         execute_statement(p_function_id);
 
@@ -85,7 +84,7 @@ void cx_executor::execute_statement_list (cx_symtab_node *p_function_id, cx_toke
  *
  * @param p_function_id : routine ID this statement is apart of.
  */
-void cx_executor::execute_compound (cx_symtab_node * p_function_id) {
+void cx_executor::execute_compound(cx_symtab_node * p_function_id) {
 
     get_token();
 
@@ -105,7 +104,7 @@ void cx_executor::execute_compound (cx_symtab_node * p_function_id) {
  *
  * @param p_function_id : routine ID this statement is apart of.
  */
-void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
+void cx_executor::execute_IF(cx_symtab_node * p_function_id) {
     //  if
     get_token();
 
@@ -129,11 +128,11 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
         while (token == tc_semicolon)get_token();
 
         // If there is an ELSE part, jump around it.
-       if (token == tc_ELSE) {
-		   get_token();
-			go_to(get_location_marker());
-			get_token(); // token following the IF statement
-		}
+        if (token == tc_ELSE) {
+            get_token();
+            go_to(get_location_marker());
+            get_token(); // token following the IF statement
+        }
     } else {
 
         // False: Go to the false location.
@@ -161,7 +160,7 @@ void cx_executor::execute_IF (cx_symtab_node * p_function_id) {
  *
  * @param p_function_id
  */
-void cx_executor::execute_FOR (cx_symtab_node * p_function_id) {
+void cx_executor::execute_FOR(cx_symtab_node * p_function_id) {
 
     bool condition = false;
 

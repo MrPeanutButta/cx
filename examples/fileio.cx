@@ -23,8 +23,7 @@ int main () {
 		perror("error opening file: " + filename);
 	else {
 		while(!myfile.eof){
-			putchar(myfile.getc);
-			putchar('\n');
+			puts(myfile.getc.to_str);
 		}
 
 		myfile.close;

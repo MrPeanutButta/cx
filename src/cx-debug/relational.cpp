@@ -1,7 +1,7 @@
 #include "exec.h"
 #include "common.h"
 
-void cx_executor::execute_relational (cx_token_code op, cx_type* lhs, cx_type* rhs) {
+void cx_executor::execute_relational(cx_token_code op, cx_type* lhs, cx_type* rhs) {
 
     switch (op) {
         case tc_equal_equal:
@@ -27,7 +27,7 @@ void cx_executor::execute_relational (cx_token_code op, cx_type* lhs, cx_type* r
     }
 }
 
-void cx_executor::equal_equal (cx_type *lhs, cx_type *rhs) {
+void cx_executor::equal_equal(cx_type *lhs, cx_type *rhs) {
 
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
@@ -355,7 +355,7 @@ void cx_executor::equal_equal (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::not_equal (cx_type *lhs, cx_type *rhs) {
+void cx_executor::not_equal(cx_type *lhs, cx_type *rhs) {
 
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
@@ -683,7 +683,7 @@ void cx_executor::not_equal (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::lessthan (cx_type *lhs, cx_type *rhs) {
+void cx_executor::lessthan(cx_type *lhs, cx_type *rhs) {
 
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
@@ -1011,7 +1011,7 @@ void cx_executor::lessthan (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::lessthan_equal (cx_type *lhs, cx_type *rhs) {
+void cx_executor::lessthan_equal(cx_type *lhs, cx_type *rhs) {
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
             case cx_int:
@@ -1338,7 +1338,7 @@ void cx_executor::lessthan_equal (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::greaterthan (cx_type *lhs, cx_type *rhs) {
+void cx_executor::greaterthan(cx_type *lhs, cx_type *rhs) {
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
             case cx_int:
@@ -1665,7 +1665,7 @@ void cx_executor::greaterthan (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::greaterthan_equal (cx_type *lhs, cx_type *rhs) {
+void cx_executor::greaterthan_equal(cx_type *lhs, cx_type *rhs) {
     if (rhs->form != fc_array) {
         switch (rhs->type_code) {
             case cx_int:

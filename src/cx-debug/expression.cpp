@@ -11,7 +11,7 @@
  *
  * @return: ptr to expression's type object
  */
-cx_type *cx_executor::execute_expression (void) {
+cx_type *cx_executor::execute_expression(void) {
     cx_type *p_operand1_type; // ptr to first  operand's type
     cx_type *p_operand2_type; // ptr to second operand's type
     cx_type *p_result_type; // ptr to result type
@@ -43,7 +43,7 @@ cx_type *cx_executor::execute_expression (void) {
  *
  * @return: ptr to expression's type object
  */
-cx_type *cx_executor::execute_simple_expression (void) {
+cx_type *cx_executor::execute_simple_expression(void) {
 
     cx_type *p_operand_type; // ptr to operand's type
     cx_type *p_result_type; // ptr to result type
@@ -90,7 +90,7 @@ cx_type *cx_executor::execute_simple_expression (void) {
  *
  * @return: ptr to term's type object
  */
-cx_type *cx_executor::execute_term (void) {
+cx_type *cx_executor::execute_term(void) {
     cx_type *p_operand_type; // ptr to operand's type
     cx_type *p_result_type; // ptr to result type
     cx_token_code op; // operator

@@ -1,4 +1,3 @@
-
 #ifndef common_h
 #define common_h
 
@@ -13,15 +12,15 @@ extern int current_nesting_level;
 extern cx_symtab cx_global_symtab;
 extern cx_symtab *p_symtab_list;
 // Pointers to predefined types.
-extern  cx_symtab_node *p_main_function_id;
-extern  cx_type *p_integer_type;
-extern  cx_type *p_float_type;
+extern cx_symtab_node *p_main_function_id;
+extern cx_type *p_integer_type;
+extern cx_type *p_float_type;
 //extern cx_type *p_double_type;
-extern  cx_type *p_boolean_type;
-extern  cx_type *p_char_type;
-extern  cx_type *p_complex_type;
+extern cx_type *p_boolean_type;
+extern cx_type *p_char_type;
+extern cx_type *p_complex_type;
 //extern  cx_type *p_file_type;
-extern  cx_type *p_dummy_type;
+extern cx_type *p_dummy_type;
 
 // tokens that can start a statement
 extern const cx_token_code tokenlist_statement_start[];

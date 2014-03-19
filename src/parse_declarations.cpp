@@ -8,7 +8,7 @@
 #include "parser.h"
 
 // might not always be true in some cases.
-bool exec_flag (true);
+bool exec_flag(true);
 
 cx_symtab_node *p_program_ptr_id = nullptr;
 
@@ -22,7 +22,7 @@ cx_symtab_node *p_program_ptr_id = nullptr;
  * @param p_function_id : ptr to the routine which owns the type being declared or
  *                     assigned a value.
  */
-void cx_parser::parse_declarations_or_assignment (cx_symtab_node *p_function_id) {
+void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) {
 
     if (!p_program_ptr_id->found_global_end) {
         p_program_ptr_id->global_finish_location = icode.current_location();
@@ -37,7 +37,7 @@ void cx_parser::parse_declarations_or_assignment (cx_symtab_node *p_function_id)
         parse_complex_type(p_function_id, p_node);
         // predefined type name found
     } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex) &&
-               (p_node->defn.how != dc_function)) {
+            (p_node->defn.how != dc_function)) {
 
         get_token();
 
@@ -56,8 +56,8 @@ void cx_parser::parse_declarations_or_assignment (cx_symtab_node *p_function_id)
             /* if not nullptr, it's already defined.
              * check if forwarded */
             if (p_new_id != nullptr) {
-                if (p_new_id->defn.how == dc_function && 
-                    p_new_id->defn.routine.which == func_forward) {
+                if (p_new_id->defn.how == dc_function &&
+                        p_new_id->defn.routine.which == func_forward) {
                     get_token_append();
                     parse_function_header(p_new_id);
                 } else cx_error(err_redefined_identifier);
@@ -142,7 +142,7 @@ void cx_parser::parse_declarations_or_assignment (cx_symtab_node *p_function_id)
  * @param p_function_id    ptr to the routine which owns the type being declared or
  *                      assigned a constant value.
  */
-void cx_parser::parse_constant_declaration (cx_symtab_node* p_function_id) {
+void cx_parser::parse_constant_declaration(cx_symtab_node* p_function_id) {
     cx_symtab_node *p_last_id = nullptr;
     cx_symtab_node *p_const_id = nullptr;
     cx_symtab_node *p_type_node = find(p_token->string__());
@@ -180,7 +180,7 @@ void cx_parser::parse_constant_declaration (cx_symtab_node* p_function_id) {
  * @param p_const_id : ptr to symbol table node of the identifier
  *                   being defined
  */
-void cx_parser::parse_constant (cx_symtab_node *p_const_id) {
+void cx_parser::parse_constant(cx_symtab_node *p_const_id) {
     cx_token_code sign = tc_dummy;
 
     if (token_in(token, tokenlist_unary_ops)) {
@@ -194,7 +194,7 @@ void cx_parser::parse_constant (cx_symtab_node *p_const_id) {
                 p_const_id->defn.constant.value.int__ = sign == tc_minus ?
                         -p_token->value().int__ : p_token->value().int__;
             } else if ((p_token->type() == ty_real) &&
-                       (((p_const_id->p_type == p_float_type)))) {
+                    (((p_const_id->p_type == p_float_type)))) {
 
                 if (p_const_id->p_type == p_float_type) {
                     p_const_id->defn.constant.value.float__ = sign == tc_minus ?
@@ -252,7 +252,7 @@ void cx_parser::parse_constant (cx_symtab_node *p_const_id) {
  * @param p_id1 : ptr to symbol table node of <id-1>.
  * @param sign : unary + or - sign, or none.
  */
-void cx_parser::parse_identifier_constant (cx_symtab_node* p_id1, cx_token_code sign) {
+void cx_parser::parse_identifier_constant(cx_symtab_node* p_id1, cx_token_code sign) {
     cx_symtab_node *p_id2 = find(p_token->string__());
 
     if (p_id2->defn.how != dc_constant) {

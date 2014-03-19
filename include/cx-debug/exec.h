@@ -71,13 +71,13 @@ struct cx_stack_item {
 
     cx_stack_item(void *address) {
         basic_types.addr__ = address;
-		addr = std::shared_ptr<void>(address);
+        addr = std::shared_ptr<void>(address);
     }
 
     mem_block basic_types;
 
 private:
-	std::shared_ptr<void> addr;
+    std::shared_ptr<void> addr;
 
 };
 
@@ -195,7 +195,7 @@ public:
             cx_runstack.erase(item);
         } else {
 
-                std::clog << "item not found on the stack\n";
+            std::clog << "item not found on the stack\n";
 
         }
     }
@@ -431,7 +431,7 @@ public:
     cx_executor(void) : cx_backend() {
         statement_count = 0;
 
-		extern bool cx_dev_debug_flag;
+        extern bool cx_dev_debug_flag;
 
         trace_routine_flag = cx_dev_debug_flag;
         trace_statement_flag = cx_dev_debug_flag;

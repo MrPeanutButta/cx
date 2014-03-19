@@ -42,7 +42,7 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
     bool f_runtime_linksuccess = false;
 
 #ifdef _WIN32
-    HINSTANCE hinst_lib = nullptr;
+    HINSTANCE lib_handle = nullptr;
 #elif defined __linux__
     void *lib_handle = nullptr;
 #endif
@@ -62,57 +62,44 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
 #if defined _WIN32
     std::string dll = std::string(lib) + ".dll";
     lib_path += dll;
-
     // Get a handle to the DLL module.
-    hinst_lib = LoadLibrary(lib_path.c_str());
-    // If the handle is valid, try to get the function address.
-    if (hinst_lib != nullptr) {
-        init_call = (lib_init) GetProcAddress(hinst_lib, "cx_lib_init");
-
-        windows_libs.push_back(hinst_lib);
-
-        // If the function address is valid, call the function.
-        if (nullptr != init_call) {
-            f_runtime_linksuccess = true;
-            //pass our symbol table to the DLL with a map of allowed data types.
-            (init_call) (p_symtab, cx_types_);
-        } else {
-            cx_error(err_library_no_init);
-        }
-
-    } else {
-        cx_error(err_loading_library);
-    }
-
+    lib_handle = LoadLibrary(lib_path.c_str());
 #elif defined __linux__
     std::string so = std::string(lib) + ".so";
     lib_path += so;
-    
+    // Get a handle to the SO module
     lib_handle = dlopen(lib_path.c_str(), RTLD_NOW);
+#endif
+
     // If the handle is valid, try to get the function address.
     if (lib_handle != nullptr) {
-        init_call = (lib_init) dlsym(lib_handle, "cx_lib_init");
 
+#if defined _WIN32
+        init_call = (lib_init) GetProcAddress(lib_handle, "cx_lib_init");
+		windows_libs.push_back(lib_handle);
+#elif defined __linux__
+        init_call = (lib_init) dlsym(lib_handle, "cx_lib_init");
         linux_libs.push_back(lib_handle);
+#endif
 
         // If the function address is valid, call the function.
         if (nullptr != init_call) {
             f_runtime_linksuccess = true;
-            //pass our symbol table to the DLL with a map of allowed data types.
+            //pass our symbol table to the library with a array of allowed data types.
             (init_call) (p_symtab, cx_types_);
         } else {
+#if defined __linux__
             std::cout << dlerror() << std::endl;
+#endif
             cx_error(err_library_no_init);
         }
 
     } else {
+#if defined __linux__
         std::cout << dlerror() << std::endl;
+#endif
         cx_error(err_loading_library);
     }
-
-#elif defined __APPLE__
-#endif
-
 }
 
 /** parse_execute_directive      Opens an external script module
@@ -148,26 +135,24 @@ void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
 
             // save current line number
             int old_line_num = current_line_number;
-			current_line_number = 0;
+            current_line_number = 0;
 
-			/* true : stdlib module
-			 * returns nullptr */
-			{
-				cx_parser *parser = nullptr;
-				
-				try{
-					parser = new cx_parser
-						(new cx_source_buffer(lib_path.c_str()), true);
+            /* true : stdlib module
+             * returns nullptr */
+            {
+                cx_parser *parser = nullptr;
 
-					parser->parse();
-				}
+                try {
+                    parser = new cx_parser
+                            (new cx_source_buffer(lib_path.c_str()), true);
 
-				catch (...){
+                    parser->parse();
+                } catch (...) {
 
-				}
+                }
 
-				delete parser;
-			}
+                delete parser;
+            }
 
             current_line_number = old_line_num;
             icode.reset();

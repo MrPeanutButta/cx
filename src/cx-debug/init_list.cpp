@@ -2,27 +2,27 @@
 #include "std_members.h"
 #include "common.h"
 
-cx_type *cx_executor::execute_initialization_list (void) {
+cx_type *cx_executor::execute_initialization_list(void) {
 
     cx_type *p_result_type = nullptr;
 
     get_token();
     int total_size = 0;
     int old_size = 0;
-	int elem_count = 0;
+    int elem_count = 0;
     bool comma = false;
     void *p_address = nullptr;
-	char *tmp = nullptr;
+    char *tmp = nullptr;
 
-	cx_type *p_prev_type = nullptr;
+    cx_type *p_prev_type = nullptr;
 
     do {
 
         p_result_type = execute_expression();
-		p_prev_type = p_result_type;
-		total_size += p_result_type->size;
-        
-		p_address = realloc(p_address, old_size + p_result_type->size);
+        p_prev_type = p_result_type;
+        total_size += p_result_type->size;
+
+        p_address = realloc(p_address, old_size + p_result_type->size);
 
         if (p_address == nullptr) {
             perror("realloc");
@@ -73,8 +73,8 @@ cx_type *cx_executor::execute_initialization_list (void) {
             }
         } else {
             void *p_source = top()->basic_types.addr__;
-			memcpy(&tmp[old_size], p_source, total_size);
-			tmp[total_size] = '\0';
+            memcpy(&tmp[old_size], p_source, total_size);
+            tmp[total_size] = '\0';
         }
 
         pop();
@@ -85,17 +85,17 @@ cx_type *cx_executor::execute_initialization_list (void) {
             get_token();
         } else comma = false;
 
-		++elem_count;
+        ++elem_count;
     } while (comma);
 
     // }
     get_token();
-    push((void *)p_address);
+    push((void *) p_address);
 
-	cx_type *p_array_type = new cx_type(fc_array, total_size, nullptr);
-	set_type(p_array_type->array.p_element_type, p_result_type);
-	p_array_type->array.element_count = elem_count;
-	p_array_type->array.max_index = elem_count;
+    cx_type *p_array_type = new cx_type(fc_array, total_size, nullptr);
+    set_type(p_array_type->array.p_element_type, p_result_type);
+    p_array_type->array.element_count = elem_count;
+    p_array_type->array.max_index = elem_count;
 
-	return p_array_type;
+    return p_array_type;
 }

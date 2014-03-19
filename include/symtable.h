@@ -112,7 +112,7 @@ public:
 
 class cx_symtab_node {
     cx_symtab_node *left__, *right__;
-	std::string node_name;
+    std::string node_name;
 
     short xsymtab;
     short xnode;
@@ -186,7 +186,7 @@ public:
     ~cx_symtab() {
         if (root__ != nullptr) delete root__;
 
-		root__ = nullptr;
+        root__ = nullptr;
     }
 
     cx_symtab_node *search(const char *p_string) const;
@@ -216,7 +216,8 @@ public:
         return next__;
     }
 
-	// DEPRECATED //
+    // DEPRECATED //
+
     cx_symtab_node **node_vector(void) const {
         //return p_vector_nodes;
         return nullptr;

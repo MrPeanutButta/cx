@@ -10,8 +10,8 @@
  * @param p_array_node : ptr to array symtab node.
  * @return ptr to array type object.
  */
-cx_type *cx_parser::parse_array_type (cx_symtab_node *p_function_id,
-                                      cx_symtab_node *p_array_node) {
+cx_type *cx_parser::parse_array_type(cx_symtab_node *p_function_id,
+        cx_symtab_node *p_array_node) {
 
     cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
     cx_type *p_element_type = p_array_type;
@@ -32,7 +32,7 @@ cx_type *cx_parser::parse_array_type (cx_symtab_node *p_function_id,
         cx_type *p_index_type = parse_expression();
 
         check_assignment_type_compatible(p_integer_type, p_index_type,
-                                         err_invalid_index_type);
+                err_invalid_index_type);
 
     }
 
@@ -68,8 +68,8 @@ cx_type *cx_parser::parse_array_type (cx_symtab_node *p_function_id,
  * @param p_array_node : ptr to array symtab node.
  * @return ptr to array type object.
  */
-cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
-                                              cx_symtab_node* p_array_node) {
+cx_type *cx_parser::parse_unksize_array_type(cx_symtab_node* p_function_id,
+        cx_symtab_node* p_array_node) {
 
     cx_type *p_array_type = new cx_type(fc_array, 0, nullptr);
     cx_type *p_expr_type = nullptr;
@@ -78,7 +78,7 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
     const bool is_expression = token_in(token, tokenlist_assign_ops);
 
     if ((token != tc_left_paren) && (token != tc_right_paren) &&
-        (!is_expression)) get_token_append();
+            (!is_expression)) get_token_append();
     else if ((token != tc_right_paren) && (!is_expression)) is_function = true;
 
     p_array_type->array.element_count = 0;
@@ -94,20 +94,20 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
         parse_function_header(p_array_node);
 
         return p_array_type;
-    } 
-	
-	if (is_expression) {
+    }
 
-        p_expr_type = parse_assignment(p_array_node);	
-		remove_type(p_array_type);
+    if (is_expression) {
+
+        p_expr_type = parse_assignment(p_array_node);
+        remove_type(p_array_type);
 
         set_type(p_array_node->p_type, p_expr_type);
-		p_array_node->p_type->p_type_id = p_array_node;
-		p_array_type = p_array_node->p_type;
+        p_array_node->p_type->p_type_id = p_array_node;
+        p_array_type = p_array_node->p_type;
     } else {
         set_type(p_array_node->p_type, p_array_type);
     }
-    
+
     if (p_array_node->defn.how == dc_undefined) {
         p_array_node->defn.how = dc_variable;
     }
@@ -128,7 +128,7 @@ cx_type *cx_parser::parse_unksize_array_type (cx_symtab_node* p_function_id,
  * @param p_array_type : ptr to array type object.
  * @return byte size.
  */
-int cx_parser::array_size (cx_type * p_array_type) {
+int cx_parser::array_size(cx_type * p_array_type) {
     if (p_array_type->array.p_element_type->size == 0) {
         p_array_type->array.p_element_type->size = array_size
                 (p_array_type->array.p_element_type);
@@ -202,7 +202,7 @@ int cx_parser::array_size (cx_type * p_array_type) {
  * @param p_node
  * @return
  */
-cx_type * cx_parser::parse_complex_type (cx_symtab_node *p_function_id, cx_symtab_node * p_node) {
+cx_type * cx_parser::parse_complex_type(cx_symtab_node *p_function_id, cx_symtab_node * p_node) {
 
     get_token();
 
@@ -248,7 +248,7 @@ cx_type * cx_parser::parse_complex_type (cx_symtab_node *p_function_id, cx_symta
  * @param p_complex_type
  * @param offset
  */
-void cx_parser::parse_member_decls (cx_symtab_node *p_function_id, cx_type *p_complex_type, int offset) {
+void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_complex_type, int offset) {
     // copy of base class would go here
 
     // if no '{' this must be a forward
@@ -351,7 +351,7 @@ void cx_parser::parse_member_decls (cx_symtab_node *p_function_id, cx_type *p_co
                 set_type(member->p_type, p_node->p_type);
 
                 // Record fields
-//                member->defn.data.offset = offset;
+                //                member->defn.data.offset = offset;
                 offset += p_node->p_type->size;
 
                 get_token_append();

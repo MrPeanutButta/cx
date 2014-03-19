@@ -10,7 +10,7 @@
  *
  * @return: ptr to factor's type object
  */
-cx_type *cx_executor::execute_factor (void) {
+cx_type *cx_executor::execute_factor(void) {
 
     cx_type *p_result_type = nullptr; // ptr to result type
     cx_symtab_node *p_id = nullptr;
@@ -43,17 +43,16 @@ cx_type *cx_executor::execute_factor (void) {
                     get_token();
                     break;
                 default:
-                   // if (p_node->p_type->form != fc_stream) {
-                        p_id = p_node;
-                        get_token();
-                        
-						if (token_in(token, tokenlist_assign_ops)) {
-                            execute_assignment(p_id);
-                            p_result_type = execute_variable(p_id, false);
-						}
-						else {
-							p_result_type = execute_variable(p_id, false);
-						}
+                    // if (p_node->p_type->form != fc_stream) {
+                    p_id = p_node;
+                    get_token();
+
+                    if (token_in(token, tokenlist_assign_ops)) {
+                        execute_assignment(p_id);
+                        p_result_type = execute_variable(p_id, false);
+                    } else {
+                        p_result_type = execute_variable(p_id, false);
+                    }
 
                     break;
             }
@@ -99,7 +98,7 @@ cx_type *cx_executor::execute_factor (void) {
     return p_result_type;
 }
 
-cx_type *cx_executor::number (cx_symtab_node* num) {
+cx_type *cx_executor::number(cx_symtab_node* num) {
 
     cx_type *p_result_type = num->p_type;
 
@@ -125,7 +124,7 @@ cx_type *cx_executor::number (cx_symtab_node* num) {
  *
  * @return: ptr to constant's type object
  */
-cx_type *cx_executor::execute_constant (const cx_symtab_node *p_id) {
+cx_type *cx_executor::execute_constant(const cx_symtab_node *p_id) {
     cx_type *p_type = p_id->p_type;
     const cx_data_value *value = &p_id->defn.constant.value;
 
@@ -147,23 +146,22 @@ cx_type *cx_executor::execute_constant (const cx_symtab_node *p_id) {
  *
  * @return: ptr to variable's type object
  */
-cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
-                                        bool address_flag) {
+cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
+        bool address_flag) {
 
     cx_type *p_type = p_id->p_type;
-	p_type->is_address = address_flag;
+    p_type->is_address = address_flag;
 
-	if (p_type->form != fc_stream){
+    if (p_type->form != fc_stream) {
 
-		// get the variable's runtime stack address.
-		cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
-		push((p_id->defn.how == dc_reference) || (!p_type->is_scalar_type())
-			? p_entry_id->basic_types.addr__ : p_entry_id);
-	}
-	else {
-		push((void *)p_id);
-		address_flag = true;
-	}
+        // get the variable's runtime stack address.
+        cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
+        push((p_id->defn.how == dc_reference) || (!p_type->is_scalar_type())
+                ? p_entry_id->basic_types.addr__ : p_entry_id);
+    } else {
+        push((void *) p_id);
+        address_flag = true;
+    }
 
     // Loop to execute any subscripts and field designators,
     // which will modify the data address at the top of the stack.
@@ -187,7 +185,7 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
     // If address_flag is false, and the data is not an array
     // or a record, replace the address at the top of the stack
     // with the data value.
-	if ((!address_flag) && (p_type->is_scalar_type())) {
+    if ((!address_flag) && (p_type->is_scalar_type())) {
         cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
         pop();
         switch (p_type->type_code) {
@@ -231,40 +229,40 @@ cx_type *cx_executor::execute_variable (const cx_symtab_node *p_id,
  *
  * @return: ptr to subscripted variable's type object
  */
-cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
+cx_type *cx_executor::execute_subscripts(const cx_type *p_type) {
 
-	char *addr = (char *)top()->basic_types.addr__;
+    char *addr = (char *) top()->basic_types.addr__;
 
     // Loop to executed subscript lists enclosed in brackets.
-	while (token == tc_left_subscript) {
-		// Loop to execute comma-separated subscript expressions
-		// within a subscript list.
+    while (token == tc_left_subscript) {
+        // Loop to execute comma-separated subscript expressions
+        // within a subscript list.
 
-		get_token(); // index
-		execute_expression();
+        get_token(); // index
+        execute_expression();
 
-		// Evaluate and range check the subscript.
-		int value = top()->basic_types.int__;
+        // Evaluate and range check the subscript.
+        int value = top()->basic_types.int__;
 
-		pop();
+        pop();
 
-		range_check(p_type, value);
+        range_check(p_type, value);
 
-		// Modify the data address at the top of the stack.
-		pop();
+        // Modify the data address at the top of the stack.
+        pop();
 
-		push(addr + (p_type->array.p_element_type->size * value));
+        push(addr + (p_type->array.p_element_type->size * value));
 
-		char *o = (char *)top()->basic_types.addr__;
+        char *o = (char *) top()->basic_types.addr__;
 
-		// Prepare for another subscript list.
-		get_token(); // ]
-		if (token == tc_left_subscript) {
-			p_type = p_type->array.p_element_type;
-		}
-	}
+        // Prepare for another subscript list.
+        get_token(); // ]
+        if (token == tc_left_subscript) {
+            p_type = p_type->array.p_element_type;
+        }
+    }
 
-	return (cx_type *)p_type->array.p_element_type;
+    return (cx_type *) p_type->array.p_element_type;
 }
 
 /** execute_field         Execute a field designator to modify the
@@ -273,7 +271,7 @@ cx_type *cx_executor::execute_subscripts (const cx_type *p_type) {
  *
  * @return: ptr to record field's type object
  */
-cx_type *cx_executor::execute_field (cx_type *p_type) {
+cx_type *cx_executor::execute_field(cx_type *p_type) {
     get_token();
     cx_symtab_node *p_field_id = p_node;
     cx_type *p_result_type = nullptr;

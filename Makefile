@@ -16,7 +16,7 @@
 #
 #  Targets beginning with '.' are not intended to be called on their own.
 #
-#  Main targets can be executed directly, and they are:
+    #  Main targets can be executed directly, and they are:
 #
 #     build                    build a specific configuration
 #     clean                    remove built files from a configuration

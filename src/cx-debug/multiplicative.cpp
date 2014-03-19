@@ -1,7 +1,7 @@
 #include "exec.h"
 #include "common.h"
 
-cx_type *cx_executor::execute_multiplicative (cx_token_code op, cx_type *lhs, cx_type *rhs) {
+cx_type *cx_executor::execute_multiplicative(cx_token_code op, cx_type *lhs, cx_type *rhs) {
     //        bool div_zero_flag = false;    
     cx_type *p_result_type = lhs;
 
@@ -26,7 +26,7 @@ cx_type *cx_executor::execute_multiplicative (cx_token_code op, cx_type *lhs, cx
     return p_result_type;
 }
 
-void cx_executor::multiply (cx_type* lhs, cx_type* rhs) {
+void cx_executor::multiply(cx_type* lhs, cx_type* rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -343,7 +343,7 @@ void cx_executor::multiply (cx_type* lhs, cx_type* rhs) {
     }
 }
 
-void cx_executor::divide (cx_type* lhs, cx_type* rhs) {
+void cx_executor::divide(cx_type* lhs, cx_type* rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -678,7 +678,7 @@ void cx_executor::divide (cx_type* lhs, cx_type* rhs) {
     }
 }
 
-void cx_executor::modulas (cx_type* lhs, cx_type* rhs) {
+void cx_executor::modulas(cx_type* lhs, cx_type* rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {

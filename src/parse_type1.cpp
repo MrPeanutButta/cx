@@ -9,7 +9,7 @@
  * @param p_function_id : ptr to symbol table node of program,
  *                     procedure, or function identifier.
  */
-void cx_parser::parse_type_definitions (cx_symtab_node *p_function_id) {
+void cx_parser::parse_type_definitions(cx_symtab_node *p_function_id) {
     cx_symtab_node *p_last_id = nullptr;
 
     while (token == tc_identifier) {
@@ -48,7 +48,7 @@ void cx_parser::parse_type_definitions (cx_symtab_node *p_function_id) {
  * @param p_node : ptr to object node.
  * @return ptr to type object.
  */
-cx_type *cx_parser::parse_type_spec (cx_symtab_node *p_node) {
+cx_type *cx_parser::parse_type_spec(cx_symtab_node *p_node) {
     switch (token) {
         case tc_identifier:
         {
@@ -92,7 +92,7 @@ cx_type *cx_parser::parse_type_spec (cx_symtab_node *p_node) {
  * @param p_id2 : ptr to symbol table node of <id-2>.
  * @return ptr to type object of <id-2>.
  */
-cx_type *cx_parser::parse_identifier_type (const cx_symtab_node *p_id2) {
+cx_type *cx_parser::parse_identifier_type(const cx_symtab_node *p_id2) {
     get_token_append();
     return p_id2->p_type;
 }
@@ -103,7 +103,7 @@ cx_type *cx_parser::parse_identifier_type (const cx_symtab_node *p_id2) {
  *
  * @return
  */
-cx_type *cx_parser::parse_enumeration_type (void) {
+cx_type *cx_parser::parse_enumeration_type(void) {
     cx_type *p_type = new cx_type(fc_enum, sizeof (int), nullptr);
     cx_symtab_node *p_last_id = nullptr;
 
@@ -158,7 +158,7 @@ cx_type *cx_parser::parse_enumeration_type (void) {
  * @param p_min_id
  * @return
  */
-cx_type *cx_parser::parse_subrange_type (cx_symtab_node* p_min_id) {
+cx_type *cx_parser::parse_subrange_type(cx_symtab_node* p_min_id) {
     /*cx_type *p_type = new cx_type(fc_subrange, 0, nullptr);
 
     set_type(p_type->subrange.p_base_type, parse_subrange_limit(p_min_id, p_type->subrange.min));
@@ -194,7 +194,7 @@ cx_type *cx_parser::parse_subrange_type (cx_symtab_node* p_min_id) {
  * @param limit
  * @return
  */
-cx_type *cx_parser::parse_subrange_limit (cx_symtab_node* p_limit_id, int& limit) {
+cx_type *cx_parser::parse_subrange_limit(cx_symtab_node* p_limit_id, int& limit) {
     cx_type *p_type = p_dummy_type;
     cx_token_code sign = tc_dummy;
 
@@ -224,8 +224,8 @@ cx_type *cx_parser::parse_subrange_limit (cx_symtab_node* p_limit_id, int& limit
                 p_type = set_type(p_limit_id->p_type, p_dummy_type);
                 break;
             } else if ((p_limit_id->p_type == p_float_type) ||
-                       (p_limit_id->p_type == p_dummy_type) ||
-                       (p_limit_id->p_type->form == fc_array)) {
+                    (p_limit_id->p_type == p_dummy_type) ||
+                    (p_limit_id->p_type->form == fc_array)) {
                 cx_error(err_invalid_subrange_type);
             } else if (p_limit_id->defn.how == dc_constant) {
 

@@ -2,7 +2,7 @@
 #include "std_members.h"
 #include "common.h"
 
-cx_type *cx_executor::execute_additive (cx_token_code op, cx_type* lhs, cx_type* rhs) {
+cx_type *cx_executor::execute_additive(cx_token_code op, cx_type* lhs, cx_type* rhs) {
     cx_type *p_result_type = rhs;
 
     switch (op) {
@@ -38,8 +38,8 @@ cx_type *cx_executor::execute_additive (cx_token_code op, cx_type* lhs, cx_type*
     return p_result_type;
 }
 
-cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
-                                         cx_type* rhs) {
+cx_type *cx_executor::alloc_temp_rvalue(const cx_type* lhs,
+        cx_type* rhs) {
 
     void *addr1 = nullptr;
     void *addr2 = nullptr;
@@ -48,12 +48,12 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
 
     cx_type *temp_type = new cx_type(fc_array, size, nullptr);
 
-	set_type(temp_type->array.p_element_type, rhs->base_type());
+    set_type(temp_type->array.p_element_type, rhs->base_type());
     temp_type->is_temp_value = true;
     temp_type->array.element_count = num_of_elements;
     temp_type->array.max_index = num_of_elements;
     temp_type->size = size;
-	temp_type->type_code = rhs->base_type()->type_code;
+    temp_type->type_code = rhs->base_type()->type_code;
 
     void *p_target_address = ::malloc(size + 1);
 
@@ -61,7 +61,7 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
         perror("malloc");
         cx_runtime_error(rte_none);
     }
-    
+
     memset(p_target_address, 0, size + 1);
     char *temp_val = (char *) p_target_address;
 
@@ -160,7 +160,7 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
             case cx_char:
             {
                 char value2 = top()->basic_types.char__;
-				char *u = (char *)top()->basic_types.addr__;
+                char *u = (char *) top()->basic_types.addr__;
                 pop();
 
                 addr1 = top()->basic_types.addr__;
@@ -226,13 +226,13 @@ cx_type *cx_executor::alloc_temp_rvalue (const cx_type* lhs,
         remove_type(rhs);
     }
 
-	temp_val[num_of_elements] = '\0';
+    temp_val[num_of_elements] = '\0';
     push((void *) p_target_address);
 
     return temp_type;
 }
 
-cx_type *cx_executor::plus (cx_type *lhs, cx_type *rhs) {
+cx_type *cx_executor::plus(cx_type *lhs, cx_type *rhs) {
 
     cx_type *p_result_type = rhs;
 
@@ -631,7 +631,7 @@ cx_type *cx_executor::plus (cx_type *lhs, cx_type *rhs) {
     return p_result_type;
 }
 
-void cx_executor::minus (cx_type *lhs, cx_type *rhs) {
+void cx_executor::minus(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -943,7 +943,7 @@ void cx_executor::minus (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_leftshift (cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_leftshift(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1173,7 +1173,7 @@ void cx_executor::bit_leftshift (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_rightshift (cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_rightshift(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1403,7 +1403,7 @@ void cx_executor::bit_rightshift (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_and (cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_and(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1633,7 +1633,7 @@ void cx_executor::bit_and (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_xor (cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_xor(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {
@@ -1864,7 +1864,7 @@ void cx_executor::bit_xor (cx_type *lhs, cx_type *rhs) {
     }
 }
 
-void cx_executor::bit_or (cx_type *lhs, cx_type *rhs) {
+void cx_executor::bit_or(cx_type *lhs, cx_type *rhs) {
     switch (rhs->type_code) {
         case cx_int:
         {

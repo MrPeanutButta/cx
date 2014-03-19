@@ -1,7 +1,7 @@
 #include "exec.h"
 #include "common.h"
 
-void cx_executor::unary_negate (cx_type* expr) {
+void cx_executor::unary_negate(cx_type* expr) {
     switch (expr->type_code) {
         case cx_int:
         {
@@ -42,7 +42,7 @@ void cx_executor::unary_negate (cx_type* expr) {
     }
 }
 
-void cx_executor::unary_bit_not (cx_type* expr) {
+void cx_executor::unary_bit_not(cx_type* expr) {
     switch (expr->type_code) {
         case cx_int:
         {
