@@ -1,0 +1,282 @@
+
+           SecureCRT(R) 6.0 (Official) -- January 15, 2008
+
+            Copyright (C) 1995-2008 VanDyke Software, Inc.
+                        All rights reserved.
+
+
+This file contains a SecureCRT product history.  It includes lists 
+of new features, changes, and bug fixes sorted by release.  For a 
+product description, installation notes, registration information,
+and contact information, please refer to Readme.txt (downloaded 
+with this installation).
+
+
+Changes in SecureCRT 6.0 (Official) -- January 15, 2008
+-------------------------------------------------------
+
+No changes.
+
+
+Changes in SecureCRT 6.0 (Beta 5) -- January 8, 2008
+----------------------------------------------------
+
+Bug fixes:
+
+  - SecureCRT could crash if a session was disconnected while a
+    script was in the WaitForStrings function.
+  - The WaitForStrings script function incorrectly matched the
+    shortest string instead of the longest string.
+  - If an auto session contained multiple sessions and the check
+    for updates dialog was displayed on startup, only the first
+    session connected.
+  - When the substitution parameter %h was specified in a log file
+    name, GMT rather than local time was used.
+  - After clicking on an inactive disconnected tabbed session, the
+    mouse pointer disappeared until the mouse was moved.
+  - When the tab context menu was used to disconnect a session, the
+    tab status indicator was not correctly updated.
+  - The mnemonic for "Clear Screen and Scrollback" on the Edit menu
+    did not work.
+  - File browser dialogs could not be resized.
+  - SSH2: When the path for the identity file contained an
+    environment variable, the Public Key Properties dialog could
+    not display the fingerprint, upload the key, or change the
+    passphrase.
+  - SSH2: In the Public Key Properties dialog, if the key file
+    path was blank, it was filled in after cancelling out of the
+    file browser.
+
+
+Changes in SecureCRT 6.0 (Beta 4) -- December 18, 2007
+------------------------------------------------------
+
+Bug fixes:
+
+  - In some cases, when third-party firewall software was installed,
+    sessions could not connect.
+  - When MENU_WINDOW_NEXT was called from a mapped key or button or
+    from a custom .MNU file, SecureCRT crashed.
+  - SecureCRT sometimes crashed when doing pass-through printing.
+  - When the Activator was used to connect a folder of sessions, not
+    all sessions in the folder were connected.
+  - The Recently Used Session List wasn't updated when a session was
+    selected from the Activator.
+  - The UNIX/Linux "resize" command did not work because it could not
+    get the rows and columns.
+  - If a session was connected and a session with a different number
+    of rows and columns was launched in a new window, it had the same
+    number of rows and columns as the first session.
+  - After running a script that displayed a message box, focus was
+    not returned to the session window.
+  - If an SFTP tab was sent or dragged to another window, an extra
+    "SFTP-" was prepended to the tab title.
+  - Telnet/RLogin: Read requests were queued and attempts to process
+    data were made when the session was not connected, which resulted
+    in a WSAENOTCONNECTED error.
+  - Telnet: Zmodem transfers were significantly slower in version 6.0
+    than in previous versions.
+
+
+Changes in SecureCRT 6.0 (Beta 3) -- December 6, 2007
+-----------------------------------------------------
+
+Changes:
+
+  - The installer no longer requires a reboot upon completion.
+  - The U3 installer is now packaged as a .exe instead of a .u3p.
+    This prevents it from being downloaded as a .zip.
+
+Bug fixes:
+
+  - Quick Connect did not work when the "Save session" check box was
+    unchecked.
+  - When the logon Expect and Send strings contained the "%"
+    character, SecureCRT attempted to do a variable expansion, which
+    caused the logon to fail.
+  - Saved passwords were not used when the "Auto Save Options" setting
+    was off.
+  - Inserting a CTRL+ENTER in the Send string in a button
+    configuration caused the button to lose its configuration when
+    SecureCRT restarted.
+  - When the global option "Only show tabs when there are more than
+    one" was set and a session was dragged to a window that only had
+    one session, the tabs were not shown.
+  - Under certain circumstances, selecting a tab could cause it to
+    move unexpectedly to a different position.
+  - Under certain circumstances, when using Quick Connect, the
+    password prompt appeared in the wrong window.
+  - When a recently used script or session path was too long to fit
+    in the menu, the path was truncated before the script or session
+    name.
+  - Telnet and Telnet/SSL: After pressing CTRL+ENTER when output was
+    scrolling, it could take a long time for the output to stop.
+  - SSH2: When using keyboard-interactive authentication, if an error
+    dialog appeared after the password prompt, SecureCRT crashed.
+
+
+Changes in SecureCRT 6.0 (Beta 2) -- November 26, 2007
+------------------------------------------------------
+
+Changes:
+
+  - The U3 installer installs the history and readme files in the
+    Exec folder.
+  - The U3 installer installs the sample scripts, menus, and keymaps
+    in the Data\Examples folder.
+
+Bug fixes:
+
+  - Changing the font of a tabbed session could cause SecureCRT to
+    crash.
+  - SecureCRT crashed when attempting to enter license data after
+    making changes in the Global Options dialog.
+  - SecureCRT failed to start if the default session's protocol was
+    Serial or TAPI.
+  - The session tab was blank when the session used the VT100 font and
+    the tab title was set with an escape sequence.
+  - If a tab title was set using the titlebar escape sequence and the
+    session was sent or dragged to another window, the tab title
+    reverted to the session name.
+  - Keyboard input was not correct with certain fonts, such as
+    Cyrillic, that used UTF-8 character encoding.
+  - Text could be pasted into a locked session.
+  - The "Autosave Options" setting was always set to true when
+    SecureCRT started.
+  - If the global option "Save window state for each session" was set
+    and a new session was created and connected and then connected in
+    a new window, the number of rows was incorrect.
+  - When the remote host rejected the connection, SecureCRT
+    incorrectly reported the error "The specified network name is no
+    longer available".
+  - SSH2: SecureCRT crashed on exit when using an SSH2 session with
+    three or more port forwards over an SSH2 SOCKS firewall.
+  - The amount of disk space the U3 installer checked for was much
+    larger than necessary.
+  - The U3 version was looking on the hard drive for the menu and
+    toolbar XML file.
+
+
+Changes in SecureCRT 6.0 (Beta 1) -- November 15, 2007
+------------------------------------------------------
+
+New features:
+
+  - Added support for sending a tabbed session to a new window and
+    cloning a session in a new window.  Sessions can also be dragged
+    between SecureCRT windows. 
+  - Added an optional button bar that allows buttons to be mapped
+    to strings, protocol functions, menu commands, scripts, etc.
+    Different button bars can be created so that they can be
+    used on a per session or per task basis.
+  - Added support for launching external programs on the local
+    machine through mapped keys and buttons on the button bar.
+  - Added support for alpha transparency.  The transparency can be
+    set for the active and inactive windows.  This allows viewing
+    of items behind the SecureCRT window and the contents of two
+    SecureCRT windows to be compared.
+  - Added support for several Windows themes, which give the user
+    interface a more modern appearance.
+  - Added support for customizing the toolbar and menu by dragging and
+    dropping items while in the Customize dialog.
+  - Added a new default color scheme, "White / Black", which is a
+    white foreground on a black background.
+  - Enhanced portability by making a U3 installer available.
+    Installing SecureCRT on a U3 drive makes it easier to use on
+    any machine.
+  - Added MSI installer support.
+  - Added optional monthly pop-up dialog that offers to check for
+    product updates.
+  - Added support for locking sessions with a password while
+    connected.  While a session is locked, it cannot be typed in
+    or closed.
+  - Environment variables can be used in all paths specified in global
+    and session options, which allows configuration files to be used
+    by more than one person and makes it easier to move configuration
+    files to other machines.
+  - The autoreconnect prompt and countdown are now displayed in
+    the session window instead of in a dialog.  This allows
+    connected sessions to be used while a disconnected session is
+    trying to reconnect.
+  - Added support for the Ymodem file transfer protocol.
+  - Added "Connect to multiple sessions sequentially" to the
+    Terminal\Advanced page in the Global Options dialog.  When this
+    option is set and multiple sessions are connecting, they will
+    connect one after the other instead of at the same time.
+  - Added a global option not to reuse disconnected tabs for
+    connecting new sessions.
+  - Extended the command-line options to support a username@hostname
+    format.
+  - Added new Session script object function LogUsingSessionOptions
+    that uses the specified session's logging options.
+  - Telnet: Added a session option to enable/disable NTLM
+    authentication.
+  - SSH2: Added a command-line option to specify the compression
+    type(s).
+
+Changes:
+
+  - The standard toolbar icons have been updated to use Windows Vista
+    icons.
+  - SecureCRT dialogs now use the font specified by the Windows
+    display properties.
+  - The line and character send delay settings, which were global
+    settings, are now session-specific settings.
+  - The scrollback buffer can be set to be up to 128,000 lines.
+  - If the logging option "Append to file" is set and the session
+    .INI file option "Log Multiple Sessions" is off, when one
+    session is already logging to a file and another session tries
+    to log to the same file, the user will be prompted for a
+    different log file.
+  - When recording a script, crt.Screen.Synchronous is set to true by
+    default.  This prevents data being lost by the script sending data
+    too fast to be transmitted to the remote system.
+  - If a script that does not exist is selected from the recently
+    used script list, a prompt asking if it should be removed from
+    the list is displayed.
+  - The "Save password" check box is no longer shown on the "Enter
+    Password" dialog when the "Auto Save Options" setting is off.
+  - The global settings "Copy on Select" and "Paste on right button"
+    are on by default.  This only affects new installations.
+  - Pressing the "+" key on the numpad now produces a "+"
+    character in Linux and ANSI emulations.
+  - Improved the error message that is displayed when attempting
+    to give a session a name that is already being used.
+
+Bug fixes:
+
+  - SecureCRT could crash when applying default session changes to all
+    sessions.
+  - Files with Unicode names may not have been named correctly when
+    transferred using Zmodem.
+  - Pasting into a SecureCRT session from an RDP session caused
+    SecureCRT to hang.
+  - When using TrueType or ClearType fonts in a session, the right
+    edge of some characters was cut off.
+  - If the session options "ANSI Color" and "Use Color Scheme" were
+    enabled for the first tab, if a second tab was connected, the
+    background color was not correct.
+  - The command-line option /POS did not override the session's
+    initial position.
+  - If a relative path was specified for a custom menu that
+    contained a script path and a log file that was in a different
+    location than the script was used, the script could not be
+    found.
+  - Xmodem transfers could fail when the remote machine sent a NAK.
+    SecureCRT now handles the NAK.
+  - Unicode characters were not displayed correctly in the title bar.
+  - When the SecureCRT window was as tall as the monitor and then the
+    chat window was shown, text in the session was obscured.
+  - Some menu item labels, such as Copy and About, could not be
+    customized.
+  - DOS device names such as CON, NUL, PRN, COM1, COM2, etc.
+    could be used as session names.
+  - SSH1/SSH2: When a password was specified in a URL session, it
+    was not used.
+  - Telnet/SSL: Connecting to a server that was using a certificate
+    with a large key size, could have resulted in the following error:
+    "The buffers supplied to a function was too small".
+  - SFTP tab downloads failed if the file contained any characters 
+    that were illegal on the local file system (i.e., \ / : * ? " < 
+    > | ).  SecureCRT now replaces any illegal characters with an 
+    underscore during the download.
