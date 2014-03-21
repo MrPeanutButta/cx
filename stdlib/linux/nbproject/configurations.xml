@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="90">
+<configurationDescriptor version="94">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-    </logicalFolder>
-    <logicalFolder name="ResourceFiles"
-                   displayName="Resource Files"
-                   projectFiles="true">
+      <itemPath>../../include/cx-debug/cx_api.h</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>../../src/buffer.cpp</itemPath>
-      <itemPath>../../src/common.cpp</itemPath>
-      <itemPath>../../src/error.cpp</itemPath>
-      <itemPath>../../src/cx-debug/std_members.cpp</itemPath>
       <itemPath>../win32/stdio/stdio.cpp</itemPath>
-      <itemPath>../../src/symtable.cpp</itemPath>
-      <itemPath>../../src/types.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -47,23 +38,29 @@
             <pElem>../../include/cx-debug</pElem>
             <pElem>../../include</pElem>
           </incDir>
-          <commandLine>-g3</commandLine>
+          <commandLine>-g3 -fPIC</commandLine>
         </ccTool>
         <linkerTool>
           <output>../stdio.${CND_DLIB_EXT}</output>
+          <linkerKpic>false</linkerKpic>
+          <linkerLibItems>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../cxapi"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../../cxapi"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcxapi.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+          </linkerLibItems>
+          <commandLine>-g3</commandLine>
         </linkerTool>
       </compileType>
-      <item path="../../src/buffer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/common.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/cx-debug/std_members.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/error.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/symtable.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/types.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../../include/cx-debug/cx_api.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../win32/stdio/stdio.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -88,17 +85,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="../../src/buffer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/common.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/cx-debug/std_members.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/error.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/symtable.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../../src/types.cpp" ex="false" tool="1" flavor2="0">
+      <item path="../../include/cx-debug/cx_api.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../win32/stdio/stdio.cpp" ex="false" tool="1" flavor2="0">
       </item>

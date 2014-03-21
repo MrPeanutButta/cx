@@ -160,7 +160,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
                 ? p_entry_id->basic_types.addr__ : p_entry_id);
     } else {
         push((void *) p_id);
-        address_flag = true;
+        //address_flag = true;
     }
 
     // Loop to execute any subscripts and field designators,

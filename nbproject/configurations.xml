@@ -151,6 +151,7 @@
           <linkerLibItems>
             <linkerOptionItem>-ldl</linkerOptionItem>
           </linkerLibItems>
+          <commandLine>-g3</commandLine>
         </linkerTool>
         <requiredProjects>
           <makeArtifact PL="stdlib/linux"

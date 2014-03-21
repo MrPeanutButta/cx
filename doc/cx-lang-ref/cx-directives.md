@@ -1,12 +1,3 @@
----
-layout: page
-title: "Cx-directives"
-date: 2014-31-01 09:55
-comments: true
-sharing: true
-footer: true
----
-
 All Cx directives start with the pound `#` operator
 
 `#include filename`
@@ -15,6 +6,12 @@ Creates a separate parser instance and opens the file for processing. Symbols lo
 #include stdio
 ```
 
-
 `#warn "string message"`
 Prints warning to stderr and continues with parsing the code module.
+
+`#import libname`
+Searches **CX_STDLIB** first then **PWD** for **libname** to load as a dynamic library. This directive will add the appropriate extension for the current platform, e.g. (.so for Linux, .dll for Windows). There's no need to use the file extension when loading compiled dynamic libraries.
+
+``` cpp
+#import stdio // loads stdio.dll or stdio.so
+```

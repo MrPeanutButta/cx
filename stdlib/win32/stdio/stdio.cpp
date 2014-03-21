@@ -379,9 +379,9 @@ cx_type *cx_putws(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     if (ret_val) {
-        p_stack->push((int) std::fputws(_wstring, p_snode->defn.io.stream));
+        p_stack->push(new cx_stack_item((int) std::fputws(_wstring, p_snode->defn.io.stream)));
     } else {
-        p_stack->push((int) EOF);
+        p_stack->push(new cx_stack_item((int) EOF));
     }
 
     return cx_function_id->p_type;
@@ -495,7 +495,7 @@ cx_type *cx_tmpfile(cx_runtime_stack *p_stack,
     p_snode->defn.io.stream = std::tmpfile();
 
     // push bool state
-    p_stack->push(new cx_stack_item((bool)(p_snode->defn.io.stream != nullptr)));
+    p_stack->push((bool)(p_snode->defn.io.stream != nullptr));
 
     return cx_function_id->p_type;
 }
@@ -506,7 +506,9 @@ cx_type *cx_tmpnam(cx_runtime_stack *p_stack,
         const cx_type *p_type) {
 
     char *buffer = (char *) std::malloc(L_tmpnam);
+
     std::string tmp_name = std::tmpnam(buffer);
+
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type;
@@ -531,7 +533,7 @@ cx_type *cx_rename(cx_runtime_stack *p_stack,
     const char *old_filename = (const char *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push(new cx_stack_item((bool)(std::rename(old_filename, new_filename) == 0)));
+    p_stack->push((bool)(std::rename(old_filename, new_filename) == 0));
 
     return cx_function_id->p_type;
 }
@@ -544,7 +546,7 @@ cx_type *cx_remove(cx_runtime_stack *p_stack,
     const char *filename = (const char *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push(new cx_stack_item((bool)(std::remove(filename) == 0)));
+    p_stack->push((bool)(std::remove(filename) == 0));
 
     return cx_function_id->p_type;
 }

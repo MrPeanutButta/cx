@@ -16,16 +16,15 @@ int main () {
 			myfile.puts(buffer);
 		//}
 
-		myfile.close;
+		//myfile.close;
 	}
 
 	if(!myfile.reopen(filename, "r"))
-		perror("error opening file: " + filename);
+		perror("error reopening file: " + filename);
 	else {
-		//while(!myfile.eof){
-			putchar(myfile.getc);
-			putchar('\n');
-		//}
+		while(!myfile.eof){
+			puts(myfile.getc.to_str);
+		}
 
 		myfile.close;
 	}

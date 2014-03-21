@@ -98,7 +98,7 @@ LDLIBSOPTIONS=-ldl
 
 ${CND_DISTDIR}/cx: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}
-	${LINK.cc} -o ${CND_DISTDIR}/cx ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/cx ${OBJECTFILES} ${LDLIBSOPTIONS} -g3
 
 ${OBJECTDIR}/src/buffer.o: nbproject/Makefile-${CND_CONF}.mk src/buffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

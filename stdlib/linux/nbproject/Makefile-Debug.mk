@@ -35,12 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/1445274692/buffer.o \
-	${OBJECTDIR}/_ext/1445274692/common.o \
-	${OBJECTDIR}/_ext/2112918630/std_members.o \
-	${OBJECTDIR}/_ext/1445274692/error.o \
-	${OBJECTDIR}/_ext/1445274692/symtable.o \
-	${OBJECTDIR}/_ext/1445274692/types.o \
 	${OBJECTDIR}/_ext/1449855206/stdio.o
 
 
@@ -48,8 +42,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-g3
-CXXFLAGS=-g3
+CCFLAGS=-g3 -fPIC
+CXXFLAGS=-g3 -fPIC
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -58,53 +52,26 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=../../cxapi/dist/Debug/GNU-Linux-x86/libcxapi.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../stdio.${CND_DLIB_EXT}
 
+../stdio.${CND_DLIB_EXT}: ../../cxapi/dist/Debug/GNU-Linux-x86/libcxapi.a
+
 ../stdio.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ..
-	${LINK.cc} -o ../stdio.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -shared -fPIC
-
-${OBJECTDIR}/_ext/1445274692/buffer.o: ../../src/buffer.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445274692/buffer.o ../../src/buffer.cpp
-
-${OBJECTDIR}/_ext/1445274692/common.o: ../../src/common.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445274692/common.o ../../src/common.cpp
-
-${OBJECTDIR}/_ext/2112918630/std_members.o: ../../src/cx-debug/std_members.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/2112918630
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/2112918630/std_members.o ../../src/cx-debug/std_members.cpp
-
-${OBJECTDIR}/_ext/1445274692/error.o: ../../src/error.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445274692/error.o ../../src/error.cpp
-
-${OBJECTDIR}/_ext/1445274692/symtable.o: ../../src/symtable.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445274692/symtable.o ../../src/symtable.cpp
-
-${OBJECTDIR}/_ext/1445274692/types.o: ../../src/types.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1445274692
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1445274692/types.o ../../src/types.cpp
+	${LINK.cc} -o ../stdio.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -g3 -shared
 
 ${OBJECTDIR}/_ext/1449855206/stdio.o: ../win32/stdio/stdio.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1449855206
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1449855206/stdio.o ../win32/stdio/stdio.cpp
+	$(COMPILE.cc) -g -I../../include/cx-debug -I../../include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1449855206/stdio.o ../win32/stdio/stdio.cpp
 
 # Subprojects
 .build-subprojects:
+	cd ../../cxapi && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -113,6 +80,7 @@ ${OBJECTDIR}/_ext/1449855206/stdio.o: ../win32/stdio/stdio.cpp
 
 # Subprojects
 .clean-subprojects:
+	cd ../../cxapi && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
