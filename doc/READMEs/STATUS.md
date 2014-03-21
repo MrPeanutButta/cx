@@ -6,4 +6,5 @@ the primary Cx debugger once completed.
 * Researching JIT methods. There is interest in designing this from scratch or using `libjit`.
 
 ## On Going (current focus)
-See TODO.md header marked (active) for updates on whats actively being coded.
+* Core language mechanics
+* Standard Library when language mechanics permit
