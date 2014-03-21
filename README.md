@@ -1,23 +1,32 @@
 Cx
 ==
-A typesafe, interepreted, procedurally object oriented language intended to be a subset of C/C++ 
-syntax. Cx intended use is aimed towards system administrative tasks, and network programmability.
+A type-safe, interpreted, procedural, object oriented language intended to be a subset of C/C++ syntax. Cx intended use is aimed towards system administrative tasks, and network programmability.
+
+``` cpp
+#include stdio
+
+using std;
+
+int main(){
+	
+	puts("Hello, World!");
+
+	return 0;
+}
+```
 
 ### Supported compilers and platforms
-Popular compilers which support C++11 are used to build the Cx interpretor.
+Popular compilers which support C++11 are used to build the Cx interpreter.
 
 * clang++
 * g++4.7 or later
 * VS 2012 express
 
-Cx language features are restricted to the C++11 standard library and will compile on OSX, Linux, 
-and Windows. Any features deemed platform specific will be implemented in dynamic libraries which can 
-be loaded at runtime.
+Cx language features are restricted to the C++11 standard library and will compile on OSX, Linux, and Windows. Any features deemed platform specific will be implemented in dynamic libraries which can be loaded at run-time.
 
 ### Cx Documentation
-All documentaion will be posted and updated at the link below. More information ,ay be found in 
-Cx/doc
-* [Cx-doc](http://aaronhebert.net/cx/cx-doc.html)
+All documentation will be posted and updated at the link below. More information may be found in Cx/doc
+* [Cx-doc](https://github.com/Cx-lang/Cx/wiki)
 
 ### Status
 This project is for educational purposes only.<br>
@@ -55,6 +64,3 @@ Sections currently in progress include:
 
 ### Getting involved
 Fork the repo. All of your changes are to be made on your copy of the repo. Changes to the master repo are done via pull requests followed by code review.<br>
-We would be happy to welcome anyone willing to learn and help build this project. Ad-hoc SCRUM meetings are to be held to
-discuss various designs and implementations. These discussions are intended to help the group learn and stay on track with
-whats going on in the project. Availability for voice chat is a minimum requirement.<br>

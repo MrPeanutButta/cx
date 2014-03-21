@@ -25,7 +25,6 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/const_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/mjf144f1g3-MacOSX-x86_64/Users/aaro3965/Dropbox/src/Cx/examples/exec_test.Cx -ddev</runcommandpicklistitem>
@@ -34,6 +33,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/aaron-redwest-Windows-x86_64/C/Users/aahebert/Documents/GitHub/Cx/examples/exec_test.cx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" /home/aaron/.netbeans/remote/aaronhebert.net/aaron-redwest-Windows-x86_64/C/Users/aahebert/Documents/GitHub/Cx/examples/exec_test.cx -ddev</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" ../examples/exec_test.cx </runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" examples/exec_test.cx -ddev</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" examples/exec_test.cx</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}" examples/exec_test.cx</runcommand>
