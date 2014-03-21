@@ -29,7 +29,7 @@ cx_type *cx_puts(cx_runtime_stack *p_stack,
 
     p_stack->pop();
 
-    p_stack->push((bool)ret_val);
+    p_stack->push(new cx_stack_item((bool)ret_val));
 
     return cx_function_id->p_type;
 }
@@ -56,7 +56,7 @@ cx_type *cx_open(cx_runtime_stack *p_stack,
     p_snode->defn.io.stream = std::fopen(filename, mode);
 
     p_stack->pop();
-    p_stack->push((bool)(p_snode->defn.io.stream != nullptr));
+    p_stack->push(new cx_stack_item((bool)(p_snode->defn.io.stream != nullptr)));
 
     return cx_function_id->p_type;
 }
@@ -81,7 +81,7 @@ cx_type *cx_reopen(cx_runtime_stack *p_stack,
 
     p_stack->pop();
 
-    p_stack->push((bool)(p_snode->defn.io.stream != nullptr));
+    p_stack->push(new cx_stack_item((bool)(p_snode->defn.io.stream != nullptr)));
 
     return cx_function_id->p_type;
 }
@@ -96,7 +96,7 @@ cx_type *cx_close(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // attempt to close the nodes file stream
-    p_stack->push((bool)(std::fclose(p_snode->defn.io.stream) != EOF));
+    p_stack->push(new cx_stack_item((bool)(std::fclose(p_snode->defn.io.stream) != EOF)));
 
     return cx_function_id->p_type;
 }
@@ -118,7 +118,7 @@ cx_type *cx_flush(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // attempt to close the nodes file stream
-    p_stack->push((bool)(std::fflush(p_snode->defn.io.stream) != EOF));
+    p_stack->push(new cx_stack_item((bool)(std::fflush(p_snode->defn.io.stream) != EOF)));
 
     return cx_function_id->p_type;
 }
@@ -142,7 +142,7 @@ cx_type *cx_wide(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // attempt to widen the nodes file stream
-    p_stack->push((int) std::fwide(p_snode->defn.io.stream, mode));
+    p_stack->push(new cx_stack_item((int) std::fwide(p_snode->defn.io.stream, mode)));
 
     return cx_function_id->p_type;
 }
@@ -161,7 +161,7 @@ cx_type *cx_read(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // read buffer
-	unsigned char *buffer = (unsigned char *)std::malloc((size * count) + 1);
+    unsigned char *buffer = (unsigned char *) std::malloc((size * count) + 1);
     memset(buffer, 0, (size * count) + 1);
 
     // get node
@@ -200,7 +200,7 @@ cx_type *cx_write(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((int) std::fwrite(buffer, size, count, p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((int) std::fwrite(buffer, size, count, p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -214,7 +214,7 @@ cx_type *cx_getc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((char) std::getc(p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((char) std::getc(p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -260,7 +260,7 @@ cx_type *cx_putc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((int) std::putc(ch, p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((int) std::putc(ch, p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -278,7 +278,7 @@ cx_type *cx_ungetc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((int) std::ungetc(ch, p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((int) std::ungetc(ch, p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -296,7 +296,7 @@ cx_type *cx_ungetwc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((wchar_t)std::ungetwc(ch, p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((wchar_t)std::ungetwc(ch, p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -310,7 +310,7 @@ cx_type *cx_getwc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((wchar_t)std::fgetwc(p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((wchar_t)std::fgetwc(p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -358,7 +358,7 @@ cx_type *cx_putwc(cx_runtime_stack *p_stack,
     cx_symtab_node *p_snode = (cx_symtab_node *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((wchar_t)std::putwc(ch, p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((wchar_t)std::putwc(ch, p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -397,7 +397,7 @@ cx_type *cx_tell(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // attempt to close the nodes file stream
-    p_stack->push((int) std::ftell(p_snode->defn.io.stream));
+    p_stack->push(new cx_stack_item((int) std::ftell(p_snode->defn.io.stream)));
 
     return cx_function_id->p_type;
 }
@@ -418,7 +418,7 @@ cx_type *cx_seek(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // attempt to seek
-    p_stack->push((bool)(std::fseek(p_snode->defn.io.stream, offset, origin) == 0));
+    p_stack->push(new cx_stack_item((bool)(std::fseek(p_snode->defn.io.stream, offset, origin) == 0)));
 
     return cx_function_id->p_type;
 }
@@ -463,7 +463,7 @@ cx_type *cx_eof(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // push bool EOF state
-    p_stack->push((bool)(std::feof(p_snode->defn.io.stream) != 0));
+    p_stack->push(new cx_stack_item((bool)(std::feof(p_snode->defn.io.stream) != 0)));
 
     return cx_function_id->p_type;
 }
@@ -478,7 +478,7 @@ cx_type *cx_error_(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // push bool error state
-    p_stack->push((bool)(std::ferror(p_snode->defn.io.stream) != 0));
+    p_stack->push(new cx_stack_item((bool)(std::ferror(p_snode->defn.io.stream) != 0)));
 
     return cx_function_id->p_type;
 }
@@ -495,7 +495,7 @@ cx_type *cx_tmpfile(cx_runtime_stack *p_stack,
     p_snode->defn.io.stream = std::tmpfile();
 
     // push bool state
-    p_stack->push((bool)(p_snode->defn.io.stream != nullptr));
+    p_stack->push(new cx_stack_item((bool)(p_snode->defn.io.stream != nullptr)));
 
     return cx_function_id->p_type;
 }
@@ -531,7 +531,7 @@ cx_type *cx_rename(cx_runtime_stack *p_stack,
     const char *old_filename = (const char *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((bool)(std::rename(old_filename, new_filename) == 0));
+    p_stack->push(new cx_stack_item((bool)(std::rename(old_filename, new_filename) == 0)));
 
     return cx_function_id->p_type;
 }
@@ -544,7 +544,7 @@ cx_type *cx_remove(cx_runtime_stack *p_stack,
     const char *filename = (const char *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
 
-    p_stack->push((bool)(std::remove(filename) == 0));
+    p_stack->push(new cx_stack_item((bool)(std::remove(filename) == 0)));
 
     return cx_function_id->p_type;
 }

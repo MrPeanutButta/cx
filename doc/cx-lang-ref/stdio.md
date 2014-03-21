@@ -1,4 +1,4 @@
-# **`<stdio>`** Standard Input/Output
+# **stdio** - Standard Input/Output
 
 ## Types
 **file** - type, capable of holding all information needed to control a Cx I/O stream

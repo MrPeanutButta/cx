@@ -22,10 +22,10 @@ int main () {
 	if(!myfile.reopen(filename, "r"))
 		perror("error opening file: " + filename);
 	else {
-		while(!myfile.eof){
+		//while(!myfile.eof){
 			putchar(myfile.getc);
 			putchar('\n');
-		}
+		//}
 
 		myfile.close;
 	}

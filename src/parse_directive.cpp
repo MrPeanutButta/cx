@@ -76,7 +76,7 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
 
 #if defined _WIN32
         init_call = (lib_init) GetProcAddress(lib_handle, "cx_lib_init");
-		windows_libs.push_back(lib_handle);
+        windows_libs.push_back(lib_handle);
 #elif defined __linux__
         init_call = (lib_init) dlsym(lib_handle, "cx_lib_init");
         linux_libs.push_back(lib_handle);
