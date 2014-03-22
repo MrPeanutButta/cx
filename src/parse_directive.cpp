@@ -27,7 +27,7 @@ std::vector<void *> linux_libs;
 
 void load_lib(const char *lib, cx_symtab *p_symtab) {
 
-    const cx_type * cx_types_[] = {
+    static const cx_type * cx_types_[] = {
         p_integer_type,
         p_char_type,
         p_wchar_type,
