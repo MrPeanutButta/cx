@@ -24,6 +24,9 @@
         <ClInclude Include="targetver.h">
             <Filter>Header Files</Filter>
         </ClInclude>
+        <ClInclude Include="..\..\..\include\cx-debug\cx_api.h">
+            <Filter>Header Files</Filter>
+        </ClInclude>
     </ItemGroup>
     <ItemGroup>
         <ClCompile Include="stdafx.cpp">
@@ -38,19 +41,19 @@
         <ClCompile Include="..\..\..\src\symtable.cpp">
             <Filter>Source Files</Filter>
         </ClCompile>
-        <ClCompile Include="..\..\..\src\types.cpp">
-            <Filter>Source Files</Filter>
-        </ClCompile>
         <ClCompile Include="..\..\..\src\error.cpp">
             <Filter>Source Files</Filter>
         </ClCompile>
         <ClCompile Include="..\..\..\src\buffer.cpp">
             <Filter>Source Files</Filter>
         </ClCompile>
-        <ClCompile Include="..\..\..\src\common.cpp">
+        <ClCompile Include="..\..\..\src\types.cpp">
             <Filter>Source Files</Filter>
         </ClCompile>
         <ClCompile Include="..\..\..\src\cx-debug\std_members.cpp">
+            <Filter>Source Files</Filter>
+        </ClCompile>
+        <ClCompile Include="..\..\..\src\common.cpp">
             <Filter>Source Files</Filter>
         </ClCompile>
     </ItemGroup>

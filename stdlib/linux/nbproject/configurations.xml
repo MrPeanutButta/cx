@@ -45,20 +45,32 @@
           <linkerKpic>false</linkerKpic>
           <linkerLibItems>
             <linkerLibProjectItem>
-              <makeArtifact PL="../../cxapi"
+              <makeArtifact PL="../../cx-api"
                             CT="3"
                             CN="Debug"
                             AC="true"
                             BL="true"
-                            WD="../../cxapi"
+                            WD="../../cx-api"
                             BC="${MAKE}  -f Makefile CONF=Debug"
                             CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcxapi.a">
+                            OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcx-api.a">
               </makeArtifact>
             </linkerLibProjectItem>
           </linkerLibItems>
           <commandLine>-g3</commandLine>
         </linkerTool>
+        <requiredProjects>
+          <makeArtifact PL="../../cx-api"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="false"
+                        WD="../../cx-api"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcx-api.a">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
       <item path="../../include/cx-debug/cx_api.h" ex="false" tool="3" flavor2="0">
       </item>

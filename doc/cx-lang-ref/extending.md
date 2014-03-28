@@ -43,20 +43,25 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 }
 ```
 
-## Defining a Type
+## Defining Types and Variables
 User defined types can be defined just like with **file** types being defined in **stdio**. Types are recognized by the define code **dc_type**
 
 ### Basic Types
-How new types are defined externally. This is an example of defining an integer named **number**.
+How new types are defined externally. This is an example of defining an integer **type** named **number** and a integer **variable** named **num**.
 ``` cpp
 
 // required entry point for all dynamic libraries
 LIBRARY_API
 void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 
+	// Will allow user to declare a 'number' type.
     cx_symtab_node *p_number_id = p_symtab->enter("number", dc_type);
-	set_type(p_number_id->p_type, (cx_type *)ct[cx_int]);
+	set_type(p_number_id->p_type, (cx_type *)ct[cx_int])
 
+	
+	// Will declare a integer variable named 'num'
+    cx_symtab_node *p_number_id = p_symtab->enter("num", dc_variable);
+	set_type(p_number_id->p_type, (cx_type *)ct[cx_int]);
 }
 ```
 
@@ -123,7 +128,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 ```
 
 ## Defining User Types with Members
-Defining a user defined type with members is simple, and we just need to enter one ID into the main symbol table then create a new symbol table for the ID we just created. This is only a **half working** example please see **stdio.cpp** for full examples
+Defining a user defined type with members is simple, and we just need to enter one ID into the current symbol table then (**p_symtab**) create a new symbol table for the ID we just created. This is example code of how the **file** type is defiend followed by defining **stdin**. 
 ``` cpp
 LIBRARY_API
 void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
@@ -135,16 +140,52 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 
     if (!p_file_type) {
         set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), p_file_id));
-
-		// create new symbol table
         p_file_type->complex.p_class_scope = new cx_symtab;
-		// point to it
         std_stream_members = p_file_type->complex.p_class_scope;
     }
 
     set_type(p_file_id->p_type, p_file_type);
+   
+	// allocate stdin
+	cx_symtab_node *p_stdin = p_symtab->enter("stdin", ::dc_variable);
+    set_type(p_stdin->p_type, p_file_type);
+    // just point directly at the real 'stdin'
+	p_stdin->defn.io.stream = stdin;
 
-	std_stream_members->enter("some_member_function", dc_function);
+	/* Time to add members to 'file' type. Added members 
+	 * to 'file' will be available to anyinstance of 
+	 * 'file' including 'stdin'	*/
+	 
+	// create a 'puts' function
+	 struct member {
+        cx_symtab_node *p_node;
+        std::string name;
+        std::string symbol_name;
+        const cx_type *p_type;
+        int num_params;
+        ext_call ext_f;
+    } members[] = {
+        // stream members
+        { nullptr, "puts", "cx_puts", ct[cx_bool], 1, cx_puts}};
 
+	for (auto &mbr : members) {
+        mbr.p_node = std_stream_members->enter(mbr.name.c_str(), dc_function);
+
+        mbr.p_node->defn.routine.which = func_std_member;
+        mbr.p_node->defn.routine.ext_function = mbr.ext_f;
+        mbr.p_node->defn.routine.parm_count = mbr.num_params;
+        set_type(mbr.p_node->p_type, (cx_type *) mbr.p_type);
+
+		if (mbr.name == "puts") {
+
+            // char *str
+    		mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("str", dc_value_parm);
+    		mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
+                    mbr.p_node->defn.routine.locals.p_parms_ids);
+
+    		set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
+           
+		}
+	}
 }
 ```

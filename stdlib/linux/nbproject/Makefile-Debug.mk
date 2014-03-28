@@ -52,13 +52,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../../cxapi/dist/Debug/GNU-Linux-x86/libcxapi.a
+LDLIBSOPTIONS=../../cx-api/dist/Debug/GNU-Linux-x86/libcx-api.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../stdio.${CND_DLIB_EXT}
 
-../stdio.${CND_DLIB_EXT}: ../../cxapi/dist/Debug/GNU-Linux-x86/libcxapi.a
+../stdio.${CND_DLIB_EXT}: ../../cx-api/dist/Debug/GNU-Linux-x86/libcx-api.a
 
 ../stdio.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ..
@@ -71,7 +71,7 @@ ${OBJECTDIR}/_ext/1449855206/stdio.o: ../win32/stdio/stdio.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../../cxapi && ${MAKE}  -f Makefile CONF=Debug
+	cd ../../cx-api && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -80,7 +80,7 @@ ${OBJECTDIR}/_ext/1449855206/stdio.o: ../win32/stdio/stdio.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../../cxapi && ${MAKE}  -f Makefile CONF=Debug clean
+	cd ../../cx-api && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

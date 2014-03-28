@@ -5,7 +5,8 @@
         <LocalDebuggerCommandArguments>examples\exec_test.cx</LocalDebuggerCommandArguments>
         <LocalDebuggerWorkingDirectory>..</LocalDebuggerWorkingDirectory>
         <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-        <LocalDebuggerEnvironment>$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+        <LocalDebuggerEnvironment>CX_STDLIB=C:\Users\aahebert\Documents\NetBeansProjects\Cx\stdlib
+            $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
         <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
