@@ -45,6 +45,33 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
             get_token();
             parse_execute_directive(p_function_id);
             break;
+		case tc_NAMESPACE:{
+			get_token();
+			cx_symtab_node *p_namespace_id = search_local(p_token->string__()); //p_function_id->defn.routine.p_symtab->enter(p_token->string__(), dc_namespace);
+
+			if (p_namespace_id == nullptr){
+				p_namespace_id = enter_local(p_token->string__(), dc_namespace);
+				p_namespace_id->p_type = new cx_type();
+				p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
+			}
+
+			//icode.put(p_namespace_id);
+			cx_symtab *p_old_symtab = (cx_symtab *)symtab_stack.get_current_symtab();
+			
+			symtab_stack.set_scope(++current_nesting_level);
+			symtab_stack.set_current_symtab(p_namespace_id->p_type->complex.p_class_scope);
+
+			get_token();	// namespace ID
+			conditional_get_token_append(tc_left_bracket, err_missing_left_bracket);	// open bracket
+
+			parse_statement_list(p_namespace_id, tc_right_bracket);
+
+			conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+			symtab_stack.set_scope(--current_nesting_level);
+			symtab_stack.set_current_symtab(p_old_symtab);
+
+		}
+			break;
         default:
             break;
     }

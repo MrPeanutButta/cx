@@ -90,9 +90,9 @@ class cx_parser {
     cx_type *parse_simple_expression(void);
     cx_type *parse_term(void);
     cx_type *parse_factor(void);
-    cx_type *parse_variable(const cx_symtab_node *p_id);
+	cx_type *parse_variable(const cx_symtab_node *p_id);
     cx_type *parse_subscripts(const cx_type *p_type);
-    cx_type *parse_field(const cx_symtab_node *p_node, cx_type *p_type);
+	cx_type *parse_field(const cx_symtab_node *p_node, cx_type *p_type);
     cx_type *parse_iterator(cx_symtab_node *p_iterator);
 
     // statements

@@ -27,17 +27,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/tknword.cpp</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/cx-debug/exec.cpp</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/nbproject/Makefile-impl.mk</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/buffer.h</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/symtable.h</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/parse_directive.cpp</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/examples/exec_test.cx</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/src/cx-debug/factor.cpp</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/common.h</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/icode.h</file>
-            <file>file:/C:/Users/aaron_000/Documents/GitHub/Cx/include/types.h</file>
+            <file>file:/C:/Users/aahebert/Documents/GitHub/Cx/src/cx-debug/function.cpp</file>
+            <file>file:/C:/Users/aahebert/Documents/GitHub/Cx/examples/exec_test.cx</file>
+            <file>file:/C:/Users/aahebert/Documents/GitHub/Cx/stdlib/stdio</file>
+            <file>file:/C:/Users/aahebert/Documents/GitHub/Cx/src/cx-debug/expression.cpp</file>
+            <file>file:/C:/Users/aahebert/Documents/GitHub/Cx/src/cx-debug/factor.cpp</file>
         </group>
     </open-files>
 </project-private>

@@ -174,6 +174,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
                 break;
 
             case tc_dot:
+			case tc_colon_colon:
                 p_type = execute_field(p_prev_type);
                 break;
             default: done_flag = true;
@@ -281,14 +282,32 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
             p_result_type = execute_std_member_call(p_field_id, p_type);
         } else {
             p_result_type = execute_function_call(p_field_id);
+			void *address = top();
+			pop();
+			push((void *)address);
+			p_field_id->runstack_item = top();
         }
-    } else {
-        void *address = top()->basic_types.addr__;
-        pop();
-        push((void *) address);
-        p_field_id->runstack_item = top();
-        p_result_type = p_field_id->p_type;
-    }
+	}
+	else if (p_field_id->defn.how == dc_variable){
+
+		/*if (p_field_id->runstack_item == nullptr){
+			p_field_id->runstack_item = new cx_stack_item(0);	// initialize new value to zero
+		}*/
+
+		push((void *)p_field_id->runstack_item);
+		p_field_id->runstack_item = top();
+		p_result_type = p_field_id->p_type;
+
+		get_token();
+	} 
+	else if (p_field_id->defn.how == dc_constant){
+		push((void*)&p_field_id->defn.constant.value);
+		p_result_type = p_field_id->p_type;
+		get_token();
+	} 
+	else { // includes nested namespaces
+		get_token();
+	}
 
     return p_result_type;
 }

@@ -91,12 +91,11 @@ public:
 ///  cx_list_buffer         List buffer subclass of cx_text_out_buffer.
 
 class cx_list_buffer : public cx_text_out_buffer {
-    char *p_source_file_name; // ptr to source file name (for page header)
+    std::string source_file_name; // ptr to source file name (for page header)
     int line_count; // count of lines in the current page
 public:
 
     virtual ~cx_list_buffer(void) {
-        delete p_source_file_name;
     }
 
     void initialize(const char *p_file_name);

@@ -178,6 +178,11 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
         set_type(p_complex_type, new cx_type(fc_complex, 0, p_complex_id));
     }
 
+	// setup standard namespace
+	/*cx_symtab_node *p_std_namespace = p_symtab->enter("std", dc_namespace);
+	set_type(p_std_namespace->p_type, new cx_type(fc_complex, 0, nullptr));
+	p_std_namespace->p_type->complex.p_class_scope = new cx_symtab;*/
+
     set_type(p_main_function_id->p_type, p_integer_type);
 
     // link each predefined type id's node to it's type object

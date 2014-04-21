@@ -44,7 +44,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
         if (token == tc_star) {
             get_token();
             is_unk_array_size = true;
-        }
+		}
 
         do {
             while (token == tc_comma)get_token_append();
@@ -83,7 +83,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
             } else if ((token != tc_comma) && (token != tc_end_of_file)) {
 
                 // check for assignment
-                parse_assignment(p_new_id);
+				parse_assignment(p_new_id);
                 p_new_id->defn.how = dc_variable;
             }
 

@@ -185,8 +185,7 @@ void cx_list_buffer::initialize(const char *p_file_name) {
     //page_number = 0;
 
     // Copy the input file name.
-    p_source_file_name = new char[strlen(p_file_name) + 1];
-    strcpy(p_source_file_name, p_file_name);
+    source_file_name = p_file_name;
 
 }
 

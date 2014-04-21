@@ -1,0 +1,39 @@
+; stdio.def : Declares the module parameters for the DLL.
+
+LIBRARY      "stdio"
+
+EXPORTS
+    ; Explicit exports can go here
+    cx_lib_init
+	cx_remove
+	cx_perror
+	cx_rename
+	cx_tmpnam
+	cx_puts
+	cx_open
+	cx_reopen
+	cx_close
+	cx_flush
+	cx_wide
+	cx_read
+	cx_write
+	cx_getc
+	cx_gets
+	cx_putc
+	cx_ungetc
+	cx_getwc
+	cx_getws
+	cx_putwc
+	cx_putws
+	cx_ungetwc
+	cx_tell
+	cx_seek
+	cx_rewind
+	cx_clearerr
+	cx_eof
+	cx_error_
+	cx_tmpfile
+	
+    
+SECTIONS
+    ; Pragma sections

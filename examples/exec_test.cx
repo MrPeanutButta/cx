@@ -1,45 +1,52 @@
-#include stdio
+#include io
+#include char
 
-int main () {
+namespace std {
 
-	file myfile;
-	char *buffer = "test - I will write this test to a text file then read it back";
-	char *filename = "textfile.txt";
+	namespace std {
 
-	puts(buffer + ": I will now attempt to r/w to " + filename);
-	
-	if(!myfile.open(filename, "w"))
-		perror("error opening file: " + filename);
-	else {
+		namespace std {
 
-		//for(int i = 0; i < 100; i++){
-			myfile.puts(buffer);
-		//}
-
-		//myfile.close;
-	}
-
-	if(!myfile.reopen(filename, "r"))
-		perror("error reopening file: " + filename);
-	else {
-		while(!myfile.eof){
-			puts(myfile.getc.to_str);
+			// 3 namespaces deep
+			int f(int i){
+				return (i * 5);
+			}
 		}
 
-		myfile.close;
+		// 2 deep
+		int f(int i){	
+			return (i * 6);
+		}
 	}
+	
+	// 1 deep
+	int f(int i){
+		return (i * 7);
+	}
+}
 
-	if(!rename(filename, "new_file_name")){
-		perror("unable to rename " + filename);
-	} else {
-		puts("renamed " + filename + " to new_file_name\n");
+namespace bool {
+	bool is_false(bool b){
+		return (b == false);
 	}
+}
 
-	if(remove("new_file_name")){
-		puts("removed file");
-	} else {
-		perror("remove");
-	}
+int main () {
+	
+	int a = io::L_tmpnam;
+
+	char F = 'F';
+
+	io::puts(std::f(a).to_str);
+	io::puts(std::std::f(a).to_str);
+	io::puts(std::std::std::f(a).to_str);
+
+	io::puts(std::f(std::std::f(std::std::std::f(a))).to_str);
+
+
+	bool b = F::isxdigit(F);
+
+	io::puts(b.is_false(b).to_str);
 
     return 0;
 }

@@ -222,6 +222,7 @@ cx_type *cx_parser::parse_factor(void) {
                 case dc_value_parm:
                 case dc_reference:
                 case dc_member:
+				case dc_namespace:
                     get_token_append();
                     p_result_type = parse_variable(p_node);
                     break;
@@ -382,6 +383,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
         case dc_pointer:
         case dc_function:
         case dc_undefined:
+		case dc_namespace:
             break;
 
         default:
@@ -401,7 +403,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 break;
 
             case tc_dot:
-                p_result_type = parse_field(p_id, p_prev_type);
+			case tc_colon_colon:
+				p_result_type = parse_field(p_id, p_prev_type);
                 p_prev_type = p_result_type;
                 break;
 
