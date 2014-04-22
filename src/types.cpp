@@ -80,8 +80,6 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
         type_code = cx_file;
         //complex.p_class_scope = std_stream_members;
     }
-
-
 }
 
 cx_type::cx_type(int length, bool constant)
@@ -178,11 +176,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
         set_type(p_complex_type, new cx_type(fc_complex, 0, p_complex_id));
     }
 
-	// setup standard namespace
-	/*cx_symtab_node *p_std_namespace = p_symtab->enter("std", dc_namespace);
-	set_type(p_std_namespace->p_type, new cx_type(fc_complex, 0, nullptr));
-	p_std_namespace->p_type->complex.p_class_scope = new cx_symtab;*/
-
     set_type(p_main_function_id->p_type, p_integer_type);
 
     // link each predefined type id's node to it's type object
@@ -193,7 +186,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(p_char_id->p_type, p_char_type);
     set_type(p_wchar_id->p_type, p_wchar_type);
     set_type(p_complex_id->p_type, p_complex_type);
-
 
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = p_false_id;
@@ -234,7 +226,10 @@ void remove_builtin_types(void) {
  */
 cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
     if (!p_target_type) remove_type(p_target_type);
-
+    
+    cx_symtab_node *p_this_ptr = this->complex.p_class_scope->enter("this", dc_function);
+    p_this_ptr->a
+    
     ++p_source_type->reference_count;
     p_target_type = p_source_type;
 

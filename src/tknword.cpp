@@ -43,7 +43,7 @@ std::pair<std::string, cx_token_code> map_data[] = {
     std::make_pair("template", tc_TEMPLATE),
     std::make_pair("const", tc_CONST),
     std::make_pair("private", tc_PRIVATE),
-    std::make_pair("this", tc_THIS),
+    //std::make_pair("this", tc_THIS),
     std::make_pair("while", tc_WHILE),
     std::make_pair("protected", tc_PROTECTED),
     std::make_pair("thread_local", tc_THREADLOCAL),

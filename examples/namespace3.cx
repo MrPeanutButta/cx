@@ -1,106 +1,16 @@
-<<<<<<< HEAD
 #include io
-#include char
-
-namespace std {
-
-	namespace std {
-
-		namespace std {
-
-			// 3 namespaces deep
-			int f(int i){
-				return (i * 5);
-			}
-		}
-
-		// 2 deep
-		int f(int i){	
-			return (i * 6);
-		}
-	}
-	
-	// 1 deep
-	int f(int i){
-		return (i * 7);
-	}
-}
-
-namespace bool {
-	bool is_false(bool b){
-		return (b == false);
-	}
-}
 
 int main () {
-	
-	int a = io::L_tmpnam;
 
-	char F = 'F';
+    bool b = true;
 
-	io::puts(std::f(a).to_str);
-	io::puts(std::std::f(a).to_str);
-	io::puts(std::std::std::f(a).to_str);
-
-	io::puts(std::f(std::std::f(std::std::std::f(a))).to_str);
-
-
-	bool b = !F.isxdigit(F);
-
-	io::puts(b.is_false(b).to_str);
+    namespace b {
+        bool is_false(){		
+            return (this == false);
+    	}
+    }
+   
+    io::puts(b.is_false.to_str);
 
     return 0;
-=======
-#include io
-#include char
-
-namespace std {
-
-	namespace std {
-
-		namespace std {
-
-			// 3 namespaces deep
-			int f(int i){
-				return (i * 5);
-			}
-		}
-
-		// 2 deep
-		int f(int i){	
-			return (i * 6);
-		}
-	}
-	
-	// 1 deep
-	int f(int i){
-		return (i * 7);
-	}
-}
-
-namespace bool {
-	bool is_false(bool b){
-		return (b == false);
-	}
-}
-
-int main () {
-	
-	int a = io::L_tmpnam;
-
-	char F = 'F';
-
-	io::puts(std::f(a).to_str);
-	io::puts(std::std::f(a).to_str);
-	io::puts(std::std::std::f(a).to_str);
-
-	io::puts(std::f(std::std::f(std::std::std::f(a))).to_str);
-
-
-	bool b = !F.isxdigit(F);
-
-	io::puts(b.is_false(b).to_str);
-
-    return 0;
->>>>>>> 92e9c5ca74da04f34a7c0b52dba7058c1eaa3ef4
 }

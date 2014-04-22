@@ -42,7 +42,7 @@ class cx_type;
 
 enum cx_define_code {
     dc_undefined, dc_constant, dc_type, dc_variable, dc_member,
-    dc_value_parm, dc_reference, dc_pointer,
+    dc_value_parm, dc_reference, dc_pointer, dc_this,
     dc_program, dc_function, dc_namespace
 };
 
