@@ -1,3 +1,4 @@
+
 /** Errors
  * error.cpp
  *

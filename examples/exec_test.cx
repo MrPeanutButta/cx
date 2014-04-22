@@ -44,7 +44,7 @@ int main () {
 	io::puts(std::f(std::std::f(std::std::std::f(a))).to_str);
 
 
-	bool b = F::isxdigit(F);
+	bool b = !F.isxdigit(F);
 
 	io::puts(b.is_false(b).to_str);
 

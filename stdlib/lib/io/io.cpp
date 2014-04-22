@@ -524,8 +524,12 @@ cx_type *cx_tmpnam(cx_runtime_stack *p_stack,
 
     char *buffer = (char *) std::malloc(L_tmpnam);
 
+#ifdef __linux__
+    mkstemp(buffer);
+    std::string tmp_name = buffer;
+#else
     std::string tmp_name = std::tmpnam(buffer);
-
+#endif
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type;
@@ -587,9 +591,9 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
     cx_type *p_file_type = nullptr;
     cx_symtab *std_stream_members = nullptr;
 
-	// get the std symtab
-	//cx_symtab_node *p_std = p_symtab->enter("std", dc_namespace);
-	//p_symtab = p_std->p_type->complex.p_class_scope;
+    // get the std symtab
+    //cx_symtab_node *p_std = p_symtab->enter("std", dc_namespace);
+    //p_symtab = p_std->p_type->complex.p_class_scope;
 
     cx_symtab_node *p_file_id = p_symtab->enter("file", dc_type);
 
