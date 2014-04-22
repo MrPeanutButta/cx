@@ -1,4 +1,3 @@
-
 /**
  * common.cpp
  *
@@ -8,7 +7,6 @@
  *      token lists below are subject to change drastically
  *      once the parser and scanner are complete. -aaron
  */
-
 
 #include "common.h"
 
