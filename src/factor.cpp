@@ -1,6 +1,5 @@
 #include "exec.h"
 #include "common.h"
-#include "rlutil.h"
 #include "std_members.h"
 
 /** execute_factor       Execute a factor (identifier, number,

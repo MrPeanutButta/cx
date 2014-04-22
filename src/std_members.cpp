@@ -1,6 +1,5 @@
 #include <sstream>
 #include "std_members.h"
-#include "cx_stdio.h"
 #include "types.h"
 #include "symtable.h"
 

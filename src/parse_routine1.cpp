@@ -53,7 +53,7 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
         } else */
     if (token == tc_semicolon) {
         p_function_id->defn.routine.which = func_forward;
-    } else if ((token == tc_left_bracket)) {/* ||
+    } else if (token == tc_left_bracket) {/* ||
                (p_function_id->defn.routine.which == func_std_iterator)) {*/
 
         if (!p_program_ptr_id->found_global_end) {

@@ -4,7 +4,7 @@
 #include <sstream>
 #include "common.h"
 #include "buffer.h"
-#include "cx-debug/exec.h"
+#include "exec.h"
 
 /** trace_routine_entry   Trace the entry into a routine.
  * 

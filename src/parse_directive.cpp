@@ -11,7 +11,6 @@
 #include "buffer.h"
 #include "error.h"
 #include "parser.h"
-#include "cx_api.h"
 
 extern bool cx_dev_debug_flag;
 
