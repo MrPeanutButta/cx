@@ -7,11 +7,11 @@
  /* still working out the details of importing symbols.
   * #include works for basic header includes */
 
-#include stdio
+#include io
 
 bool redir_out(char *filename){
-	stdout.close;
-	return stdout.reopen(filename, "w");
+	io::stdout.close;
+	return io::stdout.reopen(filename, "w");
 }
 
 char *read_file(file &infile){
@@ -31,15 +31,15 @@ char *read_file(file &infile){
 int main () {
 
 	// file stream type
-	file myfile;
+	io::file myfile;
 
 		// open for read
 		if(!myfile.open("sometextfile", "r"))
-			perror("error reopening file");
+			io::perror("error reopening file");
 		else {
 
 			// writes to output file
-			puts(read_file(myfile));
+			io::puts(read_file(myfile));
 
 			// close file
 			myfile.close;

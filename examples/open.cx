@@ -1,11 +1,11 @@
-#include stdio
+#include io
 
 int main () {
 
-	file outfile;
+	io::file outfile;
 
 	if(!outfile.open("textfile", "w")){
-		puts("error opening file");
+		io::puts("error opening file");
 	} else {
 		outfile.puts("example put string, write to file");
 		outfile.close();
