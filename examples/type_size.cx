@@ -1,4 +1,3 @@
-
 /* standard type member functions example
  * 
  * var.size() - returns the integer byte size of var

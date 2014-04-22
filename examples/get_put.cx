@@ -1,11 +1,11 @@
 
 /* gets() and string allocation example
  */
-#include cxstdio
+#include io
 
 int main () {
 
-    puts(gets() + " gets() puts() the lotion");
+    io::puts(io::gets() + " gets() puts() the lotion");
     
     return 0;
 }

@@ -4,7 +4,7 @@
  * var.to_str() - returns the string copy of the valuw of var
  */
 
-#include cxstdio
+#include io
 
 int main () {
 
@@ -14,7 +14,7 @@ int main () {
 
 	int i = 0;
 	do{
-		puts(a[i].to_str);
+		io::puts(a[i].to_str);
 	}while(i++ < a.length);
 
     return 0;

@@ -4,7 +4,7 @@
  * var.to_str() - returns the string copy of the valuw of var
  */
 
-#include cxstdio
+#include io
 
 int main () {
 
@@ -12,8 +12,8 @@ int main () {
 	char *a = s + s + '!';
 
 	// s[3] == 'e'
-	puts("the length of s[3] is " + s[3].to_str.length.to_str);
-	puts(a + " string length is " + a.length.to_str + " characters!");
+	io::puts("the length of s[3] is " + s[3].to_str.length.to_str);
+	io::puts(a + " string length is " + a.length.to_str + " characters!");
 
     return 0;
 }
