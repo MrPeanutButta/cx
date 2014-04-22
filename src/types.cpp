@@ -2,7 +2,7 @@
 #include "buffer.h"
 #include "error.h"
 #include "types.h"
-#include "std_members.h"
+#include "members.h"
 
 const char *form_strings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "error.h"
 #include "buffer.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "types.h"
 #include "icode.h"
 

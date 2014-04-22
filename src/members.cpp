@@ -1,7 +1,7 @@
 #include <sstream>
-#include "std_members.h"
+#include "members.h"
 #include "types.h"
-#include "symtable.h"
+#include "symtab.h"
 
 cx_symtab *std_type_members = nullptr;
 

@@ -12,7 +12,7 @@
 #include <fstream>
 
 #include "error.h"
-#include "symtable.h"
+#include "symtab.h"
 
 class cx_type;
 class cx_symtab_node;

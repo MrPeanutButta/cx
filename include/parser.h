@@ -10,7 +10,7 @@
 #include "complist.h"
 #include "icode.h"
 #include "exec.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "types.h"
 
 extern cx_symtab cx_global_symtab;

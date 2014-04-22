@@ -1,7 +1,7 @@
 #include <cstring>
 #include "common.h"
 #include "error.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "icode.h"
 
 const char *cx_symbol_strings[] = {

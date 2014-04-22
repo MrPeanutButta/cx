@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "error.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "types.h"
 #include "icode.h"
 #include "backend.h"
