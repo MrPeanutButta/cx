@@ -1,0 +1,9 @@
+*
+!doc/
+!examples/
+!include/
+!lib/
+!src/
+!stdlib/
+!.gitignore
+!README.md
