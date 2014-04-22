@@ -46,7 +46,7 @@
 
  namespace io {
 	
-	#import io
+	#import libio
 	
 	/* putchar - Write character to stdout
 	 * Writes a character to the standard output (stdout).
