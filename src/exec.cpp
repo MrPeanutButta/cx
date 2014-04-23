@@ -132,6 +132,11 @@ cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
      * this negates the need to calculate the
      * variables offset. */
     p_id->runstack_item = top();
+    
+    // set 'this' pointer if needed
+    /*if(p_id->defn.this_ptr.p_node != nullptr){
+        p_id->defn.this_ptr.p_node->runstack_item = top();
+    }*/
 }
 
 /** deallocate_value    Deallocate the data area of an array or
@@ -171,11 +176,15 @@ cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
  *                 variable, parameter, or function return value
  */
 cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
-    bool function_flag = p_id->defn.how == dc_function; // true if function
-    //   else false
-    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
-    return function_flag ? p_header->function_value
-            : p_id->runstack_item;
+
+    if(p_id->defn.how == dc_function){
+        return ((cx_frame_header *) p_frame_base)->function_value;
+    } else if(p_id->defn.how == dc_this){
+        return p_id->defn.this_ptr.p_node->runstack_item;
+    }
+    /*return function_flag ? p_header->function_value*/
+        
+     return p_id->runstack_item;
 }
 
 /**************

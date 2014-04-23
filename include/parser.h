@@ -49,6 +49,9 @@ class cx_parser {
     void parse_constant_declaration(cx_symtab_node *p_function_id);
     void parse_constant(cx_symtab_node *p_const_id);
     void parse_identifier_constant(cx_symtab_node *p_id1, cx_token_code sign);
+    void parse_namespace(void);
+    
+    void insert_this_ptr(cx_symtab_node *p_class_id);
 
     void parse_definitions(cx_symtab_node *p_function_id);
     //void ParseIntegerDeclaration(cx_symtab_node *p_function_id);
@@ -99,15 +102,15 @@ class cx_parser {
     void parse_statement(cx_symtab_node* p_function_id);
     cx_type *parse_assignment(const cx_symtab_node* p_target_id);
     void parse_statement_list(cx_symtab_node* p_function_id, cx_token_code terminator);
-    void parse_DO(cx_symtab_node* p_function_id);
-    void parse_WHILE(cx_symtab_node* p_function_id);
-    void parse_IF(cx_symtab_node* p_function_id);
-    void parse_FOR(cx_symtab_node* p_function_id);
-    void parse_SWITCH(cx_symtab_node* p_function_id);
+    void parse_do(cx_symtab_node* p_function_id);
+    void parse_while(cx_symtab_node* p_function_id);
+    void parse_if(cx_symtab_node* p_function_id);
+    void parse_for(cx_symtab_node* p_function_id);
+    void parse_switch(cx_symtab_node* p_function_id);
     void parse_case_branch(cx_symtab_node* p_function_id, const cx_type *p_expr_type);
     void parse_case_label(cx_symtab_node* p_function_id, const cx_type *p_expr_type);
     void parse_compound(cx_symtab_node* p_function_id);
-    void parse_RETURN(cx_symtab_node* p_function_id);
+    void parse_return(cx_symtab_node* p_function_id);
 
     void parse_execute_directive(cx_symtab_node *p_function_id);
 

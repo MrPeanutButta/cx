@@ -81,29 +81,48 @@ void cx_executor::exit_function(cx_symtab_node *p_function_id) {
 cx_type *cx_executor::execute_function_call(cx_symtab_node *p_function_id) {
     cx_type *p_result_type = nullptr;
 
-    switch (p_function_id->defn.routine.which) {
-        case func_declared:
-            p_result_type = execute_decl_function_call(p_function_id);
-            break;
-            //case func_standard:
-        default:
-            get_token();
-            if (token == tc_left_paren) {
-                // push actual parameter values onto the stack.
-                execute_actual_parameters(p_function_id);
-                //  )
-                get_token();
-            }
+    //    switch (p_function_id->defn.routine.which) {
+    //        case func_declared:
+    //            p_result_type = execute_decl_function_call(p_function_id);
+    //            get_token();
+    //            break;
+    //            //case func_standard:
+    //        default:
+    //            get_token();
+    //            if (token == tc_left_paren) {
+    //                // push actual parameter values onto the stack.
+    //                execute_actual_parameters(p_function_id);
+    //                //  )
+    //                get_token();
+    //            }
+    //
+    //            p_result_type = (*p_function_id->defn.routine.ext_function)
+    //                    (&this->run_stack, p_function_id, p_function_id->p_type);
+    //            break;
+    //            /*default:
+    //                p_result_type = (*p_function_id->defn.routine.std_member)
+    //                        (this, p_function_id, p_function_id->p_type);
+    //
+    //                //@TODO need error out, may be forwarded but no function body
+    //                break;*/
+    //    }
 
-            p_result_type = (*p_function_id->defn.routine.ext_function)
-                    (&this->run_stack, p_function_id, p_function_id->p_type);
-            break;
-            /*default:
-                p_result_type = (*p_function_id->defn.routine.std_member)
-                        (this, p_function_id, p_function_id->p_type);
 
-                //@TODO need error out, may be forwarded but no function body
-                break;*/
+
+    get_token();
+    if (token == tc_left_paren) {
+        // push actual parameter values onto the stack.
+        execute_actual_parameters(p_function_id);
+        //  )
+        get_token();
+    }
+
+    if (p_function_id->defn.routine.which == func_declared) {
+        p_result_type = execute_decl_function_call(p_function_id);
+        //get_token();
+    } else {
+        p_result_type = (*p_function_id->defn.routine.ext_function)
+                (&this->run_stack, p_function_id, p_function_id->p_type);
     }
 
     return p_result_type;
@@ -227,6 +246,8 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 push((void*) p_target_address);
 
                 set_type(p_formal_type->array.p_element_type, p_actual_type->array.p_element_type);
+
+                //set_type(p_formal_type->array.p_element_type, p_actual_type->base_type());
                 p_formal_type->array.element_count = num_of_elements;
                 p_formal_type->array.max_index = num_of_elements;
                 p_formal_type->size = size;

@@ -300,13 +300,11 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
         p_result_type = p_field_id->p_type;
 
         get_token();
-    }
-    else if (p_field_id->defn.how == dc_constant) {
+    } else if (p_field_id->defn.how == dc_constant) {
         push((void*) &p_field_id->defn.constant.value);
         p_result_type = p_field_id->p_type;
         get_token();
-    }
-    else { // includes nested namespaces
+    } else { // includes nested namespaces
         get_token();
     }
 

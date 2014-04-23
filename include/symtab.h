@@ -63,6 +63,10 @@ public:
 
     cx_define_code how;
 
+    struct {
+        cx_symtab_node *p_node;
+    } this_ptr;
+
     union {
 
         struct {
@@ -73,12 +77,6 @@ public:
             cx_function_code which;
 
             int return_marker; // used for globals return location
-
-            // pointer to node, that this node is a member of
-
-            struct {
-                cx_symtab_node *p_node;
-            } member_of;
 
             struct {
                 int loop_start; // icode positions
@@ -106,6 +104,7 @@ public:
     cx_define(cx_define_code dc) {
         how = dc;
         io.stream = nullptr;
+        this_ptr.p_node = nullptr;
     }
     ~cx_define();
 };

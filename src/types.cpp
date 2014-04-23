@@ -140,7 +140,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     cx_symtab_node *p_wchar_id = p_symtab->enter("wchar", dc_type);
     cx_symtab_node *p_false_id = p_symtab->enter("false", dc_constant);
     cx_symtab_node *p_true_id = p_symtab->enter("true", dc_constant);
-    cx_symtab_node *p_file_id = p_symtab->enter("file", dc_type);
     cx_symtab_node *p_void_id = p_symtab->enter("void", dc_type);
 
     // only used for functions with no return value
@@ -226,10 +225,7 @@ void remove_builtin_types(void) {
  */
 cx_type *set_type(cx_type *&p_target_type, cx_type *p_source_type) {
     if (!p_target_type) remove_type(p_target_type);
-    
-    cx_symtab_node *p_this_ptr = this->complex.p_class_scope->enter("this", dc_function);
-    p_this_ptr->a
-    
+
     ++p_source_type->reference_count;
     p_target_type = p_source_type;
 

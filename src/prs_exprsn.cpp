@@ -226,6 +226,10 @@ cx_type *cx_parser::parse_factor(void) {
                     get_token_append();
                     p_result_type = parse_variable(p_node);
                     break;
+                case dc_this:
+                    get_token_append();
+                    p_result_type = parse_variable(p_node);
+                    break;
                 default:
                     cx_error(err_undefined_identifier);
                     break;
@@ -384,6 +388,7 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
         case dc_function:
         case dc_undefined:
         case dc_namespace:
+        case dc_this:
             break;
         default:
             p_result_type = p_dummy_type;
