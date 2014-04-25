@@ -1,18 +1,22 @@
-Integral Types
+# Arithmetic types
 --------------------------------------
-byte - 1 byte unsigned integer
-char - 1 byte signed char
-wchar - 2 byte signed wide char
-int - 4 byte signed integer
 
-Fractional Types
---------------------------------------
-float - 4 byte fractional value
+## Character types
+`byte` - 1 byte unsigned char
+`char` - type for character representation which can be most efficiently processed on the target system
+`wchar` - type for wide character representation.
 
-Logical Types
---------------------------------------
-bool - 1 bit values representing true or false
+## Integer types
+`int` - basic integer type. Guaranteed to have width of at least 16 bits. However, on 32/64 bit systems it is almost exclusively guaranteed to have width of at least 32 bits.
 
-Type Qualifiers
---------------------------------------
-const       : The followed type is declared as constant. (incomplete)
+## Floating point type
+ 	`float` - single precision floating point type. Usually IEEE-754 32 bit floating point type
+
+## Boolean type
+`bool` - type, capable of holding one of the two values: true or false.
+
+## Type Qualifier
+`const` - The followed type is declared as constant and cannot be modified. (incomplete)
+``` cpp
+const int a = 100; // a is permantly equal to 100
+```
