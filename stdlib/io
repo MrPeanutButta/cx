@@ -1,6 +1,6 @@
 /* Cx library to perform Input/Output operations
  *
- * file     : stdio
+ * file     : io
  * author   : <aaron.hebert@gmail.com>
  * desc     : Input/Output operations
  *
@@ -44,9 +44,11 @@
  * L_tmpnam - size needed for an array of char to hold the result of std::tmpnam (macro constant) 
  */
 
+// Input/Output namespace
  namespace io {
-	
-	#import libio
+
+// import symbols from dynamic library	
+#import libio
 	
 	/* putchar - Write character to stdout
 	 * Writes a character to the standard output (stdout).

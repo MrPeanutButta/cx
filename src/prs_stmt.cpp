@@ -2,15 +2,25 @@
 #include "parser.h"
 #include "common.h"
 
-void cx_parser::insert_this_ptr(cx_symtab_node *p_class_id) {
-    cx_symtab_node *p_this = p_class_id->p_type->complex.p_class_scope->enter("this", dc_variable);
-    p_this->defn.this_ptr.p_node = p_class_id;
-    p_this->defn.how = dc_this;
-    
-    if (p_this->p_type == nullptr) {
-        set_type(p_this->p_type, p_class_id->p_type);
-    }
-}
+//void cx_parser::insert_this_ptr(cx_symtab_node *p_class_id, cx_symtab_node *p_function_id) {
+//    cx_symtab_node *p_this = p_function_id->defn.routine.p_symtab->enter("this", dc_variable);
+//
+//    set_type(p_this->p_type, p_class_id->p_type);
+//    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
+//    
+//    if (!p_var_id) {
+//        p_function_id->defn.routine.locals.p_variable_ids = p_this;
+//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
+//    } else {
+//        while (p_var_id->next__)p_var_id = p_var_id->next__;
+//
+//        p_var_id->next__ = p_this;
+//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
+//    }
+//
+//    p_class_id->defn.has_this_ptr = true;
+//
+//}
 
 void cx_parser::parse_namespace(void) {
     get_token();
@@ -20,10 +30,8 @@ void cx_parser::parse_namespace(void) {
         p_namespace_id = enter_local(p_token->string__(), dc_namespace);
         p_namespace_id->p_type = new cx_type();
         p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
-    } else if (p_namespace_id->defn.how == dc_type) {
-        insert_this_ptr(p_namespace_id);
     }
-
+    
     cx_symtab *p_old_symtab = (cx_symtab *) symtab_stack.get_current_symtab();
 
     symtab_stack.set_scope(++current_nesting_level);
@@ -117,7 +125,7 @@ void cx_parser::parse_statement_list(cx_symtab_node* p_function_id, cx_token_cod
  * @param p_target_id : ptr to target id's symbol table node
  * @return ptr to the p_target_id type object.
  */
-cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
+cx_type *cx_parser::parse_assignment(cx_symtab_node *p_target_id) {
 
     cx_type *p_target_type = parse_variable(p_target_id);
 

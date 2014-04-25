@@ -11,6 +11,7 @@
 #include <map>
 #include <cstring>
 #include <string>
+#include <memory>
 #include "misc.h"
 #include "exec.h"
 
@@ -62,9 +63,11 @@ class cx_define {
 public:
 
     cx_define_code how;
-
+    bool is_this_ptr;
+    
     struct {
-        cx_symtab_node *p_node;
+        //std::unique_ptr<cx_symtab_node> p_node;
+        cx_stack_item *p_stack_item;
     } this_ptr;
 
     union {
@@ -104,7 +107,9 @@ public:
     cx_define(cx_define_code dc) {
         how = dc;
         io.stream = nullptr;
-        this_ptr.p_node = nullptr;
+        this_ptr.p_stack_item = nullptr;
+        is_this_ptr = false;
+		routine.locals.p_function_ids = nullptr;
     }
     ~cx_define();
 };
@@ -195,21 +200,6 @@ public:
     cx_symtab_node *root(void) const {
         return root__;
     }
-
-    /*    void connect_tables(cx_scoped_symtab &class_symtab) {
-
-        root__ = class_symtab[tc_PUBLIC]->root__;
-        root__->left__ = class_symtab[tc_PROTECTED]->root__;
-        root__->right__ = class_symtab[tc_PRIVATE]->root__;
-    }*/
-
-    // DEPRECATED
-    //    cx_symtab_node *get(short xnode) const {
-    ////		if (nullptr == p_vector_nodes) return nullptr;
-    //
-    //        //return p_vector_nodes[xnode];
-    //		return nullptr;
-    //    }
 
     cx_symtab *next(void) const {
         return next__;

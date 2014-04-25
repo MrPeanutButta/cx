@@ -91,7 +91,7 @@ cx_type *cx_parser::parse_unksize_array_type(cx_symtab_node* p_function_id,
     if (is_function) {
         set_type(p_array_node->p_type, p_array_type);
         p_array_node->p_type->p_type_id = p_array_node;
-        parse_function_header(p_array_node);
+        parse_function_header(p_function_id, p_array_node);
 
         return p_array_type;
     }
@@ -362,7 +362,7 @@ void cx_parser::parse_member_decls(cx_symtab_node *p_function_id, cx_type *p_com
                     //parse_array_type(member);
                     member->defn.how = dc_variable;
                 } else if (token == tc_left_paren) {
-                    parse_function_header(member);
+                    parse_function_header(p_function_id, member);
                 } else if (token != tc_comma) {
                     // check for assignment
                     //parse_assignment(p_new_id);

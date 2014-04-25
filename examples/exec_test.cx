@@ -1,4 +1,5 @@
 #include io
+#include char
 
 namespace bool {
     bool is_false(){		
@@ -6,11 +7,21 @@ namespace bool {
     }
 }
 
+namespace char {
+    char do_di_do(int a){
+        return (this + a);
+    }
+}
+
 int main () {
 
+    char c = 'F';
+    bool a = false;
     bool b = true;
    
-    io::puts(b.is_false.to_str);
+    io::puts(c.do_di_do(10).to_str);
+	io::puts(a.is_false.to_str);
+	io::puts(b.is_false.to_str);
 
     return 0;
 }

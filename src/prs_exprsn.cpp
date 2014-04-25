@@ -377,7 +377,7 @@ cx_type *cx_parser::parse_factor(void) {
  * @param p_id : variable node id.
  * @return variables type object ptr.
  */
-cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
+cx_type *cx_parser::parse_variable(cx_symtab_node* p_id) {
     cx_type *p_result_type = p_id->p_type;
 
     switch (p_id->defn.how) {
@@ -621,7 +621,7 @@ std::string unique_name(const std::string &prefix, const int &postfix) {
  * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
-cx_type *cx_parser::parse_field(const cx_symtab_node *p_node, cx_type* p_type) {
+cx_type *cx_parser::parse_field(cx_symtab_node *p_node, cx_type* p_type) {
     get_token_append();
 
     if (token == tc_identifier) {

@@ -62,7 +62,7 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
     std::string dll = std::string(lib) + ".dll";
     lib_path += dll;
     // Get a handle to the DLL module.
-    lib_handle = LoadLibrary(lib_path.c_str());
+	lib_handle = LoadLibrary(lib_path.c_str());
 #elif defined __linux__
     std::string so = std::string(lib) + ".so";
     lib_path += so;

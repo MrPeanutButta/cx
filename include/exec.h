@@ -71,7 +71,7 @@ struct cx_stack_item {
 
     cx_stack_item(void *address) {
         basic_types.addr__ = address;
-        addr = std::shared_ptr<void>(address);
+        //addr = std::shared_ptr<void>(address);
     }
 
     mem_block basic_types;

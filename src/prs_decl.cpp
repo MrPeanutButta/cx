@@ -59,7 +59,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                 if (p_new_id->defn.how == dc_function &&
                         p_new_id->defn.routine.which == func_forward) {
                     get_token_append();
-                    parse_function_header(p_new_id);
+                    parse_function_header(p_function_id, p_new_id);
                 } else cx_error(err_redefined_identifier);
             } else {
                 p_new_id = enter_new_local(p_token->string__());
@@ -79,7 +79,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                 parse_unksize_array_type(p_function_id, p_new_id);
             } else if (token == tc_left_paren) {
 
-                parse_function_header(p_new_id);
+                parse_function_header(p_function_id, p_new_id);
             } else if ((token != tc_comma) && (token != tc_end_of_file)) {
 
                 // check for assignment

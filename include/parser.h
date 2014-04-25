@@ -26,7 +26,8 @@ class cx_parser {
     bool is_module;
     const char *file_name;
 
-    cx_symtab_node *parse_function_header(cx_symtab_node *p_function_id);
+    cx_symtab_node *parse_function_header(cx_symtab_node *p_parent,
+            cx_symtab_node *p_function_id);
 
     void parse_block(cx_symtab_node *p_function_id);
     void parse_iterator_block(cx_symtab_node *p_function_id);
@@ -50,8 +51,8 @@ class cx_parser {
     void parse_constant(cx_symtab_node *p_const_id);
     void parse_identifier_constant(cx_symtab_node *p_id1, cx_token_code sign);
     void parse_namespace(void);
-    
-    void insert_this_ptr(cx_symtab_node *p_class_id);
+
+    void insert_this_ptr(cx_symtab_node *p_class_id, cx_symtab_node *p_function_id);
 
     void parse_definitions(cx_symtab_node *p_function_id);
     //void ParseIntegerDeclaration(cx_symtab_node *p_function_id);
@@ -93,14 +94,14 @@ class cx_parser {
     cx_type *parse_simple_expression(void);
     cx_type *parse_term(void);
     cx_type *parse_factor(void);
-    cx_type *parse_variable(const cx_symtab_node *p_id);
+    cx_type *parse_variable(cx_symtab_node *p_id);
     cx_type *parse_subscripts(const cx_type *p_type);
-    cx_type *parse_field(const cx_symtab_node *p_node, cx_type *p_type);
+    cx_type *parse_field(cx_symtab_node *p_node, cx_type *p_type);
     cx_type *parse_iterator(cx_symtab_node *p_iterator);
 
     // statements
     void parse_statement(cx_symtab_node* p_function_id);
-    cx_type *parse_assignment(const cx_symtab_node* p_target_id);
+    cx_type *parse_assignment(cx_symtab_node* p_target_id);
     void parse_statement_list(cx_symtab_node* p_function_id, cx_token_code terminator);
     void parse_do(cx_symtab_node* p_function_id);
     void parse_while(cx_symtab_node* p_function_id);

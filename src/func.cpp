@@ -107,20 +107,18 @@ cx_type *cx_executor::execute_function_call(cx_symtab_node *p_function_id) {
     //                break;*/
     //    }
 
-
-
-    get_token();
-    if (token == tc_left_paren) {
-        // push actual parameter values onto the stack.
-        execute_actual_parameters(p_function_id);
-        //  )
-        get_token();
-    }
-
     if (p_function_id->defn.routine.which == func_declared) {
         p_result_type = execute_decl_function_call(p_function_id);
-        //get_token();
     } else {
+
+        get_token();
+        if (token == tc_left_paren) {
+            // push actual parameter values onto the stack.
+            execute_actual_parameters(p_function_id);
+            //  )
+            get_token();
+        }
+
         p_result_type = (*p_function_id->defn.routine.ext_function)
                 (&this->run_stack, p_function_id, p_function_id->p_type);
     }
@@ -157,15 +155,19 @@ cx_type *cx_executor::execute_decl_function_call
     cx_frame_header *p_new_frame_base = run_stack.push_frame_header
             (old_level, new_level, p_icode);
 
+    //   if (token != tc_dot) {
     // push actual parameter values onto the stack.
     get_token();
 
     if (token == tc_left_paren) {
         execute_actual_parameters(p_function_id);
+
+        get_token();
     }
 
     //  )
-    get_token();
+
+    // }
 
     // Activate the new stack frame ...
     current_nesting_level = new_level;

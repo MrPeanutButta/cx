@@ -45,6 +45,7 @@ public:
 
     ~cx_icode(void) {
         if (p_code != nullptr) delete[] p_code;
+        p_code = nullptr;
     }
 
     // append to already existing icode

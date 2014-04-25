@@ -189,8 +189,10 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = p_false_id;
 
-    p_false_id->defn.constant.value.int__ = 0;
-    p_true_id->defn.constant.value.int__ = 1;
+    p_false_id->defn.constant.value.bool__ = false;
+    p_true_id->defn.constant.value.bool__ = true;
+    p_false_id->defn.how = dc_constant;
+    p_true_id->defn.how = dc_constant;
 
     set_type(p_true_id->p_type, p_boolean_type);
     set_type(p_false_id->p_type, p_boolean_type);
