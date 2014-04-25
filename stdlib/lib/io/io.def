@@ -1,6 +1,6 @@
 ; stdio.def : Declares the module parameters for the DLL.
 
-LIBRARY      "stdio"
+LIBRARY      "libio"
 
 EXPORTS
     ; Explicit exports can go here

@@ -19,10 +19,18 @@ extern cx_symtab_node *p_program_ptr_id;
  * @param p_function_id : ptr to the function id's symbol table node.
  * @return ptr to function id's symbol table node.
  */
-cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) {
+cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_parent,
+        cx_symtab_node *p_function_id) {
     // enter the next__ nesting level and open a new scope
     // for the function.
     symtab_stack.enter_scope();
+
+    // set this pointer for the current namespace
+    cx_symtab *p_symtab = symtab_stack.get_current_symtab();
+    cx_symtab_node *p_this = p_symtab->enter("this", dc_reference);
+    p_this->defn.is_this_ptr = true;
+    set_type(p_this->p_type, p_parent->p_type);
+
     //  (
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
@@ -34,28 +42,21 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_function_id) 
 
     p_function_id->defn.routine.parm_count = parm_count;
     p_function_id->defn.routine.total_parm_size = total_parm_size;
-    p_function_id->defn.routine.locals.p_parms_ids = p_parm_list;
+    p_function_id->defn.routine.locals.p_parms_ids = p_parm_list;;
     p_function_id->defn.how = dc_function;
 
     // Not forwarded.
     p_function_id->defn.routine.locals.p_constant_ids = nullptr;
     p_function_id->defn.routine.locals.p_type_ids = nullptr;
-    p_function_id->defn.routine.locals.p_variable_ids = nullptr;
+    p_function_id->defn.routine.locals.p_variable_ids = p_this;
     p_function_id->defn.routine.locals.p_function_ids = nullptr;
 
     //  )
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
-    /*    if ((p_function_id->defn.routine.which == func_std_iterator)) {
-                p_function_id->defn.routine.iterator.loop_start = icode.current_location();
-            parse_iterator_block(p_function_id);
-                    p_function_id->defn.routine.iterator.loop_end = icode.current_location();
-        } else */
     if (token == tc_semicolon) {
         p_function_id->defn.routine.which = func_forward;
-    } else if (token == tc_left_bracket) {/* ||
-               (p_function_id->defn.routine.which == func_std_iterator)) {*/
-
+    } else if (token == tc_left_bracket) {
         if (!p_program_ptr_id->found_global_end) {
             p_program_ptr_id->found_global_end = true;
             icode.go_to(p_program_ptr_id->global_finish_location);

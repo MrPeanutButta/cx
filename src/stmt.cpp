@@ -56,8 +56,8 @@ void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
             break;
         case tc_RETURN: execute_RETURN(p_function_id);
             break;
-		case tc_NAMESPACE:
-			get_token();
+        case tc_NAMESPACE:
+            get_token();
         default:
             break;
     }

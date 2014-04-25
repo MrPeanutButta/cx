@@ -3,7 +3,7 @@
 
 #ifndef CX_DYNAMIC_API
 #include "misc.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "icode.h"
 #endif
 

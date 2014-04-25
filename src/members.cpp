@@ -1,7 +1,7 @@
 #include <sstream>
-#include "std_members.h"
+#include "members.h"
 #include "types.h"
-#include "symtable.h"
+#include "symtab.h"
 
 cx_symtab *std_type_members = nullptr;
 
@@ -106,8 +106,8 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack, cx_symtab_node *
 
     p_stack->pop();
 
-    const int size = ss.str().size() - 1;
     const int length = ss.str().length() - 1;
+    const int size = length;
 
     cx_type *p_str = new cx_type(fc_array, size, nullptr);
     set_type(p_str->array.p_element_type, p_char_type);

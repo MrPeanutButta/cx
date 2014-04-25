@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+//#include <unique_ptr.h>
 #include "exec.h"
 
 /*******************
@@ -16,9 +17,9 @@
 ///  Constructor
 
 cx_runtime_stack::cx_runtime_stack(void) {
-
     // Initialize the program's stack frame at the bottom.
     push_frame(); // program return value
+
     p_frame_base = (cx_frame_header *) top(); // point to bottom of stack
     p_stackbase = (cx_frame_header *) top();
 
@@ -114,6 +115,8 @@ cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
 void
 cx_runtime_stack::allocate_value(cx_symtab_node *p_id) {
 
+    if (p_id->defn.is_this_ptr) return;
+
     cx_type *p_type = p_id->p_type; // ptr to type object of value
 
     if ((p_type->form != fc_array) && (p_type->form != fc_complex)) {
@@ -144,6 +147,7 @@ void
 cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
 
     if (p_id->runstack_item == nullptr) return;
+    if (p_id->defn.is_this_ptr) return;
 
     //#ifndef WIN32
     void *addr = p_id->runstack_item->basic_types.addr__;
@@ -151,7 +155,6 @@ cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
     cx_define_code def_how = p_id->defn.how;
 
     if ((addr != nullptr) && (form == fc_array) && (def_how != dc_reference)) {
-
         free(p_id->runstack_item->basic_types.addr__);
     }
     //#endif
@@ -171,11 +174,16 @@ cx_runtime_stack::deallocate_value(cx_symtab_node *p_id) {
  *                 variable, parameter, or function return value
  */
 cx_stack_item *cx_runtime_stack::get_value_address(const cx_symtab_node *p_id) {
-    bool function_flag = p_id->defn.how == dc_function; // true if function
-    //   else false
-    cx_frame_header *p_header = (cx_frame_header *) p_frame_base;
-    return function_flag ? p_header->function_value
-            : p_id->runstack_item;
+
+    if (p_id->defn.is_this_ptr) {
+        return p_id->defn.this_ptr.p_stack_item;
+    }
+
+    if (p_id->defn.how == dc_function) {
+        return ((cx_frame_header *) p_frame_base)->function_value;
+    }
+
+    return p_id->runstack_item;
 }
 
 /**************
@@ -230,11 +238,13 @@ cx_executor::range_check(const cx_type *p_target_type, int value) {
  */
 void
 cx_executor::initialize_global(cx_symtab_node* p_program_id) {
+    extern cx_symtab_node *p_program_ptr_id;
 
     // Set up a new stack frame for the callee.
     cx_frame_header *p_new_frame_base = run_stack.push_frame_header
             (0, 0, p_program_id->defn.routine.p_icode);
 
+   // p_program_ptr_id->runstack_item = top();
     // Activate the new stack frame
     current_nesting_level = 0;
     run_stack.activate_frame(p_new_frame_base, p_program_id->defn.routine.return_marker);

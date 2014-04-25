@@ -2,7 +2,7 @@
 #include "buffer.h"
 #include "error.h"
 #include "types.h"
-#include "std_members.h"
+#include "members.h"
 
 const char *form_strings[] = {
     "*error*", "scalar", "enum", "subrange", "array", "complex", "pointer"
@@ -80,8 +80,6 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
         type_code = cx_file;
         //complex.p_class_scope = std_stream_members;
     }
-
-
 }
 
 cx_type::cx_type(int length, bool constant)
@@ -142,7 +140,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     cx_symtab_node *p_wchar_id = p_symtab->enter("wchar", dc_type);
     cx_symtab_node *p_false_id = p_symtab->enter("false", dc_constant);
     cx_symtab_node *p_true_id = p_symtab->enter("true", dc_constant);
-    cx_symtab_node *p_file_id = p_symtab->enter("file", dc_type);
     cx_symtab_node *p_void_id = p_symtab->enter("void", dc_type);
 
     // only used for functions with no return value
@@ -178,11 +175,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
         set_type(p_complex_type, new cx_type(fc_complex, 0, p_complex_id));
     }
 
-	// setup standard namespace
-	/*cx_symtab_node *p_std_namespace = p_symtab->enter("std", dc_namespace);
-	set_type(p_std_namespace->p_type, new cx_type(fc_complex, 0, nullptr));
-	p_std_namespace->p_type->complex.p_class_scope = new cx_symtab;*/
-
     set_type(p_main_function_id->p_type, p_integer_type);
 
     // link each predefined type id's node to it's type object
@@ -194,12 +186,13 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(p_wchar_id->p_type, p_wchar_type);
     set_type(p_complex_id->p_type, p_complex_type);
 
-
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = p_false_id;
 
-    p_false_id->defn.constant.value.int__ = 0;
-    p_true_id->defn.constant.value.int__ = 1;
+    p_false_id->defn.constant.value.bool__ = false;
+    p_true_id->defn.constant.value.bool__ = true;
+    p_false_id->defn.how = dc_constant;
+    p_true_id->defn.how = dc_constant;
 
     set_type(p_true_id->p_type, p_boolean_type);
     set_type(p_false_id->p_type, p_boolean_type);

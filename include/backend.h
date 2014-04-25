@@ -2,7 +2,7 @@
 #define backend_h
 
 #include "misc.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "token.h"
 #include "icode.h"
 

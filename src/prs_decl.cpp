@@ -44,7 +44,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
         if (token == tc_star) {
             get_token();
             is_unk_array_size = true;
-		}
+        }
 
         do {
             while (token == tc_comma)get_token_append();
@@ -59,7 +59,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                 if (p_new_id->defn.how == dc_function &&
                         p_new_id->defn.routine.which == func_forward) {
                     get_token_append();
-                    parse_function_header(p_new_id);
+                    parse_function_header(p_function_id, p_new_id);
                 } else cx_error(err_redefined_identifier);
             } else {
                 p_new_id = enter_new_local(p_token->string__());
@@ -79,11 +79,11 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                 parse_unksize_array_type(p_function_id, p_new_id);
             } else if (token == tc_left_paren) {
 
-                parse_function_header(p_new_id);
+                parse_function_header(p_function_id, p_new_id);
             } else if ((token != tc_comma) && (token != tc_end_of_file)) {
 
                 // check for assignment
-				parse_assignment(p_new_id);
+                parse_assignment(p_new_id);
                 p_new_id->defn.how = dc_variable;
             }
 
@@ -100,6 +100,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                         p_var_id->next__ = p_new_id;
                         p_function_id->defn.routine.total_local_size += p_new_id->p_type->size;
                     }
+
                 }
                 // add function to routine list
             } else if (p_new_id->defn.how == dc_function) {
@@ -113,6 +114,7 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                         p_fun_id->next__ = p_new_id;
                     }
                 }
+
             }
 
         } while (token == tc_comma);

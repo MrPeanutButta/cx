@@ -2,6 +2,51 @@
 #include "parser.h"
 #include "common.h"
 
+//void cx_parser::insert_this_ptr(cx_symtab_node *p_class_id, cx_symtab_node *p_function_id) {
+//    cx_symtab_node *p_this = p_function_id->defn.routine.p_symtab->enter("this", dc_variable);
+//
+//    set_type(p_this->p_type, p_class_id->p_type);
+//    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
+//    
+//    if (!p_var_id) {
+//        p_function_id->defn.routine.locals.p_variable_ids = p_this;
+//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
+//    } else {
+//        while (p_var_id->next__)p_var_id = p_var_id->next__;
+//
+//        p_var_id->next__ = p_this;
+//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
+//    }
+//
+//    p_class_id->defn.has_this_ptr = true;
+//
+//}
+
+void cx_parser::parse_namespace(void) {
+    get_token();
+    cx_symtab_node *p_namespace_id = search_local(p_token->string__());
+
+    if (p_namespace_id == nullptr) {
+        p_namespace_id = enter_local(p_token->string__(), dc_namespace);
+        p_namespace_id->p_type = new cx_type();
+        p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
+    }
+    
+    cx_symtab *p_old_symtab = (cx_symtab *) symtab_stack.get_current_symtab();
+
+    symtab_stack.set_scope(++current_nesting_level);
+    symtab_stack.set_current_symtab(p_namespace_id->p_type->complex.p_class_scope);
+
+    get_token(); // namespace ID
+    conditional_get_token_append(tc_left_bracket, err_missing_left_bracket); // open bracket
+
+    parse_statement_list(p_namespace_id, tc_right_bracket);
+
+    conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+    symtab_stack.set_scope(--current_nesting_level);
+    symtab_stack.set_current_symtab(p_old_symtab);
+}
+
 /** parse_statement          parse a statement.
  *
  * @param p_function_id : function in which this statement is executed.
@@ -22,15 +67,15 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
             //get_token_append();
             //            parse_enum_header(p_function_id);
             //break;
-        case tc_DO: parse_DO(p_function_id);
+        case tc_DO: parse_do(p_function_id);
             break;
-        case tc_WHILE: parse_WHILE(p_function_id);
+        case tc_WHILE: parse_while(p_function_id);
             break;
-        case tc_IF: parse_IF(p_function_id);
+        case tc_IF: parse_if(p_function_id);
             break;
-        case tc_FOR: parse_FOR(p_function_id);
+        case tc_FOR: parse_for(p_function_id);
             break;
-        case tc_SWITCH: parse_SWITCH(p_function_id);
+        case tc_SWITCH: parse_switch(p_function_id);
             break;
             //case tc_CASE:
             //case tc_DEFAULT:parse_case_label(p_function_id);
@@ -39,39 +84,14 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
             break;
         case tc_left_bracket: parse_compound(p_function_id);
             break;
-        case tc_RETURN: parse_RETURN(p_function_id);
+        case tc_RETURN: parse_return(p_function_id);
             break;
         case tc_pound:
             get_token();
             parse_execute_directive(p_function_id);
             break;
-		case tc_NAMESPACE:{
-			get_token();
-			cx_symtab_node *p_namespace_id = search_local(p_token->string__()); //p_function_id->defn.routine.p_symtab->enter(p_token->string__(), dc_namespace);
-
-			if (p_namespace_id == nullptr){
-				p_namespace_id = enter_local(p_token->string__(), dc_namespace);
-				p_namespace_id->p_type = new cx_type();
-				p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
-			}
-
-			//icode.put(p_namespace_id);
-			cx_symtab *p_old_symtab = (cx_symtab *)symtab_stack.get_current_symtab();
-			
-			symtab_stack.set_scope(++current_nesting_level);
-			symtab_stack.set_current_symtab(p_namespace_id->p_type->complex.p_class_scope);
-
-			get_token();	// namespace ID
-			conditional_get_token_append(tc_left_bracket, err_missing_left_bracket);	// open bracket
-
-			parse_statement_list(p_namespace_id, tc_right_bracket);
-
-			conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
-			symtab_stack.set_scope(--current_nesting_level);
-			symtab_stack.set_current_symtab(p_old_symtab);
-
-		}
-			break;
+        case tc_NAMESPACE: parse_namespace();
+            break;
         default:
             break;
     }
@@ -105,7 +125,7 @@ void cx_parser::parse_statement_list(cx_symtab_node* p_function_id, cx_token_cod
  * @param p_target_id : ptr to target id's symbol table node
  * @return ptr to the p_target_id type object.
  */
-cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
+cx_type *cx_parser::parse_assignment(cx_symtab_node *p_target_id) {
 
     cx_type *p_target_type = parse_variable(p_target_id);
 
@@ -120,7 +140,7 @@ cx_type *cx_parser::parse_assignment(const cx_symtab_node *p_target_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
+void cx_parser::parse_do(cx_symtab_node* p_function_id) {
 
 
     int break_point = put_location_marker();
@@ -145,7 +165,7 @@ void cx_parser::parse_DO(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
+void cx_parser::parse_while(cx_symtab_node* p_function_id) {
 
     int break_point = put_location_marker();
 
@@ -172,7 +192,7 @@ void cx_parser::parse_WHILE(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
+void cx_parser::parse_if(cx_symtab_node* p_function_id) {
 
     // Append a placeholder location marker for where to go to if
     // <expr> is false.  Remember the location of this placeholder
@@ -211,7 +231,7 @@ void cx_parser::parse_IF(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
+void cx_parser::parse_for(cx_symtab_node* p_function_id) {
 
     int break_point = put_location_marker();
     int statementMarker = put_location_marker();
@@ -261,7 +281,7 @@ void cx_parser::parse_FOR(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_SWITCH(cx_symtab_node* p_function_id) {
+void cx_parser::parse_switch(cx_symtab_node* p_function_id) {
 
     get_token_append();
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
@@ -351,7 +371,7 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
  *
  * @param p_function_id : ptr to this statements function Id.
  */
-void cx_parser::parse_RETURN(cx_symtab_node* p_function_id) {
+void cx_parser::parse_return(cx_symtab_node* p_function_id) {
     get_token_append();
 
     // expr 1

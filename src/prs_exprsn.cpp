@@ -3,7 +3,7 @@
 #include "parser.h"
 #include "common.h"
 #include "types.h"
-#include "std_members.h"
+#include "members.h"
 
 /** parse_expression     parse an expression (binary relational
  *                      operators = < > <> <= and >= ).
@@ -222,7 +222,11 @@ cx_type *cx_parser::parse_factor(void) {
                 case dc_value_parm:
                 case dc_reference:
                 case dc_member:
-				case dc_namespace:
+                case dc_namespace:
+                    get_token_append();
+                    p_result_type = parse_variable(p_node);
+                    break;
+                case dc_this:
                     get_token_append();
                     p_result_type = parse_variable(p_node);
                     break;
@@ -373,7 +377,7 @@ cx_type *cx_parser::parse_factor(void) {
  * @param p_id : variable node id.
  * @return variables type object ptr.
  */
-cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
+cx_type *cx_parser::parse_variable(cx_symtab_node* p_id) {
     cx_type *p_result_type = p_id->p_type;
 
     switch (p_id->defn.how) {
@@ -383,9 +387,9 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
         case dc_pointer:
         case dc_function:
         case dc_undefined:
-		case dc_namespace:
+        case dc_namespace:
+        case dc_this:
             break;
-
         default:
             p_result_type = p_dummy_type;
             cx_error(err_invalid_identifier_usage);
@@ -403,8 +407,8 @@ cx_type *cx_parser::parse_variable(const cx_symtab_node* p_id) {
                 break;
 
             case tc_dot:
-			case tc_colon_colon:
-				p_result_type = parse_field(p_id, p_prev_type);
+            case tc_colon_colon:
+                p_result_type = parse_field(p_id, p_prev_type);
                 p_prev_type = p_result_type;
                 break;
 
@@ -617,7 +621,7 @@ std::string unique_name(const std::string &prefix, const int &postfix) {
  * @param p_type : ptr to the record's type object
  * @return ptr to the field's type object.
  */
-cx_type *cx_parser::parse_field(const cx_symtab_node *p_node, cx_type* p_type) {
+cx_type *cx_parser::parse_field(cx_symtab_node *p_node, cx_type* p_type) {
     get_token_append();
 
     if (token == tc_identifier) {

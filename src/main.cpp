@@ -23,7 +23,7 @@
 #include "error.h"
 #include "buffer.h"
 #include "parser.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "common.h"
 #include "icode.h"
 

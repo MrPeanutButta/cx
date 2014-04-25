@@ -2,7 +2,7 @@
 #include <iostream>
 #include "error.h"
 #include "buffer.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "types.h"
 #include "icode.h"
 
@@ -63,6 +63,7 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
     level = current_nesting_level;
     label_index = ++asm_label_index;
 
+	//this->runstack_item = nullptr;
     // Allocate and copy the symbol string.
     node_name = p_str;
 }

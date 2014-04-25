@@ -12,7 +12,7 @@
 #include <fstream>
 
 #include "error.h"
-#include "symtable.h"
+#include "symtab.h"
 
 class cx_type;
 class cx_symtab_node;
@@ -40,7 +40,7 @@ enum cx_type_form_code {
     fc_subrange,
     fc_array,
     fc_complex,
-    fc_stream
+    fc_stream,
 };
 
 enum cx_type_code {

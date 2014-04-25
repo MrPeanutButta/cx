@@ -1,4 +1,4 @@
-# **stdio** - Standard Input/Output
+# **io** - Standard Input/Output
 
 ## Types
 **file** - type, capable of holding all information needed to control a Cx I/O stream
@@ -113,7 +113,7 @@ In POSIX the behavior for file types other than regular files is unspecified.
 
 **Example**
 ```cpp
-#include stdio
+#include io
 
 using std;
 
@@ -135,7 +135,7 @@ Prints a textual description of the error code currently stored in the system va
 
 **Example**
 ```cpp
-#include stdio
+#include io
 
 using std;
 
@@ -162,7 +162,7 @@ Changes the filename of a file. The file is identified by character string point
 
 **Example**
 ```cpp
-#include stdio
+#include io
 
 using std;
 
@@ -190,7 +190,7 @@ character array capable of holding at least **L_tmpnam** bytes, to be used as a 
 
 **Example**
 ```cpp
-#include stdio
+#include io
 
 using std;
 
@@ -306,7 +306,7 @@ Opens a file indicated by **filename** and returns a **boolean** indicating succ
 
 **Example**
 ``` cpp
-#include stdio
+#include io
 
 // merge std symbols with global scope
 using std;
@@ -420,7 +420,7 @@ Reassigns an existing file stream to a different file identified by **filename**
 
 **Example**
 ``` cpp
-#include stdio
+#include io
 
 using std;
 

@@ -1,5 +1,5 @@
 #include "exec.h"
-#include "std_members.h"
+#include "members.h"
 #include "common.h"
 
 cx_type *cx_executor::execute_additive(cx_token_code op, cx_type* lhs, cx_type* rhs) {
@@ -165,6 +165,8 @@ cx_type *cx_executor::alloc_temp_rvalue(const cx_type* lhs,
 
                 addr1 = top()->basic_types.addr__;
                 pop();
+
+                char *t = (char *) addr1;
 
                 memcpy(temp_val, addr1, lhs->size);
                 memcpy(&temp_val[lhs->size], &value2, rhs->size);

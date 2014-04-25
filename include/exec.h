@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "error.h"
-#include "symtable.h"
+#include "symtab.h"
 #include "types.h"
 #include "icode.h"
 #include "backend.h"
@@ -71,7 +71,7 @@ struct cx_stack_item {
 
     cx_stack_item(void *address) {
         basic_types.addr__ = address;
-        addr = std::shared_ptr<void>(address);
+        //addr = std::shared_ptr<void>(address);
     }
 
     mem_block basic_types;
