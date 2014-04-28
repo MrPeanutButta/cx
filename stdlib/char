@@ -1,26 +1,29 @@
-/* Cx library for character handling functions
+/** Cx library for character handling functions
  *
- * file     : char
- * author   : <aaron.hebert@gmail.com>
- * desc     : Character handling functions
+ * @file     : char
+ * @author   : <aaron.hebert@gmail.com>
+ * @date	 : April 26 2014
+ * @desc     : Character handling functions
  * 
  * This header declares a set of functions to classify and transform 
- * individual characters. */
+ * individual characters. These functions extend the basic char type
+ * as member functions */
 
- namespace char {
+ /// Basic char type class extension
+ class char {
 	
-	/* is_digit - Check if character is decimal digit
+	/** is_digit - Check if character is decimal digit
 	 * Checks whether c is a decimal digit character.
 	 * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
 	 *
 	 * @param this : char to test if digit.
 	 * @return true if digit, false if anything else. */
-	
+	 
 	bool is_digit(){
 	    return ((this >= '0') && (this <= '9'));
 	}
 	
-	/* is_xdigit - Check if character is hexadecimal digit
+	/** is_xdigit - Check if character is hexadecimal digit
 	 * Checks whether c is a hexdecimal digit character.
 	 * Hexadecimal digits are any of: 
 	 * 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
@@ -38,7 +41,7 @@
 	            (this.is_digit));
 	}
 	
-	/* is_lower - Check if character is lowercase letter
+	/** is_lower - Check if character is lowercase letter
 	 * Checks whether c is a lowercase letter.
 	 * A lowercase letter is any of: 
 	 * a b c d e f g h i j k l m n o p q r s t u v w x y z
@@ -50,7 +53,7 @@
 	    return ((this >= 'a') && (this <= 'z'));
 	}
 	
-	/* is_upper - Check if character is uppercase letter
+	/** is_upper - Check if character is uppercase letter
 	 * Checks whether c is a uppercase letter.
 	 * A uppercase letter is any of: 
 	 * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
@@ -62,7 +65,7 @@
 	    return ((this >= 'A') && (this <= 'Z'));
 	}
 	
-	/* is_alpha - Check if character is alphabetic
+	/** is_alpha - Check if character is alphabetic
 	 * Checks whether c is an alphabetic letter.
 	 * A letter is any of: 
 	 * a b c d e f g h i j k l m n o p q r s t u v w x y z
@@ -76,7 +79,7 @@
                     ((this >= 'a') && (this <= 'z')));
 	}
 	
-	/* is_alnum - Check if character is alphanumeric
+	/** is_alnum - Check if character is alphanumeric
 	 * Checks whether c is either a decimal digit or an 
 	 * uppercase or lowercase letter.
 	 * The result is true if either is_alpha or is_digit 
@@ -89,7 +92,7 @@
 	    return (this.is_digit || this.is_alpha);
 	}
 	
-	/* is_space - Check if character is a white-space
+	/** is_space - Check if character is a white-space
 	 * Checks whether c is a white-space character.
 	 *
 	 * For the "C" locale, white-space characters are any of:
@@ -109,7 +112,7 @@
 	            (this == '\f')|| (this == '\r'));
 	}
 	
-	/* is_blank - Check if character is blank
+	/** is_blank - Check if character is blank
 	 * Checks whether c is a blank character.
 	 * A blank character is a space character used to separate 
 	 * words within a line of text.
@@ -124,7 +127,7 @@
 	    return ((this == ' ') || (this == '\t'));
 	}
 	
-	/* to_upper - Convert lowercase letter to uppercase
+	/** to_upper - Convert lowercase letter to uppercase
 	 * Converts c to its uppercase equivalent if c is a lowercase 
 	 * letter and has an uppercase equivalent. If no such conversion 
 	 * is possible, the value returned is c unchanged.
@@ -138,7 +141,7 @@
 	    return this;
 	}
 	
-	/* to_lower - Convert uppercase letter to lowercase
+	/** to_lower - Convert uppercase letter to lowercase
 	 * Converts c to its lowercase equivalent if c is an uppercase 
 	 * letter and has a lowercase equivalent. If no such conversion 
 	 * is possible, the value returned is c unchanged.
@@ -152,7 +155,7 @@
 	    return this;
 	}
 	
-	/* is_cntrl - Check if character is a control character
+	/** is_cntrl - Check if character is a control character
 	 * Checks whether c is a control character.
 	 *
 	 * A control character is a character that does not occupy a printing position 
@@ -172,7 +175,7 @@
                    (this == 127)) || (this == '\r'));
 	}
 	
-	/* is_print - Check if character is printable
+	/** is_print - Check if character is printable
 	 * Checks whether c is a printable character.
 	 * 
 	 * A printable character is a character that occupies a printing position on a 
@@ -189,7 +192,7 @@
 	    return (!this.is_cntrl);
 	}
 	
-	/* is_graph - Check if character has graphical representation
+	/** is_graph - Check if character has graphical representation
 	 * Checks whether c is a character with graphical representation.
 	 *  
 	 * The characters with graphical representation are all those characters that 
@@ -202,7 +205,7 @@
 	    return ((this.is_print) && (!this.is_space));
 	}
 	
-	/* is_punct - Check if character is a punctuation character
+	/** is_punct - Check if character is a punctuation character
 	 * Checks whether c is a punctuation character.
 	 * 
 	 * The standard "C" locale considers punctuation characters all graphic 
@@ -214,4 +217,4 @@
 	bool is_punct(){
 	    return ((this.is_graph) && (!this.is_alnum));
 	}
-}
+} // class char

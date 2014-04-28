@@ -71,7 +71,7 @@ enum cx_error_code {
     err_missing_left_bracket,
     err_missing_right_bracket,
     err_invalid_index_type,
-    errMissingBEGIN, // deprecated
+    err_expected_scope_res_op,
     err_missing_return,
     err_too_many_subscripts,
     err_invalid_field,
@@ -88,7 +88,9 @@ enum cx_error_code {
     err_missing_single_quote,
     err_invalid_escape_char,
     err_loading_library,
-    err_library_no_init
+    err_library_no_init,
+    err_invalid_namespace,
+    err_invalid_class_def
 };
 
 void cx_error(cx_error_code ec);

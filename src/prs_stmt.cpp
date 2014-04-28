@@ -2,26 +2,6 @@
 #include "parser.h"
 #include "common.h"
 
-//void cx_parser::insert_this_ptr(cx_symtab_node *p_class_id, cx_symtab_node *p_function_id) {
-//    cx_symtab_node *p_this = p_function_id->defn.routine.p_symtab->enter("this", dc_variable);
-//
-//    set_type(p_this->p_type, p_class_id->p_type);
-//    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
-//    
-//    if (!p_var_id) {
-//        p_function_id->defn.routine.locals.p_variable_ids = p_this;
-//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
-//    } else {
-//        while (p_var_id->next__)p_var_id = p_var_id->next__;
-//
-//        p_var_id->next__ = p_this;
-//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
-//    }
-//
-//    p_class_id->defn.has_this_ptr = true;
-//
-//}
-
 void cx_parser::parse_namespace(void) {
     get_token();
     cx_symtab_node *p_namespace_id = search_local(p_token->string__());
@@ -30,8 +10,10 @@ void cx_parser::parse_namespace(void) {
         p_namespace_id = enter_local(p_token->string__(), dc_namespace);
         p_namespace_id->p_type = new cx_type();
         p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
+    } else if (p_namespace_id->defn.how != dc_namespace) {
+        cx_error(err_invalid_namespace);
     }
-    
+
     cx_symtab *p_old_symtab = (cx_symtab *) symtab_stack.get_current_symtab();
 
     symtab_stack.set_scope(++current_nesting_level);
@@ -46,6 +28,34 @@ void cx_parser::parse_namespace(void) {
     symtab_stack.set_scope(--current_nesting_level);
     symtab_stack.set_current_symtab(p_old_symtab);
 }
+
+void cx_parser::parse_class(void) {
+    get_token();
+    cx_symtab_node *p_class_id = search_local(p_token->string__());
+
+    if (p_class_id == nullptr) {
+        p_class_id = enter_local(p_token->string__(), dc_type);
+        p_class_id->p_type = new cx_type();
+        p_class_id->p_type->complex.p_class_scope = new cx_symtab();
+    } else if (p_class_id->defn.how != dc_type) {
+        cx_error(err_invalid_class_def);
+    }
+
+    cx_symtab *p_old_symtab = (cx_symtab *) symtab_stack.get_current_symtab();
+
+    symtab_stack.set_scope(++current_nesting_level);
+    symtab_stack.set_current_symtab(p_class_id->p_type->complex.p_class_scope);
+
+    get_token(); // class ID
+    conditional_get_token_append(tc_left_bracket, err_missing_left_bracket); // open bracket
+
+    parse_statement_list(p_class_id, tc_right_bracket);
+
+    conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+    symtab_stack.set_scope(--current_nesting_level);
+    symtab_stack.set_current_symtab(p_old_symtab);
+}
+
 
 /** parse_statement          parse a statement.
  *
@@ -89,6 +99,8 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
         case tc_pound:
             get_token();
             parse_execute_directive(p_function_id);
+            break;
+        case tc_CLASS: parse_class();
             break;
         case tc_NAMESPACE: parse_namespace();
             break;

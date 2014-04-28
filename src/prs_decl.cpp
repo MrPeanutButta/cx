@@ -33,10 +33,11 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
     cx_symtab_node *p_node = find(p_token->string__());
 
     // if complex then this is an object
-    if (p_node->p_type->form == fc_complex) {
-        parse_complex_type(p_function_id, p_node);
-        // predefined type name found
-    } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex) &&
+    // if (p_node->p_type->form == fc_complex) {
+    //  parse_complex_type(p_function_id, p_node);
+    // predefined type name found
+    //} else 
+    if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex) &&
             (p_node->defn.how != dc_function)) {
 
         get_token();

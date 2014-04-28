@@ -218,11 +218,15 @@ cx_type *cx_parser::parse_factor(void) {
                     get_token_append();
                     p_result_type = p_node->p_type;
                     break;
+                case dc_namespace:
+                    //conditional_get_token_append(tc_colon_colon, err_expected_scope_res_op);
+                    //  p_result_type = parse_variable(p_node);
+                    // break;
                 case dc_variable:
                 case dc_value_parm:
                 case dc_reference:
                 case dc_member:
-                case dc_namespace:
+
                     get_token_append();
                     p_result_type = parse_variable(p_node);
                     break;
@@ -380,6 +384,7 @@ cx_type *cx_parser::parse_factor(void) {
 cx_type *cx_parser::parse_variable(cx_symtab_node* p_id) {
     cx_type *p_result_type = p_id->p_type;
 
+    bool is_namespace = false;
     switch (p_id->defn.how) {
         case dc_variable:
         case dc_value_parm:
@@ -387,8 +392,17 @@ cx_type *cx_parser::parse_variable(cx_symtab_node* p_id) {
         case dc_pointer:
         case dc_function:
         case dc_undefined:
-        case dc_namespace:
         case dc_this:
+            break;
+        case dc_namespace:
+            if (token != tc_colon_colon) {
+                cx_error(err_expected_scope_res_op);
+            }
+            
+            /* TODO
+             * would setup initialization functions here
+             * for namespace variables */
+
             break;
         default:
             p_result_type = p_dummy_type;
