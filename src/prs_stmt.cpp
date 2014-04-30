@@ -2,13 +2,14 @@
 #include "parser.h"
 #include "common.h"
 
-void cx_parser::parse_namespace(void) {
+void cx_parser::parse_namespace(cx_symtab_node *p_function_id) {
     get_token();
     cx_symtab_node *p_namespace_id = search_local(p_token->string__());
 
     if (p_namespace_id == nullptr) {
         p_namespace_id = enter_local(p_token->string__(), dc_namespace);
-        p_namespace_id->p_type = new cx_type();
+        set_type(p_namespace_id->p_type, new cx_type());// = ;
+        p_namespace_id->p_type->form = fc_namespace;
         p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
     } else if (p_namespace_id->defn.how != dc_namespace) {
         cx_error(err_invalid_namespace);
@@ -19,7 +20,9 @@ void cx_parser::parse_namespace(void) {
     symtab_stack.set_scope(++current_nesting_level);
     symtab_stack.set_current_symtab(p_namespace_id->p_type->complex.p_class_scope);
 
+    //icode.put(p_namespace_id); // insert into icode
     get_token(); // namespace ID
+
     conditional_get_token_append(tc_left_bracket, err_missing_left_bracket); // open bracket
 
     parse_statement_list(p_namespace_id, tc_right_bracket);
@@ -27,15 +30,27 @@ void cx_parser::parse_namespace(void) {
     conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
     symtab_stack.set_scope(--current_nesting_level);
     symtab_stack.set_current_symtab(p_old_symtab);
+
+    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
+    if (!p_var_id) {
+        p_function_id->defn.routine.locals.p_variable_ids = p_namespace_id;
+        p_function_id->defn.routine.total_local_size += p_namespace_id->p_type->size;
+    } else {
+        while (p_var_id->next__)p_var_id = p_var_id->next__;
+
+        p_var_id->next__ = p_namespace_id;
+        
+        p_function_id->defn.routine.total_local_size += p_namespace_id->p_type->size;
+    }
 }
 
-void cx_parser::parse_class(void) {
+void cx_parser::parse_class(cx_symtab_node *p_function_id) {
     get_token();
     cx_symtab_node *p_class_id = search_local(p_token->string__());
 
     if (p_class_id == nullptr) {
         p_class_id = enter_local(p_token->string__(), dc_type);
-        p_class_id->p_type = new cx_type();
+        p_class_id->p_type = new cx_type(fc_complex, 0, p_class_id);
         p_class_id->p_type->complex.p_class_scope = new cx_symtab();
     } else if (p_class_id->defn.how != dc_type) {
         cx_error(err_invalid_class_def);
@@ -54,8 +69,18 @@ void cx_parser::parse_class(void) {
     conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
     symtab_stack.set_scope(--current_nesting_level);
     symtab_stack.set_current_symtab(p_old_symtab);
-}
 
+    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
+    if (!p_var_id) {
+        p_function_id->defn.routine.locals.p_variable_ids = p_class_id;
+        p_function_id->defn.routine.total_local_size += p_class_id->p_type->size;
+    } else {
+        while (p_var_id->next__)p_var_id = p_var_id->next__;
+
+        p_var_id->next__ = p_class_id;
+        p_function_id->defn.routine.total_local_size += p_class_id->p_type->size;
+    }
+}
 
 /** parse_statement          parse a statement.
  *
@@ -100,9 +125,9 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
             get_token();
             parse_execute_directive(p_function_id);
             break;
-        case tc_CLASS: parse_class();
+        case tc_CLASS: parse_class(p_function_id);
             break;
-        case tc_NAMESPACE: parse_namespace();
+        case tc_NAMESPACE: parse_namespace(p_function_id);
             break;
         default:
             break;

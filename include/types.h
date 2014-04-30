@@ -41,6 +41,7 @@ enum cx_type_form_code {
     fc_array,
     fc_complex,
     fc_stream,
+    fc_namespace
 };
 
 enum cx_type_code {

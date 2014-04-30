@@ -159,9 +159,9 @@ cx_token *cx_icode::get(void) {
         case tc_dummy:
             break;
         default:
-
-            p_node = nullptr;
-            strcpy(p_token->string, cx_symbol_strings[(int) code]);
+            
+            //p_node = nullptr;
+            //strcpy(p_token->string, cx_symbol_strings[(int) code]);
             break;
     }
 

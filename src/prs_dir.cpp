@@ -145,7 +145,7 @@ void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
                     parser = new cx_parser
                             (new cx_source_buffer(lib_path.c_str()), true);
 
-                    parser->parse();
+                    parser->parse(p_function_id);
                 } catch (...) {
 
                 }

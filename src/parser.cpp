@@ -11,12 +11,12 @@ extern cx_symtab_node *p_program_ptr_id;
  *
  * @return ptr to '__cx_global__' program Id.
  */
-cx_symtab_node *cx_parser::parse(void) {
+cx_symtab_node *cx_parser::parse(cx_symtab_node *p_program_id) {
 
     extern bool cx_dev_debug_flag;
-    cx_symtab_node *p_program_id = nullptr;
+//    cx_symtab_node *p_program_id = nullptr;
 
-    if (!is_module) {
+    if (p_program_id == nullptr) {
         p_program_id = new cx_symtab_node("__cx_global__", dc_program);
         p_program_id->defn.routine.which = func_declared;
         p_program_id->defn.routine.parm_count = 0;
@@ -30,7 +30,7 @@ cx_symtab_node *cx_parser::parse(void) {
         p_program_id->defn.routine.p_symtab = nullptr;
         p_program_id->defn.routine.p_icode = nullptr;
         set_type(p_program_id->p_type, p_integer_type);
-
+        
         p_program_ptr_id = p_program_id;
     }
 

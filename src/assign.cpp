@@ -27,7 +27,10 @@ void cx_executor::execute_assignment(cx_symtab_node *p_target_id) {
       * execute_variable leaves the target address on
       * top of the runtime stack. */
     else if ((p_target_id->defn.how != dc_type)) {
-        if (!token_in(token, tokenlist_assign_ops))get_token();
+
+        if (!token_in(token, tokenlist_assign_ops) &&
+                !token_in(token, tokenlist_subscript_or_field_start))get_token();
+
         p_target_type = execute_variable(p_target_id, true);
 
         if (p_target_type->form != fc_stream) {
@@ -149,10 +152,13 @@ void cx_executor::execute_assignment(cx_symtab_node *p_target_id) {
             break;
     }
 
-    if (p_target_id->defn.how == dc_function) {
-        trace_data_store(p_target_id, *p_target, p_target_type);
-    } else {
-        trace_data_store(p_target_id, *p_target_id->runstack_item, p_target_type);
+    if (p_target_id != nullptr) {
+        if ((p_target_id->defn.how == dc_function) ||
+                (p_target_id->defn.how == dc_namespace)) {
+            trace_data_store(p_target_id, *p_target, p_target_type);
+        } else if (p_target_id->runstack_item != nullptr) {
+            trace_data_store(p_target_id, *p_target_id->runstack_item, p_target_type);
+        }
     }
 }
 

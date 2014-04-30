@@ -50,8 +50,8 @@ class cx_parser {
     void parse_constant_declaration(cx_symtab_node *p_function_id);
     void parse_constant(cx_symtab_node *p_const_id);
     void parse_identifier_constant(cx_symtab_node *p_id1, cx_token_code sign);
-    void parse_namespace(void);
-    void parse_class(void);
+    void parse_namespace(cx_symtab_node *p_function_id);
+    void parse_class(cx_symtab_node *p_function_id);
 
     void insert_this_ptr(cx_symtab_node *p_class_id, cx_symtab_node *p_function_id);
 
@@ -190,7 +190,7 @@ public:
         delete p_scanner;
     }
 
-    cx_symtab_node *parse(void);
+    cx_symtab_node *parse(cx_symtab_node *p_program_id = nullptr);
 };
 
 #endif

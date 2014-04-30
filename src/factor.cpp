@@ -317,13 +317,8 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
             p_field_id->runstack_item = top();
         }
     } else if (p_field_id->defn.how == dc_variable) {
-
-        /*if (p_field_id->runstack_item == nullptr){
-                p_field_id->runstack_item = new cx_stack_item(0);	// initialize new value to zero
-        }*/
-
         push((void *) p_field_id->runstack_item);
-        p_field_id->runstack_item = top();
+        //p_field_id->runstack_item = top();
         p_result_type = p_field_id->p_type;
 
         get_token();

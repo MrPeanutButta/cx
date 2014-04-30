@@ -3,6 +3,7 @@ Conditionally executes code.
 Used where code needs to be executed only if some condition is present.
 
 ### Syntax
+
 -
 **if** **(** *condition* **)** *statement_true*
 
