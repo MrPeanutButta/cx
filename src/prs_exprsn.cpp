@@ -412,7 +412,7 @@ cx_type *cx_parser::parse_variable(cx_symtab_node* p_id) {
 
     //  [ or . : Loop to parse any subscripts and fields.
     int done_flag = false;
-    cx_type *p_prev_type = p_result_type;
+    //cx_type *p_prev_type = p_result_type;
     do {
         switch (token) {
 
@@ -422,8 +422,8 @@ cx_type *cx_parser::parse_variable(cx_symtab_node* p_id) {
 
             case tc_dot:
             case tc_colon_colon:
-                p_result_type = parse_field(p_id, p_prev_type);
-                p_prev_type = p_result_type;
+				p_result_type = parse_field(p_id, p_result_type);
+               // p_prev_type = p_result_type;
                 break;
 
             default: done_flag = true;

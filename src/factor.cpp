@@ -42,7 +42,6 @@ cx_type *cx_executor::execute_factor(void) {
                     get_token();
                     break;
                 default:
-                    // if (p_node->p_type->form != fc_stream) {
                     p_id = p_node;
                     get_token();
 
@@ -199,7 +198,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
 
             case tc_dot:
             case tc_colon_colon:
-                p_type = execute_field(p_prev_type);
+				p_type = execute_field(p_type);
                 break;
             default: done_flag = true;
         }
@@ -309,6 +308,9 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
         } else {
 
             p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item = top();
+
+			char *p = (char *)p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item->basic_types.addr__;
+
             p_result_type = execute_function_call(p_field_id);
             cx_stack_item *address = top();
             pop();

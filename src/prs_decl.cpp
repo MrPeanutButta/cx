@@ -101,8 +101,8 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                         p_var_id->next__ = p_new_id;
                         p_function_id->defn.routine.total_local_size += p_new_id->p_type->size;
                     }
-
                 }
+
                 // add function to routine list
             } else if (p_new_id->defn.how == dc_function) {
                 if (p_function_id) {
@@ -115,7 +115,6 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                         p_fun_id->next__ = p_new_id;
                     }
                 }
-
             }
 
         } while (token == tc_comma);

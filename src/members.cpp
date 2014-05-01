@@ -6,6 +6,10 @@
 cx_symtab *std_type_members = nullptr;
 
 void init_std_members(void) {
+
+	// allocate std member functions for basic types
+	std_type_members = new cx_symtab;
+
     // initialize after basic types are init
 
     struct member {
@@ -20,9 +24,9 @@ void init_std_members(void) {
         { nullptr, "length", func_std_member, &cx_std_type_members::length,
             p_integer_type},
         { nullptr, "to_str", func_std_member, &cx_std_type_members::to_str,
-            new cx_type(fc_array, 0, nullptr)},
+		new cx_type(fc_array, 0, nullptr, std_type_members) },
         { nullptr, "to_wstr", func_std_member, &cx_std_type_members::to_wstr,
-            new cx_type(fc_array, 0, nullptr)},
+		new cx_type(fc_array, 0, nullptr, std_type_members) },
         { nullptr, "to_int", func_std_member, &cx_std_type_members::to_int,
             p_integer_type},
         { nullptr, "to_chr", func_std_member, &cx_std_type_members::to_chr,
@@ -36,9 +40,6 @@ void init_std_members(void) {
         { nullptr, "to_byte", func_std_member, &cx_std_type_members::to_byte,
             p_uint8_type}
     };
-
-    // allocate std member functions for basic types
-    std_type_members = new cx_symtab;
 
     p_integer_type->complex.p_class_scope = std_type_members;
     p_uint8_type->complex.p_class_scope = std_type_members;

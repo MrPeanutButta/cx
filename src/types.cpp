@@ -37,6 +37,7 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
             array.element_count = 0;
             array.min_index = 0;
             array.p_index_type = p_integer_type;
+			this->complex.p_class_scope = p_members;
             break;
         default:
             break;
@@ -45,11 +46,12 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
     std::string type_name = "dummy";
     is_temp_value = false;
 
-    if (p_type_id != nullptr)
-        type_name = p_type_id->string__();
+    if (p_type_id != nullptr) type_name = p_type_id->string__();
 
     if (form != fc_stream) {
-        this->complex.p_class_scope = std_type_members;
+		if (this->complex.p_class_scope == nullptr){
+			this->complex.p_class_scope = std_type_members;
+		}
 
         if (form != fc_array) {
             //this->complex.p_class_scope = std_type_members;

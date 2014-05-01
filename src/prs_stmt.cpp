@@ -11,6 +11,13 @@ void cx_parser::parse_namespace(cx_symtab_node *p_function_id) {
         set_type(p_namespace_id->p_type, new cx_type());// = ;
         p_namespace_id->p_type->form = fc_namespace;
         p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
+
+		p_namespace_id->defn.routine.locals.p_parms_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_constant_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_type_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_variable_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_function_ids = nullptr;
+
     } else if (p_namespace_id->defn.how != dc_namespace) {
         cx_error(err_invalid_namespace);
     }
@@ -20,7 +27,6 @@ void cx_parser::parse_namespace(cx_symtab_node *p_function_id) {
     symtab_stack.set_scope(++current_nesting_level);
     symtab_stack.set_current_symtab(p_namespace_id->p_type->complex.p_class_scope);
 
-    //icode.put(p_namespace_id); // insert into icode
     get_token(); // namespace ID
 
     conditional_get_token_append(tc_left_bracket, err_missing_left_bracket); // open bracket
@@ -52,6 +58,13 @@ void cx_parser::parse_class(cx_symtab_node *p_function_id) {
         p_class_id = enter_local(p_token->string__(), dc_type);
         p_class_id->p_type = new cx_type(fc_complex, 0, p_class_id);
         p_class_id->p_type->complex.p_class_scope = new cx_symtab();
+
+		p_class_id->defn.routine.locals.p_parms_ids = nullptr;
+		p_class_id->defn.routine.locals.p_constant_ids = nullptr;
+		p_class_id->defn.routine.locals.p_type_ids = nullptr;
+		p_class_id->defn.routine.locals.p_variable_ids = nullptr;
+		p_class_id->defn.routine.locals.p_function_ids = nullptr;
+
     } else if (p_class_id->defn.how != dc_type) {
         cx_error(err_invalid_class_def);
     }

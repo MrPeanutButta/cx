@@ -32,12 +32,8 @@
 	 * @return true if hex digit, false if not hex digit. */
 	
 	bool is_xdigit(){
-	    return  ((this == 'a') || (this == 'A') ||
-	            (this == 'b') || (this == 'B') ||
-	            (this == 'c') || (this == 'C') ||
-	            (this == 'd') || (this == 'D') ||
-	            (this == 'e') || (this == 'E') ||
-	            (this == 'f') || (this == 'F') ||
+	    return  (((this >= 'a') && (this <= 'f')) ||
+	            ((this >= 'A') || (this == 'F')) ||
 	            (this.is_digit));
 	}
 	
