@@ -103,7 +103,7 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
                 ss << mem->basic_types.char__ << '\0';
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << '\0';
+                ss << mem->basic_types.wchar__ << L'\0';
                 break;
             case cx_float:
                 ss << mem->basic_types.float__ << '\0';
@@ -118,35 +118,35 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
         }
     } else {
         mem = (cx_stack_item *) p_stack->top();
-        
+
         ss << "[";
-        
+
         void *index = (char *) mem->basic_types.addr__;
         for (int i = 0; i < p_type->array.element_count; ++i) {
 
             switch (p_type->base_type()->type_code) {
                 case cx_int:
-                    ss << ((int *)index)[i];
+                    ss << ((int *) index)[i];
                     break;
                 case cx_char:
-                    ss << ((char *)index)[i];
+                    ss << ((char *) index)[i];
                     break;
                 case cx_wchar:
                     ss << ((wchar_t *)index)[i];
                     break;
                 case cx_float:
-                    ss << ((float *)index)[i];
+                    ss << ((float *) index)[i];
                     break;
                 case cx_bool:
                     ss << (((bool *)index)[i] ? "true" : "false");
                     break;
                 case cx_uint8:
-                    ss << ((uint8_t *)index)[i];
+                    ss << ((uint8_t *) index)[i];
                     break;
                 default:break;
             }
-            
-            if(i + 1 < p_type->array.element_count) ss << ", ";
+
+            if (i + 1 < p_type->array.element_count) ss << ", ";
         }
 
         ss << "]";
@@ -200,8 +200,41 @@ cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack,
                 break;
             default:break;
         }
-    }
+    } else {
+        mem = (cx_stack_item *) p_stack->top();
 
+        ss << "[";
+
+        void *index = (wchar_t *) mem->basic_types.addr__;
+        for (int i = 0; i < p_type->array.element_count; ++i) {
+
+            switch (p_type->base_type()->type_code) {
+                case cx_int:
+                    ss << ((int *) index)[i];
+                    break;
+                case cx_char:
+                    ss << ((char *) index)[i];
+                    break;
+                case cx_wchar:
+                    ss << ((wchar_t *)index)[i];
+                    break;
+                case cx_float:
+                    ss << ((float *) index)[i];
+                    break;
+                case cx_bool:
+                    ss << (((bool *)index)[i] ? L"true" : L"false");
+                    break;
+                case cx_uint8:
+                    ss << ((uint8_t *) index)[i];
+                    break;
+                default:break;
+            }
+
+            if (i + 1 < p_type->array.element_count) ss << L", ";
+        }
+
+        ss << L"]";
+    }
     p_stack->pop();
 
     const int size = ss.str().size() - 1;
@@ -219,8 +252,8 @@ cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack,
     return p_wstr;
 }
 
-cx_type *cx_std_type_members::to_int(cx_runtime_stack *p_stack,
-        cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_int(cx_runtime_stack *p_stack,
+        cx_symtab_node *p_node, const cx_type * p_type) {
 
     std::stringstream ss;
     ss.clear();
@@ -271,27 +304,27 @@ cx_type *cx_std_type_members::to_int(cx_runtime_stack *p_stack,
     return p_integer_type;
 }
 
-cx_type *cx_std_type_members::to_chr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_chr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::to_flt(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_flt(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::to_bool(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_bool(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::to_wchr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_wchr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::to_byte(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_byte(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
