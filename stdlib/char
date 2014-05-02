@@ -32,9 +32,10 @@
 	 * @return true if hex digit, false if not hex digit. */
 	
 	bool is_xdigit(){
-	    return  (((this >= 'a') && (this <= 'f')) ||
-	            ((this >= 'A') || (this == 'F')) ||
-	            (this.is_digit));
+            if (this.is_digit) return true;
+            if ((this >= 'A') && (this <= 'F')) return true;
+            if ((this >= 'a') && (this <= 'f')) return true;
+            return false;
 	}
 	
 	/** is_lower - Check if character is lowercase letter
@@ -71,8 +72,9 @@
 	 * @return true if alphabetic, false if anything else. */
 	
 	bool is_alpha(){
-	    return (((this >= 'A') && (this <= 'Z')) || 
-                    ((this >= 'a') && (this <= 'z')));
+            if((this >= 'A') && (this <= 'Z')) return true;
+            if((this >= 'a') && (this <= 'z')) return true;
+	    return false;
 	}
 	
 	/** is_alnum - Check if character is alphanumeric
@@ -103,9 +105,10 @@
 	 * @return true if whitespace, false if anything else. */
 	
 	bool is_space(){
-	    return ((this == ' ') || (this == '\t') ||
-	            (this == '\n')|| (this == '\v') ||
-	            (this == '\f')|| (this == '\r'));
+            if((this == ' ') || (this == '\t')) return true;
+            if((this == '\n')|| (this == '\v')) return true;
+            if((this == '\f')|| (this == '\r')) return true;
+	    return false;
 	}
 	
 	/** is_blank - Check if character is blank
@@ -133,7 +136,6 @@
 	
 	char to_upper(){
 	    if(this.is_lower) return (this - 32);
-	
 	    return this;
 	}
 	
@@ -147,7 +149,6 @@
 	
 	char to_lower(){
 	    if(this.is_upper) return (this + 32);
-	
 	    return this;
 	}
 	
@@ -167,8 +168,9 @@
 	
 	bool is_cntrl(){
             // need c == '\r' in windows
-	    return ((((this >= 0) && (this <= 31)) || 
-                   (this == 127)) || (this == '\r'));
+            if((this >= 0) && (this <= 31)) return true;
+            if((this == 127) || (this == '\r')) return true;
+	    return false;
 	}
 	
 	/** is_print - Check if character is printable

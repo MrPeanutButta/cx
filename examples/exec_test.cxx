@@ -5,16 +5,16 @@
  */
 int main () {
 
-    char *c = "some long ass string to_str splat";
-	char *a = c.to_str;
-
-	for (int i = 0; i < a.length; i++){
-		if (a[i].is_xdigit) {
-			io::puts(a[i].to_upper.to_str);
-		}
-	}
-
-    //io::puts(a.to_str.length.to_str);
- 
+    char *c = "s7o5me lvbvvon1g asbs st5rdding taao_s6tr spvvf0lat";
+    char *result;
+    
+    for (int i = 0; i < c.length; i++)
+        if (c[i].is_digit)
+            result += c[i];
+    
+    int a = result.to_int * 2;
+    
+    io::puts(a.to_str);
+    
     return 0;
 }
