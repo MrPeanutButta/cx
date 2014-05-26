@@ -243,8 +243,9 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 }
 
                 void *p_source = top()->basic_types.addr__;
-                
-                memset(p_target_address, 0,size + 1);
+				char *t = (char *)p_source;
+
+                //memset(p_target_address, 0,size + 1);
                 memcpy(p_target_address, p_source, size + 1);
 
                 char *p_array = (char *) p_target_address;

@@ -87,7 +87,9 @@
 	 * @return true if alphanumeric, false if anything else. */
 	
 	bool is_alnum(){
-	    return (this.is_digit || this.is_alpha);
+		if(this.is_digit) return true;
+		if(this.is_alpha) return true;
+	    return false;
 	}
 	
 	/** is_space - Check if character is a white-space
@@ -105,9 +107,12 @@
 	 * @return true if whitespace, false if anything else. */
 	
 	bool is_space(){
-            if((this == ' ') || (this == '\t')) return true;
-            if((this == '\n')|| (this == '\v')) return true;
-            if((this == '\f')|| (this == '\r')) return true;
+		if(this == ' ') return true;
+		if(this == '\t') return true;
+		if(this == '\n') return true;
+		if(this == '\v') return true;
+		if(this == '\f') return true;
+		if(this == '\r') return true;
 	    return false;
 	}
 	
@@ -123,7 +128,9 @@
 	 * @return true if blank, false if anything else. */
 	
 	bool is_blank(){
-	    return ((this == ' ') || (this == '\t'));
+		if(this == ' ') return true;
+		if(this == '\t') return true;
+	    return false;
 	}
 	
 	/** to_upper - Convert lowercase letter to uppercase
@@ -167,9 +174,10 @@
 	 * @return true if control character, false if not. */
 	
 	bool is_cntrl(){
-            // need c == '\r' in windows
-            if((this >= 0) && (this <= 31)) return true;
-            if((this == 127) || (this == '\r')) return true;
+		// need c == '\r' in windows
+		if((this >= 0) && (this <= 31)) return true;
+		if(this == 127) return true;
+		if(this == '\r') return true;
 	    return false;
 	}
 	
@@ -200,7 +208,9 @@
 	 * @return true if graphical character, false if not. */
 	
 	bool is_graph(){
-	    return ((this.is_print) && (!this.is_space));
+		if(this.is_print) return true;
+		if(!this.is_space) return true;
+	    return false;
 	}
 	
 	/** is_punct - Check if character is a punctuation character
@@ -213,6 +223,8 @@
 	 * @return true if punctuation character, false if not. */
 	
 	bool is_punct(){
-	    return ((this.is_graph) && (!this.is_alnum));
+		if(this.is_graph) return true;
+		if(!this.is_alnum) return true;
+		return false;
 	}
 } // class char
