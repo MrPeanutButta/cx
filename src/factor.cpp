@@ -315,7 +315,8 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
                 if (p_type->form == fc_stream) {
                     p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_node =
                             (cx_symtab_node *) top()->basic_types.addr__;
-                } else {
+				}
+				else if (p_field_id->defn.routine.locals.p_variable_ids != nullptr) {
                     p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item = top();
                 }
             }

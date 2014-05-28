@@ -11,6 +11,8 @@ int main() {
 
     io::file in;
 
+	t test;
+
     if (!in.open("test.txt", "r")) {
         io::perror("open failed");
         return 0;
@@ -24,7 +26,7 @@ int main() {
     char *c = in.readfile();
     in.close;
     
-    io::puts(c);
+    io::puts(test.is_digit.to_str);
     
     for (int i = 0; i < c.length; i++) {
         if (c[i].is_digit) numbers++;

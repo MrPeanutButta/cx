@@ -187,7 +187,7 @@ namespace io {
         char *readfile() {
             char *str;
 
-            while (!this.eof()) {
+            while (!this.eof) {
                 str += this.read(1, 50000);
             }
 

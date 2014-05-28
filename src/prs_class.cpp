@@ -2,7 +2,9 @@
 #include "common.h"
 
 void inherit(cx_symtab_node *dst, const cx_symtab_node *src) {
+	if (src->p_type->complex.p_class_scope == nullptr) return;
 
+	src->p_type->complex.p_class_scope->copy_into(dst->p_type->complex.p_class_scope);
 }
 
 void cx_parser::parse_class(cx_symtab_node *p_function_id) {

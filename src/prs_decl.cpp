@@ -46,8 +46,8 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
 
 	} while (p_node->defn.how == dc_namespace);
 	
-	if (((p_node->defn.how == dc_type) || (p_node->defn.how == dc_namespace)) && 
-		(p_node->p_type->form != fc_complex) && (p_node->defn.how != dc_function)) {
+	//(p_node->p_type->form != fc_complex) &&
+	if (((p_node->defn.how == dc_type) || (p_node->defn.how == dc_namespace)) && (p_node->defn.how != dc_function)) {
 
         get_token();
 

@@ -193,6 +193,9 @@ public:
         root__ = nullptr;
     }
 
+	// returns root node of tree
+	void copy_into(cx_symtab *p_dst) const;
+
     cx_symtab_node *search(const char *p_string) const;
     cx_symtab_node *enter(const char *p_string, cx_define_code dc = dc_undefined);
     cx_symtab_node *enter_new(const char *p_string, cx_define_code dc = dc_undefined);

@@ -54,6 +54,12 @@ void init_std_members(void) {
         mbr.p_node->defn.routine.parm_count = 0;
         mbr.p_node->defn.routine.total_parm_size = 0;
 
+		mbr.p_node->defn.routine.locals.p_variable_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_constant_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_function_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_parms_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_type_ids = nullptr;
+
         set_type(mbr.p_node->p_type, mbr.p_type);
         mbr.p_node->defn.routine.ext_function = mbr.member_call;
         mbr.p_node->defn.routine.which = mbr.func_code;

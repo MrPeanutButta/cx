@@ -585,6 +585,14 @@ cx_type *cx_perror(cx_runtime_stack *p_stack,
     return cx_function_id->p_type;
 }
 
+void init_(cx_symtab_node *p_node){
+	p_node->defn.routine.locals.p_variable_ids = nullptr;
+	p_node->defn.routine.locals.p_constant_ids = nullptr;
+	p_node->defn.routine.locals.p_function_ids = nullptr;
+	p_node->defn.routine.locals.p_parms_ids = nullptr;
+	p_node->defn.routine.locals.p_type_ids = nullptr;
+}
+
 STDIO_API
 void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
@@ -663,6 +671,8 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
     for (auto &mbr : members) {
         mbr.p_node = std_stream_members->enter(mbr.name.c_str(), dc_function);
+
+		init_(mbr.p_node);
 
         mbr.p_node->defn.routine.which = func_std_member;
         mbr.p_node->defn.routine.ext_function = mbr.ext_f;
@@ -768,6 +778,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
     }
 
     cx_symtab_node *p_remove = p_symtab->enter("remove", dc_function);
+	init_(p_remove);
     p_remove->defn.routine.which = func_standard;
     set_type(p_remove->p_type, (cx_type *) ct[cx_bool]);
     p_remove->defn.routine.parm_count = 1;
@@ -778,6 +789,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
     p_remove->defn.routine.ext_function = cx_remove;
 
     cx_symtab_node *p_perror = p_symtab->enter("perror", dc_function);
+	init_(p_perror);
     p_perror->defn.routine.which = func_standard;
     set_type(p_perror->p_type, (cx_type *) ct[cx_void]);
     p_perror->defn.routine.parm_count = 1;
@@ -788,6 +800,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
     p_perror->defn.routine.ext_function = cx_perror;
 
     cx_symtab_node *p_rename = p_symtab->enter("rename", dc_function);
+	init_(p_rename);
     p_rename->defn.routine.which = func_standard;
     set_type(p_rename->p_type, (cx_type *) ct[cx_bool]);
     p_rename->defn.routine.parm_count = 2;
@@ -803,6 +816,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
     p_rename->defn.routine.ext_function = cx_rename;
 
     cx_symtab_node *p_tmpnam = p_symtab->enter("tmpnam", dc_function);
+	init_(p_tmpnam);
     p_tmpnam->defn.routine.which = func_standard;
     set_type(p_tmpnam->p_type, new cx_type(fc_array, 0, nullptr));
     set_type(p_tmpnam->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
