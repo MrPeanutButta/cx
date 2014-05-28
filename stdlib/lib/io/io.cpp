@@ -178,7 +178,7 @@ cx_type *cx_read(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // read buffer
-    unsigned char *buffer = (unsigned char *) std::malloc((size * count) + 1);
+    char *buffer = (char *) std::malloc((size * count) + 1);
     memset(buffer, 0, (size * count) + 1);
 
     // get node
@@ -758,7 +758,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
 
         if (mbr.name == "read") {
-            set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_uint8]);
+            set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
         } else if (mbr.name == "gets") {
             set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
         } else if (mbr.name == "getws") {

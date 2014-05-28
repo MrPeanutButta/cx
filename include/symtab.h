@@ -66,7 +66,7 @@ public:
     bool is_this_ptr;
     
     struct {
-        //std::unique_ptr<cx_symtab_node> p_node;
+        cx_symtab_node *p_node;
         cx_stack_item *p_stack_item;
     } this_ptr;
 

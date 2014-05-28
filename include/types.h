@@ -151,10 +151,12 @@ public:
 
     friend void check_relational_op_operands(const cx_type *p_type1,
             const cx_type *p_type2);
+    
     friend void check_integer_or_real(const cx_type *p_type1,
-            const cx_type *p_type2 = nullptr);
+            const cx_type *p_type2);
+    
     friend void check_boolean(const cx_type *p_type1,
-            const cx_type *p_type2 = nullptr);
+            const cx_type *p_type2);
     friend void check_assignment_type_compatible(const cx_type *p_target_type,
             const cx_type *p_value_type,
             cx_error_code ec);

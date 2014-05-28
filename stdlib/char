@@ -9,222 +9,224 @@
  * individual characters. These functions extend the basic char type
  * as member functions */
 
- /// Basic char type class extension
- class char {
-	
-	/** is_digit - Check if character is decimal digit
-	 * Checks whether c is a decimal digit character.
-	 * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
-	 *
-	 * @param this : char to test if digit.
-	 * @return true if digit, false if anything else. */
-	 
-	bool is_digit(){
-	    return ((this >= '0') && (this <= '9'));
-	}
-	
-	/** is_xdigit - Check if character is hexadecimal digit
-	 * Checks whether c is a hexdecimal digit character.
-	 * Hexadecimal digits are any of: 
-	 * 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
-	 *
-	 * @param this : char to test if hex digit.
-	 * @return true if hex digit, false if not hex digit. */
-	
-	bool is_xdigit(){
-            if (this.is_digit) return true;
-            if ((this >= 'A') && (this <= 'F')) return true;
-            if ((this >= 'a') && (this <= 'f')) return true;
-            return false;
-	}
-	
-	/** is_lower - Check if character is lowercase letter
-	 * Checks whether c is a lowercase letter.
-	 * A lowercase letter is any of: 
-	 * a b c d e f g h i j k l m n o p q r s t u v w x y z
-	 *
-	 * @param this : char to test if lowercase.
-	 * @return true if lowercase, false if anything else (including digits). */
-	
-	bool is_lower(){
-	    return ((this >= 'a') && (this <= 'z'));
-	}
-	
-	/** is_upper - Check if character is uppercase letter
-	 * Checks whether c is a uppercase letter.
-	 * A uppercase letter is any of: 
-	 * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
-	 *
-	 * @param this : char to test if uppercase.
-	 * @return true if uppercase, false if anything else (including digits). */
-	
-	bool is_upper(){
-	    return ((this >= 'A') && (this <= 'Z'));
-	}
-	
-	/** is_alpha - Check if character is alphabetic
-	 * Checks whether c is an alphabetic letter.
-	 * A letter is any of: 
-	 * a b c d e f g h i j k l m n o p q r s t u v w x y z
-	 * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
-	 *
-	 * @param this : char to test if alphabetic.
-	 * @return true if alphabetic, false if anything else. */
-	
-	bool is_alpha(){
-            if((this >= 'A') && (this <= 'Z')) return true;
-            if((this >= 'a') && (this <= 'z')) return true;
-	    return false;
-	}
-	
-	/** is_alnum - Check if character is alphanumeric
-	 * Checks whether c is either a decimal digit or an 
-	 * uppercase or lowercase letter.
-	 * The result is true if either is_alpha or is_digit 
-	 * would also return true.
-	 *
-	 * @param this : char to test if alphanumeric.
-	 * @return true if alphanumeric, false if anything else. */
-	
-	bool is_alnum(){
-		if(this.is_digit) return true;
-		if(this.is_alpha) return true;
-	    return false;
-	}
-	
-	/** is_space - Check if character is a white-space
-	 * Checks whether c is a white-space character.
-	 *
-	 * For the "C" locale, white-space characters are any of:
-	 * ' '	(0x20)	space (SPC)
-	 * '\t'	(0x09)	horizontal tab (TAB)
-	 * '\n'	(0x0a)	newline (LF)
-	 * '\v'	(0x0b)	vertical tab (VT)
-	 * '\f'	(0x0c)	feed (FF)
-	 * '\r'	(0x0d)	carriage return (CR)
-	 *
-	 * @param this : char to test if whitespace.
-	 * @return true if whitespace, false if anything else. */
-	
-	bool is_space(){
-		if(this == ' ') return true;
-		if(this == '\t') return true;
-		if(this == '\n') return true;
-		if(this == '\v') return true;
-		if(this == '\f') return true;
-		if(this == '\r') return true;
-	    return false;
-	}
-	
-	/** is_blank - Check if character is blank
-	 * Checks whether c is a blank character.
-	 * A blank character is a space character used to separate 
-	 * words within a line of text.
-	 *
-	 * The standard "C" locale considers blank characters the 
-	 * tab character ('\t') and the space character (' ').
-	 *
-	 * @param this : char to test if blank.
-	 * @return true if blank, false if anything else. */
-	
-	bool is_blank(){
-		if(this == ' ') return true;
-		if(this == '\t') return true;
-	    return false;
-	}
-	
-	/** to_upper - Convert lowercase letter to uppercase
-	 * Converts c to its uppercase equivalent if c is a lowercase 
-	 * letter and has an uppercase equivalent. If no such conversion 
-	 * is possible, the value returned is c unchanged.
-	 *
-	 * @param this : char to uppercase.
-	 * @return uppercase if possible, c unchanged if anything else. */
-	
-	char to_upper(){
-	    if(this.is_lower) return (this - 32);
-	    return this;
-	}
-	
-	/** to_lower - Convert uppercase letter to lowercase
-	 * Converts c to its lowercase equivalent if c is an uppercase 
-	 * letter and has a lowercase equivalent. If no such conversion 
-	 * is possible, the value returned is c unchanged.
-	 *
-	 * @param this : char to lowercase.
-	 * @return lowercase if possible, c unchanged if anything else. */
-	
-	char to_lower(){
-	    if(this.is_upper) return (this + 32);
-	    return this;
-	}
-	
-	/** is_cntrl - Check if character is a control character
-	 * Checks whether c is a control character.
-	 *
-	 * A control character is a character that does not occupy a printing position 
-	 * on a display (this is the opposite of a printable character, checked with 
-	 * is_print).
-	 * 
-	 * For the standard ASCII character set (used by the "C" locale), control 
-	 * characters are those between ASCII codes 0x00 (NUL) and 0x1f (US), 
-	 * plus 0x7f (DEL).
-	 *
-	 * @param : character to be checked.
-	 * @return true if control character, false if not. */
-	
-	bool is_cntrl(){
-		// need c == '\r' in windows
-		if((this >= 0) && (this <= 31)) return true;
-		if(this == 127) return true;
-		if(this == '\r') return true;
-	    return false;
-	}
-	
-	/** is_print - Check if character is printable
-	 * Checks whether c is a printable character.
-	 * 
-	 * A printable character is a character that occupies a printing position on a 
-	 * display (this is the opposite of a control character, checked with is_cntrl).
-	 * 
-	 * For the standard ASCII character set (used by the "C" locale), printing 
-	 * characters are all with an ASCII code greater than 0x1f (US), except 
-	 * 0x7f (DEL).
-	 *
-	 * @param : character to be checked.
-	 * @return true if printable character, false if not. */
-	
-	bool is_print(){
-	    return (!this.is_cntrl);
-	}
-	
-	/** is_graph - Check if character has graphical representation
-	 * Checks whether c is a character with graphical representation.
-	 *  
-	 * The characters with graphical representation are all those characters that 
-	 * can be printed (as determined by is_print) except the space character (' ').
-	 *
-	 * @param : character to be checked.
-	 * @return true if graphical character, false if not. */
-	
-	bool is_graph(){
-		if(this.is_print) return true;
-		if(!this.is_space) return true;
-	    return false;
-	}
-	
-	/** is_punct - Check if character is a punctuation character
-	 * Checks whether c is a punctuation character.
-	 * 
-	 * The standard "C" locale considers punctuation characters all graphic 
-	 * characters (as in is_graph) that are not alphanumeric (as in is_alnum).
-	 *
-	 * @param : character to be checked.
-	 * @return true if punctuation character, false if not. */
-	
-	bool is_punct(){
-		if(this.is_graph) return true;
-		if(!this.is_alnum) return true;
-		return false;
-	}
-} // class char
+/// Basic char type class extension
+
+class char {
+
+    /** is_digit - Check if character is decimal digit
+     * Checks whether c is a decimal digit character.
+     * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
+     *
+     * @param this : char to test if digit.
+     * @return true if digit, false if anything else. */
+
+    bool is_digit() {
+        return ((this >= '0') && (this <= '9'));
+    }
+
+    /** is_xdigit - Check if character is hexadecimal digit
+     * Checks whether c is a hexdecimal digit character.
+     * Hexadecimal digits are any of: 
+     * 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+     *
+     * @param this : char to test if hex digit.
+     * @return true if hex digit, false if not hex digit. */
+
+    bool is_xdigit() {
+        if (this.is_digit) return true;
+        if ((this >= 'A') && (this <= 'F')) return true;
+        if ((this >= 'a') && (this <= 'f')) return true;
+        return false;
+    }
+
+    /** is_lower - Check if character is lowercase letter
+     * Checks whether c is a lowercase letter.
+     * A lowercase letter is any of: 
+     * a b c d e f g h i j k l m n o p q r s t u v w x y z
+     *
+     * @param this : char to test if lowercase.
+     * @return true if lowercase, false if anything else (including digits). */
+
+    bool is_lower() {
+        return ((this >= 'a') && (this <= 'z'));
+    }
+
+    /** is_upper - Check if character is uppercase letter
+     * Checks whether c is a uppercase letter.
+     * A uppercase letter is any of: 
+     * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
+     *
+     * @param this : char to test if uppercase.
+     * @return true if uppercase, false if anything else (including digits). */
+
+    bool is_upper() {
+        return ((this >= 'A') && (this <= 'Z'));
+    }
+
+    /** is_alpha - Check if character is alphabetic
+     * Checks whether c is an alphabetic letter.
+     * A letter is any of: 
+     * a b c d e f g h i j k l m n o p q r s t u v w x y z
+     * A B C D E G F H I J K L M N O P Q R S T U V W X Y Z
+     *
+     * @param this : char to test if alphabetic.
+     * @return true if alphabetic, false if anything else. */
+
+    bool is_alpha() {
+        if ((this >= 'A') && (this <= 'Z')) return true;
+        if ((this >= 'a') && (this <= 'z')) return true;
+        return false;
+    }
+
+    /** is_alnum - Check if character is alphanumeric
+     * Checks whether c is either a decimal digit or an 
+     * uppercase or lowercase letter.
+     * The result is true if either is_alpha or is_digit 
+     * would also return true.
+     *
+     * @param this : char to test if alphanumeric.
+     * @return true if alphanumeric, false if anything else. */
+
+    bool is_alnum() {
+        if (this.is_digit) return true;
+        if (this.is_alpha) return true;
+        return false;
+    }
+
+    /** is_space - Check if character is a white-space
+     * Checks whether c is a white-space character.
+     *
+     * For the "C" locale, white-space characters are any of:
+     * ' '	(0x20)	space (SPC)
+     * '\t'	(0x09)	horizontal tab (TAB)
+     * '\n'	(0x0a)	newline (LF)
+     * '\v'	(0x0b)	vertical tab (VT)
+     * '\f'	(0x0c)	feed (FF)
+     * '\r'	(0x0d)	carriage return (CR)
+     *
+     * @param this : char to test if whitespace.
+     * @return true if whitespace, false if anything else. */
+
+    bool is_space() {
+        if (this == ' ') return true;
+        if (this == '\t') return true;
+        if (this == '\n') return true;
+        if (this == '\v') return true;
+        if (this == '\f') return true;
+        if (this == '\r') return true;
+        return false;
+    }
+
+    /** is_blank - Check if character is blank
+     * Checks whether c is a blank character.
+     * A blank character is a space character used to separate 
+     * words within a line of text.
+     *
+     * The standard "C" locale considers blank characters the 
+     * tab character ('\t') and the space character (' ').
+     *
+     * @param this : char to test if blank.
+     * @return true if blank, false if anything else. */
+
+    bool is_blank() {
+        if (this == ' ') return true;
+        if (this == '\t') return true;
+        return false;
+    }
+
+    /** to_upper - Convert lowercase letter to uppercase
+     * Converts c to its uppercase equivalent if c is a lowercase 
+     * letter and has an uppercase equivalent. If no such conversion 
+     * is possible, the value returned is c unchanged.
+     *
+     * @param this : char to uppercase.
+     * @return uppercase if possible, c unchanged if anything else. */
+
+    char to_upper() {
+        if (this.is_lower) return (this - 32);
+        return this;
+    }
+
+    /** to_lower - Convert uppercase letter to lowercase
+     * Converts c to its lowercase equivalent if c is an uppercase 
+     * letter and has a lowercase equivalent. If no such conversion 
+     * is possible, the value returned is c unchanged.
+     *
+     * @param this : char to lowercase.
+     * @return lowercase if possible, c unchanged if anything else. */
+
+    char to_lower() {
+        if (this.is_upper) return (this + 32);
+        return this;
+    }
+
+    /** is_cntrl - Check if character is a control character
+     * Checks whether c is a control character.
+     *
+     * A control character is a character that does not occupy a printing position 
+     * on a display (this is the opposite of a printable character, checked with 
+     * is_print).
+     * 
+     * For the standard ASCII character set (used by the "C" locale), control 
+     * characters are those between ASCII codes 0x00 (NUL) and 0x1f (US), 
+     * plus 0x7f (DEL).
+     *
+     * @param : character to be checked.
+     * @return true if control character, false if not. */
+
+    bool is_cntrl() {
+        // need c == '\r' in windows
+        if ((this >= 0) && (this <= 31)) return true;
+        if (this == 127) return true;
+        if (this == '\r') return true;
+
+        return false;
+    }
+
+    /** is_print - Check if character is printable
+     * Checks whether c is a printable character.
+     * 
+     * A printable character is a character that occupies a printing position on a 
+     * display (this is the opposite of a control character, checked with is_cntrl).
+     * 
+     * For the standard ASCII character set (used by the "C" locale), printing 
+     * characters are all with an ASCII code greater than 0x1f (US), except 
+     * 0x7f (DEL).
+     *
+     * @param : character to be checked.
+     * @return true if printable character, false if not. */
+
+    bool is_print() {
+        return (!this.is_cntrl);
+    }
+
+    /** is_graph - Check if character has graphical representation
+     * Checks whether c is a character with graphical representation.
+     *  
+     * The characters with graphical representation are all those characters that 
+     * can be printed (as determined by is_print) except the space character (' ').
+     *
+     * @param : character to be checked.
+     * @return true if graphical character, false if not. */
+
+    bool is_graph() {
+        if (this.is_print && (!this.is_space)) return true;
+
+        return false;
+    }
+
+    /** is_punct - Check if character is a punctuation character
+     * Checks whether c is a punctuation character.
+     * 
+     * The standard "C" locale considers punctuation characters all graphic 
+     * characters (as in is_graph) that are not alphanumeric (as in is_alnum).
+     *
+     * @param : character to be checked.
+     * @return true if punctuation character, false if not. */
+
+    bool is_punct() {
+        if (this.is_graph && (!this.is_alnum)) return true;
+
+        return false;
+    }
+}; // class char

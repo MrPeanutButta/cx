@@ -56,7 +56,7 @@ cx_type *cx_parser::parse_simple_expression(void) {
         if (unary_op == tc_bit_NOT) {
             check_bitwise_integer(p_result_type);
         } else {
-            check_integer_or_real(p_result_type);
+            check_integer_or_real(p_result_type, nullptr);
         }
     }
 

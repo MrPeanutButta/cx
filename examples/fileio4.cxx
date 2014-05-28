@@ -1,10 +1,6 @@
 #include io
 #include char
 
-class t : char, int, bool {
-    
-};
-
 /** @param void
  */
 int main() {
@@ -21,26 +17,22 @@ int main() {
     int punct = 0;
     int hex_num = 0;
 
-    char *c = in.readfile();
+    char *c = in.readfile;
     in.close;
-    
-    io::puts(c);
     
     for (int i = 0; i < c.length; i++) {
         if (c[i].is_digit) numbers++;
         if (c[i].is_alpha) chars++;
         if (c[i].is_punct) punct++;
-        if (c[i].is_xdigit) hex_num++;	
-
-        io::puts(c[i].to_upper.to_str);
+        if (c[i].is_xdigit) hex_num++;
     }
+    
+    io::puts(c);
 
     io::puts("numbers: " + numbers.to_str);
     io::puts("chars: " + chars.to_str);
     io::puts("punct: " + punct.to_str);
     io::puts("hex_num: " + hex_num.to_str);
-    
-    io::puts("total char * length = " + c.length.to_str);
 
     return 0;
 }

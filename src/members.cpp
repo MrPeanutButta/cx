@@ -98,22 +98,22 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
     if (p_type->is_scalar_type()) {
         switch (p_type->type_code) {
             case cx_int:
-                ss << mem->basic_types.int__ << '\0';
+                ss << mem->basic_types.int__;
                 break;
             case cx_char:
-                ss << mem->basic_types.char__ << '\0';
+                ss << mem->basic_types.char__ ;
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << L'\0';
+                ss << mem->basic_types.wchar__ ;
                 break;
             case cx_float:
-                ss << mem->basic_types.float__ << '\0';
+                ss << mem->basic_types.float__ ;
                 break;
             case cx_bool:
-                ss << (mem->basic_types.bool__ ? "true" : "false") << '\0';
+                ss << (mem->basic_types.bool__ ? "true" : "false") ;
                 break;
             case cx_uint8:
-                ss << (int) mem->basic_types.uint8__ << '\0';
+                ss << (int) mem->basic_types.uint8__ ;
                 break;
             default:break;
         }
@@ -182,22 +182,22 @@ cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack,
     if (p_type->is_scalar_type()) {
         switch (p_type->type_code) {
             case cx_int:
-                ss << mem->basic_types.int__ << L'\0';
+                ss << mem->basic_types.int__;
                 break;
             case cx_char:
-                ss << mem->basic_types.char__ << L'\0';
+                ss << mem->basic_types.char__;
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << L'\0';
+                ss << mem->basic_types.wchar__;
                 break;
             case cx_float:
-                ss << mem->basic_types.float__ << L'\0';
+                ss << mem->basic_types.float__;
                 break;
             case cx_bool:
-                ss << (mem->basic_types.bool__ ? L"true" : L"false") << L'\0';
+                ss << (mem->basic_types.bool__ ? L"true" : L"false");
                 break;
             case cx_uint8:
-                ss << (int) mem->basic_types.uint8__ << L'\0';
+                ss << (int) mem->basic_types.uint8__;
                 break;
             default:break;
         }
@@ -266,22 +266,22 @@ cx_type * cx_std_type_members::to_int(cx_runtime_stack *p_stack,
 
         switch (p_type->type_code) {
             case cx_int:
-                ss << mem->basic_types.int__ << '\0';
+                ss << mem->basic_types.int__;
                 break;
             case cx_char:
-                ss << mem->basic_types.char__ << '\0';
+                ss << mem->basic_types.char__;
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << '\0';
+                ss << mem->basic_types.wchar__;
                 break;
             case cx_float:
-                ss << mem->basic_types.float__ << '\0';
+                ss << mem->basic_types.float__;
                 break;
             case cx_bool:
-                ss << mem->basic_types.bool__ << '\0';
+                ss << mem->basic_types.bool__;
                 break;
             case cx_uint8:
-                ss << (int) mem->basic_types.uint8__ << '\0';
+                ss << (int) mem->basic_types.uint8__;
                 break;
             default:break;
         }

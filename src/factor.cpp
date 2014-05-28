@@ -182,8 +182,12 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
                     ? p_entry_id->basic_types.addr__ : p_entry_id);
         }
     } else {
-        push((void *) p_id);
-        //address_flag = true;
+        // if is 'this' pointer push pointer to p_node
+        if (p_id->defn.is_this_ptr) {
+            push((void*) p_id->defn.this_ptr.p_node);
+        } else {
+            push((void *) p_id);
+        }
     }
 
     // Loop to execute any subscripts and field designators,
@@ -198,7 +202,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
 
             case tc_dot:
             case tc_colon_colon:
-				p_type = execute_field(p_type);
+                p_type = execute_field(p_type);
                 break;
             default: done_flag = true;
         }
@@ -300,23 +304,33 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
     cx_symtab_node *p_field_id = p_node;
     cx_type *p_result_type = nullptr;
 
-    //p_field_id->defn.this_ptr.p_stack_item = top();
+    //p_field_id->defn.this_ptr.p_stack_item = top()
 
     if (p_field_id->defn.how == dc_function) {
         if (p_field_id->defn.routine.which == func_std_member) {
             p_result_type = execute_std_member_call(p_field_id, p_type);
         } else {
 
-            p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item = top();
-
-			char *p = (char *)p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item->basic_types.addr__;
+            if (p_field_id->defn.routine.locals.p_variable_ids != nullptr) {
+                if (p_type->form == fc_stream) {
+                    p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_node =
+                            (cx_symtab_node *) top()->basic_types.addr__;
+                } else {
+                    p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item = top();
+                }
+            }
 
             p_result_type = execute_function_call(p_field_id);
-            cx_stack_item *address = top();
-            pop();
-            push((void *) address);
+
+            if (p_result_type->is_scalar_type()) {
+                cx_stack_item *address = top();
+                pop();
+                push((void *) address);
+            }
 
             p_field_id->runstack_item = top();
+            //char *t = (char *)p_field_id->runstack_item->basic_types.addr__;
+            //char *tt = (char *)p_field_id->runstack_item->basic_types.addr__;
         }
     } else if (p_field_id->defn.how == dc_variable) {
         push((void *) p_field_id->runstack_item);

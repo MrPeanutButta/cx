@@ -270,7 +270,8 @@ void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
+void check_integer_or_real(const cx_type *p_type1, 
+        const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
 
     if ((p_type1 != p_integer_type) && (p_type1 != p_float_type)) {

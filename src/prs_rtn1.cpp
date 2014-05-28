@@ -29,6 +29,8 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_parent,
     cx_symtab *p_symtab = symtab_stack.get_current_symtab();
     cx_symtab_node *p_this = p_symtab->enter("this", dc_reference);
     p_this->defn.is_this_ptr = true;
+    p_this->defn.this_ptr.p_node = p_parent;
+
     set_type(p_this->p_type, p_parent->p_type);
 
     //  (
@@ -42,7 +44,8 @@ cx_symtab_node *cx_parser::parse_function_header(cx_symtab_node *p_parent,
 
     p_function_id->defn.routine.parm_count = parm_count;
     p_function_id->defn.routine.total_parm_size = total_parm_size;
-    p_function_id->defn.routine.locals.p_parms_ids = p_parm_list;;
+    p_function_id->defn.routine.locals.p_parms_ids = p_parm_list;
+    ;
     p_function_id->defn.how = dc_function;
 
     // Not forwarded.
