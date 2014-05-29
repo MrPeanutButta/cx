@@ -1,8 +1,12 @@
 #include io
 #include char
 
-class t : char, int, bool {
-    
+class t : char {
+    int p(){
+        io::puts("test called");
+        
+        return 0;
+    }
 };
 
 /** @param void
@@ -11,9 +15,10 @@ int main() {
 
     io::file in;
 
-	t test;
+    t test;
 
-    if (!in.open("test.txt", "r")) {
+    test.p;
+    /*if (!in.open("test.txt", "r")) {
         io::perror("open failed");
         return 0;
     }
@@ -42,7 +47,7 @@ int main() {
     io::puts("punct: " + punct.to_str);
     io::puts("hex_num: " + hex_num.to_str);
     
-    io::puts("total char * length = " + c.length.to_str);
+    io::puts("total char * length = " + c.length.to_str);*/
 
     return 0;
 }

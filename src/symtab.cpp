@@ -96,7 +96,7 @@ cx_symtab_node::~cx_symtab_node(void) {
 
 void final_copy(cx_symtab_node *p_dst, const cx_symtab_node *p_node){
 
-	set_type(p_dst->p_type, p_node->p_type);
+	//set_type(p_dst->p_type, p_node->p_type);
 
 	p_dst->defn.routine.locals.p_parms_ids = p_node->defn.routine.locals.p_parms_ids;
 	p_dst->defn.routine.locals.p_constant_ids = p_node->defn.routine.locals.p_constant_ids;
@@ -252,8 +252,6 @@ cx_symtab_stack::cx_symtab_stack(void) {
     if (p_main_function_id == nullptr) {
         initialize_builtin_types(&cx_global_symtab);
     }
-
-    //initialize_std_functions(p_symtabs[0]);
 }
 
 /** Destructor	    Remove the predefined types.
