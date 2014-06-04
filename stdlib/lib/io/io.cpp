@@ -31,6 +31,7 @@ STDIO_API
 cx_type *cx_puts(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
+
     // first param as string
     const char *_string = (const char *) p_stack->top()->basic_types.addr__;
     p_stack->pop();

@@ -1,19 +1,23 @@
 #include io
 #include char
-
+#include math
 
 /*
 */
+void some(){
+	io::puts("some");
+	return;
+}
 
 /** @param void
  */
 int main() {
+    
+	o b;
 
-    o b;
-    
-    io::puts(b.ppp.to_str);
-    
-    io::file in;
+	b.ppp;
+
+    /*io::file in;
 
     if (!in.open("test.txt", "r")) {
         io::perror("open failed");
@@ -25,7 +29,7 @@ int main() {
     int punct = 0;
     int hex_num = 0;
 
-    char *c = in.readfile();
+    char *c = in.readfile;
     in.close;
         
     for (int i = 0; i < c.length; i++) {
@@ -43,6 +47,9 @@ int main() {
     io::puts("hex_num: " + hex_num.to_str);
     
     io::puts("total char * length = " + c.length.to_str);
+
+	// call some
+	some;*/
 
     return 0;
 }

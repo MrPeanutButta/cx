@@ -197,7 +197,6 @@ namespace io {
 
 } // namespace io
 
-
 class base {
     int p(){
         io::puts("base::p called");
@@ -216,14 +215,10 @@ class n : base {
 class o : n {
     int ppp(){
         io::puts("o::ppp called");
-        this.pp;
+        
+		this.pp;	// n::pp
+		this.p;		// base::p
+		
         return 10;
     }
 };
-
-/*class socket : io::file {
-    int poop(){
-        io::puts("socket::poop called");
-        return 20;
-    }
-};*/

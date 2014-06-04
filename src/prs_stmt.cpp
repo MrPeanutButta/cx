@@ -379,6 +379,7 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
 void cx_parser::parse_return(cx_symtab_node* p_function_id) {
     get_token_append();
 
+	if (p_function_id->p_type == p_void_type) return;
     // expr 1
     check_assignment_type_compatible(p_function_id->p_type, parse_expression(),
             err_incompatible_types);

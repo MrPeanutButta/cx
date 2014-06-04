@@ -240,7 +240,7 @@ void remove_type(cx_type *&p_type) {
 
     if (--p_type->reference_count == 0) {
 
-        delete p_type;
+		delete p_type;
         p_type = nullptr;
 
     }

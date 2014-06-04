@@ -62,6 +62,7 @@ struct cx_local_ids {
 
 class cx_define {
 public:
+	cx_define(){}
 
     cx_define_code how;
     bool is_this_ptr;
@@ -142,6 +143,7 @@ public:
     // pointer to runstack item
     cx_stack_item *runstack_item;
 
+	cx_symtab_node();
     cx_symtab_node(const char *p_string, cx_define_code dc = dc_undefined);
     ~cx_symtab_node();
 
@@ -175,9 +177,10 @@ public:
 class cx_symtab {
     cx_symtab_node *root__;
     short nodes_count;
-    cx_symtab *next__;
-    
+     
 public:
+
+	cx_symtab *next__;
 
     cx_symtab() : nodes_count(0) {
         extern cx_symtab *p_symtab_list;
@@ -200,10 +203,6 @@ public:
 
     cx_symtab_node *root(void) const {
         return root__;
-    }
-
-    cx_symtab *next(void) const {
-        return next__;
     }
 
     int node_count(void)const {

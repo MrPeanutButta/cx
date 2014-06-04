@@ -98,7 +98,7 @@ cx_runtime_stack::pop_frame(const cx_symtab_node *p_function_id,
         int start = p_header->frame_header_index;
 
         // cut the stack back and leave frame header on TOS
-        cx_runstack.erase(cx_runstack.begin() + start, cx_runstack.end());
+		cx_runstack.erase(cx_runstack.begin() + start, cx_runstack.end());
 
         if (p_function_id->p_type == p_void_type) pop();
 

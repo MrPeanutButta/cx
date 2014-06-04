@@ -56,7 +56,7 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
 : defn(dc) {
     left__ = right__ = next__ = nullptr;
     p_line_num_list = nullptr;
-    p_type = nullptr;
+	this->p_type = nullptr;
     xnode = 0;
     global_finish_location = 0;
     found_global_end = false;
@@ -74,6 +74,10 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
     node_name = p_str;
 }
 
+cx_symtab_node::cx_symtab_node(){
+	this->p_type = nullptr;
+}
+
 /** Destructor      Deallocate a symbol table node.
  *
  */
@@ -86,7 +90,10 @@ cx_symtab_node::~cx_symtab_node(void) {
 
     // Then delete this node's components.
     if (p_line_num_list != nullptr) delete p_line_num_list;
-    if (p_type != nullptr) remove_type(p_type);
+	if (this->p_type != nullptr) {
+		remove_type(p_type);
+		this->p_type = nullptr;
+	}
 
     p_type = nullptr;
     p_line_num_list = nullptr;
@@ -130,16 +137,16 @@ void final_copy(cx_symtab_node *p_dst, const cx_symtab_node *p_node) {
 cx_symtab_node *cx_symtab::search(const char *p_string) const {
     cx_symtab_node *p_node = root__; // ptr to symbol table node
 
-    // Loop to search the table.
-    while (p_node) {
-        int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
-        if (comp == 0) break; // found!
+		// Loop to search the table.
+	while (p_node) {
+		int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
+		if (comp == 0) return p_node; // found!
 
-        // Not yet found:  next__ search left__ or right__ subtree.
-        p_node = comp < 0 ? p_node->left__ : p_node->right__;
-    }
+		// Not yet found:  next search left__ or right__ subtree.
+		p_node = comp < 0 ? p_node->left__ : p_node->right__;
+	}
 
-    return p_node; // ptr to node, or nullptr if not found
+    return nullptr; // ptr to node, or nullptr if not found
 }
 
 /** enter       search the symbol table for the node with a

@@ -2,11 +2,13 @@
  *
  */
 
- #warn "<math> This header module is for development only."
- #warn "<math> You will see a performance decrease using software interpreted math functions."
+ #warn "<math::dev> This namespace is for development only."
+ #warn "<math::dev> You will see a performance decrease using software interpreted math functions."
 
- namespace math {
-	
+namespace math {
+//#import libmath	
+
+	namespace dev {
 	// Euclidean Greatest Common Divisor (GCD) algorithm
 	int igcd(int x,  int y){
 		if(x == y){
@@ -60,4 +62,5 @@
 	
 	    return val_int;
 	}
+	} // dev_only
 }

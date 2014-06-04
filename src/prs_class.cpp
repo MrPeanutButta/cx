@@ -32,7 +32,7 @@ void cx_parser::parse_class(cx_symtab_node *p_function_id) {
         cx_symtab_node *p_node = nullptr;
 
         //copy symtab into current class ID
-        do {
+        //do {
             get_token();
 
             if (token != tc_identifier) {
@@ -56,7 +56,7 @@ void cx_parser::parse_class(cx_symtab_node *p_function_id) {
 
             get_token();
             // while token == comma copy trees
-        } while (token == tc_comma);
+        //} while (token == tc_comma);
     } else if (p_class_id->p_type->complex.p_class_scope == nullptr) {
         p_class_id->p_type->complex.p_class_scope = new cx_symtab();
     }
