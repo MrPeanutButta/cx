@@ -33,7 +33,7 @@ void cx_executor::execute_assignment(cx_symtab_node *p_target_id) {
 
         p_target_type = execute_variable(p_target_id, true);
 
-        if (p_target_type->form != fc_stream) {
+        if (p_target_type->form != fc_complex) {
             if (!p_target_type->is_scalar_type()) {
                 p_target_address = top()->basic_types.addr__;
                 pop();

@@ -71,6 +71,7 @@ void cx_executor::execute_statement(cx_symtab_node *p_function_id) {
             get_token();
             break;
         default:
+            get_token();
             break;
     }
 }

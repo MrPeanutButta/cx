@@ -40,7 +40,7 @@ enum cx_type_form_code {
     fc_subrange,
     fc_array,
     fc_complex,
-    fc_stream,
+    //fc_stream,
     fc_namespace
 };
 
@@ -54,7 +54,7 @@ enum cx_type_code {
     cx_void,
     cx_address,
     cx_complex,
-    cx_file
+    //cx_file
 };
 
 // below is for external liraries
@@ -124,8 +124,8 @@ public:
 
     bool is_scalar_type(void) const {
         return (form != fc_array) &&
-                (form != fc_complex) &&
-                (form != fc_stream);
+                (form != fc_complex);// &&
+                //(form != fc_stream);
     }
 
     bool is_constant(void) const {

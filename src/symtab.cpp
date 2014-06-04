@@ -63,7 +63,13 @@ cx_symtab_node::cx_symtab_node(const char *p_str, cx_define_code dc)
     level = current_nesting_level;
     label_index = ++asm_label_index;
 
-	//this->runstack_item = nullptr;
+    this->defn.routine.locals.p_parms_ids = nullptr;
+    this->defn.routine.locals.p_constant_ids = nullptr;
+    this->defn.routine.locals.p_type_ids = nullptr;
+    this->defn.routine.locals.p_variable_ids = nullptr;
+    this->defn.routine.locals.p_function_ids = nullptr;
+    this->runstack_item = nullptr;
+
     // Allocate and copy the symbol string.
     node_name = p_str;
 }
@@ -94,59 +100,26 @@ cx_symtab_node::~cx_symtab_node(void) {
  *                *
  ******************/
 
-void final_copy(cx_symtab_node *p_dst, const cx_symtab_node *p_node){
+void final_copy(cx_symtab_node *p_dst, const cx_symtab_node *p_node) {
 
-	//set_type(p_dst->p_type, p_node->p_type);
+    //set_type(p_dst->p_type, p_node->p_type);
 
-	p_dst->defn.routine.locals.p_parms_ids = p_node->defn.routine.locals.p_parms_ids;
-	p_dst->defn.routine.locals.p_constant_ids = p_node->defn.routine.locals.p_constant_ids;
-	p_dst->defn.routine.locals.p_type_ids = p_node->defn.routine.locals.p_type_ids;
-	p_dst->defn.routine.locals.p_variable_ids = p_node->defn.routine.locals.p_variable_ids;
-	p_dst->defn.routine.locals.p_function_ids = p_node->defn.routine.locals.p_function_ids;
+    p_dst->defn.routine.locals.p_parms_ids = p_node->defn.routine.locals.p_parms_ids;
+    p_dst->defn.routine.locals.p_constant_ids = p_node->defn.routine.locals.p_constant_ids;
+    p_dst->defn.routine.locals.p_type_ids = p_node->defn.routine.locals.p_type_ids;
+    p_dst->defn.routine.locals.p_variable_ids = p_node->defn.routine.locals.p_variable_ids;
+    p_dst->defn.routine.locals.p_function_ids = p_node->defn.routine.locals.p_function_ids;
 
-	p_dst->defn.routine.p_symtab = p_node->defn.routine.p_symtab;
-	p_dst->defn.routine.p_icode = p_node->defn.routine.p_icode;
-	p_dst->defn.routine.ext_function = p_node->defn.routine.ext_function;
+    p_dst->defn.routine.p_symtab = p_node->defn.routine.p_symtab;
+    p_dst->defn.routine.p_icode = p_node->defn.routine.p_icode;
+    p_dst->defn.routine.ext_function = p_node->defn.routine.ext_function;
 
-	p_dst->defn.this_ptr.p_node = p_node->defn.this_ptr.p_node;
-	p_dst->defn.this_ptr.p_stack_item = p_node->defn.this_ptr.p_stack_item;
+    p_dst->defn.this_ptr.p_node = p_node->defn.this_ptr.p_node;
+    p_dst->defn.this_ptr.p_stack_item = p_node->defn.this_ptr.p_stack_item;
 
-	p_dst->defn.io.stream = p_node->defn.io.stream;
-
-}
-
-/** search      search the symbol table for the node with a
-*              given name string.
-*
-* @param p_string : ptr to the name string to search for.
-* @return ptr to the node if found, else nullptr.
-*/
-void cx_symtab::copy_into(cx_symtab *p_dst) const {
-	cx_symtab_node *p_node = root__; // ptr to symbol table node
-	cx_symtab_node *p_cnode = nullptr;
-
-	// copy left
-	while (p_node) {
-		p_cnode = p_dst->enter(p_node->node_name.c_str());
-
-		memcpy(p_cnode, p_node, sizeof(p_node));
-		final_copy(p_cnode, p_node);
-		p_node = p_node->left__;
-	}
-
-	p_node = root__->right__;
-
-	// copy right
-	while (p_node) {
-		p_cnode = p_dst->enter(p_node->node_name.c_str());
-
-		memcpy(p_cnode, p_node, sizeof(p_node));
-		final_copy(p_cnode, p_node);
-		p_node = p_node->right__;
-	}
+    p_dst->defn.io.stream = p_node->defn.io.stream;
 
 }
-
 
 /** search      search the symbol table for the node with a
  *              given name string.
@@ -159,8 +132,7 @@ cx_symtab_node *cx_symtab::search(const char *p_string) const {
 
     // Loop to search the table.
     while (p_node) {
-        //int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
-        int comp = std::string(p_string).compare(p_node->node_name);
+        int comp = strcmp(p_string, p_node->node_name.c_str()); // compare names
         if (comp == 0) break; // found!
 
         // Not yet found:  next__ search left__ or right__ subtree.
@@ -186,8 +158,7 @@ cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
 
     // Loop to search table for insertion point.
     while ((p_node = *ppNode) != nullptr) {
-        //int comp = strcmp(p_string, p_node->node_name.c_str()); // compare strings
-        int comp = std::string(p_string).compare(p_node->node_name);
+        int comp = strcmp(p_string, p_node->node_name.c_str()); // compare strings
 
         if (comp == 0) return p_node; // found!
 
@@ -199,13 +170,6 @@ cx_symtab_node *cx_symtab::enter(const char *p_string, cx_define_code dc) {
     p_node = new cx_symtab_node(p_string, dc); // create a new node,
     p_node->xnode = nodes_count++; // node indexes,
     *ppNode = p_node; // insert it, and
-
-	p_node->defn.routine.locals.p_parms_ids = nullptr;
-	p_node->defn.routine.locals.p_constant_ids = nullptr;
-	p_node->defn.routine.locals.p_type_ids = nullptr;
-	p_node->defn.routine.locals.p_variable_ids = nullptr;
-	p_node->defn.routine.locals.p_function_ids = nullptr;
-	p_node->runstack_item = nullptr;
 
     return p_node; // return a ptr to it
 }

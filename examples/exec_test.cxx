@@ -1,24 +1,21 @@
 #include io
 #include char
 
-class t : char {
-    int p(){
-        io::puts("test called");
-        
-        return 0;
-    }
-};
+
+/*
+*/
 
 /** @param void
  */
 int main() {
 
+    o b;
+    
+    io::puts(b.ppp.to_str);
+    
     io::file in;
 
-    t test;
-
-    test.p;
-    /*if (!in.open("test.txt", "r")) {
+    if (!in.open("test.txt", "r")) {
         io::perror("open failed");
         return 0;
     }
@@ -30,9 +27,7 @@ int main() {
 
     char *c = in.readfile();
     in.close;
-    
-    io::puts(test.is_digit.to_str);
-    
+        
     for (int i = 0; i < c.length; i++) {
         if (c[i].is_digit) numbers++;
         if (c[i].is_alpha) chars++;
@@ -47,7 +42,7 @@ int main() {
     io::puts("punct: " + punct.to_str);
     io::puts("hex_num: " + hex_num.to_str);
     
-    io::puts("total char * length = " + c.length.to_str);*/
+    io::puts("total char * length = " + c.length.to_str);
 
     return 0;
 }

@@ -172,7 +172,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     cx_type *p_type = p_id->p_type;
     p_type->is_address = address_flag;
 
-    if (p_type->form != fc_stream) {
+    if (p_type->form != fc_complex) {
 
         // get the variable's runtime stack address.
         cx_stack_item *p_entry_id = run_stack.get_value_address(p_id);
@@ -312,11 +312,10 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
         } else {
 
             if (p_field_id->defn.routine.locals.p_variable_ids != nullptr) {
-                if (p_type->form == fc_stream) {
+                if (p_type->form == fc_complex) {
                     p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_node =
                             (cx_symtab_node *) top()->basic_types.addr__;
-				}
-				else if (p_field_id->defn.routine.locals.p_variable_ids != nullptr) {
+                } else if (p_field_id->defn.routine.locals.p_variable_ids != nullptr) {
                     p_field_id->defn.routine.locals.p_variable_ids->defn.this_ptr.p_stack_item = top();
                 }
             }

@@ -196,3 +196,34 @@ namespace io {
     }; // class file
 
 } // namespace io
+
+
+class base {
+    int p(){
+        io::puts("base::p called");
+        return 0;
+    }
+};
+
+class n : base {
+    int pp(){
+        io::puts("n::pp called");
+        this.p(); 
+        return 0;
+    }
+};
+
+class o : n {
+    int ppp(){
+        io::puts("o::ppp called");
+        this.pp;
+        return 10;
+    }
+};
+
+/*class socket : io::file {
+    int poop(){
+        io::puts("socket::poop called");
+        return 20;
+    }
+};*/

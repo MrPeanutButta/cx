@@ -52,7 +52,9 @@ void cx_executor::enter_function(cx_symtab_node * p_function_id) {
             (p_function_id->p_type->form != fc_complex))) {
         // Switch to the callee's intermediate code.
         p_icode = p_function_id->defn.routine.p_icode;
-        p_icode->reset();
+        if (p_icode != nullptr) {
+            p_icode->reset();
+        }
     }
 
 }
@@ -162,7 +164,7 @@ cx_type *cx_executor::execute_decl_function_call
     if (token == tc_left_paren) {
         execute_actual_parameters(p_function_id);
 
-        if(token == tc_right_paren) get_token();
+        if (token == tc_right_paren) get_token();
     }
 
     //  )
@@ -209,7 +211,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
             //const int size = p_node->p_type->size;
             //set_type(p_formal_type, p_node->p_type);
 
-            if (p_formal_type->form == fc_stream) {
+            if (p_formal_type->form == fc_complex) {
                 p_formal_id->defn.io.stream = p_node->defn.io.stream;
             } else if (p_node->p_type->form == fc_namespace) {
                 cx_symtab_node *p_tmp = p_node;
@@ -243,9 +245,9 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 }
 
                 void *p_source = top()->basic_types.addr__;
-				char *t = (char *)p_source;
+                char *t = (char *) p_source;
 
-                memset(p_target_address, 0,size + 1);
+                memset(p_target_address, 0, size + 1);
                 memcpy(p_target_address, p_source, size + 1);
 
                 char *p_array = (char *) p_target_address;

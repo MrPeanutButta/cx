@@ -101,7 +101,7 @@ void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
 void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
         const cx_type * p_data_type) {
 
-    if (p_data_type->form == fc_stream) return;
+    //if (p_data_type->form == fc_complex) return;
 
     std::stringstream text;
 

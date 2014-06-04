@@ -48,7 +48,7 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
 
     if (p_type_id != nullptr) type_name = p_type_id->string__();
 
-    if (form != fc_stream) {
+    if (form != fc_complex) {
 		if (this->complex.p_class_scope == nullptr){
 			this->complex.p_class_scope = std_type_members;
 		}
@@ -77,7 +77,7 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
             type_code = cx_address;
         }
     } else {
-        type_code = cx_file;
+        //type_code = cx_file;
         //complex.p_class_scope = std_stream_members;
     }
 }
@@ -366,8 +366,8 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
     cx_type_code value_type = p_value_type->type_code;
 
     if (target_type == value_type) return;
-    if ((value_type == cx_file) && (target_type != cx_file)) return;
-    if ((target_type == cx_file) && (value_type != cx_file)) return;
+   // if ((value_type == cx_file) && (target_type != cx_file)) return;
+    //if ((target_type == cx_file) && (value_type != cx_file)) return;
 
     if (p_target_type->is_scalar_type()) {
         switch (target_type) {

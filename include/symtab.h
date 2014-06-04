@@ -21,6 +21,7 @@ class cx_symtab_node;
 class cx_executor;
 class cx_runtime_stack;
 
+typedef std::map<std::string, cx_symtab_node *> symbol_table;
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
 typedef cx_type *(*ext_call)(cx_runtime_stack *, cx_symtab_node *, const cx_type *);
@@ -175,7 +176,7 @@ class cx_symtab {
     cx_symtab_node *root__;
     short nodes_count;
     cx_symtab *next__;
-
+    
 public:
 
     cx_symtab() : nodes_count(0) {
@@ -193,9 +194,6 @@ public:
         root__ = nullptr;
     }
 
-	// returns root node of tree
-	void copy_into(cx_symtab *p_dst) const;
-
     cx_symtab_node *search(const char *p_string) const;
     cx_symtab_node *enter(const char *p_string, cx_define_code dc = dc_undefined);
     cx_symtab_node *enter_new(const char *p_string, cx_define_code dc = dc_undefined);
@@ -206,13 +204,6 @@ public:
 
     cx_symtab *next(void) const {
         return next__;
-    }
-
-    // DEPRECATED //
-
-    cx_symtab_node **node_vector(void) const {
-        //return p_vector_nodes;
-        return nullptr;
     }
 
     int node_count(void)const {
