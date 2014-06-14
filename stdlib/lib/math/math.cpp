@@ -6,17 +6,17 @@
 bool cx_dev_debug_flag;
 
 BOOL APIENTRY DllMain(HMODULE hModule,
-	DWORD ul_reason_for_call,
-	LPVOID lpReserved
-	) {
-	switch (ul_reason_for_call) {
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
+        DWORD ul_reason_for_call,
+        LPVOID lpReserved
+        ) {
+    switch (ul_reason_for_call) {
+        case DLL_PROCESS_ATTACH:
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+        case DLL_PROCESS_DETACH:
+            break;
+    }
+    return TRUE;
 }
 
 #define MATH_API __declspec(dllexport)
@@ -25,246 +25,657 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 #endif
 
 MATH_API
+cx_type *cx_cos(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) cos(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_sin(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) sin(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_tan(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) tan(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_acos(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) acos(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_asin(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) asin(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_atan(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) atan(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_atan2(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    const float y = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) atan2(y, x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_cosh(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) cosh(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_sinh(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) sinh(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_tanh(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) tanh(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_acosh(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) acosh(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_asinh(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) asinh(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_atanh(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) atanh(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_exp(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) exp(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_frexp(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    int *exp_ = &p_stack->top()->basic_types.int__;
+    p_stack->pop();
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    //p_stack->push(new cx_stack_item((float) frexp(x, exp)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_ldexp(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const int exp_ = p_stack->top()->basic_types.int__;
+    p_stack->pop();
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    //p_stack->push(new cx_stack_item((float) std::ldexp((float)x, (int)exp)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_log(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    double x = (double) p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    
+    double y = log(x);
+    p_stack->push(new cx_stack_item((float)log(float(x))));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_log10(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) log10(float(x))));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_modf(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    float *intpart_ = &p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) std::modf(x, intpart_)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_exp2(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) exp2(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_expm1(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) expm1(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_ilogb(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((int) ilogb(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_log1p(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) log1p(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_log2(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) log2((float) x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_scalbn(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const int n = p_stack->top()->basic_types.int__;
+    p_stack->pop();
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) scalbn(x, n)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_pow(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float exponent = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    const float base = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) pow(base, exponent)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_sqrt(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) sqrt(float(x))));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_cbrt(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) cbrt(x)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
+cx_type *cx_hypot(cx_runtime_stack *p_stack,
+        cx_symtab_node *cx_function_id,
+        const cx_type *p_type) {
+
+    const float y = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    const float x = p_stack->top()->basic_types.float__;
+    p_stack->pop();
+    p_stack->push(new cx_stack_item((float) hypot(x, y)));
+
+    return cx_function_id->p_type;
+}
+
+MATH_API
 void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
 
-	// Integer members
-	struct member {
-		cx_symtab_node *p_node;
-		std::string name;
-		std::string symbol_name;
-		const cx_type *p_type;
-		int num_params;
-		ext_call ext_f;
-	} members[] = {
-		// stream members
-		{ nullptr, "abs", "cx_abs", ct[cx_int], 0, cx_abs },
-		{ nullptr, "div", "cx_div", ct[cx_int], 1, cx_div },
-		{ nullptr, "mod", "cx_mod", ct[cx_int], 1, cx_mod },
-		{ nullptr, "close", "cx_close", ct[cx_bool], 0, cx_close },
-		{ nullptr, "flush", "cx_flush", ct[cx_bool], 0, cx_flush },
-		{ nullptr, "wide", "cx_wide", ct[cx_int], 1, cx_wide },
-		{ nullptr, "read", "cx_read", new cx_type(fc_array, 0, nullptr), 2, cx_read },
-		{ nullptr, "write", "cx_write", ct[cx_int], 3, cx_write },
-		{ nullptr, "getc", "cx_getc", ct[cx_char], 0, cx_getc },
-		{ nullptr, "gets", "cx_gets", new cx_type(fc_array, 0, nullptr), 1, cx_gets },
-		{ nullptr, "putc", "cx_putc", ct[cx_int], 1, cx_putc },
-		{ nullptr, "ungetc", "cx_ungetc", ct[cx_int], 1, cx_ungetc },
+    cx_symtab_node *p_cos = p_symtab->enter("cos", dc_function);
+    p_cos->defn.routine.which = func_standard;
+    set_type(p_cos->p_type, (cx_type *) ct[cx_float]);
+    p_cos->defn.routine.parm_count = 1;
+    p_cos->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_cos->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_cos->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_cos->defn.routine.ext_function = cx_cos;
 
-		//wide char
-		{ nullptr, "getwc", "cx_getwc", ct[cx_wchar], 0, cx_getwc },
-		{ nullptr, "getws", "cx_getws", new cx_type(fc_array, 0, nullptr), 1, cx_getws },
-		{ nullptr, "putwc", "cx_putwc", ct[cx_wchar], 1, cx_putwc },
-		{ nullptr, "putws", "cx_putws", ct[cx_bool], 1, cx_putws },
-		{ nullptr, "ungetwc", "cx_ungetwc", ct[cx_wchar], 1, cx_ungetwc },
+    cx_symtab_node *p_sin = p_symtab->enter("sin", dc_function);
+    p_sin->defn.routine.which = func_standard;
+    set_type(p_sin->p_type, (cx_type *) ct[cx_float]);
+    p_sin->defn.routine.parm_count = 1;
+    p_sin->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_sin->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_sin->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_sin->defn.routine.ext_function = cx_sin;
 
-		// file positioning 
-		{ nullptr, "tell", "cx_tell", ct[cx_int], 0, cx_tell },
-		{ nullptr, "seek", "cx_seek", ct[cx_bool], 2, cx_seek },
-		{ nullptr, "rewind", "cx_rewind", ct[cx_void], 0, cx_rewind },
+    cx_symtab_node *p_tan = p_symtab->enter("tan", dc_function);
+    p_tan->defn.routine.which = func_standard;
+    set_type(p_tan->p_type, (cx_type *) ct[cx_float]);
+    p_tan->defn.routine.parm_count = 1;
+    p_tan->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_tan->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_tan->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_tan->defn.routine.ext_function = cx_tan;
 
-		// error handling
-		{ nullptr, "clearerr", "cx_clearerr", ct[cx_void], 0, cx_clearerr },
-		{ nullptr, "eof", "cx_eof", ct[cx_bool], 0, cx_eof },
-		{ nullptr, "error", "cx_error_", ct[cx_bool], 0, cx_error_ },
+    cx_symtab_node *p_acos = p_symtab->enter("acos", dc_function);
+    p_acos->defn.routine.which = func_standard;
+    set_type(p_acos->p_type, (cx_type *) ct[cx_float]);
+    p_acos->defn.routine.parm_count = 1;
+    p_acos->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_acos->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_acos->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_acos->defn.routine.ext_function = cx_acos;
 
-		// operations on files 
-		{ nullptr, "tmpfile", "cx_tmpfile", ct[cx_bool], 0, cx_tmpfile }
-	};
+    cx_symtab_node *p_asin = p_symtab->enter("asin", dc_function);
+    p_asin->defn.routine.which = func_standard;
+    set_type(p_asin->p_type, (cx_type *) ct[cx_float]);
+    p_asin->defn.routine.parm_count = 1;
+    p_asin->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_asin->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_asin->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_asin->defn.routine.ext_function = cx_asin;
 
-	for (auto &mbr : members) {
-		mbr.p_node = std_stream_members->enter(mbr.name.c_str(), dc_function);
+    cx_symtab_node *p_atan = p_symtab->enter("atan", dc_function);
+    p_atan->defn.routine.which = func_standard;
+    set_type(p_atan->p_type, (cx_type *) ct[cx_float]);
+    p_atan->defn.routine.parm_count = 1;
+    p_atan->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_atan->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_atan->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_atan->defn.routine.ext_function = cx_atan;
 
-		mbr.p_node->defn.routine.which = func_std_member;
-		mbr.p_node->defn.routine.ext_function = mbr.ext_f;
-		mbr.p_node->defn.routine.parm_count = mbr.num_params;
-		set_type(mbr.p_node->p_type, (cx_type *)mbr.p_type);
+    cx_symtab_node *p_atan2 = p_symtab->enter("atan2", dc_function);
+    p_atan2->defn.routine.which = func_standard;
+    set_type(p_atan2->p_type, (cx_type *) ct[cx_float]);
+    p_atan2->defn.routine.parm_count = 2;
+    p_atan2->defn.routine.locals.p_parms_ids = new cx_symtab_node("y", dc_value_parm);
+    set_type(p_atan2->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_atan2->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_atan2->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_atan2->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_float]);
+    p_atan2->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_float;
+    p_atan2->defn.routine.ext_function = cx_atan2;
 
-		if ((mbr.name == "puts") || ((mbr.name == "putws"))) {
+    cx_symtab_node *p_cosh = p_symtab->enter("cosh", dc_function);
+    p_cosh->defn.routine.which = func_standard;
+    set_type(p_cosh->p_type, (cx_type *) ct[cx_float]);
+    p_cosh->defn.routine.parm_count = 1;
+    p_cosh->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_cosh->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_cosh->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_cosh->defn.routine.ext_function = cx_cosh;
 
-			// char *str
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("str", dc_value_parm);
-			mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
-				mbr.p_node->defn.routine.locals.p_parms_ids);
+    cx_symtab_node *p_sinh = p_symtab->enter("sinh", dc_function);
+    p_sinh->defn.routine.which = func_standard;
+    set_type(p_sinh->p_type, (cx_type *) ct[cx_float]);
+    p_sinh->defn.routine.parm_count = 1;
+    p_sinh->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_sinh->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_sinh->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_sinh->defn.routine.ext_function = cx_sinh;
 
-			if (mbr.name == "puts") {
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-			}
-			else {
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_wchar]);
-			}
+    cx_symtab_node *p_tanh = p_symtab->enter("tanh", dc_function);
+    p_tanh->defn.routine.which = func_standard;
+    set_type(p_tanh->p_type, (cx_type *) ct[cx_float]);
+    p_tanh->defn.routine.parm_count = 1;
+    p_tanh->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_tanh->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_tanh->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_tanh->defn.routine.ext_function = cx_tanh;
 
-		}
-		else if ((mbr.name == "open") || (mbr.name == "reopen")) {
+    cx_symtab_node *p_acosh = p_symtab->enter("acosh", dc_function);
+    p_acosh->defn.routine.which = func_standard;
+    set_type(p_acosh->p_type, (cx_type *) ct[cx_float]);
+    p_acosh->defn.routine.parm_count = 1;
+    p_acosh->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_acosh->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_acosh->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_acosh->defn.routine.ext_function = cx_acosh;
 
-			// char *filename
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("filename", dc_value_parm);
-			mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
-				mbr.p_node->defn.routine.locals.p_parms_ids);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
+    cx_symtab_node *p_asinh = p_symtab->enter("asinh", dc_function);
+    p_asinh->defn.routine.which = func_standard;
+    set_type(p_asinh->p_type, (cx_type *) ct[cx_float]);
+    p_asinh->defn.routine.parm_count = 1;
+    p_asinh->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_asinh->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_asinh->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_asinh->defn.routine.ext_function = cx_asinh;
 
-			// char *mode
-			mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("mode", dc_value_parm);
-			mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type = new cx_type(fc_array, 0,
-				mbr.p_node->defn.routine.locals.p_parms_ids->next__);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-		}
-		else if (mbr.name == "wide") {
-			// int mode
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("mode", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_int]);
-		}
-		else if (mbr.name == "read") {
-			// int size
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("size", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_int]);
-			// int count
-			mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("count", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *)ct[cx_int]);
+    cx_symtab_node *p_atanh = p_symtab->enter("atanh", dc_function);
+    p_atanh->defn.routine.which = func_standard;
+    set_type(p_atanh->p_type, (cx_type *) ct[cx_float]);
+    p_atanh->defn.routine.parm_count = 1;
+    p_atanh->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_atanh->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_atanh->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_atanh->defn.routine.ext_function = cx_atanh;
 
-		}
-		else if (mbr.name == "write") {
+    cx_symtab_node *p_exp = p_symtab->enter("exp", dc_function);
+    p_exp->defn.routine.which = func_standard;
+    set_type(p_exp->p_type, (cx_type *) ct[cx_float]);
+    p_exp->defn.routine.parm_count = 1;
+    p_exp->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_exp->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_exp->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_exp->defn.routine.ext_function = cx_exp;
 
-			// byte *buffer
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("buffer", dc_value_parm);
-			mbr.p_node->defn.routine.locals.p_parms_ids->p_type = new cx_type(fc_array, 0,
-				mbr.p_node->defn.routine.locals.p_parms_ids);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_uint8]);
+    cx_symtab_node *p_frexp = p_symtab->enter("frexp", dc_function);
+    p_frexp->defn.routine.which = func_standard;
+    set_type(p_frexp->p_type, (cx_type *) ct[cx_float]);
+    p_frexp->defn.routine.parm_count = 2;
+    p_frexp->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_frexp->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_frexp->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_frexp->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("exp", dc_reference);
+    set_type(p_frexp->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_int]);
+    p_frexp->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_int;
+    p_frexp->defn.routine.ext_function = cx_frexp;
 
-			// int size
-			mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("size", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *)ct[cx_int]);
+    cx_symtab_node *p_ldexp = p_symtab->enter("ldexp", dc_function);
+    p_ldexp->defn.routine.which = func_standard;
+    set_type(p_ldexp->p_type, (cx_type *) ct[cx_float]);
+    p_ldexp->defn.routine.parm_count = 2;
+    p_ldexp->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_ldexp->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_ldexp->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_ldexp->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("exp", dc_value_parm);
+    set_type(p_ldexp->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_int]);
+    p_ldexp->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_int;
+    p_ldexp->defn.routine.ext_function = cx_ldexp;
 
-			// int count
-			mbr.p_node->defn.routine.locals.p_parms_ids->next__->next__ = new cx_symtab_node("count", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->next__->p_type, (cx_type *)ct[cx_int]);
-		}
-		else if ((mbr.name == "gets") || (mbr.name == "getws")) {
+    cx_symtab_node *p_log = p_symtab->enter("log", dc_function);
+    p_log->defn.routine.which = func_standard;
+    set_type(p_log->p_type, (cx_type *) ct[cx_float]);
+    p_log->defn.routine.parm_count = 1;
+    p_log->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_log->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_log->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_log->defn.routine.ext_function = cx_log;
 
-			// int count
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("count", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_int]);
-		}
-		else if ((mbr.name == "putc") || (mbr.name == "putwc")) {
+    cx_symtab_node *p_log10 = p_symtab->enter("log10", dc_function);
+    p_log10->defn.routine.which = func_standard;
+    set_type(p_log10->p_type, (cx_type *) ct[cx_float]);
+    p_log10->defn.routine.parm_count = 1;
+    p_log10->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_log10->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_log10->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_log10->defn.routine.ext_function = cx_log10;
 
-			// int ch or wchar_t
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("ch", dc_value_parm);
+    cx_symtab_node *p_modf = p_symtab->enter("modf", dc_function);
+    p_modf->defn.routine.which = func_standard;
+    set_type(p_modf->p_type, (cx_type *) ct[cx_float]);
+    p_modf->defn.routine.parm_count = 2;
+    p_modf->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_modf->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_modf->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_modf->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("intpart", dc_reference);
+    set_type(p_modf->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_float]);
+    p_modf->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_float;
+    p_modf->defn.routine.ext_function = cx_modf;
 
-			if (mbr.name == "putc") {
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_int]);
-			}
-			else {
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_wchar]);
-			}
-		}
-		else if ((mbr.name == "ungetc") || (mbr.name == "ungetwc")) {
+    cx_symtab_node *p_exp2 = p_symtab->enter("exp2", dc_function);
+    p_exp2->defn.routine.which = func_standard;
+    set_type(p_exp2->p_type, (cx_type *) ct[cx_float]);
+    p_exp2->defn.routine.parm_count = 1;
+    p_exp2->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_exp2->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_exp2->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_exp2->defn.routine.ext_function = cx_exp2;
 
-			// int ch
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("ch", dc_value_parm);
+    cx_symtab_node *p_expm1 = p_symtab->enter("expm1", dc_function);
+    p_expm1->defn.routine.which = func_standard;
+    set_type(p_expm1->p_type, (cx_type *) ct[cx_float]);
+    p_expm1->defn.routine.parm_count = 1;
+    p_expm1->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_expm1->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_expm1->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_expm1->defn.routine.ext_function = cx_expm1;
 
-			if (mbr.name == "ungetc") {
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_int]);
-			}
-			else {
-				set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_wchar]);
-			}
-		}
-		else if (mbr.name == "seek") {
-			// int offset
-			mbr.p_node->defn.routine.locals.p_parms_ids = new cx_symtab_node("offset", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->p_type, (cx_type *)ct[cx_int]);
-			// int origin
-			mbr.p_node->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("origin", dc_value_parm);
-			set_type(mbr.p_node->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *)ct[cx_int]);
-		}
+    cx_symtab_node *p_ilogb = p_symtab->enter("ilogb", dc_function);
+    p_ilogb->defn.routine.which = func_standard;
+    set_type(p_ilogb->p_type, (cx_type *) ct[cx_int]);
+    p_ilogb->defn.routine.parm_count = 1;
+    p_ilogb->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_ilogb->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_ilogb->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_ilogb->defn.routine.ext_function = cx_ilogb;
 
+    cx_symtab_node *p_log1p = p_symtab->enter("log1p", dc_function);
+    p_log1p->defn.routine.which = func_standard;
+    set_type(p_log1p->p_type, (cx_type *) ct[cx_float]);
+    p_log1p->defn.routine.parm_count = 1;
+    p_log1p->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_log1p->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_log1p->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_log1p->defn.routine.ext_function = cx_log1p;
 
-		if (mbr.name == "read") {
-			set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-		}
-		else if (mbr.name == "gets") {
-			set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-		}
-		else if (mbr.name == "getws") {
-			set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *)ct[cx_wchar]);
-		}
+    cx_symtab_node *p_log2 = p_symtab->enter("log2", dc_function);
+    p_log2->defn.routine.which = func_standard;
+    set_type(p_log2->p_type, (cx_type *) ct[cx_float]);
+    p_log2->defn.routine.parm_count = 1;
+    p_log2->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_log2->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_log2->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_log2->defn.routine.ext_function = cx_log2;
 
-	}
+    cx_symtab_node *p_scalbn = p_symtab->enter("scalbn", dc_function);
+    p_scalbn->defn.routine.which = func_standard;
+    set_type(p_scalbn->p_type, (cx_type *) ct[cx_float]);
+    p_scalbn->defn.routine.parm_count = 2;
+    p_scalbn->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_scalbn->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_scalbn->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_scalbn->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("n", dc_value_parm);
+    set_type(p_scalbn->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_int]);
+    p_scalbn->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_int;
+    p_scalbn->defn.routine.ext_function = cx_scalbn;
 
-	cx_symtab_node *p_remove = p_symtab->enter("remove", dc_function);
-	p_remove->defn.routine.which = func_standard;
-	set_type(p_remove->p_type, (cx_type *)ct[cx_bool]);
-	p_remove->defn.routine.parm_count = 1;
-	p_remove->defn.routine.locals.p_parms_ids = new cx_symtab_node("filename", dc_value_parm);
-	set_type(p_remove->defn.routine.locals.p_parms_ids->p_type, new cx_type(fc_array, 0, nullptr));
-	p_remove->defn.routine.locals.p_parms_ids->p_type->type_code = cx_address;
-	set_type(p_remove->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-	p_remove->defn.routine.ext_function = cx_remove;
+    cx_symtab_node *p_pow = p_symtab->enter("pow", dc_function);
+    p_pow->defn.routine.which = func_standard;
+    set_type(p_pow->p_type, (cx_type *) ct[cx_float]);
+    p_pow->defn.routine.parm_count = 2;
+    p_pow->defn.routine.locals.p_parms_ids = new cx_symtab_node("base", dc_value_parm);
+    set_type(p_pow->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_pow->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_pow->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("exponent", dc_value_parm);
+    set_type(p_pow->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_float]);
+    p_pow->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_float;
+    p_pow->defn.routine.ext_function = cx_pow;
 
-	cx_symtab_node *p_perror = p_symtab->enter("perror", dc_function);
-	p_perror->defn.routine.which = func_standard;
-	set_type(p_perror->p_type, (cx_type *)ct[cx_void]);
-	p_perror->defn.routine.parm_count = 1;
-	p_perror->defn.routine.locals.p_parms_ids = new cx_symtab_node("str", dc_value_parm);
-	set_type(p_perror->defn.routine.locals.p_parms_ids->p_type, new cx_type(fc_array, 0, nullptr));
-	p_perror->defn.routine.locals.p_parms_ids->p_type->type_code = cx_address;
-	set_type(p_perror->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-	p_perror->defn.routine.ext_function = cx_perror;
+    cx_symtab_node *p_sqrt = p_symtab->enter("sqrt", dc_function);
+    p_sqrt->defn.routine.which = func_standard;
+    set_type(p_sqrt->p_type, (cx_type *) ct[cx_float]);
+    p_sqrt->defn.routine.parm_count = 1;
+    p_sqrt->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_sqrt->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_sqrt->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_sqrt->defn.routine.ext_function = cx_sqrt;
 
-	cx_symtab_node *p_rename = p_symtab->enter("rename", dc_function);
-	p_rename->defn.routine.which = func_standard;
-	set_type(p_rename->p_type, (cx_type *)ct[cx_bool]);
-	p_rename->defn.routine.parm_count = 2;
-	p_rename->defn.routine.locals.p_parms_ids = new cx_symtab_node("old_filename", dc_value_parm);
-	set_type(p_rename->defn.routine.locals.p_parms_ids->p_type, new cx_type(fc_array, 0, nullptr));
-	p_rename->defn.routine.locals.p_parms_ids->p_type->type_code = cx_address;
-	set_type(p_rename->defn.routine.locals.p_parms_ids->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
+    cx_symtab_node *p_cbrt = p_symtab->enter("cbrt", dc_function);
+    p_cbrt->defn.routine.which = func_standard;
+    set_type(p_cbrt->p_type, (cx_type *) ct[cx_float]);
+    p_cbrt->defn.routine.parm_count = 1;
+    p_cbrt->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_cbrt->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_cbrt->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_cbrt->defn.routine.ext_function = cx_cbrt;
 
-	p_rename->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("new_filename", dc_value_parm);
-	set_type(p_rename->defn.routine.locals.p_parms_ids->next__->p_type, new cx_type(fc_array, 0, nullptr));
-	p_rename->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_address;
-	set_type(p_rename->defn.routine.locals.p_parms_ids->next__->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-	p_rename->defn.routine.ext_function = cx_rename;
+    cx_symtab_node *p_hypot = p_symtab->enter("hypot", dc_function);
+    p_hypot->defn.routine.which = func_standard;
+    set_type(p_hypot->p_type, (cx_type *) ct[cx_float]);
+    p_hypot->defn.routine.parm_count = 2;
+    p_hypot->defn.routine.locals.p_parms_ids = new cx_symtab_node("x", dc_value_parm);
+    set_type(p_hypot->defn.routine.locals.p_parms_ids->p_type, (cx_type *) ct[cx_float]);
+    p_hypot->defn.routine.locals.p_parms_ids->p_type->type_code = cx_float;
+    p_hypot->defn.routine.locals.p_parms_ids->next__ = new cx_symtab_node("y", dc_value_parm);
+    set_type(p_hypot->defn.routine.locals.p_parms_ids->next__->p_type, (cx_type *) ct[cx_float]);
+    p_hypot->defn.routine.locals.p_parms_ids->next__->p_type->type_code = cx_float;
+    p_hypot->defn.routine.ext_function = cx_hypot;
 
-	cx_symtab_node *p_tmpnam = p_symtab->enter("tmpnam", dc_function);
-	p_tmpnam->defn.routine.which = func_standard;
-	set_type(p_tmpnam->p_type, new cx_type(fc_array, 0, nullptr));
-	set_type(p_tmpnam->p_type->array.p_element_type, (cx_type *)ct[cx_char]);
-	p_perror->defn.routine.parm_count = 0;
-	p_tmpnam->defn.routine.ext_function = cx_tmpnam;
-
-	// values
-
-	cx_symtab_node *p_eof = p_symtab->enter("EOF", dc_constant);
-	set_type(p_eof->p_type, (cx_type *)ct[cx_int]);
-	p_eof->defn.constant.value.int__ = EOF;
-
-	cx_symtab_node *p_fopen_max = p_symtab->enter("FOPEN_MAX", dc_constant);
-	set_type(p_fopen_max->p_type, (cx_type *)ct[cx_int]);
-	p_fopen_max->defn.constant.value.int__ = FOPEN_MAX;
-
-	cx_symtab_node *p_filename_max = p_symtab->enter("FILENAME_MAX", dc_constant);
-	set_type(p_filename_max->p_type, (cx_type *)ct[cx_int]);
-	p_filename_max->defn.constant.value.int__ = FILENAME_MAX;
-
-	cx_symtab_node *p_seek_set = p_symtab->enter("SEEK_SET", dc_constant);
-	set_type(p_seek_set->p_type, (cx_type *)ct[cx_int]);
-	p_seek_set->defn.constant.value.int__ = SEEK_SET;
-
-	cx_symtab_node *p_seek_cur = p_symtab->enter("SEEK_CUR", dc_constant);
-	set_type(p_seek_cur->p_type, (cx_type *)ct[cx_int]);
-	p_seek_cur->defn.constant.value.int__ = SEEK_CUR;
-
-	cx_symtab_node *p_seek_end = p_symtab->enter("SEEK_END", dc_constant);
-	set_type(p_seek_end->p_type, (cx_type *)ct[cx_int]);
-	p_seek_end->defn.constant.value.int__ = SEEK_END;
-
-	cx_symtab_node *p_tmp_max = p_symtab->enter("TMP_MAX", dc_constant);
-	set_type(p_tmp_max->p_type, (cx_type *)ct[cx_int]);
-	p_tmp_max->defn.constant.value.int__ = TMP_MAX;
-
-	cx_symtab_node *p_L_tmpnam = p_symtab->enter("L_tmpnam", dc_constant);
-	set_type(p_L_tmpnam->p_type, (cx_type *)ct[cx_int]);
-	p_L_tmpnam->defn.constant.value.int__ = L_tmpnam;
+    /*cx_symtab_node *p_eof = p_symtab->enter("EOF", dc_constant);
+    set_type(p_eof->p_type, (cx_type *) ct[cx_int]);
+    p_eof->defn.constant.value.int__ = EOF;*/
 
 }

@@ -104,9 +104,6 @@ cx_symtab_node *cx_parser::parse_formal_parm_list(cx_symtab_node *p_function_id,
         if (p_prev_sublist_last_id) p_prev_sublist_last_id->next__ = p_first_id;
         p_prev_sublist_last_id = p_last_id;
 
-        //  ; or )
-        // resync(tlFormalParmsFollow, tokenlist_declaration_follow);
-
     }
 
     if (token == tc_identifier) {
@@ -148,7 +145,6 @@ cx_type *cx_parser::parse_declared_subroutine_call
 
     if (token == tc_left_paren) {
         parse_actual_parm_list(p_function_id, parm_check_flag);
-        //get_token_append();
     }
 
     return p_function_id->p_type;
@@ -247,10 +243,17 @@ void cx_parser::parse_actual_parm(const cx_symtab_node *p_formal_id,
         icode.put(p_actual_id);
 
         get_token_append();
-        if (p_formal_id->p_type->base_type()
-                != parse_variable(p_actual_id)->base_type()) {
-            cx_error(err_incompatible_types);
+
+        bool skip_check = ((p_formal_id->p_type == p_void_type) &&
+                (p_formal_id->defn.how == dc_reference));
+
+        if (!skip_check) {
+            if (p_formal_id->p_type->base_type()
+                    != parse_variable(p_actual_id)->base_type()) {
+                cx_error(err_incompatible_types);
+            }
         }
+        
         resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
     }// cx_error: parse the actual parameter anyway for error recovery.
     else {

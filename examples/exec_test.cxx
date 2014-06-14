@@ -1,22 +1,13 @@
 #include io
-#include char
-#include math
-
-/*
-*/
-void some(){
-	io::puts("some");
-	return;
-}
+#include char 
+#import libstd
 
 /** @param void
  */
 int main() {
-    
-	o b;
 
-	b.ppp;
-
+    io::puts(getenv("CX_STDLIB"));
+    system("ls");
     /*io::file in;
 
     if (!in.open("test.txt", "r")) {
@@ -46,10 +37,7 @@ int main() {
     io::puts("punct: " + punct.to_str);
     io::puts("hex_num: " + hex_num.to_str);
     
-    io::puts("total char * length = " + c.length.to_str);
-
-	// call some
-	some;*/
+    io::puts("total char * length = " + c.length.to_str);*/
 
     return 0;
 }

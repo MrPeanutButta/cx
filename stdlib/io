@@ -212,6 +212,7 @@ class n : base {
     }
 };
 
+namespace oo {
 class o : n {
     int ppp(){
         io::puts("o::ppp called");
@@ -222,3 +223,4 @@ class o : n {
         return 10;
     }
 };
+}

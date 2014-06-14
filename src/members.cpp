@@ -124,7 +124,7 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
             default:break;
         }
     } else {
-        mem = (cx_stack_item *) p_stack->top();
+        mem = (cx_stack_item *) p_stack->top();//->basic_types.addr__;
 
         ss << "[";
 
@@ -299,8 +299,6 @@ cx_type * cx_std_type_members::to_int(cx_runtime_stack *p_stack,
             ss << index[i];
             i += p_type->base_type()->size;
         }
-
-        ss << '\0';
     }
 
     p_stack->pop();

@@ -26,10 +26,11 @@ cx_type *cx_executor::execute_factor(void) {
 
                     if (token == tc_dot) {
                         p_function->runstack_item = top();
+                        set_type(p_function->p_type, p_result_type);
                         pop();
-                        p_function->defn.how = dc_variable;
+                        //p_function->defn.how = dc_variable;
                         p_result_type = execute_variable(p_function, false);
-                        p_function->defn.how = dc_function;
+                        //p_function->defn.how = dc_function;
                     }
                 }
                     break;
@@ -304,8 +305,6 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
     cx_symtab_node *p_field_id = p_node;
     cx_type *p_result_type = nullptr;
 
-    //p_field_id->defn.this_ptr.p_stack_item = top()
-
     if (p_field_id->defn.how == dc_function) {
         if (p_field_id->defn.routine.which == func_std_member) {
             p_result_type = execute_std_member_call(p_field_id, p_type);
@@ -329,12 +328,10 @@ cx_type *cx_executor::execute_field(cx_type *p_type) {
             }
 
             p_field_id->runstack_item = top();
-            //char *t = (char *)p_field_id->runstack_item->basic_types.addr__;
-            //char *tt = (char *)p_field_id->runstack_item->basic_types.addr__;
+
         }
     } else if (p_field_id->defn.how == dc_variable) {
         push((void *) p_field_id->runstack_item);
-        //p_field_id->runstack_item = top();
         p_result_type = p_field_id->p_type;
 
         get_token();

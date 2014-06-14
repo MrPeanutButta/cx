@@ -37,7 +37,6 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
             array.element_count = 0;
             array.min_index = 0;
             array.p_index_type = p_integer_type;
-			this->complex.p_class_scope = p_members;
             break;
         default:
             break;
@@ -49,13 +48,10 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
     if (p_type_id != nullptr) type_name = p_type_id->string__();
 
     if (form != fc_complex) {
-		if (this->complex.p_class_scope == nullptr){
-			this->complex.p_class_scope = std_type_members;
-		}
+
+        this->complex.p_class_scope = std_type_members;
 
         if (form != fc_array) {
-            //this->complex.p_class_scope = std_type_members;
-
             if (type_name == "int") {
                 type_code = cx_int;
             } else if (type_name == "char") {
@@ -76,9 +72,6 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
         } else {
             type_code = cx_address;
         }
-    } else {
-        //type_code = cx_file;
-        //complex.p_class_scope = std_stream_members;
     }
 }
 
@@ -124,9 +117,6 @@ cx_type::~cx_type() {
  * @param p_symtab : ptr to symbol table.
  */
 void initialize_builtin_types(cx_symtab *p_symtab) {
-
-    // if main already exists this is not the parent instance
-    // if (p_main_function_id != nullptr) return;
 
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = func_forward;
@@ -240,7 +230,7 @@ void remove_type(cx_type *&p_type) {
 
     if (--p_type->reference_count == 0) {
 
-		delete p_type;
+        delete p_type;
         p_type = nullptr;
 
     }
@@ -270,7 +260,7 @@ void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_integer_or_real(const cx_type *p_type1, 
+void check_integer_or_real(const cx_type *p_type1,
         const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
 
@@ -366,8 +356,6 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
     cx_type_code value_type = p_value_type->type_code;
 
     if (target_type == value_type) return;
-   // if ((value_type == cx_file) && (target_type != cx_file)) return;
-    //if ((target_type == cx_file) && (value_type != cx_file)) return;
 
     if (p_target_type->is_scalar_type()) {
         switch (target_type) {
