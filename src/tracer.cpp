@@ -12,7 +12,15 @@
  */
 void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
     if (trace_routine_flag) {
-        std::cout << ">> Entering routine " << p_function_id->string__() << std::endl;
+        if (p_function_id->p_type->form == fc_namespace) {
+            std::cout << ">> Allocating namespace ";
+        } else if (p_function_id->p_type->form == fc_complex) {
+            std::cout << ">> Allocating class ";
+        } else {
+            std::cout << ">> Entering routine ";
+        }
+
+        std::cout << p_function_id->string__() << std::endl;
     }
 }
 
@@ -20,9 +28,17 @@ void cx_executor::trace_routine_entry(const cx_symtab_node *p_function_id) {
  * 
  * @param p_function_id : ptr to the routine name's symbol table node
  */
-void cx_executor::trace_routine_exit(const cx_symtab_node *p_function_id) {
+void cx_executor::trace_routine_exit(const cx_symtab_node * p_function_id) {
     if (trace_routine_flag) {
-        std::cout << ">> Exiting routine " << p_function_id->string__() << std::endl;
+        if (p_function_id->p_type->form == fc_namespace) {
+            std::cout << ">> De-allocating namespace ";
+        } else if (p_function_id->p_type->form == fc_complex) {
+            std::cout << ">> De-allocating class ";
+        } else {
+            std::cout << ">> Exiting routine ";
+        }
+
+        std::cout << p_function_id->string__() << std::endl;
     }
 }
 
@@ -42,7 +58,7 @@ void cx_executor::trace_statement(void) {
  */
 void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
         const cx_stack_item &p_data_value,
-        const cx_type *p_data_type) {
+        const cx_type * p_data_type) {
     if (trace_store_flag) {
         cx_type_form_code form = p_target_id->p_type->form;
 
@@ -64,7 +80,7 @@ void cx_executor::trace_data_store(const cx_symtab_node *p_target_id,
  */
 void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
         const cx_stack_item &p_data_value,
-        const cx_type *p_data_type) {
+        const cx_type * p_data_type) {
     if (trace_fetch_flag) {
         cx_type_form_code form = p_id->p_type->form;
 
@@ -83,9 +99,9 @@ void cx_executor::trace_data_fetch(const cx_symtab_node *p_id,
  * @param p_data_type  : ptr to the data's type object.
  */
 void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
-        const cx_type *p_data_type) {
+        const cx_type * p_data_type) {
 
-    if (p_data_type->form == fc_stream) return;
+    //if (p_data_type->form == fc_complex) return;
 
     std::stringstream text;
 
@@ -117,7 +133,7 @@ void cx_executor::trace_data_value(const cx_stack_item &p_data_value,
         while (--count >= 0) p_id = p_id->next__;
         text << p_id->string__();
     } else {
-        text << p_data_value.basic_types.addr__;
+        //text << p_data_value.basic_types.addr__;
     }
 
     std::cout << text.str() << std::endl;

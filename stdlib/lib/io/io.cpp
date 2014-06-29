@@ -31,6 +31,7 @@ STDIO_API
 cx_type *cx_puts(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
+
     // first param as string
     const char *_string = (const char *) p_stack->top()->basic_types.addr__;
     p_stack->pop();
@@ -178,7 +179,7 @@ cx_type *cx_read(cx_runtime_stack *p_stack,
     p_stack->pop();
 
     // read buffer
-    unsigned char *buffer = (unsigned char *) std::malloc((size * count) + 1);
+    char *buffer = (char *) std::malloc((size * count) + 1);
     memset(buffer, 0, (size * count) + 1);
 
     // get node
@@ -526,19 +527,19 @@ cx_type *cx_tmpnam(cx_runtime_stack *p_stack,
 
 #ifdef __linux__
     mkstemp(buffer);
-    std::string tmp_name = buffer;
 #else
-    std::string tmp_name = std::tmpnam(buffer);
+    std::tmpnam(buffer);
 #endif
+    
     p_stack->push((void *) buffer);
 
     cx_type *p_str = new cx_type;
     p_str->form = fc_array;
     p_str->type_code = cx_address;
-    p_str->size = tmp_name.size();
+    p_str->size = (buffer != nullptr ? strlen(buffer) : 0);
     set_type(p_str->array.p_element_type, (cx_type *) cx_function_id->p_type->base_type());
-    p_str->array.element_count = tmp_name.length();
-    p_str->array.max_index = tmp_name.length();
+    p_str->array.element_count = p_str->size;
+    p_str->array.max_index = p_str->size;
 
     return p_str;
 }
@@ -591,14 +592,10 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
     cx_type *p_file_type = nullptr;
     cx_symtab *std_stream_members = nullptr;
 
-    // get the std symtab
-    //cx_symtab_node *p_std = p_symtab->enter("std", dc_namespace);
-    //p_symtab = p_std->p_type->complex.p_class_scope;
-
     cx_symtab_node *p_file_id = p_symtab->enter("file", dc_type);
 
     if (!p_file_type) {
-        set_type(p_file_type, new cx_type(fc_stream, sizeof (FILE), p_file_id));
+        set_type(p_file_type, new cx_type(fc_complex, sizeof (FILE), p_file_id));
         p_file_type->complex.p_class_scope = new cx_symtab;
         std_stream_members = p_file_type->complex.p_class_scope;
     }
@@ -669,6 +666,10 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
         mbr.p_node->defn.routine.parm_count = mbr.num_params;
         set_type(mbr.p_node->p_type, (cx_type *) mbr.p_type);
 
+        if(mbr.p_type != ct[cx_void]){
+            mbr.p_node->p_type->complex.p_class_scope = (cx_symtab *)ct[cx_std_member];
+        }
+        
         if ((mbr.name == "puts") || ((mbr.name == "putws"))) {
 
             // char *str
@@ -758,7 +759,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct) {
 
 
         if (mbr.name == "read") {
-            set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_uint8]);
+            set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
         } else if (mbr.name == "gets") {
             set_type(mbr.p_node->p_type->array.p_element_type, (cx_type *) ct[cx_char]);
         } else if (mbr.name == "getws") {

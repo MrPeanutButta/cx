@@ -71,9 +71,9 @@ const char *error_messages[] = {
     "Missing ,",
     "Missing DO",
     "Missing while",
-    "Missing THEN",
+     nullptr,
     "Invalid FOR control variable",
-    "Missing OF",
+    nullptr,
     "Invalid constant",
     "Missing constant",
     "Missing :",
@@ -94,12 +94,12 @@ const char *error_messages[] = {
     "Missing {",
     "Missing }",
     "Invalid index type",
-    "Missing BEGIN",
+    "Expected scope resolution operator ::",
     "Missing return",
     "Too many subscripts",
-    "Invalid field",
+    "Invalid member",
     "Nesting too deep",
-    "Missing PROGRAM",
+    nullptr,
     "Already specified in FORWARD",
     "Wrong number of actual parameters",
     "Invalid reference variable",
@@ -111,7 +111,9 @@ const char *error_messages[] = {
     "Missing '",
     "Invalid escape character",
     "Could not load library",
-    "No cx_lib_init in library"
+    "No cx_lib_init in library",
+    "Invalid namespace",
+    "Invalid class definition"
 };
 
 /** cx_error       print an arrow under the error and then
@@ -134,7 +136,7 @@ void cx_error(cx_error_code ec) {
     list.put_line();
 
     if (++error_count > max_syntax_errors) {
-        list.put_line("Too many syntax errors.  Translation aborted.");
+        //list.put_line("Too many syntax errors.  Translation aborted.");
         std::cin.get();
         exit(ec);
         //abort_translation(abort_too_many_syntax_errors);

@@ -2,42 +2,33 @@
 #include "parser.h"
 #include "common.h"
 
-//void cx_parser::insert_this_ptr(cx_symtab_node *p_class_id, cx_symtab_node *p_function_id) {
-//    cx_symtab_node *p_this = p_function_id->defn.routine.p_symtab->enter("this", dc_variable);
-//
-//    set_type(p_this->p_type, p_class_id->p_type);
-//    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
-//    
-//    if (!p_var_id) {
-//        p_function_id->defn.routine.locals.p_variable_ids = p_this;
-//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
-//    } else {
-//        while (p_var_id->next__)p_var_id = p_var_id->next__;
-//
-//        p_var_id->next__ = p_this;
-//        p_function_id->defn.routine.total_local_size += p_this->p_type->size;
-//    }
-//
-//    p_class_id->defn.has_this_ptr = true;
-//
-//}
-
-void cx_parser::parse_namespace(void) {
+void cx_parser::parse_namespace(cx_symtab_node *p_function_id) {
     get_token();
     cx_symtab_node *p_namespace_id = search_local(p_token->string__());
 
     if (p_namespace_id == nullptr) {
         p_namespace_id = enter_local(p_token->string__(), dc_namespace);
-        p_namespace_id->p_type = new cx_type();
+        set_type(p_namespace_id->p_type, new cx_type());// = ;
+        p_namespace_id->p_type->form = fc_namespace;
         p_namespace_id->p_type->complex.p_class_scope = new cx_symtab();
+
+		p_namespace_id->defn.routine.locals.p_parms_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_constant_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_type_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_variable_ids = nullptr;
+		p_namespace_id->defn.routine.locals.p_function_ids = nullptr;
+
+    } else if (p_namespace_id->defn.how != dc_namespace) {
+        cx_error(err_invalid_namespace);
     }
-    
+
     cx_symtab *p_old_symtab = (cx_symtab *) symtab_stack.get_current_symtab();
 
     symtab_stack.set_scope(++current_nesting_level);
     symtab_stack.set_current_symtab(p_namespace_id->p_type->complex.p_class_scope);
 
     get_token(); // namespace ID
+
     conditional_get_token_append(tc_left_bracket, err_missing_left_bracket); // open bracket
 
     parse_statement_list(p_namespace_id, tc_right_bracket);
@@ -45,6 +36,18 @@ void cx_parser::parse_namespace(void) {
     conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
     symtab_stack.set_scope(--current_nesting_level);
     symtab_stack.set_current_symtab(p_old_symtab);
+
+    cx_symtab_node *p_var_id = p_function_id->defn.routine.locals.p_variable_ids;
+    if (!p_var_id) {
+        p_function_id->defn.routine.locals.p_variable_ids = p_namespace_id;
+        p_function_id->defn.routine.total_local_size += p_namespace_id->p_type->size;
+    } else {
+        while (p_var_id->next__)p_var_id = p_var_id->next__;
+
+        p_var_id->next__ = p_namespace_id;
+        
+        p_function_id->defn.routine.total_local_size += p_namespace_id->p_type->size;
+    }
 }
 
 /** parse_statement          parse a statement.
@@ -90,7 +93,9 @@ void cx_parser::parse_statement(cx_symtab_node *p_function_id) {
             get_token();
             parse_execute_directive(p_function_id);
             break;
-        case tc_NAMESPACE: parse_namespace();
+        case tc_CLASS: parse_class(p_function_id);
+            break;
+        case tc_NAMESPACE: parse_namespace(p_function_id);
             break;
         default:
             break;
@@ -151,7 +156,7 @@ void cx_parser::parse_do(cx_symtab_node* p_function_id) {
     conditional_get_token_append(tc_WHILE, err_missing_WHILE);
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    check_boolean(parse_expression());
+    check_boolean(parse_expression(), nullptr);
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
@@ -172,7 +177,7 @@ void cx_parser::parse_while(cx_symtab_node* p_function_id) {
     get_token_append(); // while
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    check_boolean(parse_expression());
+    check_boolean(parse_expression(), nullptr);
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
@@ -202,7 +207,7 @@ void cx_parser::parse_if(cx_symtab_node* p_function_id) {
     get_token_append();
     conditional_get_token_append(tc_left_paren, err_missing_left_paren);
 
-    check_boolean(parse_expression());
+    check_boolean(parse_expression(), nullptr);
 
     conditional_get_token_append(tc_right_paren, err_missing_right_paren);
 
@@ -252,7 +257,7 @@ void cx_parser::parse_for(cx_symtab_node* p_function_id) {
     if (token != tc_semicolon) {
 
         // expr 2
-        check_boolean(parse_expression());
+        check_boolean(parse_expression(), nullptr);
         conditional_get_token_append(tc_semicolon, err_missing_semicolon);
     } else get_token_append();
 
@@ -374,6 +379,7 @@ void cx_parser::parse_compound(cx_symtab_node* p_function_id) {
 void cx_parser::parse_return(cx_symtab_node* p_function_id) {
     get_token_append();
 
+	if (p_function_id->p_type == p_void_type) return;
     // expr 1
     check_assignment_type_compatible(p_function_id->p_type, parse_expression(),
             err_incompatible_types);

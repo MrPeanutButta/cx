@@ -24,11 +24,11 @@ cx_type *cx_executor::execute_expression(void) {
     // execute the second simple expression.
     if (token_in(token, tokenlist_relation_ops)) {
         op = token;
-        p_operand1_type = p_result_type->base_type();
+        p_operand1_type = p_result_type;//->base_type();
         p_result_type = p_boolean_type;
 
         get_token();
-        p_operand2_type = execute_simple_expression()->base_type();
+        p_operand2_type = execute_simple_expression();//->base_type();
 
         execute_relational(op, p_operand1_type, p_operand2_type);
     }

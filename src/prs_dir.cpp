@@ -25,7 +25,8 @@ std::vector<void *> linux_libs;
 #endif
 
 void load_lib(const char *lib, cx_symtab *p_symtab) {
-
+    extern cx_symtab *std_type_members;
+    
     static const cx_type * cx_types_[] = {
         p_integer_type,
         p_char_type,
@@ -33,7 +34,8 @@ void load_lib(const char *lib, cx_symtab *p_symtab) {
         p_float_type,
         p_boolean_type,
         p_uint8_type,
-        p_void_type
+        p_void_type,
+        (cx_type *) std_type_members
     };
 
     typedef void (*lib_init)(cx_symtab *, const cx_type **);
@@ -145,7 +147,7 @@ void cx_parser::parse_execute_directive(cx_symtab_node *p_function_id) {
                     parser = new cx_parser
                             (new cx_source_buffer(lib_path.c_str()), true);
 
-                    parser->parse();
+                    parser->parse(p_function_id);
                 } catch (...) {
 
                 }

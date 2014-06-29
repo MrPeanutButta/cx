@@ -30,14 +30,24 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
 
     // track if we seen '*'
     bool is_unk_array_size = false;
-    cx_symtab_node *p_node = find(p_token->string__());
+	cx_symtab_node *p_node = nullptr;
 
-    // if complex then this is an object
-    if (p_node->p_type->form == fc_complex) {
-        parse_complex_type(p_function_id, p_node);
-        // predefined type name found
-    } else if ((p_node->defn.how == dc_type) && (p_node->p_type->form != fc_complex) &&
-            (p_node->defn.how != dc_function)) {
+	do{
+
+		p_node = find(p_token->string__());
+
+		if (p_node->defn.how == dc_namespace){
+			icode.put(p_node);
+			get_token_append();
+			conditional_get_token_append(tc_colon_colon, err_expected_scope_res_op);
+
+			p_node = p_node->p_type->complex.p_class_scope->search(p_token->string__());
+		}
+
+	} while (p_node->defn.how == dc_namespace);
+	
+	//(p_node->p_type->form != fc_complex) &&
+	if (((p_node->defn.how == dc_type) || (p_node->defn.how == dc_namespace)) && (p_node->defn.how != dc_function)) {
 
         get_token();
 
@@ -100,8 +110,8 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                         p_var_id->next__ = p_new_id;
                         p_function_id->defn.routine.total_local_size += p_new_id->p_type->size;
                     }
-
                 }
+
                 // add function to routine list
             } else if (p_new_id->defn.how == dc_function) {
                 if (p_function_id) {
@@ -114,7 +124,6 @@ void cx_parser::parse_declarations_or_assignment(cx_symtab_node *p_function_id) 
                         p_fun_id->next__ = p_new_id;
                     }
                 }
-
             }
 
         } while (token == tc_comma);

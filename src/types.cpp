@@ -16,9 +16,7 @@ cx_type *p_float_type = nullptr;
 cx_type *p_boolean_type = nullptr;
 cx_type *p_char_type = nullptr;
 cx_type *p_wchar_type = nullptr;
-//cx_type *p_class_type = nullptr;
 cx_type *p_complex_type = nullptr;
-//cx_type *p_file_type = nullptr;
 cx_type *p_dummy_type = nullptr;
 cx_type *p_void_type = nullptr;
 
@@ -47,15 +45,13 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
     std::string type_name = "dummy";
     is_temp_value = false;
 
-    if (p_type_id != nullptr)
-        type_name = p_type_id->string__();
+    if (p_type_id != nullptr) type_name = p_type_id->string__();
 
-    if (form != fc_stream) {
+    if (form != fc_complex) {
+
         this->complex.p_class_scope = std_type_members;
 
         if (form != fc_array) {
-            //this->complex.p_class_scope = std_type_members;
-
             if (type_name == "int") {
                 type_code = cx_int;
             } else if (type_name == "char") {
@@ -76,9 +72,6 @@ cx_type::cx_type(cx_type_form_code fc, int s, cx_symtab_node* p_id, cx_symtab *p
         } else {
             type_code = cx_address;
         }
-    } else {
-        type_code = cx_file;
-        //complex.p_class_scope = std_stream_members;
     }
 }
 
@@ -125,16 +118,12 @@ cx_type::~cx_type() {
  */
 void initialize_builtin_types(cx_symtab *p_symtab) {
 
-    // if main already exists this is not the parent instance
-    // if (p_main_function_id != nullptr) return;
-
     p_main_function_id = p_symtab->enter("main", dc_function);
     p_main_function_id->defn.routine.which = func_forward;
 
     cx_symtab_node *p_integer_id = p_symtab->enter("int", dc_type);
     cx_symtab_node *p_uint8_id = p_symtab->enter("byte", dc_type);
     cx_symtab_node *p_float_id = p_symtab->enter("float", dc_type);
-    cx_symtab_node *p_complex_id = p_symtab->enter("class", dc_type);
     cx_symtab_node *p_boolean_id = p_symtab->enter("bool", dc_type);
     cx_symtab_node *p_char_id = p_symtab->enter("char", dc_type);
     cx_symtab_node *p_wchar_id = p_symtab->enter("wchar", dc_type);
@@ -171,10 +160,6 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
         set_type(p_wchar_type, new cx_type(fc_scalar, sizeof (wchar_t), p_wchar_id));
     }
 
-    if (!p_complex_type) {
-        set_type(p_complex_type, new cx_type(fc_complex, 0, p_complex_id));
-    }
-
     set_type(p_main_function_id->p_type, p_integer_type);
 
     // link each predefined type id's node to it's type object
@@ -184,7 +169,7 @@ void initialize_builtin_types(cx_symtab *p_symtab) {
     set_type(p_boolean_id->p_type, p_boolean_type);
     set_type(p_char_id->p_type, p_char_type);
     set_type(p_wchar_id->p_type, p_wchar_type);
-    set_type(p_complex_id->p_type, p_complex_type);
+    set_type(p_void_id->p_type, p_void_type);
 
     p_boolean_type->enumeration.max = 1;
     p_boolean_type->enumeration.p_const_ids = p_false_id;
@@ -275,7 +260,8 @@ void check_relational_op_operands(const cx_type *p_type1, const cx_type *p_type2
  * @param p_type1 : ptr to the first  operand's type object.
  * @param p_type2 : ptr to the second operand's type object or nullptr.
  */
-void check_integer_or_real(const cx_type *p_type1, const cx_type *p_type2) {
+void check_integer_or_real(const cx_type *p_type1,
+        const cx_type *p_type2) {
     p_type1 = p_type1->base_type();
 
     if ((p_type1 != p_integer_type) && (p_type1 != p_float_type)) {
@@ -370,8 +356,6 @@ void check_assignment_type_compatible(const cx_type *p_target_type,
     cx_type_code value_type = p_value_type->type_code;
 
     if (target_type == value_type) return;
-    if ((value_type == cx_file) && (target_type != cx_file)) return;
-    if ((target_type == cx_file) && (value_type != cx_file)) return;
 
     if (p_target_type->is_scalar_type()) {
         switch (target_type) {

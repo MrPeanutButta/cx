@@ -17,18 +17,18 @@
  */
 char cx_token::get_escape_char(const char& c) {
     switch (c) {
-        case '\'': return '\'';
-        case '\"': return '\"';
-        case '\?': return '\?';
-        case '\\': return '\\';
-        case 'a': return '\a';
-        case 'b': return '\b';
-        case 'f': return '\f';
-        case 'n': return '\n';
-        case 'r': return '\r';
-        case 't': return '\t';
-        case 'v': return '\v';
-        case '0': return '\0';
+	case '\'': return '\''; break;
+	case '\"': return '\"'; break;
+	case '\?': return '\?'; break;
+	case '\\': return '\\'; break;
+	case 'a': return '\a'; break;
+	case 'b': return '\b'; break;
+	case 'f': return '\f'; break;
+	case 'n': return '\n'; break;
+	case 'r': return '\r'; break;
+	case 't': return '\t'; break;
+	case 'v': return '\v'; break;
+	case '0': return '\0'; break;
         default:
             cx_error(err_invalid_escape_char);
     }

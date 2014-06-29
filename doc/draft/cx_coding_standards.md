@@ -45,10 +45,11 @@ of a string does not include the null terminator, but the size of the
 buffer that contains the string does.
 
 Comments:
-    single line comments should only use C++ one line comments.
-    comment blocks should use C style comments to denote that these comments
-    are grouped.
+single line comments should only use C++ one line comments.
+comment blocks should use C style comments to denote that these comments
+are grouped.
 
+``` cpp
     // single liner not documented
 
     /* we have lots to talk about
@@ -59,9 +60,16 @@ Comments:
      /// for one liners
      /** main_topic     explanation.
       *
-      * NOTE:
+      * @NOTE:
       *     notes go here.
       */
+
+/** @TODO: 
+ * need #define directive to omit including headers twice
+ */
+
+/// @TODO need #define directive to omit including headers twice
+```
 
 Pointers:
     must always be initialized with nullptr if nothing else.

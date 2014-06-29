@@ -40,7 +40,8 @@ enum cx_type_form_code {
     fc_subrange,
     fc_array,
     fc_complex,
-    fc_stream,
+    //fc_stream,
+    fc_namespace
 };
 
 enum cx_type_code {
@@ -51,9 +52,10 @@ enum cx_type_code {
     cx_bool,
     cx_uint8,
     cx_void,
+    cx_std_member,
     cx_address,
     cx_complex,
-    cx_file
+    //cx_file
 };
 
 // below is for external liraries
@@ -107,15 +109,6 @@ public:
         } complex;
     };
 
-    //struct {
-    /* used only for internal to class.
-     * connects all scopes to a single table */
-    //cx_symtab *p_class_scope_symtab;
-
-    // seperate public, private and protected tables
-    //cx_scoped_symtab MemberTable;
-    //} complex;
-
     cx_type(cx_type_form_code fc, int s, cx_symtab_node *p_id, cx_symtab *p_members = nullptr);
     cx_type(int length, bool constant = false);
 
@@ -123,8 +116,7 @@ public:
 
     bool is_scalar_type(void) const {
         return (form != fc_array) &&
-                (form != fc_complex) &&
-                (form != fc_stream);
+                (form != fc_complex);
     }
 
     bool is_constant(void) const {
@@ -150,10 +142,12 @@ public:
 
     friend void check_relational_op_operands(const cx_type *p_type1,
             const cx_type *p_type2);
+    
     friend void check_integer_or_real(const cx_type *p_type1,
-            const cx_type *p_type2 = nullptr);
+            const cx_type *p_type2);
+    
     friend void check_boolean(const cx_type *p_type1,
-            const cx_type *p_type2 = nullptr);
+            const cx_type *p_type2);
     friend void check_assignment_type_compatible(const cx_type *p_target_type,
             const cx_type *p_value_type,
             cx_error_code ec);

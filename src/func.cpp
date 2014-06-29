@@ -35,11 +35,27 @@ void cx_executor::enter_function(cx_symtab_node * p_function_id) {
     // Allocate the callee's local variables.
     for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
             p_id;
-            p_id = p_id->next__) run_stack.allocate_value(p_id);
+            p_id = p_id->next__) {
 
-    // Switch to the callee's intermediate code.
-    p_icode = p_function_id->defn.routine.p_icode;
-    p_icode->reset();
+        if (!p_id->defn.is_this_ptr) {
+            if (p_id->p_type->form == fc_namespace) {
+                enter_function(p_id);
+            } else if (p_id->p_type->form == fc_complex) {
+                enter_function(p_id);
+            } else {
+                run_stack.allocate_value(p_id);
+            }
+        }
+    }
+
+    if (((p_function_id->p_type->form != fc_namespace)&&
+            (p_function_id->p_type->form != fc_complex))) {
+        // Switch to the callee's intermediate code.
+        p_icode = p_function_id->defn.routine.p_icode;
+        if (p_icode != nullptr) {
+            p_icode->reset();
+        }
+    }
 
 }
 
@@ -62,13 +78,25 @@ void cx_executor::exit_function(cx_symtab_node *p_function_id) {
 
     for (p_id = p_function_id->defn.routine.locals.p_variable_ids;
             p_id;
-            p_id = p_id->next__) run_stack.deallocate_value(p_id);
+            p_id = p_id->next__) {
+
+        if (!p_id->defn.is_this_ptr) {
+            if (p_id->p_type->form == fc_namespace) {
+                exit_function(p_id);
+            } else if (p_id->p_type->form == fc_complex) {
+                exit_function(p_id);
+            } else {
+                run_stack.deallocate_value(p_id);
+            }
+        }
+    }
 
     // pop off the callee's stack frame and return to the caller's
     // intermediate code.
-    //if (p_function_id->defn.routine.which != func_std_iterator){
-    run_stack.pop_frame(p_function_id, p_icode);
-    //}*/
+    if ((p_function_id->p_type->form != fc_namespace) &&
+            (p_function_id->p_type->form != fc_complex)) {
+        run_stack.pop_frame(p_function_id, p_icode);
+    }
 }
 
 /** execute_subroutine_call	Execute a call to a procedure or
@@ -80,32 +108,6 @@ void cx_executor::exit_function(cx_symtab_node *p_function_id) {
  */
 cx_type *cx_executor::execute_function_call(cx_symtab_node *p_function_id) {
     cx_type *p_result_type = nullptr;
-
-    //    switch (p_function_id->defn.routine.which) {
-    //        case func_declared:
-    //            p_result_type = execute_decl_function_call(p_function_id);
-    //            get_token();
-    //            break;
-    //            //case func_standard:
-    //        default:
-    //            get_token();
-    //            if (token == tc_left_paren) {
-    //                // push actual parameter values onto the stack.
-    //                execute_actual_parameters(p_function_id);
-    //                //  )
-    //                get_token();
-    //            }
-    //
-    //            p_result_type = (*p_function_id->defn.routine.ext_function)
-    //                    (&this->run_stack, p_function_id, p_function_id->p_type);
-    //            break;
-    //            /*default:
-    //                p_result_type = (*p_function_id->defn.routine.std_member)
-    //                        (this, p_function_id, p_function_id->p_type);
-    //
-    //                //@TODO need error out, may be forwarded but no function body
-    //                break;*/
-    //    }
 
     if (p_function_id->defn.routine.which == func_declared) {
         p_result_type = execute_decl_function_call(p_function_id);
@@ -162,7 +164,7 @@ cx_type *cx_executor::execute_decl_function_call
     if (token == tc_left_paren) {
         execute_actual_parameters(p_function_id);
 
-        get_token();
+        if (token == tc_right_paren) get_token();
     }
 
     //  )
@@ -189,7 +191,7 @@ cx_type *cx_executor::execute_decl_function_call
  * @param p_function_id : ptr to the subroutine name's symtab node
  */
 void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
-    cx_symtab_node *p_formal_id; // ptr to formal parm's symtab node
+    cx_symtab_node *p_formal_id = nullptr; // ptr to formal parm's symtab node
 
     get_token();
 
@@ -199,7 +201,7 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
             p_formal_id = p_formal_id->next__) {
 
         cx_type *p_formal_type = p_formal_id->p_type;
-        //get_token();
+
         if (token == tc_comma) get_token();
 
         /* Reference parameter: execute_variable will leave the actual
@@ -207,10 +209,15 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
         if (p_formal_id->defn.how == dc_reference) {
 
             //const int size = p_node->p_type->size;
-            set_type(p_formal_type, p_node->p_type);
+            //set_type(p_formal_type, p_node->p_type);
 
-            if (p_formal_type->form == fc_stream) {
+            if (p_formal_type->form == fc_complex) {
                 p_formal_id->defn.io.stream = p_node->defn.io.stream;
+            } else if (p_node->p_type->form == fc_namespace) {
+                cx_symtab_node *p_tmp = p_node;
+                get_token();
+                execute_variable(p_tmp, true);
+                p_formal_id->runstack_item = top();
             } else {
                 execute_variable(p_node, true);
                 p_formal_id->runstack_item = top();
@@ -238,12 +245,13 @@ void cx_executor::execute_actual_parameters(cx_symtab_node *p_function_id) {
                 }
 
                 void *p_source = top()->basic_types.addr__;
+                char *t = (char *) p_source;
 
-                //memset(p_target_address, 0, size + 1);
+                memset(p_target_address, 0, size + 1);
                 memcpy(p_target_address, p_source, size + 1);
 
                 char *p_array = (char *) p_target_address;
-                p_array[size] = '\0';
+                //p_array[size] = '\0';
                 pop();
                 push((void*) p_target_address);
 
@@ -276,14 +284,3 @@ void cx_executor::execute_RETURN(cx_symtab_node * p_function_id) {
     execute_assignment(p_function_id);
     token = tc_dummy;
 }
-
-/*
-cx_type *cx_executor::execute_std_function_call (cx_symtab_node* p_function_id) {
-    if (p_function_id->defn.routine.std_function != nullptr) {
-        return (*p_function_id->defn.routine.std_function)(this, p_function_id);
-    } else {
-
-    }
-    //@TODO need error checking
-    return p_dummy_type;
-}*/

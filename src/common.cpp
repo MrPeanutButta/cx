@@ -30,7 +30,7 @@ cx_symtab *p_symtab_list = nullptr;
 extern const cx_token_code tokenlist_declaration_start[] = {
     tc_SIGNED,
     tc_STATIC, tc_UNSIGNED,
-    tc_NAMESPACE, tc_USING, tc_char, tc_VIRTUAL,
+    tc_NAMESPACE, tc_CLASS, tc_USING, tc_char, tc_VIRTUAL,
     tc_EXPORT,
     tc_EXTERN, tc_TEMPLATE, tc_CONST, tc_PRIVATE,
     tc_PROTECTED, tc_THREADLOCAL, tc_PUBLIC, tc_TYPEDEF,
@@ -113,7 +113,7 @@ extern const cx_token_code tokenlist_statement_start[] = {
     tc_colon_colon, tc_RETURN, tc_CONTINUE, tc_IF,
     tc_FRIEND, tc_GOTO, tc_TRY, tc_DELETE,
     tc_SIGNED, tc_BREAK, tc_STATIC,
-    tc_UNSIGNED, tc_CATCH, tc_NAMESPACE, tc_USING, tc_char,
+    tc_UNSIGNED, tc_CATCH, tc_NAMESPACE,tc_CLASS, tc_USING, tc_char,
     tc_VIRTUAL, tc_EXPORT,
     tc_EXTERN, tc_TEMPLATE, tc_CONST,
     tc_PRIVATE, tc_THIS, tc_PROTECTED, tc_THREADLOCAL,

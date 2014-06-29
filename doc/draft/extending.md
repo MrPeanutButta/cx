@@ -1,6 +1,6 @@
 # Extending the Cx Interpreter
-## Minimum Requirements
-Extending the language requires a dynamic library to be compiled against **libcxapi**. The header file **include/cx-debug/cx_api.h** will need to be included in the project also. The library must contain the entry point **cx_lib_init** for the import directive to be successful.
+### Minimum Requirements
+Extending the language requires a dynamic library to be compiled against **libcx**. The header file **Cx/lib/include/cx_api.h** will need to be included in the project also. The library must contain the entry point **cx_lib_init** for the import directive to be successful.
 
 The entry point of the library will be passed the current scopes symbol table and a array of basic data types that can be used.
 
@@ -19,7 +19,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 }
 ```
 
-## Define Codes
+### Define Codes
 When defining an identifier you must specify a **Define Code**. The recognized **Define Codes** are:
 ``` cpp
 enum cx_define_code {
@@ -28,7 +28,7 @@ enum cx_define_code {
 };
 ```
 
-## Defining Constants
+### Defining Constants
 Declaring a constant must be done by entering the identifier name into the symbol table and setting the data type.
 ``` cpp
 
@@ -43,10 +43,10 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 }
 ```
 
-## Defining Types and Variables
+### Defining Types and Variables
 User defined types can be defined just like with **file** types being defined in **stdio**. Types are recognized by the define code **dc_type**
 
-### Basic Types
+#### Basic Types
 How new types are defined externally. This is an example of defining an integer **type** named **number** and a integer **variable** named **num**.
 ``` cpp
 
@@ -65,7 +65,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 }
 ```
 
-### Arrays
+#### Arrays
 Arrays are defined by the **form code** and are considered a new type.
 ``` cpp
 
@@ -84,7 +84,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 }
 ```
 
-## Defining Functions
+### Defining Functions
 Declaring functions is a little more involved. We must consider the parameters (value or reference) and return type. Also, we must set a pointer to the function we are defining. We are responsible for maintaining the stack and return type.
 ``` cpp
 LIBRARY_API
@@ -127,7 +127,7 @@ void cx_lib_init(cx_symtab *p_symtab, const cx_type **ct){
 }
 ```
 
-## Defining User Types with Members
+### Defining User Types with Members
 Defining a user defined type with members is simple, and we just need to enter one ID into the current symbol table then (**p_symtab**) create a new symbol table for the ID we just created. This is example code of how the **file** type is defiend followed by defining **stdin**. 
 ``` cpp
 LIBRARY_API

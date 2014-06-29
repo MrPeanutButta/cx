@@ -21,6 +21,7 @@ class cx_symtab_node;
 class cx_executor;
 class cx_runtime_stack;
 
+typedef std::map<std::string, cx_symtab_node *> symbol_table;
 typedef std::vector<cx_stack_item*> cx_stack;
 typedef cx_stack::iterator cx_stack_iterator;
 typedef cx_type *(*ext_call)(cx_runtime_stack *, cx_symtab_node *, const cx_type *);
@@ -61,12 +62,13 @@ struct cx_local_ids {
 
 class cx_define {
 public:
+	cx_define(){}
 
     cx_define_code how;
     bool is_this_ptr;
     
     struct {
-        //std::unique_ptr<cx_symtab_node> p_node;
+        cx_symtab_node *p_node;
         cx_stack_item *p_stack_item;
     } this_ptr;
 
@@ -141,6 +143,7 @@ public:
     // pointer to runstack item
     cx_stack_item *runstack_item;
 
+	cx_symtab_node();
     cx_symtab_node(const char *p_string, cx_define_code dc = dc_undefined);
     ~cx_symtab_node();
 
@@ -174,9 +177,10 @@ public:
 class cx_symtab {
     cx_symtab_node *root__;
     short nodes_count;
-    cx_symtab *next__;
-
+     
 public:
+
+	cx_symtab *next__;
 
     cx_symtab() : nodes_count(0) {
         extern cx_symtab *p_symtab_list;
@@ -199,17 +203,6 @@ public:
 
     cx_symtab_node *root(void) const {
         return root__;
-    }
-
-    cx_symtab *next(void) const {
-        return next__;
-    }
-
-    // DEPRECATED //
-
-    cx_symtab_node **node_vector(void) const {
-        //return p_vector_nodes;
-        return nullptr;
     }
 
     int node_count(void)const {

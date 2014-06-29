@@ -4,27 +4,6 @@
 #include "symtab.h"
 #include "icode.h"
 
-const char *cx_symbol_strings[] = {
-    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-    //operators and punctuation
-    "^", "&", "|", "~", "^=", "&=", "|=", "<<",
-    "<<=", ">>", ">>=", "-", "-=", "+", "+=", "=", "--",
-    "++", "/", "/=", "*", "*=", "<", ">", "==", "<=", ">=",
-    "!=", "%", "%=", "[", "]", "?", "#", ".*", "(", ")", "{",
-    "}", ":", ";", ",", "...", ".", "::", "->", "->*", "||",
-    "&&", "!", "\'", "\"",
-
-    "if", "return", "continue", "friend", "go_to", "try",
-    "delete", "typeid", "do", "singed",
-    "typename", "break", "sizeof",
-    "case", "static", "unsigned", "catch", "else", "namespace",
-    "using", "new", "virtual", "explicit",
-    "noexcept", "export", "switch",
-    "extern", "operator", "template", "const",
-    "private", "this", "while", "protected", "threadlocal",
-    "for", "public", "throw", "default", "typedef", "mutable", "include"
-};
-
 /** Copy constructor    Make a copy of the icode.  Only copy as
  *                      many bytes of icode as necessary.
  *
@@ -37,12 +16,6 @@ cx_icode::cx_icode(const cx_icode &icode) {
     p_code = cursor = new char[length];
     memcpy(p_code, icode.p_code, length);
 }
-
-//cx_icode::append(const cx_icode& icode){
-//    int total_length = int(cursor - p_code) + int(icode.cursor - icode.p_code);
-//
-//    int cur_loc = current_location();
-//}
 
 /** check_bounds         Guard against code segment overflow.
  *
@@ -159,9 +132,6 @@ cx_token *cx_icode::get(void) {
         case tc_dummy:
             break;
         default:
-
-            p_node = nullptr;
-            strcpy(p_token->string, cx_symbol_strings[(int) code]);
             break;
     }
 

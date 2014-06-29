@@ -6,6 +6,10 @@
 cx_symtab *std_type_members = nullptr;
 
 void init_std_members(void) {
+
+	// allocate std member functions for basic types
+	std_type_members = new cx_symtab;
+
     // initialize after basic types are init
 
     struct member {
@@ -15,20 +19,27 @@ void init_std_members(void) {
         ext_call member_call;
         cx_type *p_type;
     } members[] = {
-        { nullptr, "size", func_std_member, &cx_std_type_members::size, p_integer_type},
-        { nullptr, "length", func_std_member, &cx_std_type_members::length, p_integer_type},
-        { nullptr, "to_str", func_std_member, &cx_std_type_members::to_str, new cx_type(fc_array, 0, nullptr)},
-        { nullptr, "to_wstr", func_std_member, &cx_std_type_members::to_wstr, new cx_type(fc_array, 0, nullptr)},
-        { nullptr, "to_int", func_std_member, &cx_std_type_members::to_int, p_integer_type},
-        { nullptr, "to_chr", func_std_member, &cx_std_type_members::to_chr, p_char_type},
-        { nullptr, "to_flt", func_std_member, &cx_std_type_members::to_flt, p_float_type},
-        { nullptr, "to_bool", func_std_member, &cx_std_type_members::to_bool, p_boolean_type},
-        { nullptr, "to_wchr", func_std_member, &cx_std_type_members::to_wchr, p_wchar_type},
-        { nullptr, "to_byte", func_std_member, &cx_std_type_members::to_byte, p_uint8_type}
+        { nullptr, "size", func_std_member, &cx_std_type_members::size,
+            p_integer_type},
+        { nullptr, "length", func_std_member, &cx_std_type_members::length,
+            p_integer_type},
+        { nullptr, "to_str", func_std_member, &cx_std_type_members::to_str,
+		new cx_type(fc_array, 0, nullptr, std_type_members) },
+        { nullptr, "to_wstr", func_std_member, &cx_std_type_members::to_wstr,
+		new cx_type(fc_array, 0, nullptr, std_type_members) },
+        { nullptr, "to_int", func_std_member, &cx_std_type_members::to_int,
+            p_integer_type},
+        { nullptr, "to_chr", func_std_member, &cx_std_type_members::to_chr,
+            p_char_type},
+        { nullptr, "to_flt", func_std_member, &cx_std_type_members::to_flt,
+            p_float_type},
+        { nullptr, "to_bool", func_std_member, &cx_std_type_members::to_bool,
+            p_boolean_type},
+        { nullptr, "to_wchr", func_std_member, &cx_std_type_members::to_wchr,
+            p_wchar_type},
+        { nullptr, "to_byte", func_std_member, &cx_std_type_members::to_byte,
+            p_uint8_type}
     };
-
-    // allocate std member functions for basic types
-    std_type_members = new cx_symtab;
 
     p_integer_type->complex.p_class_scope = std_type_members;
     p_uint8_type->complex.p_class_scope = std_type_members;
@@ -43,6 +54,12 @@ void init_std_members(void) {
         mbr.p_node->defn.routine.parm_count = 0;
         mbr.p_node->defn.routine.total_parm_size = 0;
 
+		mbr.p_node->defn.routine.locals.p_variable_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_constant_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_function_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_parms_ids = nullptr;
+		mbr.p_node->defn.routine.locals.p_type_ids = nullptr;
+
         set_type(mbr.p_node->p_type, mbr.p_type);
         mbr.p_node->defn.routine.ext_function = mbr.member_call;
         mbr.p_node->defn.routine.which = mbr.func_code;
@@ -55,7 +72,8 @@ void init_std_members(void) {
     }
 }
 
-cx_type *cx_std_type_members::size(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type *cx_std_type_members::size(cx_runtime_stack *p_stack,
+        cx_symtab_node *p_node, const cx_type *p_type) {
 
     p_stack->pop();
     p_stack->push(new cx_stack_item((int) p_type->size));
@@ -63,17 +81,20 @@ cx_type *cx_std_type_members::size(cx_runtime_stack *p_stack, cx_symtab_node *p_
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::length(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type *cx_std_type_members::length(cx_runtime_stack *p_stack,
+        cx_symtab_node *p_node, const cx_type *p_type) {
 
     p_stack->pop();
-    p_stack->push(new cx_stack_item((int) p_type->form == fc_array ? p_type->array.element_count : 1));
+    p_stack->push(new cx_stack_item((int) p_type->form == fc_array ?
+            p_type->array.element_count : 1));
 
     return p_node->p_type;
 }
 
 /** @TODO - needs to be fixed for wide char
  */
-cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
+        cx_symtab_node *p_node, const cx_type *p_type) {
 
     std::stringstream ss;
     ss.clear();
@@ -83,30 +104,64 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack, cx_symtab_node *
     if (p_type->is_scalar_type()) {
         switch (p_type->type_code) {
             case cx_int:
-                ss << mem->basic_types.int__ << '\0';
+                ss << mem->basic_types.int__;
                 break;
             case cx_char:
-                ss << mem->basic_types.char__ << '\0';
+                ss << mem->basic_types.char__ ;
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << '\0';
+                ss << mem->basic_types.wchar__ ;
                 break;
             case cx_float:
-                ss << mem->basic_types.float__ << '\0';
+                ss << mem->basic_types.float__ ;
                 break;
             case cx_bool:
-                ss << (mem->basic_types.bool__ ? "true" : "false") << '\0';
+                ss << (mem->basic_types.bool__ ? "true" : "false") ;
                 break;
             case cx_uint8:
-                ss << (int) mem->basic_types.uint8__ << '\0';
+                ss << (int) mem->basic_types.uint8__ ;
                 break;
             default:break;
         }
+    } else {
+        mem = (cx_stack_item *) p_stack->top();//->basic_types.addr__;
+
+        ss << "[";
+
+        void *index = (char *) mem->basic_types.addr__;
+        for (int i = 0; i < p_type->array.element_count; ++i) {
+
+            switch (p_type->base_type()->type_code) {
+                case cx_int:
+                    ss << ((int *) index)[i];
+                    break;
+                case cx_char:
+                    ss << ((char *) index)[i];
+                    break;
+                case cx_wchar:
+                    ss << ((wchar_t *)index)[i];
+                    break;
+                case cx_float:
+                    ss << ((float *) index)[i];
+                    break;
+                case cx_bool:
+                    ss << (((bool *)index)[i] ? "true" : "false");
+                    break;
+                case cx_uint8:
+                    ss << ((uint8_t *) index)[i];
+                    break;
+                default:break;
+            }
+
+            if (i + 1 < p_type->array.element_count) ss << ", ";
+        }
+
+        ss << "]";
     }
 
     p_stack->pop();
 
-    const int length = ss.str().length() - 1;
+    const int length = ss.str().length();
     const int size = length;
 
     cx_type *p_str = new cx_type(fc_array, size, nullptr);
@@ -120,7 +175,8 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack, cx_symtab_node *
     return p_str;
 }
 
-cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack,
+        cx_symtab_node *p_node, const cx_type *p_type) {
 
     std::wstringstream ss;
     ss.clear();
@@ -132,27 +188,60 @@ cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack, cx_symtab_node 
     if (p_type->is_scalar_type()) {
         switch (p_type->type_code) {
             case cx_int:
-                ss << mem->basic_types.int__ << L'\0';
+                ss << mem->basic_types.int__;
                 break;
             case cx_char:
-                ss << mem->basic_types.char__ << L'\0';
+                ss << mem->basic_types.char__;
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << L'\0';
+                ss << mem->basic_types.wchar__;
                 break;
             case cx_float:
-                ss << mem->basic_types.float__ << L'\0';
+                ss << mem->basic_types.float__;
                 break;
             case cx_bool:
-                ss << (mem->basic_types.bool__ ? L"true" : L"false") << L'\0';
+                ss << (mem->basic_types.bool__ ? L"true" : L"false");
                 break;
             case cx_uint8:
-                ss << (int) mem->basic_types.uint8__ << L'\0';
+                ss << (int) mem->basic_types.uint8__;
                 break;
             default:break;
         }
-    }
+    } else {
+        mem = (cx_stack_item *) p_stack->top();
 
+        ss << "[";
+
+        void *index = (wchar_t *) mem->basic_types.addr__;
+        for (int i = 0; i < p_type->array.element_count; ++i) {
+
+            switch (p_type->base_type()->type_code) {
+                case cx_int:
+                    ss << ((int *) index)[i];
+                    break;
+                case cx_char:
+                    ss << ((char *) index)[i];
+                    break;
+                case cx_wchar:
+                    ss << ((wchar_t *)index)[i];
+                    break;
+                case cx_float:
+                    ss << ((float *) index)[i];
+                    break;
+                case cx_bool:
+                    ss << (((bool *)index)[i] ? L"true" : L"false");
+                    break;
+                case cx_uint8:
+                    ss << ((uint8_t *) index)[i];
+                    break;
+                default:break;
+            }
+
+            if (i + 1 < p_type->array.element_count) ss << L", ";
+        }
+
+        ss << L"]";
+    }
     p_stack->pop();
 
     const int size = ss.str().size() - 1;
@@ -170,61 +259,77 @@ cx_type *cx_std_type_members::to_wstr(cx_runtime_stack *p_stack, cx_symtab_node 
     return p_wstr;
 }
 
-cx_type *cx_std_type_members::to_int(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_int(cx_runtime_stack *p_stack,
+        cx_symtab_node *p_node, const cx_type * p_type) {
 
     std::stringstream ss;
     ss.clear();
 
-    cx_stack_item *mem = (cx_stack_item *) p_stack->top()->basic_types.addr__;
+    cx_stack_item *mem = nullptr;
 
     if (p_type->is_scalar_type()) {
+        mem = (cx_stack_item *) p_stack->top()->basic_types.addr__;
+
         switch (p_type->type_code) {
             case cx_int:
-                ss << mem->basic_types.int__ << '\0';
+                ss << mem->basic_types.int__;
                 break;
             case cx_char:
-                ss << mem->basic_types.char__ << '\0';
+                ss << mem->basic_types.char__;
                 break;
             case cx_wchar:
-                ss << mem->basic_types.wchar__ << '\0';
+                ss << mem->basic_types.wchar__;
                 break;
             case cx_float:
-                ss << mem->basic_types.float__ << '\0';
+                ss << mem->basic_types.float__;
                 break;
             case cx_bool:
-                ss << mem->basic_types.bool__ << '\0';
+                ss << mem->basic_types.bool__;
                 break;
             case cx_uint8:
-                ss << (int) mem->basic_types.uint8__ << '\0';
+                ss << (int) mem->basic_types.uint8__;
                 break;
             default:break;
         }
+    } else {
+        mem = (cx_stack_item *) p_stack->top();
+
+        char *index = (char *) mem->basic_types.addr__;
+        for (int i = 0; i < p_type->size;) {
+            ss << index[i];
+            i += p_type->base_type()->size;
+        }
     }
 
-    return p_node->p_type;
+    p_stack->pop();
+
+    int ret_val = 0;
+    p_stack->push(new cx_stack_item((int) ((ss >> ret_val) ? ret_val : 0)));
+
+    return p_integer_type;
 }
 
-cx_type *cx_std_type_members::to_chr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
-
-    return p_node->p_type;
-}
-
-cx_type *cx_std_type_members::to_flt(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
-
-    return p_node->p_type;
-}
-
-cx_type *cx_std_type_members::to_bool(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_chr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::to_wchr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_flt(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
 
-cx_type *cx_std_type_members::to_byte(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type *p_type) {
+cx_type * cx_std_type_members::to_bool(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
+
+    return p_node->p_type;
+}
+
+cx_type * cx_std_type_members::to_wchr(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
+
+    return p_node->p_type;
+}
+
+cx_type * cx_std_type_members::to_byte(cx_runtime_stack *p_stack, cx_symtab_node *p_node, const cx_type * p_type) {
 
     return p_node->p_type;
 }
