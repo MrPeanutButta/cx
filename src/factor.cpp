@@ -215,7 +215,7 @@ cx_type *cx_executor::execute_variable(const cx_symtab_node *p_id,
     // or a record, replace the address at the top of the stack
     // with the data value.
     if ((!address_flag) && (p_type->is_scalar_type())) {
-        cx_stack_item *t = (cx_stack_item *) top()->basic_types.addr__;
+		cx_stack_item *t = (cx_stack_item *)top();// ->basic_types.addr__;
         pop();
         switch (p_type->type_code) {
             case cx_uint8:

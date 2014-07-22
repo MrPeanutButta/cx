@@ -139,7 +139,7 @@ public:
     }
 
     void push(const bool &value) {
-        cx_runstack.push_back(new cx_stack_item((bool)value));
+		cx_runstack.push_back(new cx_stack_item((bool)value));
     }
 
     void push(const uint8_t &value) {

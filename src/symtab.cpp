@@ -317,8 +317,10 @@ cx_line_num_list::~cx_line_num_list(void) {
  *
  */
 void cx_line_num_list::update(void) {
+	if (tail == nullptr) return;
+
     // If the line number is already there, it'll be at the tail.
-    if (tail && (tail->number == current_line_number)) return;
+    if (tail->number == current_line_number) return;
 
     // Append the new node.
     tail->next__ = new cx_line_num_node;

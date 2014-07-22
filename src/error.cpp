@@ -40,7 +40,7 @@ const char *abort_message[] = {
  */
 void abort_translation(cx_abort_code ac) {
     std::cerr << "*** fatal translator error: " << abort_message[-ac] << std::endl;
-    std::cin.get();
+    system("pause");
     exit(ac);
 }
 
@@ -137,7 +137,7 @@ void cx_error(cx_error_code ec) {
 
     if (++error_count > max_syntax_errors) {
         //list.put_line("Too many syntax errors.  Translation aborted.");
-        std::cin.get();
+		system("pause");
         exit(ec);
         //abort_translation(abort_too_many_syntax_errors);
     }
@@ -160,6 +160,6 @@ void cx_runtime_error(cx_runtime_error_code ec) {
 
     std::cout << "\nruntime error in line <" << current_line_number << ">: "
             << runtime_error_messages[ec] << std::endl;
-
+	system("pause");
     exit(abort_runtime_error);
 }

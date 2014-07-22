@@ -96,6 +96,7 @@ cx_type::cx_type(int length, bool constant)
  *                  identifiers.
  */
 cx_type::~cx_type() {
+	is_disposed = true;
     switch (form) {
         case fc_array:
             remove_type(array.p_element_type);
@@ -229,10 +230,10 @@ void remove_type(cx_type *&p_type) {
     if (p_type == nullptr) return;
 
     if (--p_type->reference_count == 0) {
-
-        delete p_type;
-        p_type = nullptr;
-
+		if (!p_type->is_disposed){
+			delete p_type;
+			p_type = nullptr;
+		}
     }
 }
 

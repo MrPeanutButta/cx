@@ -32,7 +32,8 @@ cx_type *cx_rand(cx_runtime_stack *p_stack,
         cx_symtab_node *cx_function_id,
         const cx_type *p_type) {
 
-    p_stack->push(new cx_stack_item((int) rand()));
+	int t = rand();
+    p_stack->push((int) t);
 
     return cx_function_id->p_type;
 }
@@ -112,7 +113,7 @@ cx_type *cx_system(cx_runtime_stack *p_stack,
     const char *p_command = (const char *)p_stack->top()->basic_types.addr__;
         p_stack->pop();
 
-    p_stack->push((void *) new cx_stack_item((int)system(p_command)));
+    p_stack->push((int)system(p_command));
 
     return cx_function_id->p_type;
 }

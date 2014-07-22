@@ -67,10 +67,11 @@ extern const char *form_strings[];
 class cx_type {
     int reference_count;
     bool is_constant__;
+	bool is_disposed;
 
 public:
 
-    cx_type() { //cx_type_form_code form_code){
+	cx_type() : is_disposed(false){ //cx_type_form_code form_code){
         //this->form = form_code;
     }
 

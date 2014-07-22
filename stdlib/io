@@ -1,4 +1,4 @@
-/** Cx library to perform Input/Output operations
+/* Cx library to perform Input/Output operations
  *
  * @file     : io
  * @author   : <aaron.hebert@gmail.com>
@@ -20,13 +20,12 @@
  * using the library.
  */
 
-/** @todo
+/* @todo
  * @need #define directive to omit including headers twice
  * @need to test wide char functions
  */
 
-/*
- * Defined externally in io.cpp:
+/* Imported from libio
  * perror - displays a character string corresponding of the current error to stderr (function)
  * remove - erases a file (function)
  * rename - renames a file (function)
@@ -197,6 +196,8 @@ namespace io {
 
 } // namespace io
 
+
+//// testing
 class base {
     int p(){
         io::puts("base::p called");

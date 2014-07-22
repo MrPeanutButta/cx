@@ -99,9 +99,12 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
     std::stringstream ss;
     ss.clear();
 
-    cx_stack_item *mem = (cx_stack_item *) p_stack->top()->basic_types.addr__;
+	// ->basic_types.addr__;
+	cx_stack_item *mem = ((cx_stack_item *)p_stack->top()->basic_types.addr__);
 
     if (p_type->is_scalar_type()) {
+		
+
         switch (p_type->type_code) {
             case cx_int:
                 ss << mem->basic_types.int__;
@@ -124,7 +127,6 @@ cx_type *cx_std_type_members::to_str(cx_runtime_stack *p_stack,
             default:break;
         }
     } else {
-        mem = (cx_stack_item *) p_stack->top();//->basic_types.addr__;
 
         ss << "[";
 
