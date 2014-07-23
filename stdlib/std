@@ -1,0 +1,23 @@
+/* Cx library for standard functions
+ *
+ * file     : std
+ * author   : <aaron.hebert@gmail.com>
+ * desc     : Standard functions
+ *
+ * This header defines several general purpose functions 
+ */
+
+ 
+/* Imported from libstd
+ * int rand() - random number generator
+ * void srand(int seed) - seeds rand(), int is converted to unsigned int
+ * void free(void block) - release a block of allocated RAM
+ * void abort() - abort execution
+ * void exit(int status) - exit with a status code; returns status to OS
+ * char *getenv(char *name) - get environment variable 'name' value
+ * int system(char *command) - call underlying system to execute a command
+ */
+ 
+namespace std{
+#import libstd
+}
