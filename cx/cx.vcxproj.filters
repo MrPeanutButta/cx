@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{5721468d-783e-4431-a69f-4f2314bcfec1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documentation">
+      <UniqueIdentifier>{d92ea09a-11e3-435c-9067-1483404cc7b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Standard Library">
+      <UniqueIdentifier>{0f673a48-ba6d-42ea-9901-7e5655b16b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Standard Library\cx">
+      <UniqueIdentifier>{499724ab-beca-4ddf-96f2-0d28ae848f01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Standard Library\lib">
+      <UniqueIdentifier>{0cdb9356-24e8-4592-a73b-93a9fa9dc65b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documentation\dev">
+      <UniqueIdentifier>{727f67b1-d803-4dad-a3be-b27b50e315c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documentation\cx language">
+      <UniqueIdentifier>{684eef4f-6c2e-4161-b030-a1c07e72e755}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cxvm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vm_test.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="symtab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tknnum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tknstrsp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tknword.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stdlib\lib\io\io.cpp">
+      <Filter>Standard Library\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stdlib\lib\math\math.cpp">
+      <Filter>Standard Library\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stdlib\lib\std\std.cpp">
+      <Filter>Standard Library\lib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cxvm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="symtab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="token.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\stdlib\char">
+      <Filter>Standard Library\cx</Filter>
+    </None>
+    <None Include="..\stdlib\io">
+      <Filter>Standard Library\cx</Filter>
+    </None>
+    <None Include="..\stdlib\math">
+      <Filter>Standard Library\cx</Filter>
+    </None>
+    <None Include="..\stdlib\std">
+      <Filter>Standard Library\cx</Filter>
+    </None>
+    <None Include="..\stdlib\string">
+      <Filter>Standard Library\cx</Filter>
+    </None>
+    <None Include="..\stdlib\lib\io\io.def">
+      <Filter>Standard Library\lib</Filter>
+    </None>
+    <None Include="..\stdlib\lib\math\math.def">
+      <Filter>Standard Library\lib</Filter>
+    </None>
+    <None Include="..\stdlib\lib\std\std.def">
+      <Filter>Standard Library\lib</Filter>
+    </None>
+    <None Include="..\doc\preprocessors">
+      <Filter>Documentation\dev</Filter>
+    </None>
+    <None Include="..\doc\draft\cx_coding_standards.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\data-types.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\directives.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\doc.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\expr.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\expression_design (draft).md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\extending.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\if.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\index.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\io.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\keywords.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\kw-template.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\operators.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+    <None Include="..\doc\draft\ptypes.md">
+      <Filter>Documentation\cx language</Filter>
+    </None>
+  </ItemGroup>
+</Project>
