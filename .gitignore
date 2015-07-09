@@ -1,9 +1,9 @@
 *
+!cx/
 !doc/
 !examples/
-!include/
-!lib/
-!src/
 !stdlib/
+!cx.sdf
+!cx.sln
 !.gitignore
 !README.md

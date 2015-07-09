@@ -133,6 +133,7 @@
     <None Include="..\doc\draft\operators.md" />
     <None Include="..\doc\draft\ptypes.md" />
     <None Include="..\doc\preprocessors" />
+    <None Include="..\README.md" />
     <None Include="..\stdlib\char" />
     <None Include="..\stdlib\io" />
     <None Include="..\stdlib\lib\io\io.def">

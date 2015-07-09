@@ -178,5 +178,8 @@
     <None Include="..\doc\draft\ptypes.md">
       <Filter>Documentation\cx language</Filter>
     </None>
+    <None Include="..\README.md">
+      <Filter>Documentation</Filter>
+    </None>
   </ItemGroup>
 </Project>
