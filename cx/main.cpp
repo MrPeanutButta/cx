@@ -10,14 +10,14 @@
 
 #ifdef __CX_PROFILE_EXECUTION__
 #include <chrono>
-
+/*
 #ifdef _WIN32_LEAK_DETECT
 #ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC // below for leak detection on windows
 #include <stdlib.h>
 #include <crtdbg.h>
-#endif
-#endif
+#endif*/
+//#endif
 
 #endif
 
@@ -161,6 +161,8 @@ const char* opcode_string[] = {
 	"lmul",
 	"lneg",
 	"lookupswitch",
+	"logic_or",
+	"logic_and",
 	"lor",
 	"lrem",
 	"lreturn",
@@ -196,12 +198,7 @@ const char* opcode_string[] = {
 };
 
 namespace cx{
-	// turn on to view Cx debugging
-#ifdef _DEBUG
-	bool cx_dev_debug_flag = true;
-#else
-	bool cx_dev_debug_flag = false;
-#endif
+	extern bool	cx_dev_debug_flag;
 }
 
 void set_options(int argc, char **argv);
@@ -280,11 +277,11 @@ int main(int argc, char *argv[]) {
         time_span = duration_cast < duration<double >> (t2 - t1);
         std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
-#ifdef _WIN32_LEAK_DETECT
+/*#ifdef _WIN32_LEAK_DETECT
 #ifdef _WIN32
         _CrtDumpMemoryLeaks();
 #endif
-#endif
+#endif*/
         std::cin.get();
 #endif
 

@@ -620,6 +620,7 @@ namespace cx{
 
 		p_result_type = parse_term(p_function_id);
 
+		// TODO ++ -- should be in this section
 		if (unary_op_flag) {
 			if (unary_op == TC_BIT_NOT) {
 				check_bitwise_integer(p_result_type);
@@ -641,24 +642,50 @@ namespace cx{
 					ERR_INCOMPATIBLE_TYPES);
 
 				p_result_type = parse_rvalue(p_function_id, p_result_type, p_operand_type);
-				this->emit(p_function_id, IADD);
+				this->emit_add(p_function_id, p_operand_type);
 
 				break;
 			case TC_MINUS:
 				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
 					ERR_INCOMPATIBLE_TYPES);
+
+				this->emit_sub(p_function_id, p_operand_type);
 				break;
 			case TC_BIT_LEFTSHIFT:
+				check_bitwise_integer(p_result_type);
+				check_bitwise_integer(p_operand_type);
+
+				this->emit(p_function_id, { ISHL });
+				break;
 			case TC_BIT_RIGHTSHIFT:
+				check_bitwise_integer(p_result_type);
+				check_bitwise_integer(p_operand_type);
+
+				this->emit(p_function_id, { ISHR });
+				break;
 			case TC_BIT_AND:
+				check_bitwise_integer(p_result_type);
+				check_bitwise_integer(p_operand_type);
+
+				this->emit(p_function_id, { IAND });
+				break;
 			case TC_BIT_XOR:
+				check_bitwise_integer(p_result_type);
+				check_bitwise_integer(p_operand_type);
+
+				this->emit(p_function_id, { IXOR });
+				break;
 			case TC_BIT_OR:
-				check_bitwise_integer(p_result_type, p_operand_type);
-				p_result_type = p_integer_type;
+				check_bitwise_integer(p_result_type);
+				check_bitwise_integer(p_operand_type);
+
+				this->emit(p_function_id, { IOR });
 				break;
 			case TC_LOGIC_OR:
 				check_boolean(p_result_type, p_operand_type);
 				p_result_type = p_boolean_type;
+
+				this->emit(p_function_id, { LOGIC_OR });
 				break;
 			default:
 				break;
@@ -747,6 +774,8 @@ namespace cx{
 			case TC_LOGIC_AND:
 				check_boolean(p_result_type, p_operand_type);
 				p_result_type = p_boolean_type;
+
+				this->emit(p_function_id, { LOGIC_AND });
 				break;
 			default:
 				break;
@@ -787,6 +816,8 @@ namespace cx{
 			case DC_CONSTANT:
 				get_token_append();
 				p_result_type = p_node->p_type;
+
+				this->emit_const(p_function_id, p_node);
 				break;
 
 			case DC_TYPE:
@@ -814,22 +845,27 @@ namespace cx{
 
 			if (p_node == nullptr) {
 				p_node = enter_local(p_token->string);
+			}
 
-				if (p_token->type() == T_INT) {
-					p_node->p_type = p_integer_type;
-					p_node->defined.constant.value.i_ = p_token->value().i_;
-					op = ICONST;
-				}
-				else {
-					p_node->p_type = p_float_type;
-					p_node->defined.constant.value.f_ = p_token->value().f_;
-					op = FCONST;
-				}
+			switch (p_token->type()){
+			case T_INT:
+				p_node->p_type = p_integer_type;
+				p_node->defined.constant.value.i_ = p_token->value().i_;
+				op = ICONST;
+				break;
+			case T_FLOAT:
+				p_node->p_type = p_float_type;
+				p_node->defined.constant.value.f_ = p_token->value().f_;
+				op = FCONST;
+				break;
+			default:
+				cx_error(ERR_INCOMPATIBLE_ASSIGNMENT);
 			}
 
 			p_result_type = p_node->p_type;
 			this->emit(p_function_id, op, p_node->defined.constant.value);
 		}
+
 		get_token();
 		break;
 
@@ -844,12 +880,12 @@ namespace cx{
 			}
 
 			p_result_type = p_char_type;
-			
+
 			this->emit_load(p_function_id, p_id, false);
 			//icode.put(p_node);
 			get_token();
 		}
-			break;
+		break;
 		//case tc_string:
 		//{
 
@@ -884,58 +920,58 @@ namespace cx{
 		//}
 		//	break;
 
-		//case tc_left_paren:
-		//	get_token_append();
-		//	p_result_type = parse_expression();
-		//	conditional_get_token_append(tc_right_paren, err_missing_right_paren);
-		//	break;
-		//case tc_logic_NOT:
-		//	get_token_append();
-		//	parse_expression();
-		//	p_result_type = p_boolean_type;
-		//	break;
-		//case tc_left_bracket:
-		//{
-		//	get_token_append();
-		//	int total_size = 0;
-		//	int elem_count = 0;
-		//	bool comma = false;
-		//	cx_type *p_prev_type = nullptr;
+		case TC_LEFT_PAREN:
+			get_token();
+			p_result_type = parse_expression(p_function_id);
+			conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
+			break;
+			//case tc_logic_NOT:
+			//	get_token_append();
+			//	parse_expression();
+			//	p_result_type = p_boolean_type;
+			//	break;
+			//case tc_left_bracket:
+			//{
+			//	get_token_append();
+			//	int total_size = 0;
+			//	int elem_count = 0;
+			//	bool comma = false;
+			//	cx_type *p_prev_type = nullptr;
 
-		//	do {
-		//		p_result_type = parse_expression();
-		//		p_prev_type = p_result_type;
+			//	do {
+			//		p_result_type = parse_expression();
+			//		p_prev_type = p_result_type;
 
-		//		total_size += p_result_type->size;
+			//		total_size += p_result_type->size;
 
-		//		if (p_prev_type != nullptr) {
-		//			// make sure we init all of the same type
-		//			check_assignment_type_compatible(p_prev_type, p_result_type,
-		//				err_incompatible_types);
-		//		}
+			//		if (p_prev_type != nullptr) {
+			//			// make sure we init all of the same type
+			//			check_assignment_type_compatible(p_prev_type, p_result_type,
+			//				err_incompatible_types);
+			//		}
 
-		//		if (token == tc_comma) {
-		//			comma = true;
-		//			get_token_append();
-		//		}
-		//		else comma = false;
+			//		if (token == tc_comma) {
+			//			comma = true;
+			//			get_token_append();
+			//		}
+			//		else comma = false;
 
-		//		++elem_count;
+			//		++elem_count;
 
-		//	} while (comma);
+			//	} while (comma);
 
-		//	conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
+			//	conditional_get_token_append(tc_right_bracket, err_missing_right_bracket);
 
-		//	cx_type *p_array_type = new cx_type(F_ARRAY, total_size, nullptr);
-		//	set_type(p_array_type->array.p_element_type, p_result_type);
-		//	p_array_type->array.element_count = elem_count;
-		//	p_array_type->array.max_index = elem_count;
+			//	cx_type *p_array_type = new cx_type(F_ARRAY, total_size, nullptr);
+			//	set_type(p_array_type->array.p_element_type, p_result_type);
+			//	p_array_type->array.element_count = elem_count;
+			//	p_array_type->array.max_index = elem_count;
 
-		//	p_result_type = p_array_type;
-		//}
-		//	break;
-		//case TC_SEMICOLON:
-		//	break;
+			//	p_result_type = p_array_type;
+			//}
+			//	break;
+			//case TC_SEMICOLON:
+			//	break;
 		default:
 			cx_error(ERR_INVALID_EXPRESSION);/// err_invalid_expression);
 			p_result_type = p_dummy_type;
@@ -1436,10 +1472,10 @@ namespace cx{
 
 		/* If there are no actual parameters, there better not be
 		 * any formal parameters either. */
-		
+
 		if (token != TC_LEFT_PAREN) {
-				//if (parm_check_flag && p_formal_id) cx_error(ERR_WRONG_NUMBER_OF_PARMS);
-				return;
+			//if (parm_check_flag && p_formal_id) cx_error(ERR_WRONG_NUMBER_OF_PARMS);
+			return;
 		}
 
 		std::vector <std::shared_ptr<symbol_table_node>>::iterator p_formal_id;
@@ -1475,7 +1511,7 @@ namespace cx{
 	*                        id's symbol table node
 	* @param parm_check_flag : true to check parameter, false not to.
 	*/
-	void parser::parse_actual_parm(symbol_table_node_ptr &p_function_id, 
+	void parser::parse_actual_parm(symbol_table_node_ptr &p_function_id,
 		symbol_table_node_ptr &p_node_id, symbol_table_node_ptr &p_formal_id) {
 		///* If we're not checking the actual parameters against
 		//* the corresponding formal parameters (as during error
@@ -1513,7 +1549,7 @@ namespace cx{
 			p_function_id->defined.routine.program_code.push_back({ PLOAD, p_actual_id.get() });
 			check_assignment_type_compatible(p_function_id, p_formal_id->p_type, p_actual_id->p_type,
 				ERR_INCOMPATIBLE_TYPES);
-			
+
 			resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
 		}// cx_error: parse the actual parameter anyway for error recovery.
 		else {
@@ -2447,6 +2483,95 @@ namespace cx{
 	conditional_get_token_append(TC_SEMICOLON, err_missing_semicolon);
 	}*/
 
+void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
+	opcode op;
+
+	switch (p_id->p_type->typecode)
+	{
+	case T_BOOLEAN:
+	case T_BYTE:
+	case T_CHAR:
+	case T_SHORT:
+	case T_WCHAR:
+	case T_INT:
+		op = ICONST;
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.i_ });
+		break;
+	case T_FLOAT:
+		op = FCONST;
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.f_ });
+		break;
+	case T_LONG:
+		op = LCONST;
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.l_ });
+		break;
+	case T_REFERENCE:
+		op = ACONST_NULL;
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.a_ });
+		break;
+	default:
+		break;
+	}
+}
+
+	void parser::emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IADD;
+			break;
+		case T_FLOAT:
+			op = FADD;
+			break;
+		case T_LONG:
+			op = LADD;
+			break;
+		case T_REFERENCE: // TODO fix
+			op = ASTORE;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = ISUB;
+			break;
+		case T_FLOAT:
+			op = FSUB;
+			break;
+		case T_LONG:
+			op = LSUB;
+			break;
+		case T_REFERENCE: // TODO fix
+			op = ASTORE;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
 	void parser::emit(symbol_table_node_ptr &p_function_id, cx::opcode op1){
 		p_function_id->defined.routine.program_code.push_back(op1);
 	}
@@ -2471,9 +2596,6 @@ namespace cx{
 		case T_WCHAR:
 		case T_INT:
 			op = ISTORE;
-			break;
-		case T_DOUBLE:
-			op = DSTORE;
 			break;
 		case T_FLOAT:
 			op = FSTORE;
@@ -2522,7 +2644,7 @@ namespace cx{
 
 		//if (reference == true){
 		//	op = ALOAD;
-	//	}
+		//	}
 
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
 	}

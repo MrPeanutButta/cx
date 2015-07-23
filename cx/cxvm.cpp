@@ -6,6 +6,13 @@
 #include "symtab.h"
 
 namespace cx{
+		// turn on to view Cx debugging
+#ifdef _DEBUG
+		bool cx_dev_debug_flag = true;
+#else
+		bool cx_dev_debug_flag = false;
+#endif
+
 	// Type sizes
 	const size_t type_size[] = {
 		sizeof(bool), sizeof(char), sizeof(uint8_t), sizeof(short),
@@ -185,25 +192,6 @@ namespace cx{
 			case CALOAD: _ALOAD(c_, char); break;
 			case CASTORE: _ASTORE(c_, char); break;
 			case CHECKCAST: break;
-			case D2F: _PUSHS->f_ = static_cast<float> (_POPS->d_); break;
-			case D2I: _PUSHS->i_ = static_cast<int> (_POPS->d_); break;
-			case D2L: _PUSHS->l_ = static_cast<long> (_POPS->d_); break;
-			case DADD: _TOS.d_ += vpu.stack_ptr->d_; break;
-			case DALOAD: _ALOAD(d_, double); break;
-			case DASTORE: _ASTORE(d_, double); break;
-			case DCMP:
-				vpu.stack_ptr -= 2;
-				vpu.flag = static_cast<int>(vpu.stack_ptr->d_ - vpu.stack_ptr[1].d_);
-				break;
-			case DCONST: _PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
-			case DDIV: _TOS.d_ /= vpu.stack_ptr->d_; break;
-			case DLOAD: _PUSHS->d_ = _VALUE->d_; break;
-			case DMUL: _TOS.d_ *= vpu.stack_ptr->d_; break;
-			case DNEG: vpu.stack_ptr[-1].d_ = -vpu.stack_ptr[-1].d_; break;
-			case DREM: _TOS.d_ = fmod(vpu.stack_ptr[-1].d_, vpu.stack_ptr->d_); break;
-//			case DRETURN: vpu.inst_ptr = --vpu.stack_ptr->i_ + vpu.base_ptr; break;
-			case DSTORE: _VALUE->d_ = _POPS->d_; break;
-			case DSUB: _TOS.d_ -= vpu.stack_ptr->d_; break;
 
 				/** Duplicate the top operand stack value
 				 * Duplicate the top value on the operand stack and push
@@ -239,7 +227,7 @@ namespace cx{
 			case DUP2_X2: break;
 			case DUP_X1: break;
 			case DUP_X2: break;
-			case F2D: _PUSHS->d_ = static_cast<double> (_POPS->f_); break;
+
 			case F2I: _PUSHS->i_ = static_cast<int> (_POPS->f_); break;
 			case F2L: _PUSHS->l_ = static_cast<long> (_POPS->f_); break;
 			case FADD: _TOS.f_ += vpu.stack_ptr->f_; break;
@@ -250,38 +238,73 @@ namespace cx{
 				vpu.flag = static_cast<int16_t>(vpu.stack_ptr->f_ - vpu.stack_ptr[1].f_);
 				break;
 			case FCONST: _PUSHS->f_ = vpu.inst_ptr->arg0.f_; break;
-			case FDIV: _TOS.f_ /= vpu.stack_ptr->f_; break;
+			case FDIV:{
+				float b = _POPS->f_;
+				float a = _POPS->f_;
+
+				_PUSHS->f_ = (a / b);
+			}break;
 			case FLOAD: _PUSHS->f_ = _VALUE->f_; break;
-			case FMUL: _TOS.f_ *= vpu.stack_ptr->f_; break;
-			case FNEG: vpu.stack_ptr[-1].f_ = -vpu.stack_ptr[-1].f_; break;
-			case FREM: _TOS.f_ = fmod(vpu.stack_ptr[-1].f_, vpu.stack_ptr->f_); break;
+			case FMUL:{
+				float b = _POPS->f_;
+				float a = _POPS->f_;
+
+				_PUSHS->f_ = (a * b);
+			}break;
+			case FNEG:{
+				float a = _POPS->f_;
+
+				_PUSHS->f_ = (-a);
+			}break;
+			case FREM:{
+				float b = _POPS->f_;
+				float a = _POPS->f_;
+
+				_PUSHS->f_ = fmod(a, b); 
+			}break;
 //			case FRETURN: vpu.inst_ptr = _POPS->i_ + vpu.base_ptr; break;
 			case FSTORE: _VALUE->f_ = _POPS->f_; break;
-			case FSUB: _TOS.f_ -= vpu.stack_ptr->f_; break;
+			case FSUB:{
+				float b = _POPS->f_;
+				float a = _POPS->f_;
+
+				_PUSHS->f_ = (a - b);
+			}break;
 			case GETFIELD: break;
 			case GETSTATIC: break;
 			case GOTO: _JMP(s_); break;
 			case GOTO_W: _JMP(i_); break;
 			case I2B: _PUSHS->b_ = static_cast<uint8_t> (_POPS->i_); break;
 			case I2C: _PUSHS->c_ = static_cast<char> (_POPS->i_); break;
-			case I2D: _PUSHS->d_ = static_cast<double> (_POPS->i_); break;
 			case I2F: _PUSHS->f_ = static_cast<float> (_POPS->i_); break;
 			case I2L: _PUSHS->l_ = static_cast<long> (_POPS->i_); break;
 			case I2S: _PUSHS->s_ = static_cast<short> (_POPS->i_); break;
 			case IADD:{
-				int a = _POPS->i_;
 				int b = _POPS->i_;
+				int a = _POPS->i_;
+
 				_PUSHS->i_ = (a + b);
 			}break;
 			case IALOAD: _ALOAD(i_, int); break;
-			case IAND: _TOS.i_ &= vpu.stack_ptr->i_; break;
+			// Bitwise AND
+			case IAND: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a & b);
+			}break;
 			case IASTORE: _ASTORE(i_, int); break;
 			case ICMP:
 				vpu.stack_ptr -= 2;
 				vpu.flag = vpu.stack_ptr->i_ - vpu.stack_ptr[1].i_;
 				break;
 			case ICONST: _PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
-			case IDIV: _TOS.i_ /= vpu.stack_ptr->i_; break;
+			case IDIV: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a / b);
+			}break;
 			case IFEQ: _IF(== ); break;
 			case IFNE: _IF(!= ); break;
 			case IFLT: _IF(< ); break;
@@ -335,9 +358,21 @@ namespace cx{
 
 			}break;
 			case ILOAD: _PUSHS->i_ = _VALUE->i_; break;
-			case IMUL: _TOS.i_ *= vpu.stack_ptr->i_; break;
-			case INEG: vpu.stack_ptr[-1].i_ = -vpu.stack_ptr[-1].i_; break;
-			case INOT: vpu.stack_ptr[-1].i_ = !vpu.stack_ptr[-1].i_; break;
+			case IMUL: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a * b);
+			}break;
+			case INEG:{
+				int a = _POPS->i_;
+				_PUSHS->i_ = (-a);
+			}break;
+			// Unary complement (bit inversion)
+			case INOT: {
+				int a = _POPS->i_;
+				_PUSHS->i_ = (~a);
+			}break;
 			case INSTANCEOF: break;
 			case INVOKEDYNAMIC: break;
 			case INVOKEFUNCT: break;
@@ -345,26 +380,67 @@ namespace cx{
 			case INVOKESPECIAL: break;
 			case INVOKESTATIC: break;
 			case INVOKEVIRTUAL: break;
-			case IOR: _TOS.i_ |= vpu.stack_ptr->i_; break;
-			case IREM: _TOS.i_ %= vpu.stack_ptr->i_; break;
-//			case IRETURN: vpu.inst_ptr = --vpu.stack_ptr->i_ + vpu.base_ptr; break;
-			case ISHL: _TOS.i_ <<= vpu.stack_ptr->i_; break;
-			case ISHR: _TOS.i_ >>= vpu.stack_ptr->i_; break;
+			// Bitwise inclusive OR
+			case IOR:  {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a | b);
+			}break;
+			case IREM: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a % b);
+			}break;
+			case ISHL: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a << b);
+			}break;
+			case ISHR: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a >> b);
+			}break;
 			case ISTORE: {
 				int i = _POPS->i_;
 				_VALUE->i_ = i;
 			}break;
-			case ISUB: _TOS.i_ -= vpu.stack_ptr->i_; break;
+			case ISUB:{
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a - b);
+			}break;
 			case IUSHR: _TOS.i_ = (int)((unsigned int)vpu.stack_ptr[-1].i_ >> vpu.stack_ptr->i_); break;
-			case IXOR: _TOS.i_ ^= vpu.stack_ptr->i_; break;
+			// Bitwise exclusive OR
+			case IXOR: {
+				int b = _POPS->i_;
+				int a = _POPS->i_;
+
+				_PUSHS->i_ = (a ^ b);
+			}break;
 			case JSR:
 			case JSR_W: break;
-			case L2D: _PUSHS->d_ = static_cast<double> (_POPS->l_); break;
+			
 			case L2F: _PUSHS->f_ = static_cast<float> (_POPS->l_); break;
 			case L2I: _PUSHS->i_ = static_cast<int> (_POPS->l_); break;
-			case LADD: _TOS.l_ += vpu.stack_ptr->l_; break;
+			case LADD: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a + b);
+			}break;
 			case LALOAD: _ALOAD(l_, long); break;
-			case LAND: _TOS.l_ &= vpu.stack_ptr->l_; break;
+			case LAND: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a & b);
+			}break;
 			case LASTORE: _ASTORE(l_, long); break;
 			case LCMP:
 				vpu.stack_ptr -= 2;
@@ -374,20 +450,75 @@ namespace cx{
 			case LDC:
 			case LDC2_W:
 			case LDC_W: break;
-			case LDIV: _TOS.l_ /= vpu.stack_ptr->l_; break;
+			case LDIV: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a / b);
+			}break;
 			case LLOAD: _PUSHS->l_ = _VALUE->l_; break;
-			case LMUL: _TOS.l_ *= vpu.stack_ptr->l_; break;
-			case LNEG: vpu.stack_ptr[-1].l_ = -vpu.stack_ptr[-1].l_; break;
+			case LMUL: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a * b);
+			}break;
+			case LNEG: {
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (-a);
+			}break;
 			case LOOKUPSWITCH: break;
-			case LOR: _TOS.l_ |= vpu.stack_ptr->l_; break;
-			case LREM: _TOS.l_ %= vpu.stack_ptr->l_; break;
-//			case LRETURN: vpu.inst_ptr = _POPS->i_ + vpu.base_ptr; break;
-			case LSHL: _TOS.l_ <<= vpu.stack_ptr->l_; break;
-			case LSHR: _TOS.l_ >>= vpu.stack_ptr->l_; break;
+			case LOGIC_OR:{
+				bool b = _POPS->z_;
+				bool a = _POPS->z_;
+
+				_PUSHS->z_ = (a || b);
+			}break;
+			case LOGIC_AND:{
+				bool b = _POPS->z_;
+				bool a = _POPS->z_;
+
+				_PUSHS->z_ = (a && b);
+			}break;
+			case LOR: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a | b);
+			}break;
+			case LREM: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a % b);
+			}break;
+			case LSHL: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a << b);
+			}break;
+			case LSHR: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a >> b);
+			}break;
 			case LSTORE: _VALUE->l_ = _POPS->i_; break;
-			case LSUB: _TOS.l_ -= vpu.stack_ptr->l_; break;
+			case LSUB: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a - b);
+			}break;
 			case LUSHR: _TOS.l_ = (long)((unsigned long)vpu.stack_ptr[-1].l_ >> vpu.stack_ptr->l_); break;
-			case LXOR: _TOS.l_ ^= vpu.stack_ptr->l_; break;
+			case LXOR: {
+				long b = _POPS->l_;
+				long a = _POPS->l_;
+
+				_PUSHS->l_ = (a ^ b);
+			}break;
 			case MONITORENTER:
 			case MONITOREXIT: break;
 			case MULTIANEWARRAY: break;

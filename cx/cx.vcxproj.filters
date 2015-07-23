@@ -34,6 +34,12 @@
     <Filter Include="Documentation\cx language">
       <UniqueIdentifier>{684eef4f-6c2e-4161-b030-a1c07e72e755}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Examples">
+      <UniqueIdentifier>{2155e37f-bcce-439b-8b16-a624c4c14d56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Snippits">
+      <UniqueIdentifier>{15f14760-ce3e-49b0-9748-f21480f9d15c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cxvm.cpp">
@@ -80,6 +86,75 @@
     </ClCompile>
     <ClCompile Include="..\stdlib\lib\std\std.cpp">
       <Filter>Standard Library\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\array.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\exec_test.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\fileio.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\fileio2.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\fileio3.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\fileio4.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\fizzbuzz.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\get_put.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\gets.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\int.to_str.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\logical_not.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\namespace.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\namespace2.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\namespace3.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\namespace4.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\open.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\radix.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\reopen.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\test.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\to_str.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\to_str2.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\type_size.cxx">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="double operations.cpp">
+      <Filter>Snippits</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -235,7 +235,6 @@ namespace cx{
 		switch (target_type) {
 		case T_INT:
 		case T_CHAR:
-		case T_BOOLEAN:
 		case T_WCHAR:
 		case T_BYTE:
 			return;
@@ -289,20 +288,15 @@ namespace cx{
 				case T_BOOLEAN:
 				case T_SHORT:
 				case T_REFERENCE:
-//					EMIT1(p_function_id, I2B);
+					p_function_id->defined.routine.program_code.push_back({ I2B });
 					break;
 				case T_FLOAT:
-//					EMIT1(p_function_id, F2I);
-//					EMIT1(p_function_id, I2B);
-					break;
-				case T_DOUBLE:
-//					EMIT1(p_function_id, D2I);
-//					EMIT1(p_function_id, I2B);
-					return;
+					p_function_id->defined.routine.program_code.push_back({ F2I });
+					p_function_id->defined.routine.program_code.push_back({ I2B });
 					break;
 				case T_LONG:
-//					EMIT1(p_function_id, L2I);
-//					EMIT1(p_function_id, I2B);
+					p_function_id->defined.routine.program_code.push_back({ L2I });
+					p_function_id->defined.routine.program_code.push_back({ I2B });
 					break;
 				default:
 					break;
@@ -314,10 +308,13 @@ namespace cx{
 				case T_CHAR:
 				case T_WCHAR:
 				case T_BOOLEAN:
-				case T_FLOAT:
-				case T_DOUBLE:
 				case T_BYTE:
 				case T_SHORT:
+					return;
+					break;
+				case T_FLOAT:
+					p_function_id->defined.routine.program_code.push_back({ F2I });
+					p_function_id->defined.routine.program_code.push_back({ I2B });
 					return;
 					break;
 				default:
@@ -347,7 +344,10 @@ namespace cx{
 				case T_WCHAR:
 				case T_BOOLEAN:
 				case T_FLOAT:
-				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ F2I });
+					p_function_id->defined.routine.program_code.push_back({ I2B });
+					return;
+					break;
 				case T_BYTE:
 				case T_SHORT:
 					return;
