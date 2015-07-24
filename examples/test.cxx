@@ -1,7 +1,5 @@
 
 
-int a = 'a';
-long b = 'a';
-wchar wide = "¯";
+long b = 922337203685477580;
 
 return wide;

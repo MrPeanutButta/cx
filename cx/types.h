@@ -48,7 +48,7 @@ namespace cx{
 		wchar_t w_;
 		short s_;
 		int i_;
-		long l_;
+		long long l_;
 		float f_;
 		double d_;
 		void *a_;
@@ -58,7 +58,7 @@ namespace cx{
 		value(char c) : c_(c) {}
 		value(short s) : s_(s) {}
 		value(int i) : i_(i) {}
-		value(long l) : l_(l) {}
+		value(long long l) : l_(l) {}
 		value(float f) : f_(f) {}
 		value(double d) : d_(d) {}
 		value(void *a) : a_(a) {}

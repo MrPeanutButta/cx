@@ -856,7 +856,7 @@ namespace cx{
 				break;
 			case T_LONG:
 				p_node->p_type = p_long_type;
-				p_node->defined.constant.value.i_ = p_token->value().l_;
+				p_node->defined.constant.value.l_ = p_token->value().l_;
 				op = LCONST;
 				break;
 			default:

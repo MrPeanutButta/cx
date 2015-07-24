@@ -145,8 +145,15 @@ namespace cx{
 		// TODO Add T_LONG support
 		if (type__ == T_INT) {
 			if ((number_value < INT_MIN) || (number_value > INT_MAX)) {
-				cx_error(ERR_INTEGER_OUT_OF_RANGE);
-				return;
+				if ((number_value < LLONG_MIN) || (number_value > LLONG_MAX)){
+
+					cx_error(ERR_INTEGER_OUT_OF_RANGE);
+					return;
+				}
+				else {
+					this->type__ = T_LONG;
+					this->value__.l_ = long long(number_value);
+				}
 			}
 			value__.i_ = int(number_value);
 		}

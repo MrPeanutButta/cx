@@ -594,19 +594,19 @@ namespace cx{
 			case L2F: _PUSHS->f_ = static_cast<float> (_POPS->l_); break;
 			case L2I: _PUSHS->i_ = static_cast<int> (_POPS->l_); break;
 			case LADD: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a + b);
 			}break;
 			case LALOAD: _ALOAD(l_, long); break;
 			case LAND: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a & b);
 			}break;
-			case LASTORE: _ASTORE(l_, long); break;
+			case LASTORE: _ASTORE(l_, long long); break;
 			case LCMP:
 				break;
 			case LCONST: _PUSHS->l_ = vpu.inst_ptr->arg0.l_; break;
@@ -614,20 +614,20 @@ namespace cx{
 			case LDC2_W:
 			case LDC_W: break;
 			case LDIV: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a / b);
 			}break;
 			case LLOAD: _PUSHS->l_ = _VALUE->l_; break;
 			case LMUL: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a * b);
 			}break;
 			case LNEG: {
-				long a = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (-a);
 			}break;
@@ -645,40 +645,40 @@ namespace cx{
 				_PUSHS->z_ = (a && b);
 			}break;
 			case LOR: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a | b);
 			}break;
 			case LREM: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a % b);
 			}break;
 			case LSHL: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a << b);
 			}break;
 			case LSHR: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a >> b);
 			}break;
 			case LSTORE: _VALUE->l_ = _POPS->i_; break;
 			case LSUB: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a - b);
 			}break;
-			case LUSHR: _TOS.l_ = (long)((unsigned long)vpu.stack_ptr[-1].l_ >> vpu.stack_ptr->l_); break;
+			case LUSHR: _TOS.l_ = (long long)((unsigned long long)vpu.stack_ptr[-1].l_ >> vpu.stack_ptr->l_); break;
 			case LXOR: {
-				long b = _POPS->l_;
-				long a = _POPS->l_;
+				long long b = _POPS->l_;
+				long long a = _POPS->l_;
 
 				_PUSHS->l_ = (a ^ b);
 			}break;
