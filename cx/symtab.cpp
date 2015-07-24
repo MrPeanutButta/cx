@@ -118,7 +118,7 @@ namespace cx{
 	}
 
 	void symbol_table::enter(symbol_table_node *p_node){
-		this->symbols[p_node->node_name] = std::shared_ptr<symbol_table_node>(std::move(p_node));// this->node_pool.back().get();
+		this->symbols[p_node->node_name] =  std::move(std::shared_ptr<symbol_table_node>(p_node));// this->node_pool.back().get();
 	}
 
 	void symbol_table::enter(local &params){

@@ -36,17 +36,22 @@ namespace cx {
 		class mem_mapping {
 		private:
 		public:
-			managedmem shared_ref;
+			mem_mapping() : is_rvalue(false) {}
+			managedmem shared_ref;	// VM memory allocations
 			size_t size;			// sizeof
 			type_code typecode;
 			type_form typeform;
-
-			size_t length(void);	// sizeof * count
+			bool is_rvalue;			// Evaluates to a temporary value that does not persist beyond the expression that defines it.
+			size_t count(void);		// memory size / element size
 		};
 
 		typedef void* address;
 		typedef std::map<uintptr_t, mem_mapping> malloc_map;
+
+		extern malloc_map heap_;		// HEAP: For storing raw memory allocations
 	}
+
+	extern const char* opcode_string[];
 
 	// Op codes
 	enum opcode {
@@ -95,7 +100,6 @@ namespace cx {
 		value *stack_ptr;	// Pointer to the current position in stack
 		instr_ptr inst_ptr; // Instruction pointer
 		program *code_ptr;
-		int16_t flag;
 	} vcpu;
 
 	enum {
@@ -105,7 +109,6 @@ namespace cx {
 	class cxvm {
 	private:
 		vcpu vpu;					// VPU: Virtual Proc Unit
-		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
 		value stack[_STACK_SIZE];	// STACK:
 
 		//std::mutex vm_lock;				// VM lock during execution

@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 #include <cstdint>
-#include "misc.h"
+///#include "misc.h"
 #include "error.h"
 #include "buffer.h"
 #include "types.h"
@@ -153,7 +153,7 @@ namespace cx{
 
 		token(void) {
 			code__ = TC_DUMMY;
-			type__ = T_DUMMY;// ty_dummy;
+			type__ = T_DUMMY;;
 			memset(&value__, 0, sizeof value__);
 			memset(&string, 0, sizeof string);
 		}
@@ -161,7 +161,6 @@ namespace cx{
 		token_code code() const { return code__; }
 		type_code type() const { return type__; }
 		value value() const { return value__; }
-	//	char *string__() { return string; }
 
 		char get_escape_char(const char &c);
 		virtual void get(text_in_buffer &buffer) = 0;

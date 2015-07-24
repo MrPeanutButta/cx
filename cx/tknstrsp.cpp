@@ -53,9 +53,13 @@ namespace cx{
 
 		*ps++ = '\"'; // opening quote
 
+		// if single char, make wchar
+		int char_count = 0;
+
 		// get the string.
 		ch = buffer.get_char(); // first char after opening quote
 		while (ch != EOF_CHAR) {
+		
 			if (ch == '\"') { // look for another quote
 
 				/* Fetched a quote.  Now check for an adjacent quote,
@@ -73,6 +77,7 @@ namespace cx{
 			else {
 				// Append current char to string, then get the next__ char.
 				*ps++ = ch;
+				++char_count;
 			}
 
 			ch = buffer.get_char();
@@ -82,6 +87,10 @@ namespace cx{
 
 		*ps++ = '\"'; // closing quote
 		*ps = '\0';
+
+		if (char_count == 1){
+			this->type__ = T_WCHAR;
+		}
 	}
 
 	/** get         Extract single quoted char ' '

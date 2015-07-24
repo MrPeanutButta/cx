@@ -142,6 +142,7 @@ namespace cx{
 		if (exponent != 0) number_value *= float(pow((double)10, exponent));
 
 		// Check and set the numeric value.
+		// TODO Add T_LONG support
 		if (type__ == T_INT) {
 			if ((number_value < INT_MIN) || (number_value > INT_MAX)) {
 				cx_error(ERR_INTEGER_OUT_OF_RANGE);

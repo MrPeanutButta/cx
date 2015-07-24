@@ -2,15 +2,192 @@
 *
 */
 
+#include <iostream>
 #include "cxvm.h"
 #include "symtab.h"
 
 namespace cx{
-		// turn on to view Cx debugging
+
+	const char* opcode_string[] = {
+		"aaload",
+		"aastore",
+		"aconst_null",
+		"aload",
+		"anewarray",
+		"areturn",
+		"arraylength",
+		"astore",
+		"athrow",
+		"baload",
+		"bastore",
+		"beq",
+		"bge",
+		"bgt",
+		"bipush",
+		"ble",
+		"blt",
+		"bne",
+		"call",
+		"caload",
+		"castore",
+		"checkcast",
+		"d2f",
+		"d2i",
+		"d2l",
+		"dadd",
+		"daload",
+		"dastore",
+		"dcmp",
+		"dconst",
+		"ddiv",
+		"dload",
+		"dmul",
+		"dneg",
+		"drem",
+		"dreturn",
+		"dstore",
+		"dsub",
+		"dup",
+		"dup2",
+		"dup2_x1",
+		"dup2_x2",
+		"dup_x1",
+		"dup_x2",
+		"f2d",
+		"f2i",
+		"f2l",
+		"fadd",
+		"faload",
+		"fastore",
+		"fcmp",
+		"fconst",
+		"fdiv",
+		"fload",
+		"fmul",
+		"fneg",
+		"frem",
+		"freturn",
+		"fstore",
+		"fsub",
+		"getfield",
+		"getstatic",
+		"goto",
+		"goto_w",
+		"halt",
+		"i2b",
+		"i2c",
+		"i2d",
+		"i2f",
+		"i2l",
+		"i2s",
+		"iadd",
+		"iaload",
+		"iand",
+		"iastore",
+		"icmp",
+		"iconst",
+		"idiv",
+		"ifeq",
+		"ifne",
+		"iflt",
+		"ifge",
+		"ifgt",
+		"ifle",
+		"if_acmpeq",
+		"if_acmpne",
+		"if_icmpeq",
+		"if_icmpne",
+		"if_icmplt",
+		"if_icmpge",
+		"if_icmpgt",
+		"if_icmple",
+		"ifnonnull",
+		"ifnull",
+		"iinc",
+		"iload",
+		"imul",
+		"ineg",
+		"inot",
+		"instanceof",
+		"invokedynamic",
+		"invokefunct",
+		"invokeinterface",
+		"invokespecial",
+		"invokestatic",
+		"invokevirtual",
+		"ior",
+		"irem",
+		"ireturn",
+		"ishl",
+		"ishr",
+		"istore",
+		"isub",
+		"iushr",
+		"ixor",
+		"jsr",
+		"jsr_w",
+		"l2d",
+		"l2f",
+		"l2i",
+		"ladd",
+		"laload",
+		"land",
+		"lastore",
+		"lcmp",
+		"lconst",
+		"ldc",
+		"ldc2_w",
+		"ldc_w",
+		"ldiv",
+		"lload",
+		"lmul",
+		"lneg",
+		"lookupswitch",
+		"logic_or",
+		"logic_and",
+		"lor",
+		"lrem",
+		"lreturn",
+		"lshl",
+		"lshr",
+		"lstore",
+		"lsub",
+		"lushr",
+		"lxor",
+		"monitorenter",
+		"monitorexit",
+		"multianewarray",
+		"new",
+		"newarray",
+		"nop",
+		"pload",
+		"postop",
+		"pop",
+		"pop2",
+		"preop",
+		"putfield",
+		"putstatic",
+		"ret",
+		"return",
+		"saload",
+		"sastore",
+		"sipush",
+		"swap",
+		"tableswitch",
+		"waload",
+		"wastore",
+		"wide"
+	};
+
+	namespace heap{
+		malloc_map heap_;		// HEAP: For storing raw memory allocations
+	}
+
+	// turn on to view Cx debugging
 #ifdef _DEBUG
-		bool cx_dev_debug_flag = true;
+	bool cx_dev_debug_flag = true;
 #else
-		bool cx_dev_debug_flag = false;
+	bool cx_dev_debug_flag = false;
 #endif
 
 	// Type sizes
@@ -21,7 +198,7 @@ namespace cx{
 	};
 
 
-	size_t heap::mem_mapping::length(void){
+	size_t heap::mem_mapping::count(void){
 		return (this->size / type_size[this->typecode]);
 	}
 
@@ -39,7 +216,7 @@ namespace cx{
     int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     _PUSHS->t_ = *((type *) ((char *) mem + (*index * sizeof (type))));  \
-				}
+					}
 
 	// Store to memory
 #define _ASTORE(t_, type) {     \
@@ -47,7 +224,7 @@ namespace cx{
     int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     *((type *) ((char *) mem + (*index * sizeof (type)))) = *v_;        \
-				}
+					}
 
 	// Value object
 #define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item
@@ -57,7 +234,7 @@ namespace cx{
     int value2 = _POPS->i_; \
     int value1 = _POPS->i_; \
     if(value1 op value2) _JMP(s_);  \
-				}
+					}
 
 #define _IF(op) if(_POPS->i_ op 0) _JMP(s_)
 
@@ -66,7 +243,7 @@ namespace cx{
 		this->vpu.stack_ptr = stack;
 		//this->lock();
 	}
-	
+
 	cxvm::~cxvm(void){
 		this->unlock();
 	}
@@ -103,13 +280,9 @@ namespace cx{
 	inline void cxvm::unlock(void){
 		//this->vm_lock.unlock();
 	}
-	
-	 void cxvm::go(void) {
-	
-//		using namespace opcodes;
-#ifdef INSTRUCTION_TEST
-		std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-#endif
+
+	void cxvm::go(void) {
+		using namespace heap;
 
 		for (vpu.inst_ptr = this->vpu.code_ptr->begin();
 			vpu.inst_ptr != this->vpu.code_ptr->end();
@@ -126,7 +299,7 @@ namespace cx{
 				void **mem = (void **)malloc(size);
 				assert(mem != nullptr);
 
-				heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
+				mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
 
 				/* Compile with -D INSTRUCTION_TEST if testing.
 				* If undefined, RAM gets released and tests allocating RAM
@@ -143,24 +316,17 @@ namespace cx{
 			case ARRAYLENGTH: {
 				void *mem = _POPS->a_;
 				assert(mem != nullptr);
-				_PUSHS->i_ = heap_[_ADDRTOINT(mem)].length();
+				_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
 			} break;
 			case ASTORE: _VALUE->a_ = _POPS->a_; break;
 			case ATHROW: { // Throws a string message
-				char *message;
-				assert((message = (char *)_POPS->a_) != nullptr);
+				char *message = (char *)_POPS->a_;
+				assert(message != nullptr);
 
 				throw std::string(message);
 			} break;
 			case BALOAD: _ALOAD(b_, uint8_t); break;
 			case BASTORE: _ASTORE(b_, uint8_t); break;
-			case BEQ: if (!vpu.flag) _JMP(i_); break;
-			case BGE: if (vpu.flag >= 0) _JMP(i_); break;
-			case BGT: if (vpu.flag > 0) _JMP(i_); break;
-			case BIPUSH: _PUSHS->b_ = vpu.inst_ptr->arg0.i_; break;
-			case BLE: if (vpu.flag <= 0) _JMP(i_); break;
-			case BLT: if (vpu.flag < 0) _JMP(i_); break;
-			case BNE: if (vpu.flag) _JMP(i_); break;
 			case CALL:{
 				symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
 				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
@@ -169,7 +335,7 @@ namespace cx{
 				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
 				for (; parameter != p_function_id->defined.routine.p_parameter_ids.rend(); ++parameter){
 					value *stack_item = ((value *)&_TOS.a_);
-					
+
 					_POPS;
 
 					symbol_table_node *p_node = parameter->get();
@@ -238,8 +404,6 @@ namespace cx{
 			case FALOAD: _ALOAD(f_, float); break;
 			case FASTORE: _ASTORE(f_, float); break;
 			case FCMP:
-				vpu.stack_ptr -= 2;
-				vpu.flag = static_cast<int16_t>(vpu.stack_ptr->f_ - vpu.stack_ptr[1].f_);
 				break;
 			case FCONST: _PUSHS->f_ = vpu.inst_ptr->arg0.f_; break;
 			case FDIV:{
@@ -264,9 +428,8 @@ namespace cx{
 				float b = _POPS->f_;
 				float a = _POPS->f_;
 
-				_PUSHS->f_ = fmod(a, b); 
+				_PUSHS->f_ = fmod(a, b);
 			}break;
-//			case FRETURN: vpu.inst_ptr = _POPS->i_ + vpu.base_ptr; break;
 			case FSTORE: _VALUE->f_ = _POPS->f_; break;
 			case FSUB:{
 				float b = _POPS->f_;
@@ -290,7 +453,7 @@ namespace cx{
 				_PUSHS->i_ = (a + b);
 			}break;
 			case IALOAD: _ALOAD(i_, int); break;
-			// Bitwise AND
+				// Bitwise AND
 			case IAND: {
 				int b = _POPS->i_;
 				int a = _POPS->i_;
@@ -299,8 +462,6 @@ namespace cx{
 			}break;
 			case IASTORE: _ASTORE(i_, int); break;
 			case ICMP:
-				vpu.stack_ptr -= 2;
-				vpu.flag = vpu.stack_ptr->i_ - vpu.stack_ptr[1].i_;
 				break;
 			case ICONST: _PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
 			case IDIV: {
@@ -355,7 +516,7 @@ namespace cx{
 					v_->i_ += arg0;
 					_PUSHS->i_ = i_;
 				}
-					break;
+							break;
 				default:
 					break;
 				}
@@ -372,7 +533,7 @@ namespace cx{
 				int a = _POPS->i_;
 				_PUSHS->i_ = (-a);
 			}break;
-			// Unary complement (bit inversion)
+				// Unary complement (bit inversion)
 			case INOT: {
 				int a = _POPS->i_;
 				_PUSHS->i_ = (~a);
@@ -384,7 +545,7 @@ namespace cx{
 			case INVOKESPECIAL: break;
 			case INVOKESTATIC: break;
 			case INVOKEVIRTUAL: break;
-			// Bitwise inclusive OR
+				// Bitwise inclusive OR
 			case IOR:  {
 				int b = _POPS->i_;
 				int a = _POPS->i_;
@@ -420,7 +581,7 @@ namespace cx{
 				_PUSHS->i_ = (a - b);
 			}break;
 			case IUSHR: _TOS.i_ = (int)((unsigned int)vpu.stack_ptr[-1].i_ >> vpu.stack_ptr->i_); break;
-			// Bitwise exclusive OR
+				// Bitwise exclusive OR
 			case IXOR: {
 				int b = _POPS->i_;
 				int a = _POPS->i_;
@@ -429,7 +590,7 @@ namespace cx{
 			}break;
 			case JSR:
 			case JSR_W: break;
-			
+
 			case L2F: _PUSHS->f_ = static_cast<float> (_POPS->l_); break;
 			case L2I: _PUSHS->i_ = static_cast<int> (_POPS->l_); break;
 			case LADD: {
@@ -447,8 +608,6 @@ namespace cx{
 			}break;
 			case LASTORE: _ASTORE(l_, long); break;
 			case LCMP:
-				vpu.stack_ptr -= 2;
-				vpu.flag = static_cast<int16_t>(vpu.stack_ptr->l_ - vpu.stack_ptr[1].l_);
 				break;
 			case LCONST: _PUSHS->l_ = vpu.inst_ptr->arg0.l_; break;
 			case LDC:
@@ -558,8 +717,8 @@ namespace cx{
 			case POP2: _POPS; _POPS; break;
 			case PUTFIELD: break;
 			case PUTSTATIC: break;
-			case RET: 
-			case RETURN: 
+			case RET:
+			case RETURN:
 				return;
 				break;
 			case SALOAD: _ALOAD(s_, short); break;
@@ -577,12 +736,6 @@ namespace cx{
 				 * @return exit status (int)
 				 */
 			case HALT:
-#ifdef INSTRUCTION_TEST
-				std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>> (t2 - t1);
-				std::cout << " finished vpu execution in: " << std::fixed << time_span.count() << "(secs) ";
-#endif	
-				break;
 				goto end;
 			} //switch
 		} // for
@@ -590,5 +743,5 @@ namespace cx{
 	end:
 		// return frame header
 		return;
+			}
 	}
-}

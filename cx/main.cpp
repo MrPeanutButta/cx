@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <memory>
-#include <vld.h>
+//#include <vld.h>
 
 #ifdef __CX_PROFILE_EXECUTION__
 #include <chrono>
@@ -26,177 +26,6 @@
 #include "parser.h"
 #include "symtab.h"
 
-const char* opcode_string[] = {
-	"aaload",
-	"aastore",
-	"aconst_null",
-	"aload",
-	"anewarray",
-	"areturn",
-	"arraylength",
-	"astore",
-	"athrow",
-	"baload",
-	"bastore",
-	"beq",
-	"bge",
-	"bgt",
-	"bipush",
-	"ble",
-	"blt",
-	"bne",
-	"call",
-	"caload",
-	"castore",
-	"checkcast",
-	"d2f",
-	"d2i",
-	"d2l",
-	"dadd",
-	"daload",
-	"dastore",
-	"dcmp",
-	"dconst",
-	"ddiv",
-	"dload",
-	"dmul",
-	"dneg",
-	"drem",
-	"dreturn",
-	"dstore",
-	"dsub",
-	"dup",
-	"dup2",
-	"dup2_x1",
-	"dup2_x2",
-	"dup_x1",
-	"dup_x2",
-	"f2d",
-	"f2i",
-	"f2l",
-	"fadd",
-	"faload",
-	"fastore",
-	"fcmp",
-	"fconst",
-	"fdiv",
-	"fload",
-	"fmul",
-	"fneg",
-	"frem",
-	"freturn",
-	"fstore",
-	"fsub",
-	"getfield",
-	"getstatic",
-	"goto",
-	"goto_w",
-	"halt",
-	"i2b",
-	"i2c",
-	"i2d",
-	"i2f",
-	"i2l",
-	"i2s",
-	"iadd",
-	"iaload",
-	"iand",
-	"iastore",
-	"icmp",
-	"iconst",
-	"idiv",
-	"ifeq",
-	"ifne",
-	"iflt",
-	"ifge",
-	"ifgt",
-	"ifle",
-	"if_acmpeq",
-	"if_acmpne",
-	"if_icmpeq",
-	"if_icmpne",
-	"if_icmplt",
-	"if_icmpge",
-	"if_icmpgt",
-	"if_icmple",
-	"ifnonnull",
-	"ifnull",
-	"iinc",
-	"iload",
-	"imul",
-	"ineg",
-	"inot",
-	"instanceof",
-	"invokedynamic",
-	"invokefunct",
-	"invokeinterface",
-	"invokespecial",
-	"invokestatic",
-	"invokevirtual",
-	"ior",
-	"irem",
-	"ireturn",
-	"ishl",
-	"ishr",
-	"istore",
-	"isub",
-	"iushr",
-	"ixor",
-	"jsr",
-	"jsr_w",
-	"l2d",
-	"l2f",
-	"l2i",
-	"ladd",
-	"laload",
-	"land",
-	"lastore",
-	"lcmp",
-	"lconst",
-	"ldc",
-	"ldc2_w",
-	"ldc_w",
-	"ldiv",
-	"lload",
-	"lmul",
-	"lneg",
-	"lookupswitch",
-	"logic_or",
-	"logic_and",
-	"lor",
-	"lrem",
-	"lreturn",
-	"lshl",
-	"lshr",
-	"lstore",
-	"lsub",
-	"lushr",
-	"lxor",
-	"monitorenter",
-	"monitorexit",
-	"multianewarray",
-	"new",
-	"newarray",
-	"nop",
-	"pload",
-	"postop",
-	"pop",
-	"pop2",
-	"preop",
-	"putfield",
-	"putstatic",
-	"ret",
-	"return",
-	"saload",
-	"sastore",
-	"sipush",
-	"swap",
-	"tableswitch",
-	"waload",
-	"wastore",
-	"wide"
-};
-
 namespace cx{
 	extern bool	cx_dev_debug_flag;
 }
@@ -211,7 +40,6 @@ void set_options(int argc, char **argv);
  */
 int main(int argc, char *argv[]) {
 	using namespace cx;
-//	using namespace cx::error;
 
     set_options(argc, argv);
 
@@ -258,12 +86,9 @@ int main(int argc, char *argv[]) {
 #endif
 
     if (error_count == 0) {
-
 		std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
-        //std::unique_ptr<cx_backend> backend(new cx_executor);
 
 #ifdef __CX_PROFILE_EXECUTION__
-       // std::cin.get();
         t1 = high_resolution_clock::now();
 #endif
 		p_program_id->runstack_item = cx->push();
@@ -277,11 +102,6 @@ int main(int argc, char *argv[]) {
         time_span = duration_cast < duration<double >> (t2 - t1);
         std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
-/*#ifdef _WIN32_LEAK_DETECT
-#ifdef _WIN32
-        _CrtDumpMemoryLeaks();
-#endif
-#endif*/
         std::cin.get();
 #endif
 

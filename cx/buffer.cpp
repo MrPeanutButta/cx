@@ -9,12 +9,13 @@
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
-#include <iostream>
 #include <fstream>
 #include <ctime>
 #endif
 
-#include "common.h"
+//#include "common.h"
+#include <iostream>
+#include <string>
 #include "buffer.h"
 
 namespace cx{

@@ -1,8 +1,7 @@
 
 
-int a = 4;
-long b = 1;
+int a = 'a';
+long b = 'a';
+wchar wide = "¯";
 
-a >>= b;
-
-return a;
+return wide;

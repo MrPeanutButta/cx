@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstdio>
 #//include "common.h"
 #include "buffer.h"
@@ -843,6 +844,7 @@ namespace cx{
 
 			switch (p_token->type()){
 			case T_INT:
+			case T_SHORT:
 				p_node->p_type = p_integer_type;
 				p_node->defined.constant.value.i_ = p_token->value().i_;
 				op = ICONST;
@@ -852,20 +854,23 @@ namespace cx{
 				p_node->defined.constant.value.f_ = p_token->value().f_;
 				op = FCONST;
 				break;
+			case T_LONG:
+				p_node->p_type = p_long_type;
+				p_node->defined.constant.value.i_ = p_token->value().l_;
+				op = LCONST;
+				break;
 			default:
 				cx_error(ERR_INCOMPATIBLE_ASSIGNMENT);
 			}
 
+			get_token();
 			p_result_type = p_node->p_type;
 			this->emit(p_function_id, op, p_node->defined.constant.value);
-		}
 
-		get_token();
-		break;
-
+		}break;
 		case TC_CHAR:
 		{
-			symbol_table_node_ptr p_id = search_all(p_token->string);
+			symbol_table_node_ptr &p_id = search_all(p_token->string);
 
 			if (p_id == nullptr) {
 				p_id = enter_local(p_token->string);
@@ -875,12 +880,27 @@ namespace cx{
 
 			p_result_type = p_char_type;
 
-			this->emit_load(p_function_id, p_id, false);
+			this->emit(p_function_id, ICONST, p_id->defined.constant.value);
 			get_token();
 		}
 		break;
-		//case tc_string:
-		//{
+		case TC_STRING:
+		{
+			symbol_table_node_ptr &p_id = search_all(p_token->string);
+
+			if (p_id == nullptr) {
+				p_id = enter_local(p_token->string);
+			}
+
+			if (p_token->type() == T_WCHAR){
+				p_id->p_type = p_wchar_type;
+				p_id->defined.constant.value.w_ = (wchar_t)p_token->string[1];
+
+				this->emit(p_function_id, ICONST, p_id->defined.constant.value);
+				get_token();
+
+				return p_wchar_type;
+			}
 
 		//	char *p_string = p_token->string__();
 		//	symbol_table_node_ptr &p_node = search_all(p_token->string__());
@@ -910,8 +930,7 @@ namespace cx{
 		//	icode.put(p_node);
 
 		//	get_token_append();
-		//}
-		//	break;
+		}break;
 
 		case TC_LEFT_PAREN:
 			get_token();
