@@ -227,10 +227,14 @@ namespace cx{
 			case DUP2_X2: break;
 			case DUP_X1: break;
 			case DUP_X2: break;
-
 			case F2I: _PUSHS->i_ = static_cast<int> (_POPS->f_); break;
 			case F2L: _PUSHS->l_ = static_cast<long> (_POPS->f_); break;
-			case FADD: _TOS.f_ += vpu.stack_ptr->f_; break;
+			case FADD:{
+				float b = _POPS->f_;
+				float a = _POPS->f_;
+
+				_PUSHS->f_ = (a + b);
+			}break;
 			case FALOAD: _ALOAD(f_, float); break;
 			case FASTORE: _ASTORE(f_, float); break;
 			case FCMP:

@@ -184,6 +184,14 @@ namespace cx{
 		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
+		void emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_rshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_and(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_xor(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_or(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 	public:
 
 		parser(text_in_buffer *p_buffer, bool std_lib_module = false)

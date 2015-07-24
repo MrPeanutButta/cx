@@ -207,15 +207,15 @@ namespace cx{
 		switch (target_type) {
 		case T_INT:
 		case T_CHAR:
-		case T_BOOLEAN:
 		case T_WCHAR:
 		case T_BYTE:
+		case T_LONG:
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-			case T_BOOLEAN:
 			case T_WCHAR:
 			case T_BYTE:
+			case T_LONG:
 				return;
 				break;
 			default:break;
@@ -289,14 +289,17 @@ namespace cx{
 				case T_SHORT:
 				case T_REFERENCE:
 					p_function_id->defined.routine.program_code.push_back({ I2B });
+					return;
 					break;
 				case T_FLOAT:
 					p_function_id->defined.routine.program_code.push_back({ F2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
+					return;
 					break;
 				case T_LONG:
 					p_function_id->defined.routine.program_code.push_back({ L2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
+					return;
 					break;
 				default:
 					break;
@@ -314,7 +317,10 @@ namespace cx{
 					break;
 				case T_FLOAT:
 					p_function_id->defined.routine.program_code.push_back({ F2I });
-					p_function_id->defined.routine.program_code.push_back({ I2B });
+					return;
+					break;
+				case T_LONG:
+					p_function_id->defined.routine.program_code.push_back({ L2I });
 					return;
 					break;
 				default:
@@ -343,9 +349,9 @@ namespace cx{
 				case T_CHAR:
 				case T_WCHAR:
 				case T_BOOLEAN:
+					break;
 				case T_FLOAT:
 					p_function_id->defined.routine.program_code.push_back({ F2I });
-					p_function_id->defined.routine.program_code.push_back({ I2B });
 					return;
 					break;
 				case T_BYTE:
@@ -388,6 +394,28 @@ namespace cx{
 					break;
 				}
 				break;
+			case T_LONG:
+				switch (value_type) {
+				case T_INT:
+				case T_CHAR:
+				case T_WCHAR:
+				case T_BOOLEAN:
+				case T_BYTE:
+				case T_SHORT:
+					p_function_id->defined.routine.program_code.push_back({ I2L });
+					return;
+					break;
+				case T_FLOAT:
+					p_function_id->defined.routine.program_code.push_back({ F2L });
+					return;
+					break;
+				case T_LONG:
+					return;
+					break;
+				default:
+					break;
+				}
+				break;
 			default:
 				break;
 			}
@@ -396,9 +424,6 @@ namespace cx{
 			//        if (p_target_type->base_type() ==
 			//            p_value_type->array.p_element_type->type_code) return;
 			return;
-		}
-		else {
-			if (p_target_type == p_value_type) return;
 		}
 
 		cx_error(ec);

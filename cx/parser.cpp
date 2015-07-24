@@ -683,7 +683,6 @@ namespace cx{
 				break;
 			case TC_LOGIC_OR:
 				check_boolean(p_result_type, p_operand_type);
-				p_result_type = p_boolean_type;
 
 				this->emit(p_function_id, { LOGIC_OR });
 				break;
@@ -745,35 +744,30 @@ namespace cx{
 		while (token_in(token, tokenlist_mul_ops)) {
 
 			op = token;
-			get_token_append();
+			get_token();
 			p_operand_type = parse_factor(p_function_id);
 
 			switch (op) {
 			case TC_STAR:
-				if (integer_operands(p_result_type, p_operand_type)) {
-					p_result_type = p_integer_type;
-				}
-				else if (real_operands(p_result_type, p_operand_type)) {
-					p_result_type = p_float_type;
-				}
-				else cx_error(ERR_INCOMPATIBLE_TYPES);
+				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
+				ERR_INCOMPATIBLE_TYPES);
+
+				this->emit_mul(p_function_id, p_operand_type);
 				break;
 			case TC_DIVIDE:
-				if (integer_operands(p_result_type, p_operand_type) ||
-					real_operands(p_result_type, p_operand_type)) {
-					p_result_type = p_integer_type;
-				}
-				else cx_error(ERR_INCOMPATIBLE_TYPES);
+				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
+					ERR_INCOMPATIBLE_TYPES);
+
+				this->emit_div(p_function_id, p_operand_type);
 				break;
 			case TC_MODULAS:
-				if (integer_operands(p_result_type, p_operand_type)) {
-					p_result_type = p_integer_type;
-				}
-				else cx_error(ERR_INCOMPATIBLE_TYPES);
+				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
+					ERR_INCOMPATIBLE_TYPES);
+
+				this->emit_mod(p_function_id, p_operand_type);
 				break;
 			case TC_LOGIC_AND:
 				check_boolean(p_result_type, p_operand_type);
-				p_result_type = p_boolean_type;
 
 				this->emit(p_function_id, { LOGIC_AND });
 				break;
@@ -814,14 +808,14 @@ namespace cx{
 				}
 				break;
 			case DC_CONSTANT:
-				get_token_append();
+				get_token();
 				p_result_type = p_node->p_type;
 
 				this->emit_const(p_function_id, p_node);
 				break;
 
 			case DC_TYPE:
-				get_token_append();
+				get_token();
 				p_result_type = p_node->p_type;
 				break;
 			case DC_VARIABLE:
@@ -829,7 +823,7 @@ namespace cx{
 			case DC_REFERENCE:
 			case DC_MEMBER:
 			case DC_NAMESPACE:
-				get_token_append();
+				get_token();
 				p_result_type = parse_variable(p_function_id, p_node, true);
 				break;
 			default:
@@ -882,7 +876,6 @@ namespace cx{
 			p_result_type = p_char_type;
 
 			this->emit_load(p_function_id, p_id, false);
-			//icode.put(p_node);
 			get_token();
 		}
 		break;
@@ -925,11 +918,12 @@ namespace cx{
 			p_result_type = parse_expression(p_function_id);
 			conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 			break;
-			//case tc_logic_NOT:
-			//	get_token_append();
-			//	parse_expression();
-			//	p_result_type = p_boolean_type;
-			//	break;
+		case TC_LOGIC_NOT:
+				get_token();
+				parse_expression(p_function_id);
+				// TODO LOGIC_NOT operation.
+				p_result_type = p_boolean_type;
+				break;
 			//case tc_left_bracket:
 			//{
 			//	get_token_append();
@@ -1009,10 +1003,8 @@ namespace cx{
 			break;
 		}
 
-		// emit load
-
 		//  [ or . : Loop to parse any subscripts and fields.
-		int done_flag = false;
+		bool done_flag = false;
 		cx_type::type_ptr p_prev_type = p_result_type;
 		do {
 			switch (token) {
@@ -1043,8 +1035,6 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
-
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1058,102 +1048,132 @@ namespace cx{
 				break;
 			case TC_PLUS_EQUAL:
 			{
-				get_token_append();
+				get_token();
 				p_expr_type = parse_expression(p_function_id);
+
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
-				p_result_type = p_expr_type;
+				
+				this->emit_add(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_MINUS_EQUAL:
 			{
-				get_token_append();
+				get_token();
 				p_expr_type = parse_expression(p_function_id);
+
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_sub(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_STAR_EQUAL:
 			{
-				get_token_append();
+				get_token();
 				p_expr_type = parse_expression(p_function_id);
+
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_mul(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_DIVIDE_EQUAL:
 			{
-				get_token_append();
+				get_token();
 				p_expr_type = parse_expression(p_function_id);
+
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_div(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_MODULAS_EQUAL:
 			{
-				get_token_append();
+				get_token();
 				p_expr_type = parse_expression(p_function_id);
+
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_mod(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_BIT_LEFTSHIFT_EQUAL:
 			{
-				get_token_append();
+				get_token();
+
 				p_expr_type = parse_expression(p_function_id);
+
+				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_lshift(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_BIT_RIGHTSHIFT_EQUAL:
 			{
-				get_token_append();
+				get_token();
+
 				p_expr_type = parse_expression(p_function_id);
+
+				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_rshift(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_BIT_AND_EQUAL:
 			{
-				get_token_append();
+				get_token();
+
 				p_expr_type = parse_expression(p_function_id);
+
+				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_and(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_BIT_XOR_EQUAL:
 			{
-				get_token_append();
+				get_token();
+
 				p_expr_type = parse_expression(p_function_id);
+
+				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_xor(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);			
 			}
 			break;
 			case TC_BIT_OR_EQUAL:
 			{
-				get_token_append();
+				get_token();
+
 				p_expr_type = parse_expression(p_function_id);
+
+				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				p_result_type = p_expr_type;
+				this->emit_or(p_function_id, p_result_type);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_COMMA:
@@ -1161,7 +1181,7 @@ namespace cx{
 			case TC_RETURN:
 				break;
 			case TC_IDENTIFIER:
-				get_token_append();
+				get_token();
 				p_expr_type = p_result_type;
 
 			default:
@@ -2543,6 +2563,35 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
+	void parser::emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IDIV;
+			break;
+		case T_FLOAT:
+			op = FDIV;
+			break;
+		case T_LONG:
+			op = LDIV;
+			break;
+		case T_REFERENCE: // TODO fix
+			op = ASTORE;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
 	void parser::emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
 		cx::opcode op;
 
@@ -2564,6 +2613,177 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 			break;
 		case T_REFERENCE: // TODO fix
 			op = ASTORE;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IREM;
+			break;
+		case T_FLOAT:
+			op = FREM;
+			break;
+		case T_LONG:
+			op = LREM;
+			break;
+		case T_REFERENCE: // TODO fix
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IMUL;
+			break;
+		case T_FLOAT:
+			op = FMUL;
+			break;
+		case T_LONG:
+			op = LMUL;
+			break;
+		case T_REFERENCE: // TODO fix
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_lshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = ISHL;
+		break;
+		case T_LONG:
+			op = LSHL;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_rshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = ISHR;
+			break;
+		case T_LONG:
+			op = LSHR;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_and(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IAND;
+			break;
+		case T_LONG:
+			op = LAND;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_or(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IOR;
+			break;
+		case T_LONG:
+			op = LOR;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_xor(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+		case T_SHORT:
+		case T_WCHAR:
+		case T_INT:
+			op = IXOR;
+			break;
+		case T_LONG:
+			op = LXOR;
 			break;
 		default:
 			break;

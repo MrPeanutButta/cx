@@ -1,7 +1,8 @@
 
 
-bool d = false;
-bool s = true;
-bool a = (s && d);
+int a = 4;
+long b = 1;
+
+a >>= b;
 
 return a;
