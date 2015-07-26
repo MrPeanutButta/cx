@@ -192,7 +192,7 @@ namespace cx{
 		uint8_t radix; // number base
 
 		int accumulate_value(text_in_buffer &buffer,
-			float &value, error_code ec);
+			cx_real &value, error_code ec);
 
 		bool is_x_digit(const char &c);
 		int char_value(const unsigned char &c);

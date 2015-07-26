@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     }
 
-	return p_program_id->runstack_item->i_;;
+	return static_cast<int>(p_program_id->runstack_item->i_);
 }
 
 void set_options(int argc, char **argv) {

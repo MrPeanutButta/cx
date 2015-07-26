@@ -9,174 +9,129 @@
 namespace cx{
 
 	const char* opcode_string[] = {
-		"aaload",
-		"aastore",
-		"aconst_null",
-		"aload",
-		"anewarray",
-		"areturn",
-		"arraylength",
-		"astore",
-		"athrow",
-		"baload",
-		"bastore",
-		"beq",
-		"bge",
-		"bgt",
-		"bipush",
-		"ble",
-		"blt",
-		"bne",
-		"call",
-		"caload",
-		"castore",
-		"checkcast",
-		"d2f",
-		"d2i",
-		"d2l",
-		"dadd",
-		"daload",
-		"dastore",
-		"dcmp",
-		"dconst",
-		"ddiv",
-		"dload",
-		"dmul",
-		"dneg",
-		"drem",
-		"dreturn",
-		"dstore",
-		"dsub",
-		"dup",
-		"dup2",
-		"dup2_x1",
-		"dup2_x2",
-		"dup_x1",
-		"dup_x2",
-		"f2d",
-		"f2i",
-		"f2l",
-		"fadd",
-		"faload",
-		"fastore",
-		"fcmp",
-		"fconst",
-		"fdiv",
-		"fload",
-		"fmul",
-		"fneg",
-		"frem",
-		"freturn",
-		"fstore",
-		"fsub",
-		"getfield",
-		"getstatic",
-		"goto",
-		"goto_w",
-		"halt",
-		"i2b",
-		"i2c",
-		"i2d",
-		"i2f",
-		"i2l",
-		"i2s",
-		"iadd",
-		"iaload",
-		"iand",
-		"iastore",
-		"icmp",
-		"iconst",
-		"idiv",
-		"ifeq",
-		"ifne",
-		"iflt",
-		"ifge",
-		"ifgt",
-		"ifle",
-		"if_acmpeq",
-		"if_acmpne",
-		"if_icmpeq",
-		"if_icmpne",
-		"if_icmplt",
-		"if_icmpge",
-		"if_icmpgt",
-		"if_icmple",
-		"ifnonnull",
-		"ifnull",
-		"iinc",
-		"iload",
-		"imul",
-		"ineg",
-		"inot",
-		"instanceof",
-		"invokedynamic",
-		"invokefunct",
-		"invokeinterface",
-		"invokespecial",
-		"invokestatic",
-		"invokevirtual",
-		"ior",
-		"irem",
-		"ireturn",
-		"ishl",
-		"ishr",
-		"istore",
-		"isub",
-		"iushr",
-		"ixor",
-		"jsr",
-		"jsr_w",
-		"l2d",
-		"l2f",
-		"l2i",
-		"ladd",
-		"laload",
-		"land",
-		"lastore",
-		"lcmp",
-		"lconst",
-		"ldc",
-		"ldc2_w",
-		"ldc_w",
-		"ldiv",
-		"lload",
-		"lmul",
-		"lneg",
-		"lookupswitch",
-		"logic_or",
-		"logic_and",
-		"lor",
-		"lrem",
-		"lreturn",
-		"lshl",
-		"lshr",
-		"lstore",
-		"lsub",
-		"lushr",
-		"lxor",
-		"monitorenter",
-		"monitorexit",
-		"multianewarray",
-		"new",
-		"newarray",
-		"nop",
-		"pload",
-		"postop",
-		"pop",
-		"pop2",
-		"preop",
-		"putfield",
-		"putstatic",
-		"ret",
-		"return",
-		"saload",
-		"sastore",
-		"sipush",
-		"swap",
-		"tableswitch",
-		"waload",
-		"wastore",
-		"wide"
+		"AALOAD",
+		"AASTORE",
+		"ACONST_NULL",
+		"ALOAD",
+		"ANEWARRAY",
+		"ARRAYLENGTH",
+		"ASTORE",
+		"ATHROW",
+		"BALOAD",
+		"BASTORE",
+		"BEQ",
+		"BGE",
+		"BGT",
+		"BIPUSH",
+		"BLE",
+		"BLT",
+		"BNE",
+		"CALL",
+		"CALOAD",
+		"CASTORE",
+		"CHECKCAST",
+		"D2F",
+		"D2I",
+		"D2L",
+		"DADD",
+		"DALOAD",
+		"DASTORE",
+		"DCMP",
+		"DCONST",
+		"DDIV",
+		"DLOAD",
+		"DMUL",
+		"DNEG",
+		"DREM",
+		"DRETURN",
+		"DSTORE",
+		"DSUB",
+		"DUP",
+		"DUP2",
+		"DUP2_X1",
+		"DUP2_X2",
+		"DUP_X1",
+		"DUP_X2",
+		"GETFIELD",
+		"GETSTATIC",
+		"GOTO",
+		"HALT",
+		"I2B",
+		"I2C",
+		"I2D",
+		"I2W",
+		"IADD",
+		"IALOAD",
+		"IAND",
+		"IASTORE",
+		"ICMP",
+		"ICONST",
+		"IDIV",
+		"IFEQ",
+		"IFNE",
+		"IFLT",
+		"IFGE",
+		"IFGT",
+		"IFLE",
+		"IF_ACMPEQ",
+		"IF_ACMPNE",
+		"IF_ICMPEQ",
+		"IF_ICMPNE",
+		"IF_ICMPLT",
+		"IF_ICMPGE",
+		"IF_ICMPGT",
+		"IF_ICMPLE",
+		"IFNONNULL",
+		"IFNULL",
+		"IINC",
+		"ILOAD",
+		"IMUL",
+		"INEG",
+		"INOT",
+		"INSTANCEOF",
+		"INVOKEDYNAMIC",
+		"INVOKEFUNCT",
+		"INVOKEINTERFACE",
+		"INVOKESPECIAL",
+		"INVOKESTATIC",
+		"INVOKEVIRTUAL",
+		"IOR",
+		"IREM",
+		"IRETURN",
+		"ISHL",
+		"ISHR",
+		"ISTORE",
+		"ISUB",
+		"IUSHR",
+		"IXOR",
+		"JSR",
+		"JSR_W",
+		"LDC",
+		"LDC2_W",
+		"LDC_W",
+		"LOOKUPSWITCH",
+		"LOGIC_OR",
+		"LOGIC_AND",
+		"MONITORENTER",
+		"MONITOREXIT",
+		"MULTIANEWARRAY",
+		"NEW",
+		"NEWARRAY",
+		"NOP",
+		"PLOAD",
+		"POSTOP",
+		"POP",
+		"POP2",
+		"PREOP",
+		"PUTFIELD",
+		"PUTSTATIC",
+		"RET",
+		"RETURN",
+		"SWAP",
+		"TABLESWITCH",
+		"WALOAD",
+		"WASTORE",
+		"WIDE"
 	};
 
 	namespace heap{
@@ -192,9 +147,12 @@ namespace cx{
 
 	// Type sizes
 	const size_t type_size[] = {
-		sizeof(bool), sizeof(char), sizeof(uint8_t), sizeof(short),
-		sizeof(wchar_t), sizeof(int), sizeof(float), sizeof(double),
-		sizeof(long)
+		sizeof(bool), 
+		sizeof(char), 
+		sizeof(uint8_t), 
+		sizeof(wchar_t), 
+		sizeof(cx_int), 
+		sizeof(cx_real)
 	};
 
 
@@ -213,7 +171,7 @@ namespace cx{
 
 	// Load Array or reference to stack
 #define _ALOAD(t_, type) {      \
-    int *index = &_POPS->i_;     \
+    cx_int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     _PUSHS->t_ = *((type *) ((char *) mem + (*index * sizeof (type))));  \
 					}
@@ -221,22 +179,22 @@ namespace cx{
 	// Store to memory
 #define _ASTORE(t_, type) {     \
     type *v_ = &_POPS->t_;       \
-    int *index = &_POPS->i_;     \
+    cx_int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     *((type *) ((char *) mem + (*index * sizeof (type)))) = *v_;        \
 					}
 
 	// Value object
 #define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item
-#define _JMP(t_) vpu.inst_ptr = this->vpu.code_ptr->begin() + (vpu.inst_ptr->arg0.t_ - 1)
+#define _JMP(t_) vpu.inst_ptr = this->vpu.code_ptr->begin() + ((int)vpu.inst_ptr->arg0.t_ - 1)
 
 #define _IFICMP(op) {       \
-    int value2 = _POPS->i_; \
-    int value1 = _POPS->i_; \
-    if(value1 op value2) _JMP(s_);  \
+    cx_int value2 = _POPS->i_; \
+    cx_int value1 = _POPS->i_; \
+    if(value1 op value2) _JMP(i_);  \
 					}
 
-#define _IF(op) if(_POPS->i_ op 0) _JMP(s_)
+#define _IF(op) if(_POPS->i_ op 0) _JMP(i_)
 
 	cxvm::cxvm(){
 		// Pointer to the allocated stack
@@ -294,7 +252,7 @@ namespace cx{
 			case ACONST_NULL: _PUSHS->a_ = nullptr; break;
 			case ALOAD: _PUSHS->a_ = _VALUE->a_;  break;
 			case ANEWARRAY: {
-				size_t size = _POPS->i_ * sizeof(void *); //data_type::type_size[(dt = static_cast<data_type::dtype> (vpu.inst_ptr->arg0.b_))];
+				size_t size = (size_t)_POPS->i_ * sizeof(void *); //data_type::type_size[(dt = static_cast<data_type::dtype> (vpu.inst_ptr->arg0.b_))];
 
 				void **mem = (void **)malloc(size);
 				assert(mem != nullptr);
@@ -312,7 +270,6 @@ namespace cx{
 				mem_map->typeform = F_ARRAY;
 				_PUSHS->a_ = (void *)mem;
 			} break;
-			case ARETURN: break;
 			case ARRAYLENGTH: {
 				void *mem = _POPS->a_;
 				assert(mem != nullptr);
@@ -334,16 +291,13 @@ namespace cx{
 				// Load parameters from the stack
 				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
 				for (; parameter != p_function_id->defined.routine.p_parameter_ids.rend(); ++parameter){
-					value *stack_item = ((value *)&_TOS.a_);
-
-					_POPS;
+					value *stack_item = ((value *)&_POPS->a_);
 
 					symbol_table_node *p_node = parameter->get();
 					p_node->runstack_item = stack_item;
 				}
 
 				_POPS;
-
 				p_function_id->runstack_item = _PUSHS;
 				cx->enter_function(p_function_id);
 				cx->go();
@@ -393,80 +347,75 @@ namespace cx{
 			case DUP2_X2: break;
 			case DUP_X1: break;
 			case DUP_X2: break;
-			case F2I: _PUSHS->i_ = static_cast<int> (_POPS->f_); break;
-			case F2L: _PUSHS->l_ = static_cast<long> (_POPS->f_); break;
-			case FADD:{
-				float b = _POPS->f_;
-				float a = _POPS->f_;
+			case D2I: _PUSHS->i_ = static_cast<cx_int> (_POPS->d_); break;
+			case DADD: {
+				cx_real b = _POPS->d_;
+				cx_real a = _POPS->d_;
 
-				_PUSHS->f_ = (a + b);
+				_PUSHS->d_ = (a + b);
 			}break;
-			case FALOAD: _ALOAD(f_, float); break;
-			case FASTORE: _ASTORE(f_, float); break;
-			case FCMP:
-				break;
-			case FCONST: _PUSHS->f_ = vpu.inst_ptr->arg0.f_; break;
-			case FDIV:{
-				float b = _POPS->f_;
-				float a = _POPS->f_;
+			case DALOAD: _ALOAD(d_, cx_real); break;
+			case DASTORE: _ASTORE(d_, cx_real); break;
+			case DCONST: _PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
+			case DDIV: {
+				cx_real b = _POPS->d_;
+				cx_real a = _POPS->d_;
 
-				_PUSHS->f_ = (a / b);
+				_PUSHS->d_ = (a / b);
 			}break;
-			case FLOAD: _PUSHS->f_ = _VALUE->f_; break;
-			case FMUL:{
-				float b = _POPS->f_;
-				float a = _POPS->f_;
+			case DLOAD: _PUSHS->d_ = _VALUE->d_; break;
+			case DMUL: {
+				cx_real b = _POPS->d_;
+				cx_real a = _POPS->d_;
 
-				_PUSHS->f_ = (a * b);
+				_PUSHS->d_ = (a * b);
 			}break;
-			case FNEG:{
-				float a = _POPS->f_;
+			case DNEG: {
+				cx_real a = _POPS->d_;
 
-				_PUSHS->f_ = (-a);
+				_PUSHS->d_ = (-a);
 			}break;
-			case FREM:{
-				float b = _POPS->f_;
-				float a = _POPS->f_;
+			case DREM: {
+				cx_real b = _POPS->d_;
+				cx_real a = _POPS->d_;
 
-				_PUSHS->f_ = fmod(a, b);
+				_PUSHS->d_ = fmod(a ,b);
 			}break;
-			case FSTORE: _VALUE->f_ = _POPS->f_; break;
-			case FSUB:{
-				float b = _POPS->f_;
-				float a = _POPS->f_;
+			case DSTORE: _VALUE->d_ = _POPS->d_; break;
+			case DSUB: {
+				cx_real b = _POPS->d_;
+				cx_real a = _POPS->d_;
 
-				_PUSHS->f_ = (a - b);
+				_PUSHS->d_ = (a - b);
 			}break;
 			case GETFIELD: break;
 			case GETSTATIC: break;
-			case GOTO: _JMP(s_); break;
-			case GOTO_W: _JMP(i_); break;
+			case GOTO: _JMP(i_); break;
 			case I2B: _PUSHS->b_ = static_cast<uint8_t> (_POPS->i_); break;
 			case I2C: _PUSHS->c_ = static_cast<char> (_POPS->i_); break;
-			case I2F: _PUSHS->f_ = static_cast<float> (_POPS->i_); break;
-			case I2L: _PUSHS->l_ = static_cast<long> (_POPS->i_); break;
-			case I2S: _PUSHS->s_ = static_cast<short> (_POPS->i_); break;
+			case I2D: _PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
+			case I2W: _PUSHS->w_ = static_cast<wchar_t> (_POPS->i_); break;
 			case IADD:{
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a + b);
 			}break;
-			case IALOAD: _ALOAD(i_, int); break;
+			case IALOAD: _ALOAD(i_, cx_int); break;
 				// Bitwise AND
 			case IAND: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a & b);
 			}break;
-			case IASTORE: _ASTORE(i_, int); break;
+			case IASTORE: _ASTORE(i_, cx_int); break;
 			case ICMP:
 				break;
 			case ICONST: _PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
 			case IDIV: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a / b);
 			}break;
@@ -481,14 +430,14 @@ namespace cx{
 				void *value2 = _POPS->a_;
 				void *value1 = _POPS->a_;
 
-				if (!memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(s_);
+				if (!memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
 			} break;
 
 			case IF_ACMPNE: {
 				void *value2 = _POPS->a_;
 				void *value1 = _POPS->a_;
 
-				if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(s_);
+				if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
 			} break;
 
 			case IF_ICMPEQ: _IFICMP(== ); break;
@@ -497,12 +446,12 @@ namespace cx{
 			case IF_ICMPGE: _IFICMP(>= ); break;
 			case IF_ICMPGT: _IFICMP(> ); break;
 			case IF_ICMPLE: _IFICMP(<= ); break;
-			case IFNONNULL: if (_POPS->a_ != nullptr) _JMP(s_); break;
-			case IFNULL: if (_POPS->a_ == nullptr) _JMP(s_); break;
+			case IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); break;
+			case IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); break;
 			case IINC: {
 				value *v_ = (value *)_POPS;
-				int i_ = _POPS->i_;
-				int arg0 = vpu.inst_ptr->arg0.i_;
+				cx_int i_ = _POPS->i_;
+				int arg0 = static_cast<int>(vpu.inst_ptr->arg0.i_);
 				opcode order = (opcode)vpu.inst_ptr->arg1.i_;
 
 				switch (order)
@@ -524,18 +473,18 @@ namespace cx{
 			}break;
 			case ILOAD: _PUSHS->i_ = _VALUE->i_; break;
 			case IMUL: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a * b);
 			}break;
 			case INEG:{
-				int a = _POPS->i_;
+				cx_int a = _POPS->i_;
 				_PUSHS->i_ = (-a);
 			}break;
 				// Unary complement (bit inversion)
 			case INOT: {
-				int a = _POPS->i_;
+				cx_int a = _POPS->i_;
 				_PUSHS->i_ = (~a);
 			}break;
 			case INSTANCEOF: break;
@@ -547,90 +496,51 @@ namespace cx{
 			case INVOKEVIRTUAL: break;
 				// Bitwise inclusive OR
 			case IOR:  {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a | b);
 			}break;
 			case IREM: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a % b);
 			}break;
 			case ISHL: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a << b);
 			}break;
 			case ISHR: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a >> b);
 			}break;
 			case ISTORE: {
-				int i = _POPS->i_;
+				cx_int i = _POPS->i_;
 				_VALUE->i_ = i;
 			}break;
 			case ISUB:{
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a - b);
 			}break;
-			case IUSHR: _TOS.i_ = (int)((unsigned int)vpu.stack_ptr[-1].i_ >> vpu.stack_ptr->i_); break;
 				// Bitwise exclusive OR
 			case IXOR: {
-				int b = _POPS->i_;
-				int a = _POPS->i_;
+				cx_int b = _POPS->i_;
+				cx_int a = _POPS->i_;
 
 				_PUSHS->i_ = (a ^ b);
 			}break;
 			case JSR:
 			case JSR_W: break;
-
-			case L2F: _PUSHS->f_ = static_cast<float> (_POPS->l_); break;
-			case L2I: _PUSHS->i_ = static_cast<int> (_POPS->l_); break;
-			case LADD: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a + b);
-			}break;
-			case LALOAD: _ALOAD(l_, long); break;
-			case LAND: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a & b);
-			}break;
-			case LASTORE: _ASTORE(l_, long long); break;
-			case LCMP:
-				break;
-			case LCONST: _PUSHS->l_ = vpu.inst_ptr->arg0.l_; break;
 			case LDC:
 			case LDC2_W:
 			case LDC_W: break;
-			case LDIV: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a / b);
-			}break;
-			case LLOAD: _PUSHS->l_ = _VALUE->l_; break;
-			case LMUL: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a * b);
-			}break;
-			case LNEG: {
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (-a);
-			}break;
 			case LOOKUPSWITCH: break;
 			case LOGIC_OR:{
 				bool b = _POPS->z_;
@@ -644,44 +554,6 @@ namespace cx{
 
 				_PUSHS->z_ = (a && b);
 			}break;
-			case LOR: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a | b);
-			}break;
-			case LREM: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a % b);
-			}break;
-			case LSHL: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a << b);
-			}break;
-			case LSHR: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a >> b);
-			}break;
-			case LSTORE: _VALUE->l_ = _POPS->i_; break;
-			case LSUB: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a - b);
-			}break;
-			case LUSHR: _TOS.l_ = (long long)((unsigned long long)vpu.stack_ptr[-1].l_ >> vpu.stack_ptr->l_); break;
-			case LXOR: {
-				long long b = _POPS->l_;
-				long long a = _POPS->l_;
-
-				_PUSHS->l_ = (a ^ b);
-			}break;
 			case MONITORENTER:
 			case MONITOREXIT: break;
 			case MULTIANEWARRAY: break;
@@ -693,7 +565,7 @@ namespace cx{
 				 * @return: new array allocation managed by GC */
 			case NEWARRAY: {
 				type_code dt;
-				size_t size = _POPS->i_ * type_size[(dt = static_cast<type_code> (vpu.inst_ptr->arg0.b_))];
+				size_t size = static_cast<size_t>(_POPS->i_ * type_size[(dt = static_cast<type_code> (vpu.inst_ptr->arg0.b_))]);
 
 				void *mem = malloc(size);
 				assert(mem != nullptr);
@@ -721,9 +593,6 @@ namespace cx{
 			case RETURN:
 				return;
 				break;
-			case SALOAD: _ALOAD(s_, short); break;
-			case SASTORE: _ASTORE(s_, short); break;
-			case SIPUSH: _PUSHS->s_ = vpu.inst_ptr->arg0.i_; break;
 			case SWAP: break;
 			case TABLESWITCH: break;
 			case WALOAD: _ALOAD(w_, wchar_t); break;

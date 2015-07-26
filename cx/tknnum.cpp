@@ -31,12 +31,12 @@ namespace cx{
 	 */
 	void number_token::get(text_in_buffer &buffer) {
 
-		float number_value = 0.0; /* value of number ignoring
+		cx_real number_value = 0.0; /* value of number ignoring
 							   * the decimal point */
 		int whole_places = 0; // no. digits before the decimal point
 		int decimal_places = 0; // no. digits after  the decimal point
 		char exponent_sign = '+';
-		float e_value = 0.0; // value of number after 'E'
+		cx_real e_value = 0.0; // value of number after 'E'
 		int exponent = 0; // final value of exponent
 		bool saw_dot_dot_Flag = false; // true if encountered '..',
 
@@ -94,7 +94,7 @@ namespace cx{
 				buffer.put_back_char();
 			}
 			else {
-				type__ = T_FLOAT;
+				type__ = T_DOUBLE;
 				*ps++ = '.';
 
 				// We have a fraction part.  Accumulate it into number_value.
@@ -107,7 +107,7 @@ namespace cx{
 		/* get the exponent part, if any. There cannot be an
 		 * exponent part if we already saw the '..' token. */
 		if (!saw_dot_dot_Flag && ((ch == 'E') || (ch == 'e'))) {
-			type__ = T_FLOAT;
+			type__ = T_DOUBLE;
 			*ps++ = ch;
 			ch = buffer.get_char();
 
@@ -144,20 +144,19 @@ namespace cx{
 		// Check and set the numeric value.
 		// TODO Add T_LONG support
 		if (type__ == T_INT) {
-			if ((number_value < INT_MIN) || (number_value > INT_MAX)) {
-				if ((number_value < LLONG_MIN) || (number_value > LLONG_MAX)){
-
-					cx_error(ERR_INTEGER_OUT_OF_RANGE);
-					return;
-				}
-				else {
-					this->type__ = T_LONG;
-					this->value__.l_ = long long(number_value);
-				}
+			if ((number_value < INT_MIN) || (number_value > INT_MAX)){
+				cx_error(ERR_INTEGER_OUT_OF_RANGE);
+				return;
 			}
-			value__.i_ = int(number_value);
+			value__.i_ = static_cast<cx_int>(number_value);
 		}
-		else value__.f_ = number_value;
+		else {	// TODO Range check for max double
+			if ((number_value < DBL_MIN) || (number_value > DBL_MAX)){
+				cx_error(ERR_REAL_OUT_OF_RANGE);
+				return;
+			}
+			value__.d_ = number_value;
+		}
 
 		*ps = '\0';
 		code__ = TC_NUMBER;
@@ -172,7 +171,7 @@ namespace cx{
 	 * @return true  if success false if failure.
 	 */
 	int number_token::accumulate_value(text_in_buffer &buffer,
-		float &value, error_code ec) {
+		cx_real &value, error_code ec) {
 
 		const int max_digit_count = 20;
 
@@ -240,7 +239,7 @@ namespace cx{
 		}
 		else {
 			sprintf(list.text, "\t%-18s =%g", ">> real:",
-				value__.f_);
+				value__.d_);
 		}
 
 		list.put_line();

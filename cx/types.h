@@ -21,12 +21,9 @@ namespace cx{
 		T_BOOLEAN = 0x00,
 		T_CHAR = 0x01,
 		T_BYTE = 0x02,
-		T_SHORT = 0x03,
 		T_WCHAR = 0x04,
 		T_INT = 0x05,
-		T_FLOAT = 0x06,
 		T_DOUBLE = 0x07,
-		T_LONG = 0x08,
 		T_REFERENCE = 0x09,
 		T_VOID = 0xA,
 		T_DUMMY = 0xF
@@ -46,20 +43,16 @@ namespace cx{
 		uint8_t b_;
 		char c_;
 		wchar_t w_;
-		short s_;
 		int i_;
-		long long l_;
-		float f_;
 		double d_;
 		void *a_;
 
 		value(bool z) : z_(z) {}
 		value(uint8_t b) : b_(b) {}
 		value(char c) : c_(c) {}
-		value(short s) : s_(s) {}
+		value(wchar_t w) : w_(w) {}
+		//value(int i) : i_(i) {}
 		value(int i) : i_(i) {}
-		value(long long l) : l_(l) {}
-		value(float f) : f_(f) {}
 		value(double d) : d_(d) {}
 		value(void *a) : a_(a) {}
 		value() : a_(nullptr){}
@@ -94,6 +87,8 @@ namespace cx{
 	class symbol_table_node;
 	typedef std::shared_ptr<symbol_table> symbol_table_ptr;
 	typedef std::shared_ptr<symbol_table_node> symbol_table_node_ptr;
+	typedef int cx_int;
+	typedef double cx_real;
 
 	class cx_type {
 		bool is_constant_;
@@ -168,12 +163,9 @@ namespace cx{
 	extern cx_type::type_ptr p_boolean_type;
 	extern cx_type::type_ptr p_char_type;
 	extern cx_type::type_ptr p_byte_type;
-	extern cx_type::type_ptr p_short_type;
 	extern cx_type::type_ptr p_wchar_type;
 	extern cx_type::type_ptr p_integer_type;
-	extern cx_type::type_ptr p_float_type;
 	extern cx_type::type_ptr p_double_type;
-	extern cx_type::type_ptr p_long_type;
 	extern cx_type::type_ptr p_reference_type;
 	extern cx_type::type_ptr p_void_type;
 	extern cx_type::type_ptr p_dummy_type;
