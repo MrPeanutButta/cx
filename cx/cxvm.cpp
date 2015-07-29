@@ -39,9 +39,15 @@ namespace cx{
 		"DCMP",
 		"DCONST",
 		"DDIV",
+		"DEQ_EQ",
+		"DGT",
+		"DGT_EQ",
 		"DLOAD",
+		"DLT",
+		"DLT_EQ",
 		"DMUL",
 		"DNEG",
+		"DNOT_EQ",
 		"DREM",
 		"DRETURN",
 		"DSTORE",
@@ -67,6 +73,7 @@ namespace cx{
 		"ICMP",
 		"ICONST",
 		"IDIV",
+		"IEQ_EQ",
 		"IFEQ",
 		"IFNE",
 		"IFLT",
@@ -83,11 +90,16 @@ namespace cx{
 		"IF_ICMPLE",
 		"IFNONNULL",
 		"IFNULL",
+		"IGT",
+		"IGT_EQ",
 		"IINC",
 		"ILOAD",
+		"ILT",
+		"ILT_EQ",
 		"IMUL",
 		"INEG",
 		"INOT",
+		"INOT_EQ",
 		"INSTANCEOF",
 		"INVOKEDYNAMIC",
 		"INVOKEFUNCT",
@@ -102,7 +114,6 @@ namespace cx{
 		"ISHR",
 		"ISTORE",
 		"ISUB",
-		"IUSHR",
 		"IXOR",
 		"JSR",
 		"JSR_W",
@@ -112,6 +123,7 @@ namespace cx{
 		"LOOKUPSWITCH",
 		"LOGIC_OR",
 		"LOGIC_AND",
+		"LOGIC_NOT",
 		"MONITORENTER",
 		"MONITOREXIT",
 		"MULTIANEWARRAY",
@@ -147,11 +159,11 @@ namespace cx{
 
 	// Type sizes
 	const size_t type_size[] = {
-		sizeof(bool), 
-		sizeof(char), 
-		sizeof(uint8_t), 
-		sizeof(wchar_t), 
-		sizeof(cx_int), 
+		sizeof(cx_bool),
+		sizeof(cx_char),
+		sizeof(cx_byte),
+		sizeof(cx_wchar),
+		sizeof(cx_int),
 		sizeof(cx_real)
 	};
 
@@ -174,7 +186,7 @@ namespace cx{
     cx_int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     _PUSHS->t_ = *((type *) ((char *) mem + (*index * sizeof (type))));  \
-					}
+								}
 
 	// Store to memory
 #define _ASTORE(t_, type) {     \
@@ -182,7 +194,7 @@ namespace cx{
     cx_int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     *((type *) ((char *) mem + (*index * sizeof (type)))) = *v_;        \
-					}
+								}
 
 	// Value object
 #define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item
@@ -192,9 +204,29 @@ namespace cx{
     cx_int value2 = _POPS->i_; \
     cx_int value1 = _POPS->i_; \
     if(value1 op value2) _JMP(i_);  \
-					}
+								}
 
 #define _IF(op) if(_POPS->i_ op 0) _JMP(i_)
+
+	// Binary Operators
+#define _BIN_OP(t_, type, op)  { \
+	type b = _POPS->t_; \
+	type a = _POPS->t_; \
+	_PUSHS->t_ = (a op b); \
+				}
+
+	// Unary Operators
+#define _UNA_OP(t_, type, op)  { \
+	type a = _POPS->t_; \
+	_PUSHS->t_ = op(a); \
+			}
+
+	// Relational Operators (bool)
+#define _REL_OP(t_, type, op)  { \
+	type b = _POPS->t_; \
+	type a = _POPS->t_; \
+	_PUSHS->i_ = (a op b); \
+				}
 
 	cxvm::cxvm(){
 		// Pointer to the allocated stack
@@ -282,8 +314,8 @@ namespace cx{
 
 				throw std::string(message);
 			} break;
-			case BALOAD: _ALOAD(b_, uint8_t); break;
-			case BASTORE: _ASTORE(b_, uint8_t); break;
+			case BALOAD: _ALOAD(b_, cx_byte); break;
+			case BASTORE: _ASTORE(b_, cx_byte); break;
 			case CALL:{
 				symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
 				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
@@ -309,8 +341,8 @@ namespace cx{
 					_POPS;
 				}
 			} break;
-			case CALOAD: _ALOAD(c_, char); break;
-			case CASTORE: _ASTORE(c_, char); break;
+			case CALOAD: _ALOAD(c_, cx_char); break;
+			case CASTORE: _ASTORE(c_, cx_char); break;
 			case CHECKCAST: break;
 
 				/** Duplicate the top operand stack value
@@ -342,83 +374,52 @@ namespace cx{
 				_PUSHS->a_ = (void *)new_value_copy;
 
 			} break;
-			case DUP2: break;
-			case DUP2_X1: break;
-			case DUP2_X2: break;
-			case DUP_X1: break;
-			case DUP_X2: break;
-			case D2I: _PUSHS->i_ = static_cast<cx_int> (_POPS->d_); break;
-			case DADD: {
-				cx_real b = _POPS->d_;
-				cx_real a = _POPS->d_;
-
-				_PUSHS->d_ = (a + b);
-			}break;
-			case DALOAD: _ALOAD(d_, cx_real); break;
-			case DASTORE: _ASTORE(d_, cx_real); break;
-			case DCONST: _PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
-			case DDIV: {
-				cx_real b = _POPS->d_;
-				cx_real a = _POPS->d_;
-
-				_PUSHS->d_ = (a / b);
-			}break;
-			case DLOAD: _PUSHS->d_ = _VALUE->d_; break;
-			case DMUL: {
-				cx_real b = _POPS->d_;
-				cx_real a = _POPS->d_;
-
-				_PUSHS->d_ = (a * b);
-			}break;
-			case DNEG: {
-				cx_real a = _POPS->d_;
-
-				_PUSHS->d_ = (-a);
-			}break;
+			case DUP2:		break;
+			case DUP2_X1:	break;
+			case DUP2_X2:	break;
+			case DUP_X1:	break;
+			case DUP_X2:	break;
+			case D2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->d_); break;
+			case DADD:		_BIN_OP(d_, cx_real, +); break;
+			case DALOAD:	_ALOAD(d_, cx_real); break;
+			case DASTORE:	_ASTORE(d_, cx_real); break;
+			case DCONST:	_PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
+			case DDIV:		_BIN_OP(d_, cx_real, / ); break;
+			case DEQ_EQ:	_REL_OP(d_, cx_real, == ); break;
+			case DGT:		_REL_OP(d_, cx_real, > ); break;
+			case DGT_EQ:	_REL_OP(d_, cx_real, >=); break;
+			case DLOAD:		_PUSHS->d_ = _VALUE->d_; break;
+			case DLT:		_REL_OP(d_, cx_real, < ); break;
+			case DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;
+			case DMUL:		_BIN_OP(d_, cx_real, *); break;
+			case DNEG:		_UNA_OP(d_, cx_real, -); break;
+			case DNOT_EQ:	_REL_OP(d_, cx_real, != ); break;
 			case DREM: {
 				cx_real b = _POPS->d_;
 				cx_real a = _POPS->d_;
 
-				_PUSHS->d_ = fmod(a ,b);
+				_PUSHS->d_ = fmod(a, b);
 			}break;
-			case DSTORE: _VALUE->d_ = _POPS->d_; break;
-			case DSUB: {
-				cx_real b = _POPS->d_;
-				cx_real a = _POPS->d_;
-
-				_PUSHS->d_ = (a - b);
-			}break;
+			case DSTORE:	_VALUE->d_ = _POPS->d_; break;
+			case DSUB:		_BIN_OP(d_, cx_real, -); break;
 			case GETFIELD: break;
 			case GETSTATIC: break;
-			case GOTO: _JMP(i_); break;
-			case I2B: _PUSHS->b_ = static_cast<uint8_t> (_POPS->i_); break;
-			case I2C: _PUSHS->c_ = static_cast<char> (_POPS->i_); break;
-			case I2D: _PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
-			case I2W: _PUSHS->w_ = static_cast<wchar_t> (_POPS->i_); break;
-			case IADD:{
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a + b);
-			}break;
-			case IALOAD: _ALOAD(i_, cx_int); break;
+			case GOTO:		_JMP(i_); break;
+			case I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
+			case I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
+			case I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
+			case I2W:		_PUSHS->w_ = static_cast<cx_wchar> (_POPS->i_); break;
+			case IADD:		_BIN_OP(i_, cx_int, +); break;
+			case IALOAD:	_ALOAD(i_, cx_int); break;
+			case ILT:		_REL_OP(i_, cx_int, < ); break;
 				// Bitwise AND
-			case IAND: {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a & b);
-			}break;
-			case IASTORE: _ASTORE(i_, cx_int); break;
+			case IAND:		_BIN_OP(i_, cx_int, &); break;
+			case IASTORE:	_ASTORE(i_, cx_int); break;
 			case ICMP:
 				break;
-			case ICONST: _PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
-			case IDIV: {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a / b);
-			}break;
+			case ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
+			case IDIV:		_BIN_OP(i_, cx_int, / ); break;
+			case IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
 			case IFEQ: _IF(== ); break;
 			case IFNE: _IF(!= ); break;
 			case IFLT: _IF(< ); break;
@@ -448,45 +449,19 @@ namespace cx{
 			case IF_ICMPLE: _IFICMP(<= ); break;
 			case IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); break;
 			case IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); break;
-			case IINC: {
-				value *v_ = (value *)_POPS;
-				cx_int i_ = _POPS->i_;
-				int arg0 = static_cast<int>(vpu.inst_ptr->arg0.i_);
-				opcode order = (opcode)vpu.inst_ptr->arg1.i_;
-
-				switch (order)
-				{
-				case PREOP:{
-					v_->i_ += arg0;
-					_PUSHS->i_ = v_->i_;
-				}break;
-				case POSTOP:{
-					i_ = v_->i_;
-					v_->i_ += arg0;
-					_PUSHS->i_ = i_;
-				}
-							break;
-				default:
-					break;
-				}
-
-			}break;
-			case ILOAD: _PUSHS->i_ = _VALUE->i_; break;
-			case IMUL: {
-				cx_int b = _POPS->i_;
+			case IGT:		_REL_OP(i_, cx_int, > ); break;
+			case IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
+			case IINC:{
 				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a * b);
+				_PUSHS->i_ += vpu.inst_ptr->arg0.i_;
 			}break;
-			case INEG:{
-				cx_int a = _POPS->i_;
-				_PUSHS->i_ = (-a);
-			}break;
+			case ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
+			case ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
+			case IMUL:		_BIN_OP(i_, cx_int, *); break;
+			case INEG:		_UNA_OP(i_, cx_int, -); break;
 				// Unary complement (bit inversion)
-			case INOT: {
-				cx_int a = _POPS->i_;
-				_PUSHS->i_ = (~a);
-			}break;
+			case INOT: 		_UNA_OP(i_, cx_int, ~); break;
+			case INOT_EQ:	_REL_OP(i_, cx_int, != ); break;
 			case INSTANCEOF: break;
 			case INVOKEDYNAMIC: break;
 			case INVOKEFUNCT: break;
@@ -495,65 +470,26 @@ namespace cx{
 			case INVOKESTATIC: break;
 			case INVOKEVIRTUAL: break;
 				// Bitwise inclusive OR
-			case IOR:  {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a | b);
-			}break;
-			case IREM: {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a % b);
-			}break;
-			case ISHL: {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a << b);
-			}break;
-			case ISHR: {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a >> b);
-			}break;
+			case IOR:		_BIN_OP(i_, cx_int, | ); break;
+			case IREM: 		_BIN_OP(i_, cx_int, %); break;
+			case ISHL: 		_BIN_OP(i_, cx_int, << ); break;
+			case ISHR: 		_BIN_OP(i_, cx_int, >> ); break;
 			case ISTORE: {
 				cx_int i = _POPS->i_;
 				_VALUE->i_ = i;
 			}break;
-			case ISUB:{
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a - b);
-			}break;
+			case ISUB:		_BIN_OP(i_, cx_int, -); break;
 				// Bitwise exclusive OR
-			case IXOR: {
-				cx_int b = _POPS->i_;
-				cx_int a = _POPS->i_;
-
-				_PUSHS->i_ = (a ^ b);
-			}break;
+			case IXOR: 		_BIN_OP(i_, cx_int, ^); break;
 			case JSR:
 			case JSR_W: break;
 			case LDC:
 			case LDC2_W:
 			case LDC_W: break;
 			case LOOKUPSWITCH: break;
-			case LOGIC_OR:{
-				bool b = _POPS->z_;
-				bool a = _POPS->z_;
-
-				_PUSHS->z_ = (a || b);
-			}break;
-			case LOGIC_AND:{
-				bool b = _POPS->z_;
-				bool a = _POPS->z_;
-
-				_PUSHS->z_ = (a && b);
-			}break;
+			case LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); break;
+			case LOGIC_AND:	_BIN_OP(z_, cx_bool, && ); break;
+			case LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; break;
 			case MONITORENTER:
 			case MONITOREXIT: break;
 			case MULTIANEWARRAY: break;
@@ -612,5 +548,5 @@ namespace cx{
 	end:
 		// return frame header
 		return;
-			}
 	}
+}

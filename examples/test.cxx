@@ -1,11 +1,6 @@
+int i = 5;
+int b = 10;
 
-int pow2(int b){
-	return b <<= 1;
-}
+int a = (b * i++);
 
-int b = 5;
-int y = b << 2;
-real a = 3.33;
-real c = a * a;
-
-return pow2(y);
+return a;

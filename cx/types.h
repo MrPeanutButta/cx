@@ -17,6 +17,14 @@
 #include "error.h"
 
 namespace cx{
+
+	typedef long long cx_int;
+	typedef double cx_real;
+	typedef bool cx_bool;
+	typedef char cx_char;
+	typedef wchar_t cx_wchar;
+	typedef uint8_t cx_byte;
+
 	enum type_code {
 		T_BOOLEAN = 0x00,
 		T_CHAR = 0x01,
@@ -39,21 +47,21 @@ namespace cx{
 	};
 
 	typedef union value {
-		bool z_;
-		uint8_t b_;
-		char c_;
-		wchar_t w_;
-		int i_;
-		double d_;
+		cx_bool z_;
+		cx_byte b_;
+		cx_char c_;
+		cx_wchar w_;
+		cx_int i_;
+		cx_real d_;
 		void *a_;
 
-		value(bool z) : z_(z) {}
-		value(uint8_t b) : b_(b) {}
-		value(char c) : c_(c) {}
-		value(wchar_t w) : w_(w) {}
-		//value(int i) : i_(i) {}
+		value(cx_bool z) : z_(z) {}
+		value(cx_byte b) : b_(b) {}
+		value(cx_char c) : c_(c) {}
+		value(cx_wchar w) : w_(w) {}
+		value(cx_int i) : i_(i) {}
 		value(int i) : i_(i) {}
-		value(double d) : d_(d) {}
+		value(cx_real d) : d_(d) {}
 		value(void *a) : a_(a) {}
 		value() : a_(nullptr){}
 
@@ -87,8 +95,6 @@ namespace cx{
 	class symbol_table_node;
 	typedef std::shared_ptr<symbol_table> symbol_table_ptr;
 	typedef std::shared_ptr<symbol_table_node> symbol_table_node_ptr;
-	typedef int cx_int;
-	typedef double cx_real;
 
 	class cx_type {
 		bool is_constant_;
@@ -98,7 +104,7 @@ namespace cx{
 
 		/* Mapped raw pointer to type data. Gets passed to library
 		 * to allow the lib to decalre cx datatypes and functions */
-		typedef std::map<type_code, cx_type *> cx_datatype;		
+		typedef std::map<type_code, cx_type *> cx_datatype;
 
 		size_t size;					// The size of this type
 		symbol_table_node_ptr p_type_id;	// TODO should be symbol_table_node_ptr
@@ -159,7 +165,7 @@ namespace cx{
 	};
 
 	void initialize_builtin_types(symbol_table_ptr &p_symtab);
-	
+
 	extern cx_type::type_ptr p_boolean_type;
 	extern cx_type::type_ptr p_char_type;
 	extern cx_type::type_ptr p_byte_type;

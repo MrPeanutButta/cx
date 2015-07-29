@@ -180,13 +180,21 @@ namespace cx{
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1, value arg2);
 		void emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference);
-		void emit_inc(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, value v_, cx::opcode order_op);
+		void emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_);
 		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_not_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_eq_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_gt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_gt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lnot(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_store_no_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 	public:
 
 		parser(text_in_buffer *p_buffer, bool std_lib_module = false)

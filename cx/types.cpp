@@ -103,7 +103,7 @@ namespace cx{
 			p_reference_type = std::make_shared<cx_type>(F_REFERENCE, T_REFERENCE, sizeof(uintptr_t), p_reference_id, p_std_type_members);
 		}
 
-		// link each predefined type id's node to it's type object
+		// Link each predefined type id's node to it's type object
 		p_integer_id->p_type = p_integer_type;
 		p_byte_id->p_type = p_byte_type;
 		p_double_id->p_type = p_double_type;
@@ -258,11 +258,11 @@ namespace cx{
 					p_function_id->defined.routine.program_code.push_back({ I2B });
 					return;
 					break;
-				//case T_DOUBLE:
-				//	p_function_id->defined.routine.program_code.push_back({ D2I });
-				//	p_function_id->defined.routine.program_code.push_back({ I2B });
-				//	return;
-				//	break;
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
+					p_function_id->defined.routine.program_code.push_back({ I2B });
+					return;
+					break;
 				default:
 					break;
 				}
@@ -275,10 +275,10 @@ namespace cx{
 				case T_BYTE:
 					return;
 					break;
-				//case T_DOUBLE:
-					//p_function_id->defined.routine.program_code.push_back({ D2I });
-				//0	return;
-				//	break;
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
+					return;
+					break;
 				default:
 					break;
 				}
@@ -290,6 +290,10 @@ namespace cx{
 				case T_BYTE:
 					return;
 					break;
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
+					return;
+					break;
 				default:
 					break;
 				}
@@ -299,6 +303,10 @@ namespace cx{
 				case T_INT:
 				case T_CHAR:
 				case T_BYTE:
+					return;
+					break;
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
 					return;
 					break;
 				default:

@@ -134,24 +134,23 @@ namespace cx{
 		/* Calculate and check the final exponent value,
 		 * and then use it to adjust the number's value. */
 		exponent = int(e_value) - decimal_places;
-		if ((exponent + whole_places < FLT_MIN_10_EXP) ||
-			(exponent + whole_places > FLT_MAX_10_EXP)) {
+		if ((exponent + whole_places < DBL_MIN_10_EXP) ||
+			(exponent + whole_places > DBL_MAX_10_EXP)) {
 			cx_error(ERR_REAL_OUT_OF_RANGE);
 			return;
 		}
-		if (exponent != 0) number_value *= float(pow((double)10, exponent));
+		if (exponent != 0) number_value *= pow(10.0L, exponent);
 
 		// Check and set the numeric value.
-		// TODO Add T_LONG support
 		if (type__ == T_INT) {
-			if ((number_value < INT_MIN) || (number_value > INT_MAX)){
+			if ((number_value < LLONG_MIN) || (number_value > LLONG_MAX)){
 				cx_error(ERR_INTEGER_OUT_OF_RANGE);
 				return;
 			}
 			value__.i_ = static_cast<cx_int>(number_value);
 		}
 		else {	// TODO Range check for max double
-			if ((number_value < DBL_MIN) || (number_value > DBL_MAX)){
+			if ((number_value < -DBL_MAX) || (number_value > DBL_MAX)){
 				cx_error(ERR_REAL_OUT_OF_RANGE);
 				return;
 			}
