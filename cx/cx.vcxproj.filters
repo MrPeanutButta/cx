@@ -45,9 +45,6 @@
     <ClCompile Include="cxvm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vm_test.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
     <ClCompile Include="symtab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

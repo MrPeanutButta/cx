@@ -201,10 +201,6 @@
     <ClCompile Include="tknstrsp.cpp" />
     <ClCompile Include="tknword.cpp" />
     <ClCompile Include="types.cpp" />
-    <ClCompile Include="vm_test.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="buffer.h" />
