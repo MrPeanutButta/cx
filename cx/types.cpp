@@ -9,12 +9,9 @@ namespace cx{
 	cx_type::type_ptr p_boolean_type;
 	cx_type::type_ptr p_char_type;
 	cx_type::type_ptr p_byte_type;
-	cx_type::type_ptr p_short_type;
-	cx_type::type_ptr p_wchar_type;
+//	cx_type::type_ptr p_wchar_type;
 	cx_type::type_ptr p_integer_type;
-	cx_type::type_ptr p_float_type;
 	cx_type::type_ptr p_double_type;
-	cx_type::type_ptr p_long_type;
 	cx_type::type_ptr p_reference_type;
 	cx_type::type_ptr p_void_type;
 	cx_type::type_ptr p_dummy_type;
@@ -61,26 +58,17 @@ namespace cx{
 	 * @param p_symtab : ptr to symbol table.
 	 */
 	void initialize_builtin_types(symbol_table_ptr &p_symtab) {
-		
-		// if main already exists this is not the parent instance
-		// if (p_main_function_id != nullptr) return;
 
-		//p_main_function_id = p_symtab->enter("main", DC_FUNCTION);
-		//p_main_function_id->defined.routine.function_type = FUNC_FORWARD;
-
-		symbol_table_node_ptr p_integer_id = p_symtab->enter("int", DC_TYPE);
-		symbol_table_node_ptr p_long_id = p_symtab->enter("long", DC_TYPE);
-		symbol_table_node_ptr p_short_id = p_symtab->enter("short", DC_TYPE);
-		symbol_table_node_ptr p_byte_id = p_symtab->enter("byte", DC_TYPE);
-		symbol_table_node_ptr p_float_id = p_symtab->enter("float", DC_TYPE);
-		symbol_table_node_ptr p_double_id = p_symtab->enter("double", DC_TYPE);
-		symbol_table_node_ptr p_reference_id = p_symtab->enter("class", DC_TYPE);
-		symbol_table_node_ptr p_boolean_id = p_symtab->enter("bool", DC_TYPE);
-		symbol_table_node_ptr p_char_id = p_symtab->enter("char", DC_TYPE);
-		symbol_table_node_ptr p_wchar_id = p_symtab->enter("wchar", DC_TYPE);
-		symbol_table_node_ptr p_false_id = p_symtab->enter("false", DC_CONSTANT);
-		symbol_table_node_ptr p_true_id = p_symtab->enter("true", DC_CONSTANT);
-		symbol_table_node_ptr p_void_id = p_symtab->enter("void", DC_TYPE);
+		symbol_table_node_ptr p_integer_id = p_symtab->enter(L"int", DC_TYPE);
+		symbol_table_node_ptr p_byte_id = p_symtab->enter(L"byte", DC_TYPE);
+		symbol_table_node_ptr p_double_id = p_symtab->enter(L"real", DC_TYPE);
+		symbol_table_node_ptr p_reference_id = p_symtab->enter(L"class", DC_TYPE);
+		symbol_table_node_ptr p_boolean_id = p_symtab->enter(L"bool", DC_TYPE);
+		symbol_table_node_ptr p_char_id = p_symtab->enter(L"char", DC_TYPE);
+		//symbol_table_node_ptr p_wchar_id = p_symtab->enter(L"wchar", DC_TYPE);
+		symbol_table_node_ptr p_false_id = p_symtab->enter(L"false", DC_CONSTANT);
+		symbol_table_node_ptr p_true_id = p_symtab->enter(L"true", DC_CONSTANT);
+		symbol_table_node_ptr p_void_id = p_symtab->enter(L"void", DC_TYPE);
 
 		// only used for functions with no return value
 		if (p_void_type == nullptr) {
@@ -88,27 +76,15 @@ namespace cx{
 		}
 
 		if (p_integer_type == nullptr) {
-			p_integer_type = std::make_shared<cx_type>(F_SCALAR, T_INT, sizeof(int), p_integer_id, p_std_type_members);
-		}
-
-		if (p_long_type == nullptr) {
-			p_long_type = std::make_shared<cx_type>(F_SCALAR, T_LONG, sizeof(long), p_long_id, p_std_type_members);
-		}
-
-		if (p_short_type == nullptr) {
-			p_short_type = std::make_shared<cx_type>(F_SCALAR, T_SHORT, sizeof(short), p_short_id, p_std_type_members);
+			p_integer_type = std::make_shared<cx_type>(F_SCALAR, T_INT, sizeof(cx_int), p_integer_id, p_std_type_members);
 		}
 
 		if (p_byte_type == nullptr) {
 			p_byte_type = std::make_shared<cx_type>(F_SCALAR, T_BYTE, sizeof(uint8_t), p_byte_id, p_std_type_members);
 		}
 
-		if (p_float_type == nullptr) {
-			p_float_type = std::make_shared<cx_type>(F_SCALAR, T_FLOAT, sizeof(float), p_float_id, p_std_type_members);
-		}
-
 		if (p_double_type == nullptr) {
-			p_double_type = std::make_shared<cx_type>(F_SCALAR, T_DOUBLE, sizeof(double), p_double_id, p_std_type_members);
+			p_double_type = std::make_shared<cx_type>(F_SCALAR, T_DOUBLE, sizeof(cx_real), p_double_id, p_std_type_members);
 		}
 
 		if (p_boolean_type == nullptr) {
@@ -116,30 +92,25 @@ namespace cx{
 		}
 
 		if (p_char_type == nullptr) {
-			p_char_type = std::make_shared<cx_type>(F_SCALAR, T_CHAR, sizeof(char), p_char_id, p_std_type_members);
+			p_char_type = std::make_shared<cx_type>(F_SCALAR, T_CHAR, sizeof(wchar_t), p_char_id, p_std_type_members);
 		}
 
-		if (p_wchar_type == nullptr) {
+		/*if (p_wchar_type == nullptr) {
 			p_wchar_type = std::make_shared<cx_type>(F_SCALAR, T_WCHAR, sizeof(wchar_t), p_wchar_id, p_std_type_members);
-		}
+		}*/
 
 		if (p_reference_type == nullptr) {
 			p_reference_type = std::make_shared<cx_type>(F_REFERENCE, T_REFERENCE, sizeof(uintptr_t), p_reference_id, p_std_type_members);
 		}
 
-		//p_main_function_id->p_type = p_integer_type;
-
-		// link each predefined type id's node to it's type object
+		// Link each predefined type id's node to it's type object
 		p_integer_id->p_type = p_integer_type;
-		p_long_id->p_type = p_long_type;
-		p_short_id->p_type = p_short_type;
 		p_byte_id->p_type = p_byte_type;
-		p_float_id->p_type = p_float_type;
 		p_double_id->p_type = p_double_type;
 		p_reference_id->p_type = p_reference_type;
 		p_boolean_id->p_type = p_boolean_type;
 		p_char_id->p_type = p_char_type;
-		p_wchar_id->p_type = p_wchar_type;
+//		p_wchar_id->p_type = p_wchar_type;
 		p_false_id->p_type = p_boolean_type;
 		p_true_id->p_type = p_boolean_type;
 		p_void_id->p_type = p_reference_type;
@@ -187,14 +158,14 @@ namespace cx{
 	void check_integer_or_real(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
 		///p_type1 = std::make_shared<cx_type>(p_type1->base_type());
 
-		if ((p_type1 != p_integer_type) && (p_type1 != p_float_type)) {
+		if ((p_type1 != p_integer_type) && (p_type1 != p_double_type)) {
 			cx_error(ERR_INCOMPATIBLE_TYPES);
 		}
 
 		if (p_type2 != nullptr) {
 			//p_type2 = p_type2->base_type();
 
-			if ((p_type2 != p_integer_type) && (p_type2 != p_float_type)) {
+			if ((p_type2 != p_integer_type) && (p_type2 != p_double_type)) {
 				cx_error(ERR_INCOMPATIBLE_TYPES);
 			}
 		}
@@ -207,15 +178,13 @@ namespace cx{
 		switch (target_type) {
 		case T_INT:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_BYTE:
-		case T_LONG:
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-			case T_WCHAR:
+//			case T_WCHAR:
 			case T_BYTE:
-			case T_LONG:
 				return;
 				break;
 			default:break;
@@ -235,7 +204,7 @@ namespace cx{
 		switch (target_type) {
 		case T_INT:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_BYTE:
 			return;
 			break;
@@ -283,21 +252,17 @@ namespace cx{
 			case T_BYTE:
 				switch (value_type) {
 				case T_INT:					
-				case T_CHAR:
-				case T_WCHAR:
 				case T_BOOLEAN:
-				case T_SHORT:
-				case T_REFERENCE:
 					p_function_id->defined.routine.program_code.push_back({ I2B });
 					return;
 					break;
-				case T_FLOAT:
-					p_function_id->defined.routine.program_code.push_back({ F2I });
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
 					return;
 					break;
-				case T_LONG:
-					p_function_id->defined.routine.program_code.push_back({ L2I });
+				case T_CHAR:
+					p_function_id->defined.routine.program_code.push_back({ C2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
 					return;
 					break;
@@ -307,22 +272,17 @@ namespace cx{
 				break;
 			case T_INT:
 				switch (value_type) {
-				case T_INT:
-				case T_CHAR:
-				case T_WCHAR:
 				case T_BOOLEAN:
 				case T_BYTE:
-				case T_SHORT:
 					return;
 					break;
-				case T_FLOAT:
-					p_function_id->defined.routine.program_code.push_back({ F2I });
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
 					return;
 					break;
-				case T_LONG:
-					p_function_id->defined.routine.program_code.push_back({ L2I });
+				case T_CHAR:
+					p_function_id->defined.routine.program_code.push_back({ C2I });
 					return;
-					break;
 				default:
 					break;
 				}
@@ -330,48 +290,30 @@ namespace cx{
 			case T_CHAR:
 				switch (value_type) {
 				case T_INT:
-				case T_CHAR:
-				case T_WCHAR:
-				case T_BOOLEAN:
-				case T_FLOAT:
-				case T_DOUBLE:
 				case T_BYTE:
-				case T_SHORT:
+					p_function_id->defined.routine.program_code.push_back({ I2C });
+					return;
+					return;
+					break;
+				case T_DOUBLE:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
+					p_function_id->defined.routine.program_code.push_back({ I2C });
 					return;
 					break;
 				default:
 					break;
 				}
 				break;
-			case T_WCHAR:
+			case T_DOUBLE:
 				switch (value_type) {
 				case T_INT:
-				case T_CHAR:
-				case T_WCHAR:
-				case T_BOOLEAN:
-					break;
-				case T_FLOAT:
-					p_function_id->defined.routine.program_code.push_back({ F2I });
+				case T_BYTE:
+					p_function_id->defined.routine.program_code.push_back({ I2D });
 					return;
 					break;
-				case T_BYTE:
-				case T_SHORT:
-					return;
-					break;
-				default:
-					break;
-				}
-				break;
-			case T_FLOAT:
-				switch (value_type) {
-				case T_INT:
 				case T_CHAR:
-				case T_WCHAR:
-				case T_BOOLEAN:
-				case T_FLOAT:
-				case T_DOUBLE:
-				case T_BYTE:
-				case T_SHORT:
+					p_function_id->defined.routine.program_code.push_back({ C2I });
+					p_function_id->defined.routine.program_code.push_back({ I2D });
 					return;
 					break;
 				default:
@@ -381,35 +323,15 @@ namespace cx{
 			case T_BOOLEAN:
 				switch (value_type) {
 				case T_INT:
-				case T_CHAR:
-				case T_WCHAR:
-				case T_BOOLEAN:
-				case T_FLOAT:
+				case T_BYTE:
+					return;
+					break;
 				case T_DOUBLE:
-				case T_BYTE:
-				case T_SHORT:
+					p_function_id->defined.routine.program_code.push_back({ D2I });
 					return;
 					break;
-				default:
-					break;
-				}
-				break;
-			case T_LONG:
-				switch (value_type) {
-				case T_INT:
 				case T_CHAR:
-				case T_WCHAR:
-				case T_BOOLEAN:
-				case T_BYTE:
-				case T_SHORT:
-					p_function_id->defined.routine.program_code.push_back({ I2L });
-					return;
-					break;
-				case T_FLOAT:
-					p_function_id->defined.routine.program_code.push_back({ F2L });
-					return;
-					break;
-				case T_LONG:
+					p_function_id->defined.routine.program_code.push_back({ C2I });
 					return;
 					break;
 				default:
@@ -446,12 +368,10 @@ namespace cx{
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-			case T_WCHAR:
+//			case T_WCHAR:
 			case T_BOOLEAN:
-			case T_FLOAT:
 			case T_DOUBLE:
 			case T_BYTE:
-			case T_SHORT:
 				return true;
 				break;
 			default:
@@ -462,12 +382,10 @@ namespace cx{
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-			case T_WCHAR:
+//			case T_WCHAR:
 			case T_BOOLEAN:
-			case T_FLOAT:
 			case T_DOUBLE:
 			case T_BYTE:
-			case T_SHORT:
 				return true;
 				break;
 			default:
@@ -478,28 +396,10 @@ namespace cx{
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-			case T_WCHAR:
+//			case T_WCHAR:
 			case T_BOOLEAN:
-			case T_FLOAT:
 			case T_DOUBLE:
 			case T_BYTE:
-			case T_SHORT:
-				return true;
-				break;
-			default:
-				break;
-			}
-			break;
-		case T_WCHAR:
-			switch (value_type) {
-			case T_INT:
-			case T_CHAR:
-			case T_WCHAR:
-			case T_BOOLEAN:
-			case T_FLOAT:
-			case T_DOUBLE:
-			case T_BYTE:
-			case T_SHORT:
 				return true;
 				break;
 			default:
@@ -510,12 +410,10 @@ namespace cx{
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-			case T_WCHAR:
+//			case T_WCHAR:
 			case T_BOOLEAN:
-			case T_FLOAT:
 			case T_DOUBLE:
 			case T_BYTE:
-			case T_SHORT:
 				return true;
 				break;
 			default:
@@ -541,9 +439,9 @@ namespace cx{
 		const cx_type *p_type_a = p_type1.get()->base_type();
 		const cx_type *p_type_b = p_type2.get()->base_type();
 
-		return (((p_type_a == p_float_type.get()) && (p_type_b == p_float_type.get()))
-			|| ((p_type_a == p_float_type.get()) && (p_type_b == p_integer_type.get()))
-			|| ((p_type_b == p_float_type.get()) && (p_type_a == p_integer_type.get())));
+		return (((p_type_a == p_double_type.get()) && (p_type_b == p_double_type.get()))
+			|| ((p_type_a == p_double_type.get()) && (p_type_b == p_integer_type.get()))
+			|| ((p_type_b == p_double_type.get()) && (p_type_a == p_integer_type.get())));
 
 	}
 }

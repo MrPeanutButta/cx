@@ -13,51 +13,51 @@
 namespace cx{
 
 	///  Reserved word lists
-	std::pair<std::string, token_code> map_data[] = {
-		std::make_pair("if", TC_IF),
-		std::make_pair("return", TC_RETURN),
-		std::make_pair("continue", TC_CONTINUE),
-		std::make_pair("friend", TC_FRIEND),
-		std::make_pair("goto", TC_GOTO),
-		std::make_pair("try", TC_TRY),
-		std::make_pair("delete", TC_DELETE),
-		std::make_pair("typeid", TC_TYPEID),
-		std::make_pair("do", TC_DO),
-		std::make_pair("signed", TC_SIGNED),
-		std::make_pair("typename", TC_TYPENAME),
-		std::make_pair("break", TC_BREAK),
-		std::make_pair("sizeof", TC_SIZEOF),
-		std::make_pair("case", TC_CASE),
-		std::make_pair("static", TC_STATIC),
-		std::make_pair("unsigned", TC_UNSIGNED),
-		std::make_pair("catch", TC_CATCH),
-		std::make_pair("else", TC_ELSE),
-		std::make_pair("namespace", TC_NAMESPACE),
-		std::make_pair("using", TC_USING),
-		std::make_pair("new", TC_NEW),
-		std::make_pair("virtual", TC_VIRTUAL),
-		std::make_pair("explicit", TC_EXPLICIT),
-		std::make_pair("noexcept", TC_NOEXCEPT),
-		std::make_pair("export", TC_EXPORT),
-		std::make_pair("switch", TC_SWITCH),
-		std::make_pair("extern", TC_EXTERN),
-		std::make_pair("operator", TC_OPERATOR),
-		std::make_pair("template", TC_TEMPLATE),
-		std::make_pair("const", TC_CONST),
-		std::make_pair("private", TC_PRIVATE),
-		std::make_pair("this", TC_THIS),
-		std::make_pair("while", TC_WHILE),
-		std::make_pair("protected", TC_PROTECTED),
-		std::make_pair("thread_local", TC_THREADLOCAL),
-		std::make_pair("for", TC_FOR),
-		std::make_pair("public", TC_PUBLIC),
-		std::make_pair("throw", TC_THROW),
-		std::make_pair("default", TC_DEFAULT),
-		std::make_pair("typedef", TC_TYPEDEF),
-		std::make_pair("mutable", TC_MUTABLE),
-		std::make_pair("include", TC_INCLUDE),
-		std::make_pair("warn", TC_WARN),
-		std::make_pair("import", TC_IMPORT),
+	std::pair<std::wstring, token_code> map_data[] = {
+		std::make_pair(L"if", TC_IF),
+		std::make_pair(L"return", TC_RETURN),
+		std::make_pair(L"continue", TC_CONTINUE),
+		std::make_pair(L"friend", TC_FRIEND),
+		std::make_pair(L"goto", TC_GOTO),
+		std::make_pair(L"try", TC_TRY),
+		std::make_pair(L"delete", TC_DELETE),
+		std::make_pair(L"typeid", TC_TYPEID),
+		std::make_pair(L"do", TC_DO),
+		std::make_pair(L"signed", TC_SIGNED),
+		std::make_pair(L"typename", TC_TYPENAME),
+		std::make_pair(L"break", TC_BREAK),
+		std::make_pair(L"sizeof", TC_SIZEOF),
+		std::make_pair(L"case", TC_CASE),
+		std::make_pair(L"static", TC_STATIC),
+		std::make_pair(L"unsigned", TC_UNSIGNED),
+		std::make_pair(L"catch", TC_CATCH),
+		std::make_pair(L"else", TC_ELSE),
+		std::make_pair(L"namespace", TC_NAMESPACE),
+		std::make_pair(L"using", TC_USING),
+		std::make_pair(L"new", TC_NEW),
+		std::make_pair(L"virtual", TC_VIRTUAL),
+		std::make_pair(L"explicit", TC_EXPLICIT),
+		std::make_pair(L"noexcept", TC_NOEXCEPT),
+		std::make_pair(L"export", TC_EXPORT),
+		std::make_pair(L"switch", TC_SWITCH),
+		std::make_pair(L"extern", TC_EXTERN),
+		std::make_pair(L"operator", TC_OPERATOR),
+		std::make_pair(L"template", TC_TEMPLATE),
+		std::make_pair(L"const", TC_CONST),
+		std::make_pair(L"private", TC_PRIVATE),
+		std::make_pair(L"this", TC_THIS),
+		std::make_pair(L"while", TC_WHILE),
+		std::make_pair(L"protected", TC_PROTECTED),
+		std::make_pair(L"thread_local", TC_THREADLOCAL),
+		std::make_pair(L"for", TC_FOR),
+		std::make_pair(L"public", TC_PUBLIC),
+		std::make_pair(L"throw", TC_THROW),
+		std::make_pair(L"default", TC_DEFAULT),
+		std::make_pair(L"typedef", TC_TYPEDEF),
+		std::make_pair(L"mutable", TC_MUTABLE),
+		std::make_pair(L"include", TC_INCLUDE),
+		std::make_pair(L"warn", TC_WARN),
+		std::make_pair(L"import", TC_IMPORT),
 	};
 
 	token_map cx_reserved_words(map_data, map_data + sizeof map_data / sizeof map_data[0]);
@@ -203,8 +203,9 @@ namespace cx{
 		TC_EQUAL_EQUAL, TC_NOT_EQUAL, TC_LESSTHAN, TC_GREATERTHAN, TC_LESSTHAN_EQUAL, TC_GREATERTHAN_EQUAL, TC_DUMMY
 	};
 
+	// TODO add ++ --
 	const token_code tokenlist_unary_ops[] = {
-		TC_PLUS, TC_MINUS, TC_BIT_NOT, TC_DUMMY
+		TC_PLUS, TC_MINUS, TC_BIT_NOT,TC_LOGIC_NOT, TC_DUMMY
 	};
 
 	const token_code tokenlist_add_ops[] = {
@@ -255,17 +256,17 @@ namespace cx{
 	void word_token::get(text_in_buffer &buffer) {
 		extern cx::char_code_map char_map;
 
-		char ch = buffer.current_char(); // char fetched from input
-		char *ps = this->string;
+		wchar_t ch = buffer.current_char(); // char fetched from input
+		wchar_t *ps = this->string;
 
 		// get the word.
 		do {
 			*ps++ = ch;
 			ch = buffer.get_char();
-		} while ((char_map[ch] == CC_LETTER)
-			|| (char_map[ch] == CC_DIGIT));
+		} while ((char_map[(int)ch] == CC_LETTER)
+			|| (char_map[(int)ch] == CC_DIGIT));
 
-		*ps = '\0';
+		*ps = L'\0';
 
 		check_for_reserved_word();
 	}
@@ -290,10 +291,10 @@ namespace cx{
 	 */
 	void word_token::print(void) const {
 		if (code__ == TC_IDENTIFIER) {
-			sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
+//			sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
 		}
 		else {
-			sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
+//			sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
 		}
 
 		list.put_line();

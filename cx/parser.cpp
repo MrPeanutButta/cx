@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstdio>
 #//include "common.h"
 #include "buffer.h"
@@ -32,7 +33,7 @@ namespace cx{
 		symbol_table_node_ptr p_program_id;// = nullptr;
 
 		if (!is_module) {
-			p_program_id = std::make_shared<symbol_table_node>("__main__", DC_PROGRAM);
+			p_program_id = std::make_shared<symbol_table_node>(L"__main__", DC_PROGRAM);
 			p_program_id->defined.routine.function_type = FUNC_DECLARED;
 			p_program_id->p_type = p_integer_type;
 
@@ -56,10 +57,10 @@ namespace cx{
 			conditional_get_token_append(TC_END_OF_FILE, ERR_MISSING_RIGHT_BRACKET);
 
 			if (cx_dev_debug_flag) {
+				//list.put_line();
+				swprintf(list.text, L"%20d source lines.", current_line_number);
 				list.put_line();
-				sprintf(list.text, "%20d source lines.", current_line_number);
-				list.put_line();
-				sprintf(list.text, "%20d syntax errors.", error_count);
+				swprintf(list.text, L"%20d syntax errors.", error_count);
 				list.put_line();
 			}
 		}
@@ -401,15 +402,15 @@ namespace cx{
 	}
 
 	// env variable that holds the path to stdlib
-#define __CX_STDLIB__   "CX_STDLIB"
+#define __CX_STDLIB__   L"CX_STDLIB"
 
-	void load_lib(const char *lib, symbol_table *p_symtab) {
+	void load_lib(const wchar_t *lib, symbol_table *p_symtab) {
 
 		static const cx_type * cx_types_[] = {
 			p_integer_type.get(),
 			p_char_type.get(),
-			p_wchar_type.get(),
-			p_float_type.get(),
+			//p_wchar_type.get(),
+			p_double_type.get(),
 			p_boolean_type.get(),
 			p_byte_type.get(),
 			p_void_type.get()
@@ -425,23 +426,23 @@ namespace cx{
 		void *lib_handle = nullptr;
 #endif
 
-		std::string lib_path;
-		char *env_path = getenv(__CX_STDLIB__);
+		std::wstring lib_path;
+		wchar_t *env_path = _wgetenv(__CX_STDLIB__);
 
 		if (env_path != nullptr) {
 			lib_path = env_path;
 #ifdef _WIN32
-			lib_path += "\\";
+			lib_path += L"\\";
 #elif defined __linux__
-			lib_path += "/";
+			lib_path += L"/";
 #endif
 		}
 
 #if defined _WIN32
-		std::string dll = std::string(lib) + ".dll";
+		std::wstring dll = std::wstring(lib) + L".dll";
 		lib_path += dll;
 		// Get a handle to the DLL module.
-		lib_handle = LoadLibrary(lib_path.c_str());
+		lib_handle = LoadLibrary((LPCSTR)lib_path.c_str());
 #elif defined __linux__
 		std::string so = std::string(lib) + ".so";
 		lib_path += so;
@@ -496,15 +497,15 @@ namespace cx{
 		switch (token) {
 		case TC_INCLUDE:
 		{
-			std::string lib_path;
-			char *env_path = getenv(__CX_STDLIB__);
+			std::wstring lib_path;
+			wchar_t *env_path = _wgetenv(__CX_STDLIB__);
 
 			if (env_path != nullptr) {
 				lib_path = env_path;
 #ifdef _WIN32
-				lib_path += "\\";
+				lib_path += L"\\";
 #else
-				lib_path += "/";
+				lib_path += L"/";
 #endif
 			}
 
@@ -550,10 +551,10 @@ namespace cx{
 			}
 
 			{
-				std::string msg = p_token->string;
+				std::wstring msg = p_token->string;
 				msg[0] = ' ';
-				msg[msg.length() - 1] = '\0';
-				std::cerr << "warning:" << msg << std::endl;
+				msg[msg.length() - 1] = L'\0';
+				std::wcerr << "warning:" << msg << std::endl;
 			}
 
 			get_token_append();
@@ -574,7 +575,7 @@ namespace cx{
 	}
 
 	/** parse_expression     parse an expression (binary relational
-	*                      operators = < > <> <= and >= ).
+	*                      operators == < > <> <= and >= ).
 	*
 	* @return ptr to the expression's type object.
 	*/
@@ -582,14 +583,39 @@ namespace cx{
 
 		cx_type::type_ptr p_result_type;
 		cx_type::type_ptr p_operand_type;
+		token_code op;
 
 		p_result_type = parse_simple_expression(p_function_id);
 
 		if (token_in(token, tokenlist_relation_ops)) {
-			get_token_append();
+			op = token;
+			get_token();
 			p_operand_type = parse_simple_expression(p_function_id);
+
 			check_relational_op_operands(p_function_id, p_result_type, p_operand_type);
+
 			p_result_type = p_boolean_type;
+
+			switch (op){
+			case TC_LESSTHAN:
+				this->emit_lt(p_function_id, p_operand_type);
+				break;
+			case TC_GREATERTHAN:
+				this->emit_gt(p_function_id, p_operand_type);
+				break;
+			case TC_LESSTHAN_EQUAL:
+				this->emit_lt_eq(p_function_id, p_operand_type);
+				break;
+			case TC_GREATERTHAN_EQUAL:
+				this->emit_gt_eq(p_function_id, p_operand_type);
+				break;
+			case TC_NOT_EQUAL:
+				this->emit_not_eq(p_function_id, p_operand_type);
+				break;
+			case TC_EQUAL_EQUAL:
+				this->emit_eq_eq(p_function_id, p_operand_type);
+				break;
+			}
 		}
 
 		resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
@@ -615,18 +641,41 @@ namespace cx{
 		if (token_in(token, tokenlist_unary_ops)) {
 			unary_op_flag = true;
 			unary_op = token;
-			get_token_append();
+			get_token();
 		}
 
 		p_result_type = parse_term(p_function_id);
 
 		// TODO ++ -- should be in this section
 		if (unary_op_flag) {
-			if (unary_op == TC_BIT_NOT) {
+			switch (unary_op){
+			case TC_LOGIC_NOT:
+				this->emit_lnot(p_function_id, p_result_type);
+				p_result_type = p_boolean_type;
+				break;
+			case TC_BIT_NOT:
 				check_bitwise_integer(p_result_type);
-			}
-			else {
+				this->emit(p_function_id, { INOT });
+				break;
+			case TC_PLUS: // TODO use ABS?
 				check_integer_or_real(p_result_type, nullptr);
+				// TODO emit ABS
+				break;
+			case TC_MINUS:
+				check_integer_or_real(p_result_type, nullptr);
+				// TODO emit ABS
+				// TODO emit NEG
+				break;
+				/*case TC_PLUS_PLUS:{
+					check_integer_or_real(p_result_type, nullptr);
+					this->emit_inc(p_function_id, p_result_type, { 1 });
+					}break;
+					case TC_MINUS_MINUS:{
+					check_integer_or_real(p_result_type, nullptr);
+					this->emit_inc(p_function_id, p_result_type, { -1 });
+					}break;*/
+			default:
+				break;
 			}
 		}
 
@@ -750,7 +799,7 @@ namespace cx{
 			switch (op) {
 			case TC_STAR:
 				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
-				ERR_INCOMPATIBLE_TYPES);
+					ERR_INCOMPATIBLE_TYPES);
 
 				this->emit_mul(p_function_id, p_operand_type);
 				break;
@@ -788,8 +837,21 @@ namespace cx{
 	cx_type::type_ptr parser::parse_factor(symbol_table_node_ptr &p_function_id) {
 
 		cx_type::type_ptr p_result_type = nullptr;
+		token_code op = TC_DUMMY;
 
-		switch (token) {
+		switch (this->token){
+		case TC_PLUS_PLUS:
+			op = TC_PLUS_PLUS;
+			this->get_token();
+			break;
+		case TC_MINUS_MINUS:
+			op = TC_MINUS_MINUS;
+			this->get_token();
+			break;
+		default: break;
+		}
+
+		switch (this->token) {
 		case TC_IDENTIFIER:
 		{
 			symbol_table_node_ptr &p_node = search_all(p_token->string);
@@ -825,6 +887,39 @@ namespace cx{
 			case DC_NAMESPACE:
 				get_token();
 				p_result_type = parse_variable(p_function_id, p_node, true);
+
+				switch (op)
+				{
+				case TC_PLUS_PLUS:
+					switch (p_result_type->typecode){
+					case T_DOUBLE:
+						this->emit(p_function_id, { DCONST }, { 1.0 });
+						this->emit(p_function_id, { DADD });
+						this->emit_store(p_function_id, p_node);
+						break;
+					default:
+						this->emit(p_function_id, { IINC }, { 1 });
+						this->emit_store(p_function_id, p_node);
+						break;
+					}
+					break;
+				case TC_MINUS_MINUS:
+					switch (p_result_type->typecode){
+					case T_DOUBLE:
+						this->emit(p_function_id, { DCONST }, { -1.0 });
+						this->emit(p_function_id, { DSUB });
+						this->emit_store(p_function_id, p_node);
+						break;
+					default:
+						this->emit(p_function_id, { IINC }, { -1 });
+						this->emit_store(p_function_id, p_node);
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+
 				break;
 			default:
 				cx_error(ERR_UNDEFINED_IDENTIFIER);
@@ -847,25 +942,23 @@ namespace cx{
 				p_node->defined.constant.value.i_ = p_token->value().i_;
 				op = ICONST;
 				break;
-			case T_FLOAT:
-				p_node->p_type = p_float_type;
-				p_node->defined.constant.value.f_ = p_token->value().f_;
-				op = FCONST;
+			case T_DOUBLE:
+				p_node->p_type = p_double_type;
+				p_node->defined.constant.value.d_ = p_token->value().d_;
+				op = DCONST;
 				break;
 			default:
 				cx_error(ERR_INCOMPATIBLE_ASSIGNMENT);
 			}
 
+			get_token();
 			p_result_type = p_node->p_type;
 			this->emit(p_function_id, op, p_node->defined.constant.value);
-		}
 
-		get_token();
-		break;
-
-		case TC_CHAR:
+		}break;
+		case TC_CHAR: // TODO TC_WCHAR
 		{
-			symbol_table_node_ptr p_id = search_all(p_token->string);
+			symbol_table_node_ptr &p_id = search_all(p_token->string);
 
 			if (p_id == nullptr) {
 				p_id = enter_local(p_token->string);
@@ -875,55 +968,81 @@ namespace cx{
 
 			p_result_type = p_char_type;
 
-			this->emit_load(p_function_id, p_id, false);
+			this->emit(p_function_id, ICONST, p_id->defined.constant.value.c_);
+			get_token();
+		}break;
+		/*case TC_CHAR: 
+		{
+			symbol_table_node_ptr &p_id = search_all(p_token->string);
+
+			if (p_id == nullptr) {
+				p_id = enter_local(p_token->string);
+				p_id->p_type = p_char_type;
+				p_id->defined.constant.value.c_ = p_token->string[1];
+			}
+
+			p_result_type = p_char_type;
+
+			this->emit(p_function_id, ICONST, p_id->defined.constant.value);
 			get_token();
 		}
-		break;
-		//case tc_string:
-		//{
+		break;*/
+		case TC_STRING:
+		case TC_WSTRING: // TODO TC_WSTRING
+		{
+			// TODO fix string constants
+			symbol_table_node_ptr &p_id = search_all(p_token->string);
 
-		//	char *p_string = p_token->string__();
-		//	symbol_table_node_ptr &p_node = search_all(p_token->string__());
-		//	const int length = strlen(p_string) - 2;
+			if (p_id == nullptr) {
+				p_id = enter_local(p_token->string);
+			}
 
-		//	if (!p_node) {
-		//		p_node = enter_local(p_token->string__());
-		//		p_node->p_type = new cx_type(F_ARRAY, length, nullptr);
-		//		set_type(p_node->p_type->array.p_element_type, p_char_type);
-		//		p_node->p_type->type_code = cx_char;
-		//		const int size = sizeof(char) * (length + 1);
-		//		p_node->defined.constant.value.addr__ = new char[size];
-		//		memset(p_node->defined.constant.value.addr__, '\0', size);
-		//		memcpy(p_node->defined.constant.value.addr__,
-		//			&p_string[1], size);
+			if (p_token->type() == T_CHAR){
+				p_id->p_type = p_char_type;
+				p_id->defined.constant.value.c_ = (wchar_t)p_token->string[1];
 
-		//		// remove the quote
-		//		char *t = (char *)p_node->defined.constant.value.addr__;
-		//		t[length] = '\0';
+				this->emit(p_function_id, ICONST, p_id->defined.constant.value);
+				get_token();
 
-		//		p_node->p_type->array.element_count = length;
-		//		p_node->p_type->array.max_index = length;
+				return p_char_type;
+			}
 
-		//	}
+			//	char *p_string = p_token->string__();
+			//	symbol_table_node_ptr &p_node = search_all(p_token->string__());
+			//	const int length = strlen(p_string) - 2;
 
-		//	p_result_type = p_node->p_type;
-		//	icode.put(p_node);
+			//	if (!p_node) {
+			//		p_node = enter_local(p_token->string__());
+			//		p_node->p_type = new cx_type(F_ARRAY, length, nullptr);
+			//		set_type(p_node->p_type->array.p_element_type, p_char_type);
+			//		p_node->p_type->type_code = cx_char;
+			//		const int size = sizeof(char) * (length + 1);
+			//		p_node->defined.constant.value.addr__ = new char[size];
+			//		memset(p_node->defined.constant.value.addr__, '\0', size);
+			//		memcpy(p_node->defined.constant.value.addr__,
+			//			&p_string[1], size);
 
-		//	get_token_append();
-		//}
-		//	break;
+			//		// remove the quote
+			//		char *t = (char *)p_node->defined.constant.value.addr__;
+			//		t[length] = '\0';
+
+			//		p_node->p_type->array.element_count = length;
+			//		p_node->p_type->array.max_index = length;
+
+			//	}
+
+			//	p_result_type = p_node->p_type;
+			//	icode.put(p_node);
+
+			//	get_token_append();
+		}break;
 
 		case TC_LEFT_PAREN:
 			get_token();
 			p_result_type = parse_expression(p_function_id);
 			conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 			break;
-		case TC_LOGIC_NOT:
-				get_token();
-				parse_expression(p_function_id);
-				// TODO LOGIC_NOT operation.
-				p_result_type = p_boolean_type;
-				break;
+			/*		*/
 			//case tc_left_bracket:
 			//{
 			//	get_token_append();
@@ -1019,6 +1138,36 @@ namespace cx{
 				p_prev_type = p_result_type;
 				break;
 
+			case TC_PLUS_PLUS:
+				this->get_token();
+				switch (p_result_type->typecode){
+				case T_DOUBLE:
+					this->emit(p_function_id, { DCONST }, { 1.0 });
+					this->emit(p_function_id, { DADD });
+					this->emit_store_no_load(p_function_id, p_id);
+					break;
+				default:
+					this->emit(p_function_id, { IINC }, { 1 });
+					this->emit_store(p_function_id, p_id);
+					break;
+				}
+				break;
+			case TC_MINUS_MINUS:
+				this->get_token();
+				switch (p_result_type->typecode){
+				case T_DOUBLE:
+					this->emit(p_function_id, { DCONST }, { -1.0 });
+					this->emit(p_function_id, { DSUB });
+					this->emit_store(p_function_id, p_id);
+					break;
+				default:
+					this->emit(p_function_id, { IINC }, { -1 });
+					this->emit_store(p_function_id, p_id);
+					break;
+				}
+				break;
+
+
 			default: done_flag = true;
 			}
 		} while (!done_flag);
@@ -1038,14 +1187,6 @@ namespace cx{
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
-			case TC_MINUS_MINUS:
-				this->emit_inc(p_function_id, p_id, { -1 }, POSTOP);
-				get_token();
-				break;
-			case TC_PLUS_PLUS:
-				this->emit_inc(p_function_id, p_id, { 1 }, POSTOP);
-				get_token();
-				break;
 			case TC_PLUS_EQUAL:
 			{
 				get_token();
@@ -1053,7 +1194,7 @@ namespace cx{
 
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-				
+
 				this->emit_add(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1116,7 +1257,7 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				this->emit_lshift(p_function_id, p_result_type);
+				this->emit(p_function_id, ISHL);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1130,7 +1271,7 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				this->emit_rshift(p_function_id, p_result_type);
+				this->emit(p_function_id, ISHR);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1144,7 +1285,7 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				this->emit_and(p_function_id, p_result_type);
+				this->emit(p_function_id, IAND);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1158,8 +1299,8 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				this->emit_xor(p_function_id, p_result_type);
-				this->emit_store(p_function_id, p_id);			
+				this->emit(p_function_id, IXOR);
+				this->emit_store(p_function_id, p_id);
 			}
 			break;
 			case TC_BIT_OR_EQUAL:
@@ -1172,7 +1313,7 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
-				this->emit_or(p_function_id, p_result_type);
+				this->emit(p_function_id, IOR);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1488,7 +1629,6 @@ namespace cx{
 	* @param parm_check_flag : true to check parameter, false not to.
 	*/
 	void parser::parse_actual_parm_list(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id) {
-		////		symbol_table_node_ptr &p_formal_id = p_function_id ? p_function_id->defined.routine.p_parameters : nullptr;
 
 		/* If there are no actual parameters, there better not be
 		 * any formal parameters either. */
@@ -1501,6 +1641,8 @@ namespace cx{
 		std::vector <std::shared_ptr<symbol_table_node>>::iterator p_formal_id;
 		p_formal_id = p_node_id->defined.routine.p_parameter_ids.begin();
 
+		cx::cx_type::type_ptr p_expr_type;
+
 		/* Loop to parse actual parameter expressions
 		* separated by commas. */
 		do {
@@ -1511,7 +1653,12 @@ namespace cx{
 				break;
 			}
 
-			parse_actual_parm(p_function_id, p_node_id, *p_formal_id);
+			// TODO parse_expression and check type compatability
+			p_expr_type = parse_expression(p_function_id);
+
+			check_assignment_type_compatible(p_function_id, p_formal_id->get()->p_type, p_expr_type,
+				ERR_INCOMPATIBLE_TYPES);
+
 			if (p_formal_id != p_node_id->defined.routine.p_parameter_ids.end()){
 				++p_formal_id;
 			}
@@ -1524,59 +1671,6 @@ namespace cx{
 		//if (parm_check_flag && p_formal_id) cx_error(ERR_WRONG_NUMBER_OF_PARMS);
 	}
 
-	/** parse_actual_parm     parse an actual parameter.  Make sure it
-	*                      matches the corresponding formal parm.
-	*
-	* @param p_formal_id     : ptr to the corresponding formal parm
-	*                        id's symbol table node
-	* @param parm_check_flag : true to check parameter, false not to.
-	*/
-	void parser::parse_actual_parm(symbol_table_node_ptr &p_function_id,
-		symbol_table_node_ptr &p_node_id, symbol_table_node_ptr &p_formal_id) {
-		///* If we're not checking the actual parameters against
-		//* the corresponding formal parameters (as during error
-		//* recovery), just parse the actual parameter. */
-		//if (!parm_check_flag) {
-		//	parse_expression();
-		//	return;
-		//}
-
-		///* If we've already run out of formal parameter,
-		//* we have an error.  Go into error recovery mode and
-		//* parse the actual parameter anyway. */
-		if (p_formal_id == nullptr) {
-			cx_error(ERR_WRONG_NUMBER_OF_PARMS);
-			return;
-		}
-
-		///* Formal value parameter: The actual parameter can be an
-		//*                         arbitrary expression that is
-		//*                         assignment type compatible with
-		//*                         the formal parameter. */
-		if (token == TC_IDENTIFIER) {
-			symbol_table_node_ptr &p_actual_id = find(p_token->string);
-
-			// skip type declaration
-			if (p_actual_id->defined.defined_how == DC_TYPE) {
-				get_token();
-
-				p_actual_id = find(p_token->string);
-			}
-
-			get_token();
-
-			// Load a reference to the actual variable
-			p_function_id->defined.routine.program_code.push_back({ PLOAD, p_actual_id.get() });
-			check_assignment_type_compatible(p_function_id, p_formal_id->p_type, p_actual_id->p_type,
-				ERR_INCOMPATIBLE_TYPES);
-
-			resync(tokenlist_expression_follow, tokenlist_statement_follow, tokenlist_statement_start);
-		}// cx_error: parse the actual parameter anyway for error recovery.
-		else {
-			cx_error(ERR_INVALID_REFERENCE);
-		}
-	}
-
 	/** parse_statement          parse a statement.
 	*
 	* @param p_function_id : function in which this statement is executed.
@@ -1587,10 +1681,6 @@ namespace cx{
 		switch (this->token) {
 		case TC_IDENTIFIER: parse_declarations_or_assignment(p_function_id);
 
-			break;
-		case TC_PLUS_PLUS:
-			break;
-		case TC_MINUS_MINUS:
 			break;
 			//	// not a type but a cv-qualifier
 			//case TC_CONST:
@@ -1652,6 +1742,7 @@ namespace cx{
 			//	break;ent_symtab(p_old_symtab);
 
 		default:
+			parse_simple_expression(p_function_id);
 			break;
 		}
 
@@ -2503,36 +2594,172 @@ namespace cx{
 	conditional_get_token_append(TC_SEMICOLON, err_missing_semicolon);
 	}*/
 
-void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
-	opcode op;
+	void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
+		opcode op;
 
-	switch (p_id->p_type->typecode)
-	{
-	case T_BOOLEAN:
-	case T_BYTE:
-	case T_CHAR:
-	case T_SHORT:
-	case T_WCHAR:
-	case T_INT:
-		op = ICONST;
-		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.i_ });
-		break;
-	case T_FLOAT:
-		op = FCONST;
-		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.f_ });
-		break;
-	case T_LONG:
-		op = LCONST;
-		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.l_ });
-		break;
-	case T_REFERENCE:
-		op = ACONST_NULL;
-		p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.a_ });
-		break;
-	default:
-		break;
+		switch (p_id->p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_INT:
+			op = ICONST;
+			p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.i_ });
+			break;
+		case T_CHAR:
+			op = ICONST;
+			p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.c_ });
+			break;
+		case T_DOUBLE:
+			op = DCONST;
+			p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.d_ });
+			break;
+		case T_REFERENCE:
+			op = ACONST_NULL;
+			p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.a_ });
+			break;
+		default:
+			break;
+		}
 	}
-}
+
+	void parser::emit_not_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = INOT_EQ;
+			break;
+		case T_DOUBLE:
+			op = DNOT_EQ;
+			break;
+		case T_REFERENCE: // TODO fix
+			//op = ANOT_EQ;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_lt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = ILT_EQ;
+			break;
+		case T_DOUBLE:
+			op = DLT_EQ;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+
+	void parser::emit_eq_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = IEQ_EQ;
+			break;
+		case T_DOUBLE:
+			op = DEQ_EQ;
+			break;
+		case T_REFERENCE: // TODO fix
+			//op = ANOT_EQ;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_gt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = IGT;
+			break;
+		case T_DOUBLE:
+			op = DGT;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_gt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = IGT_EQ;
+			break;
+		case T_DOUBLE:
+			op = DGT_EQ;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
+
+	void parser::emit_lt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op;
+
+		switch (p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = ILT;
+			break;
+		case T_DOUBLE:
+			op = DLT;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back(op);
+	}
 
 	void parser::emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
 		cx::opcode op;
@@ -2542,16 +2769,12 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IADD;
 			break;
-		case T_FLOAT:
-			op = FADD;
-			break;
-		case T_LONG:
-			op = LADD;
+		case T_DOUBLE:
+			op = DADD;
 			break;
 		case T_REFERENCE: // TODO fix
 			op = ASTORE;
@@ -2571,16 +2794,12 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IDIV;
 			break;
-		case T_FLOAT:
-			op = FDIV;
-			break;
-		case T_LONG:
-			op = LDIV;
+		case T_DOUBLE:
+			op = DDIV;
 			break;
 		case T_REFERENCE: // TODO fix
 			op = ASTORE;
@@ -2600,16 +2819,12 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ISUB;
 			break;
-		case T_FLOAT:
-			op = FSUB;
-			break;
-		case T_LONG:
-			op = LSUB;
+		case T_DOUBLE:
+			op = DSUB;
 			break;
 		case T_REFERENCE: // TODO fix
 			op = ASTORE;
@@ -2629,18 +2844,12 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IREM;
 			break;
-		case T_FLOAT:
-			op = FREM;
-			break;
-		case T_LONG:
-			op = LREM;
-			break;
-		case T_REFERENCE: // TODO fix
+		case T_DOUBLE:
+			op = DREM;
 			break;
 		default:
 			break;
@@ -2654,21 +2863,14 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 
 		switch (p_type->typecode)
 		{
-		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IMUL;
 			break;
-		case T_FLOAT:
-			op = FMUL;
-			break;
-		case T_LONG:
-			op = LMUL;
-			break;
-		case T_REFERENCE: // TODO fix
+		case T_DOUBLE:
+			op = DMUL;
 			break;
 		default:
 			break;
@@ -2677,113 +2879,13 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_lshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+	void parser::emit_lnot(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+		cx::opcode op = LOGIC_NOT;
 
 		switch (p_type->typecode)
 		{
-		case T_BOOLEAN:
-		case T_BYTE:
-		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
-		case T_INT:
-			op = ISHL;
-		break;
-		case T_LONG:
-			op = LSHL;
-			break;
-		default:
-			break;
-		}
-
-		p_function_id->defined.routine.program_code.push_back(op);
-	}
-
-	void parser::emit_rshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
-
-		switch (p_type->typecode)
-		{
-		case T_BOOLEAN:
-		case T_BYTE:
-		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
-		case T_INT:
-			op = ISHR;
-			break;
-		case T_LONG:
-			op = LSHR;
-			break;
-		default:
-			break;
-		}
-
-		p_function_id->defined.routine.program_code.push_back(op);
-	}
-
-	void parser::emit_and(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
-
-		switch (p_type->typecode)
-		{
-		case T_BOOLEAN:
-		case T_BYTE:
-		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
-		case T_INT:
-			op = IAND;
-			break;
-		case T_LONG:
-			op = LAND;
-			break;
-		default:
-			break;
-		}
-
-		p_function_id->defined.routine.program_code.push_back(op);
-	}
-
-	void parser::emit_or(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
-
-		switch (p_type->typecode)
-		{
-		case T_BOOLEAN:
-		case T_BYTE:
-		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
-		case T_INT:
-			op = IOR;
-			break;
-		case T_LONG:
-			op = LOR;
-			break;
-		default:
-			break;
-		}
-
-		p_function_id->defined.routine.program_code.push_back(op);
-	}
-
-	void parser::emit_xor(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
-
-		switch (p_type->typecode)
-		{
-		case T_BOOLEAN:
-		case T_BYTE:
-		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
-		case T_INT:
-			op = IXOR;
-			break;
-		case T_LONG:
-			op = LXOR;
+		case T_DOUBLE:
+			p_function_id->defined.routine.program_code.push_back(D2I);
 			break;
 		default:
 			break;
@@ -2804,7 +2906,7 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		p_function_id->defined.routine.program_code.push_back({ op1, arg1, arg2 });
 	}
 
-	void parser::emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
+	void parser::emit_store_no_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
 		opcode op;
 
 		switch (p_id->p_type->typecode)
@@ -2812,16 +2914,12 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ISTORE;
 			break;
-		case T_FLOAT:
-			op = FSTORE;
-			break;
-		case T_LONG:
-			op = LSTORE;
+		case T_DOUBLE:
+			op = DSTORE;
 			break;
 		case T_REFERENCE:
 			op = ASTORE;
@@ -2833,6 +2931,32 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
 	}
 
+	void parser::emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
+		opcode op;
+
+		switch (p_id->p_type->typecode)
+		{
+		case T_BOOLEAN:
+		case T_BYTE:
+		case T_CHAR:
+//		case T_WCHAR:
+		case T_INT:
+			op = ISTORE;
+			break;
+		case T_DOUBLE:
+			op = DSTORE;
+			break;
+		case T_REFERENCE:
+			op = ASTORE;
+			break;
+		default:
+			break;
+		}
+
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
+		this->emit_load(p_function_id, p_id, false);
+	}
+
 	void parser::emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false){
 		opcode op;
 
@@ -2841,19 +2965,11 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
 		case T_INT:
 			op = ILOAD;
 			break;
 		case T_DOUBLE:
 			op = DLOAD;
-			break;
-		case T_FLOAT:
-			op = FLOAD;
-			break;
-		case T_LONG:
-			op = LLOAD;
 			break;
 		case T_REFERENCE:
 			op = ALOAD;
@@ -2862,37 +2978,23 @@ void parser::emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_
 			break;
 		}
 
-		//if (reference == true){
-		//	op = ALOAD;
-		//	}
-
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
 	}
 
-	void parser::emit_inc(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, value v_, cx::opcode order_op){
-		this->emit_load(p_function_id, p_id, true);
+	void parser::emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_){
 
-		switch (p_id->p_type->typecode)
+		switch (p_type->typecode)
 		{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_SHORT:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
-			this->emit(p_function_id, IINC, { v_.i_ }, { order_op });
+			this->emit(p_function_id, IINC, { v_.i_ });
 			break;
 		case T_DOUBLE:
 			this->emit(p_function_id, DCONST, { v_.d_ });
 			this->emit(p_function_id, DADD);
-			break;
-		case T_FLOAT:
-			this->emit(p_function_id, FCONST, { v_.f_ });
-			this->emit(p_function_id, FADD);
-			break;
-		case T_LONG:
-			this->emit(p_function_id, LCONST, { v_.l_ });
-			this->emit(p_function_id, LADD);
 			break;
 		default:
 			break;

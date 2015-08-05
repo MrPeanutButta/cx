@@ -127,15 +127,15 @@ namespace cx{
 
 		// print the arrow pointing to the token just scanned.
 		list.put_line(); // print current line info
-		sprintf(list.text, "%*s^", error_position, " ");
+		swprintf(list.text, L"%*s^", error_position, " ");
 		list.put_line();
 
 		// print the error message.
-		sprintf(list.text, "*** error: %s", error_messages[ec]);
+		swprintf(list.text, L"*** error: %s", error_messages[ec]);
 		list.put_line();
 
 		if (++error_count > max_syntax_errors) {
-			list.put_line("Too many syntax errors.  Translation aborted.");
+			list.put_line(L"Too many syntax errors.  Translation aborted.");
 			std::cin.get();
 			exit(ec);
 			//abort_translation(abort_too_many_syntax_errors);

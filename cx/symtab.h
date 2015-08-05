@@ -20,7 +20,7 @@ namespace cx{
 	class symbol_table_node;
 	class symbol_table;
 
-	typedef std::map<std::string, std::shared_ptr<symbol_table_node>> local;
+	typedef std::map<std::wstring, std::shared_ptr<symbol_table_node>> local;
 	typedef std::shared_ptr<symbol_table> symbol_table_ptr;
 	typedef std::shared_ptr<symbol_table_node> symbol_table_node_ptr;
 
@@ -53,9 +53,9 @@ namespace cx{
 		void copy(symbol_table *p_symtab);
 		void enter(symbol_table_node *p_node);
 		void enter(local &params);
-		symbol_table_node_ptr search(std::string);
-		symbol_table_node_ptr enter(std::string, define_code dc = DC_UNDEFINED);
-		symbol_table_node_ptr enter_new(std::string, define_code dc = DC_UNDEFINED);
+		symbol_table_node_ptr search(std::wstring);
+		symbol_table_node_ptr enter(std::wstring, define_code dc = DC_UNDEFINED);
+		symbol_table_node_ptr enter_new(std::wstring, define_code dc = DC_UNDEFINED);
 
 		int node_count(void) const {return symbols.size();}
 	};
@@ -129,7 +129,7 @@ namespace cx{
 	public:
 
 		cx_type::type_ptr p_type;
-		std::string node_name;
+		std::wstring node_name;
 		define defined;
 		int level;
 		int label_index;
@@ -141,7 +141,7 @@ namespace cx{
 		value *runstack_item;
 
 		//symbol_table_node();
-		symbol_table_node(std::string name, define_code dc = DC_UNDEFINED);
+		symbol_table_node(std::wstring name, define_code dc = DC_UNDEFINED);
 		~symbol_table_node();
 	};
 
@@ -155,16 +155,16 @@ namespace cx{
 		symbol_table_stack(void);
 		~symbol_table_stack(void);
 
-		symbol_table_node_ptr search_local(std::string name) {
+		symbol_table_node_ptr search_local(std::wstring name) {
 			return p_symtabs[current_nesting_level]->search(name);
 		}
 
-		symbol_table_node_ptr enter_local(std::string name,
+		symbol_table_node_ptr enter_local(std::wstring name,
 			define_code dc = DC_UNDEFINED) {
 			return p_symtabs[current_nesting_level]->enter(name, dc);
 		}
 
-		symbol_table_node_ptr enter_new_local(std::string name,
+		symbol_table_node_ptr enter_new_local(std::wstring name,
 			define_code dc = DC_UNDEFINED) {
 			return p_symtabs[current_nesting_level]->enter_new(name, dc);
 		}
@@ -183,15 +183,15 @@ namespace cx{
 			current_nesting_level = scopeLevel;
 		}
 
-		symbol_table_node_ptr search_available_scopes(std::string name) const;
-		symbol_table_node_ptr search_all(std::string name) const;
-		symbol_table_node_ptr find(std::string name) const;
+		symbol_table_node_ptr search_available_scopes(std::wstring name) const;
+		symbol_table_node_ptr search_all(std::wstring name) const;
+		symbol_table_node_ptr find(std::wstring name) const;
 		void enter_scope(void);
 		symbol_table *exit_scope(void);
 	};
 
 	// mains scope level on the symtab stack
-#define __MAIN_ENTRY__ symtab_stack.find("main")
+#define __MAIN_ENTRY__ symtab_stack.find(L"main")
 }
 #endif	/* SYMTABLE_H */
 

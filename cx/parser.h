@@ -2,6 +2,7 @@
 #define PARSER_H
 //#pragma once
 #include <string>
+#include <cwchar>
 //#include "misc.h"
 #include "buffer.h"
 #include "error.h"
@@ -22,7 +23,7 @@ namespace cx{
 		token_code token; // code of current token
 		symbol_table_stack symtab_stack;
 		bool is_module;
-		std::string file_name;
+		std::wstring file_name;
 
 		symbol_table_node_ptr parse_function_header(symbol_table_node_ptr &p_function_id);
 
@@ -127,15 +128,15 @@ namespace cx{
 			icode.fixup_location_marker(location);
 		}*/
 
-		symbol_table_node_ptr search_local(const std::string name) {
+		symbol_table_node_ptr search_local(const std::wstring name) {
 			return symtab_stack.search_local(name);
 		}
 
-		symbol_table_node_ptr search_all(const std::string name) const {
+		symbol_table_node_ptr search_all(const std::wstring name) const {
 			return symtab_stack.search_all(name);
 		}
 
-		symbol_table_node_ptr find(const std::string name) const {
+		symbol_table_node_ptr find(const std::wstring name) const {
 			symbol_table_node_ptr p_node = search_all(name);
 
 			if (p_node == nullptr){
@@ -145,18 +146,18 @@ namespace cx{
 			return p_node;
 		}
 
-		void copy_quoted_string(char *p_string, const char *p_quoted_string) const {
-			int length = strlen(p_quoted_string) - 2;
-			strncpy(p_string, &p_quoted_string[1], length);
+		void copy_quoted_string(wchar_t *p_string, const wchar_t *p_quoted_string) const {
+			int length = wcslen(p_quoted_string) - 2;
+			wcscpy(p_string, &p_quoted_string[1]);// , length);
 			p_string[length] = '\0';
 		}
 
-		symbol_table_node_ptr enter_local(const char *p_string,
+		symbol_table_node_ptr enter_local(const wchar_t *p_string,
 			define_code dc = DC_UNDEFINED) {
 			return symtab_stack.enter_local(p_string, dc);
 		}
 
-		symbol_table_node_ptr enter_new_local(const char *p_string,
+		symbol_table_node_ptr enter_new_local(const wchar_t *p_string,
 			define_code dc = DC_UNDEFINED) {
 			return symtab_stack.enter_new_local(p_string, dc);
 		}
@@ -180,18 +181,21 @@ namespace cx{
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1, value arg2);
 		void emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference);
-		void emit_inc(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, value v_, cx::opcode order_op);
+		void emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_);
 		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_lshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_rshift(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_and(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_xor(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_or(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_not_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_eq_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_gt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_gt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_lnot(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_store_no_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 	public:
 
 		parser(text_in_buffer *p_buffer, bool std_lib_module = false)

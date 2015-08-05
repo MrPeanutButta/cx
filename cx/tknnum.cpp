@@ -31,12 +31,12 @@ namespace cx{
 	 */
 	void number_token::get(text_in_buffer &buffer) {
 
-		float number_value = 0.0; /* value of number ignoring
+		cx_real number_value = 0.0; /* value of number ignoring
 							   * the decimal point */
 		int whole_places = 0; // no. digits before the decimal point
 		int decimal_places = 0; // no. digits after  the decimal point
-		char exponent_sign = '+';
-		float e_value = 0.0; // value of number after 'E'
+		wchar_t exponent_sign = L'+';
+		cx_real e_value = 0.0; // value of number after 'E'
 		int exponent = 0; // final value of exponent
 		bool saw_dot_dot_Flag = false; // true if encountered '..',
 
@@ -52,19 +52,19 @@ namespace cx{
 		radix = rb_DECIMAL;
 
 		// octal base
-		if (ch == '0') {
+		if (ch == L'0') {
 			radix = rb_OCTAL;
 			ch = buffer.get_char();
 			switch (ch) {
-			case 'x':
+			case L'x':
 				radix = rb_HEXADECIMAL;
 				ch = buffer.get_char();
 				break;
-			case 'b':
+			case L'b':
 				radix = rb_BINARY;
 				ch = buffer.get_char();
 				break;
-			case '.':
+			case L'.':
 				radix = rb_DECIMAL;
 				ch = buffer.put_back_char();
 				break;
@@ -94,7 +94,7 @@ namespace cx{
 				buffer.put_back_char();
 			}
 			else {
-				type__ = T_FLOAT;
+				type__ = T_DOUBLE;
 				*ps++ = '.';
 
 				// We have a fraction part.  Accumulate it into number_value.
@@ -107,7 +107,7 @@ namespace cx{
 		/* get the exponent part, if any. There cannot be an
 		 * exponent part if we already saw the '..' token. */
 		if (!saw_dot_dot_Flag && ((ch == 'E') || (ch == 'e'))) {
-			type__ = T_FLOAT;
+			type__ = T_DOUBLE;
 			*ps++ = ch;
 			ch = buffer.get_char();
 
@@ -134,22 +134,28 @@ namespace cx{
 		/* Calculate and check the final exponent value,
 		 * and then use it to adjust the number's value. */
 		exponent = int(e_value) - decimal_places;
-		if ((exponent + whole_places < FLT_MIN_10_EXP) ||
-			(exponent + whole_places > FLT_MAX_10_EXP)) {
+		if ((exponent + whole_places < DBL_MIN_10_EXP) ||
+			(exponent + whole_places > DBL_MAX_10_EXP)) {
 			cx_error(ERR_REAL_OUT_OF_RANGE);
 			return;
 		}
-		if (exponent != 0) number_value *= float(pow((double)10, exponent));
+		if (exponent != 0) number_value *= pow(10.0L, exponent);
 
 		// Check and set the numeric value.
 		if (type__ == T_INT) {
-			if ((number_value < INT_MIN) || (number_value > INT_MAX)) {
+			if ((number_value < LLONG_MIN) || (number_value > LLONG_MAX)){
 				cx_error(ERR_INTEGER_OUT_OF_RANGE);
 				return;
 			}
-			value__.i_ = int(number_value);
+			value__.i_ = static_cast<cx_int>(number_value);
 		}
-		else value__.f_ = number_value;
+		else {	// TODO Range check for max double
+			if ((number_value < -DBL_MAX) || (number_value > DBL_MAX)){
+				cx_error(ERR_REAL_OUT_OF_RANGE);
+				return;
+			}
+			value__.d_ = number_value;
+		}
 
 		*ps = '\0';
 		code__ = TC_NUMBER;
@@ -164,13 +170,13 @@ namespace cx{
 	 * @return true  if success false if failure.
 	 */
 	int number_token::accumulate_value(text_in_buffer &buffer,
-		float &value, error_code ec) {
+		cx_real &value, error_code ec) {
 
 		const int max_digit_count = 20;
 
 		/* cx_error if the first character is not a digit
 		 * and radix base is not hex */
-		if ((char_map[ch] != CC_DIGIT) && (!isxdigit((unsigned)ch))) {
+		if ((char_map[(int)ch] != CC_DIGIT) && (!isxdigit((int)ch))) {
 			cx_error(ec);
 			return false; // failure
 		}
@@ -188,30 +194,30 @@ namespace cx{
 
 			ch = buffer.get_char();
 
-		} while ((char_map[ch] == CC_DIGIT) || isxdigit((unsigned)ch));
+		} while ((char_map[(int)ch] == CC_DIGIT) || isxdigit((int)ch));
 
 		return true; // success
 	}
 
-	int number_token::char_value(const unsigned char &c) {
+	int number_token::char_value(const wchar_t &c) {
 		if (isxdigit(c)) {
 			switch (c) {
-			case 'A':
-			case 'a': return 10;
-			case 'B':
-			case 'b': return 11;
-			case 'C':
-			case 'c': return 12;
-			case 'D':
-			case 'd': return 13;
-			case 'E':
-			case 'e': return 14;
-			case 'F':
-			case 'f': return 15;
+			case L'A':
+			case L'a': return 10;
+			case L'B':
+			case L'b': return 11;
+			case L'C':
+			case L'c': return 12;
+			case L'D':
+			case L'd': return 13;
+			case L'E':
+			case L'e': return 14;
+			case L'F':
+			case L'f': return 15;
 			}
 		}
 
-		return (c - '0');
+		return (c - L'0');
 	}
 
 	/** C already has this function
@@ -227,12 +233,12 @@ namespace cx{
 	 */
 	void number_token::print(void) const {
 		if (type__ == T_INT) {
-			sprintf(list.text, "\t%-18s =%d", ">> integer:",
-				value__.i_);
+	//		sprintf(list.text, "\t%-18s =%d", ">> integer:",
+	//			value__.i_);
 		}
 		else {
-			sprintf(list.text, "\t%-18s =%g", ">> real:",
-				value__.f_);
+	//		sprintf(list.text, "\t%-18s =%g", ">> real:",
+	//			value__.d_);
 		}
 
 		list.put_line();

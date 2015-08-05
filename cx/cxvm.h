@@ -36,41 +36,161 @@ namespace cx {
 		class mem_mapping {
 		private:
 		public:
-			managedmem shared_ref;
+			mem_mapping() : is_rvalue(false) {}
+			managedmem shared_ref;	// VM memory allocations
 			size_t size;			// sizeof
 			type_code typecode;
 			type_form typeform;
-
-			size_t length(void);	// sizeof * count
+			bool is_rvalue;			// Evaluates to a temporary value that does not persist beyond the expression that defines it.
+			size_t count(void);		// memory size / element size
 		};
 
 		typedef void* address;
 		typedef std::map<uintptr_t, mem_mapping> malloc_map;
+
+		extern malloc_map heap_;		// HEAP: For storing raw memory allocations
 	}
+
+	extern const wchar_t* opcode_string[];
 
 	// Op codes
 	enum opcode {
-		AALOAD, AASTORE, ACONST_NULL, ALOAD, ANEWARRAY,
-		ARETURN, ARRAYLENGTH, ASTORE, ATHROW,
-		BALOAD, BASTORE, BEQ, BGE, BGT, BIPUSH, BLE,
-		BLT, BNE, CALL, CALOAD, CASTORE, CHECKCAST, D2F, D2I, D2L, DADD, DALOAD,
-		DASTORE, DCMP, DCONST, DDIV, DLOAD, DMUL, DNEG, DREM, DRETURN,
-		DSTORE, DSUB, DUP, DUP2, DUP2_X1, DUP2_X2, DUP_X1, DUP_X2, F2D, F2I,
-		F2L, FADD, FALOAD, FASTORE, FCMP, FCONST, FDIV, FLOAD,
-		FMUL, FNEG, FREM, FRETURN, FSTORE, FSUB, GETFIELD, GETSTATIC,
-		GOTO, GOTO_W, HALT, I2B, I2C, I2D, I2F, I2L, I2S, IADD, IALOAD,
-		IAND, IASTORE, ICMP, ICONST, IDIV, IFEQ, IFNE, IFLT,
-		IFGE, IFGT, IFLE, IF_ACMPEQ, IF_ACMPNE, IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT,
-		IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IFNONNULL, IFNULL, IINC,
-		ILOAD, IMUL, INEG, INOT, INSTANCEOF, INVOKEDYNAMIC, INVOKEFUNCT, INVOKEINTERFACE,
-		INVOKESPECIAL, INVOKESTATIC, INVOKEVIRTUAL, IOR, IREM, IRETURN, ISHL, ISHR,
-		ISTORE, ISUB, IUSHR, IXOR, JSR, JSR_W, L2D, L2F, L2I, LADD, LALOAD, LAND,
-		LASTORE, LCMP, LCONST, LDC, LDC2_W, LDC_W, LDIV,
-		LLOAD, LMUL, LNEG, LOOKUPSWITCH, LOGIC_OR, LOGIC_AND, LOR, LREM, LRETURN, LSHL,
-		LSHR, LSTORE, LSUB, LUSHR, LXOR, MONITORENTER, MONITOREXIT,
-		MULTIANEWARRAY, NEW, NEWARRAY, NOP, PLOAD, POSTOP, POP, POP2, PREOP, PUTFIELD, PUTSTATIC, RET,
-		RETURN, SALOAD, SASTORE, SIPUSH, SWAP,
-		TABLESWITCH, WALOAD, WASTORE, WIDE
+		AALOAD,
+		AASTORE,
+		ACONST_NULL,
+		ALOAD,
+		ANEWARRAY,
+		ARRAYLENGTH,
+		ASTORE,
+		ATHROW,
+		BALOAD,
+		BASTORE,
+		BEQ,
+		BGE,
+		BGT,
+		BIPUSH,
+		BLE,
+		BLT,
+		BNE,
+		C2I,
+		CALL,
+		CALOAD,
+		CASTORE,
+		CHECKCAST,
+		D2F,
+		D2I,
+		D2L,
+		DADD,
+		DALOAD,
+		DASTORE,
+		DCMP,
+		DCONST,
+		DDIV,
+		DEQ_EQ,
+		DGT,
+		DGT_EQ,
+		DLOAD,
+		DLT,
+		DLT_EQ,
+		DMUL,
+		DNEG,
+		DNOT_EQ,
+		DREM,
+		DRETURN,
+		DSTORE,
+		DSUB,
+		DUP,
+		DUP2,
+		DUP2_X1,
+		DUP2_X2,
+		DUP_X1,
+		DUP_X2,
+		GETFIELD,
+		GETSTATIC,
+		GOTO,
+		HALT,
+		I2B,
+		I2C,
+		I2D,
+//		I2W,
+		IADD,
+		IALOAD,
+		IAND,
+		IASTORE,
+		ICMP,
+		ICONST,
+		IDIV,
+		IEQ_EQ,
+		IFEQ,
+		IFNE,
+		IFLT,
+		IFGE,
+		IFGT,
+		IFLE,
+		IF_ACMPEQ,
+		IF_ACMPNE,
+		IF_ICMPEQ,
+		IF_ICMPNE,
+		IF_ICMPLT,
+		IF_ICMPGE,
+		IF_ICMPGT,
+		IF_ICMPLE,
+		IFNONNULL,
+		IFNULL,
+		IGT,
+		IGT_EQ,
+		IINC,
+		ILOAD,
+		ILT,
+		ILT_EQ,
+		IMUL,
+		INEG,
+		INOT,
+		INOT_EQ,
+		INSTANCEOF,
+		INVOKEDYNAMIC,
+		INVOKEFUNCT,
+		INVOKEINTERFACE,
+		INVOKESPECIAL,
+		INVOKESTATIC,
+		INVOKEVIRTUAL,
+		IOR,
+		IREM,
+		IRETURN,
+		ISHL,
+		ISHR,
+		ISTORE,
+		ISUB,
+		IXOR,
+		JSR,
+		JSR_W,
+		LDC,
+		LDC2_W,
+		LDC_W,
+		LOOKUPSWITCH,
+		LOGIC_OR,
+		LOGIC_AND,
+		LOGIC_NOT,
+		MONITORENTER,
+		MONITOREXIT,
+		MULTIANEWARRAY,
+		NEW,
+		NEWARRAY,
+		NOP,
+		PLOAD,
+		POSTOP,
+		POP,
+		POP2,
+		PREOP,
+		PUTFIELD,
+		PUTSTATIC,
+		RET,
+		RETURN,
+		SWAP,
+		TABLESWITCH,
+		WALOAD,
+		WASTORE,
+		WIDE
 	};
 
 	// Instruction
@@ -95,7 +215,6 @@ namespace cx {
 		value *stack_ptr;	// Pointer to the current position in stack
 		instr_ptr inst_ptr; // Instruction pointer
 		program *code_ptr;
-		int16_t flag;
 	} vcpu;
 
 	enum {
@@ -105,7 +224,6 @@ namespace cx {
 	class cxvm {
 	private:
 		vcpu vpu;					// VPU: Virtual Proc Unit
-		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
 		value stack[_STACK_SIZE];	// STACK:
 
 		//std::mutex vm_lock;				// VM lock during execution

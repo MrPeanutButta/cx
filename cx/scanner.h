@@ -1,7 +1,7 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 #pragma once
-#include "misc.h"
+//#include "misc.h"
 #include "buffer.h"
 #include "token.h"
 

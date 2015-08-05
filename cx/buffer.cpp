@@ -9,12 +9,14 @@
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
-#include <iostream>
+#include <codecvt>
 #include <fstream>
 #include <ctime>
 #endif
 
-#include "common.h"
+//#include "common.h"
+#include <iostream>
+#include <string>
 #include "buffer.h"
 
 namespace cx{
@@ -36,7 +38,7 @@ namespace cx{
 	 * @param p_input_file_name : ptr to the name of the input file
 	 * @param ac             : abort code to use if open failed
 	 */
-	text_in_buffer::text_in_buffer(std::string input_file_name,
+	text_in_buffer::text_in_buffer(std::wstring input_file_name,
 		abort_code ac) : file_name_(input_file_name) {
 
 		// Copy the input file name.
@@ -44,9 +46,10 @@ namespace cx{
 
 		// Open the input file.  Abort if failed.
 		file.open(file_name_.c_str(), std::ios::in);
+		file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::little_endian>));
 
 		if (!file.good()) {
-			std::cout << file_name_ << ": " << std::strerror(errno) << std::endl;
+			std::wcout << file_name_ << ": " << std::strerror(errno) << std::endl;
 			abort_translation(ac);
 		}
 	}
@@ -59,12 +62,12 @@ namespace cx{
 	 * @return next__ character from the source file
 	 *          or the end-of-file character.
 	 */
-	char text_in_buffer::get_char(void) {
+	wchar_t text_in_buffer::get_char(void) {
 		const int tab_size = 8; // size of tabs
-		char ch; // character to return
+		wchar_t ch; // character to return
 
 		if (*p_char == EOF_CHAR) return EOF_CHAR; // end of file
-		else if (*p_char == '\0') ch = get_line(); // null
+		else if (*p_char == L'\0') ch = get_line(); // null
 		else { // next__ char
 			++p_char;
 			++input_position;
@@ -73,7 +76,7 @@ namespace cx{
 
 		// If tab character, increment input_position to the next__
 		// multiple of tab_size.
-		if (ch == '\t') input_position += tab_size - input_position % tab_size;
+		if (ch == L'\t') input_position += tab_size - input_position % tab_size;
 
 		return ch;
 	}
@@ -85,7 +88,7 @@ namespace cx{
 	 *
 	 * @return the previous character
 	 */
-	char text_in_buffer::put_back_char(void) {
+	wchar_t text_in_buffer::put_back_char(void) {
 		--p_char;
 		--input_position;
 
@@ -98,7 +101,7 @@ namespace cx{
 	 *
 	 * @param p_source_file_name : ptr to name of source file
 	 */
-	source_buffer::source_buffer(const std::string source_file_name)
+	source_buffer::source_buffer(const std::wstring source_file_name)
 		: text_in_buffer(source_file_name, ABORT_SOURCE_FILE_OPEN_FAILED) {
 		// Initialize the list file and read the first source line.
 		if (list_flag) list.initialize(source_file_name);
@@ -112,23 +115,27 @@ namespace cx{
 	 * @return first character of the source line, or the
 	 *          end-of-file character if at the end of the file
 	 */
-	char source_buffer::get_line(void) {
+	wchar_t source_buffer::get_line(void) {
 		extern int current_nesting_level;
 
 		// If at the end of the source file, return the end-of-file char.
-		if (file.eof()) p_char = (char *)&EOF_CHAR;
+		if (file.eof()) p_char = (wchar_t *)&EOF_CHAR;
 
 		// Else read the next__ source line and print it to the list file.
 		else {
-			memset(text, '\0', sizeof(text));
+			memset(text, L'\0', sizeof(text));
 
-			file.getline(text, MAX_INPUT_BUFFER_SIZE);
+			while (!wcscmp(text, L"\0")) {
+				file.getline(text, MAX_INPUT_BUFFER_SIZE);
+				++current_line_number;
+			}
+
 			p_char = text; // point to first source line char
 
 			// just buffer current line, we can display on error
-			list.buffer(
+			list.wbuffer(
 				text,
-				++current_line_number,
+				current_line_number,
 				current_nesting_level
 				);
 
@@ -148,11 +155,11 @@ namespace cx{
 	 *
 	 * @param p_file_name : ptr to source file name (for page header)
 	 */
-	void list_buffer::initialize(const std::string file_name) {
+	void list_buffer::initialize(const std::wstring file_name) {
 
 		if (file_name.empty()) return;
 
-		memset(text, '\0', sizeof(text));
+		memset(text, L'\0', sizeof(text));
 
 		// Copy the input file name.
 		source_file_name = file_name;
@@ -167,7 +174,7 @@ namespace cx{
 		text[max_printline_length] = '\0';
 
 		// print the text line, and then blank out the text.
-		std::cout << text << std::endl;
+		std::wcout << text << std::endl;
 		memset(text, '\0', sizeof(text));
 
 		++line_count;

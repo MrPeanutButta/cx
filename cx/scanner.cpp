@@ -44,6 +44,7 @@ namespace cx{
 
 		char_map['\''] = CC_QUOTE;
 		char_map['\"'] = CC_DOUBLE_QUOTE;
+		char_map['L'] = CC_DOUBLE_QUOTE;
 
 		char_map[EOF_CHAR] = CC_END_OF_FILE;
 
@@ -57,23 +58,23 @@ namespace cx{
 	 *
 	 */
 	void text_scanner::skip_whitespace(void) {
-		char ch = p_text_in_buffer->current_char();
+		wchar_t ch = p_text_in_buffer->current_char();
 
 		do {
-			if (char_map[ch] == CC_WHITE_SPACE) {
+			if (char_map[(int)ch] == CC_WHITE_SPACE) {
 				ch = p_text_in_buffer->get_char();
 			}
-			else if (ch == '/') {
+			else if (ch == L'/') {
 				ch = p_text_in_buffer->get_char();
-				if (ch == '/') {
-					while (ch != '\0') ch = p_text_in_buffer->get_char();
+				if (ch == L'/') {
+					while (ch != L'\0') ch = p_text_in_buffer->get_char();
 				}
-				else if (ch == '*') {
+				else if (ch == L'*') {
 					while (ch != EOF_CHAR) {
 						ch = p_text_in_buffer->get_char();
-						if (ch == '*') {
+						if (ch == L'*') {
 							ch = p_text_in_buffer->get_char();
-							if (ch == '/') {
+							if (ch == L'/') {
 								ch = p_text_in_buffer->get_char();
 								break;
 							}
@@ -85,7 +86,7 @@ namespace cx{
 					break;
 				}
 			}
-		} while ((char_map[ch] == CC_WHITE_SPACE)|| (ch == '/'));
+		} while ((char_map[(int)ch] == CC_WHITE_SPACE) || (ch == L'/'));
 	}
 
 	/** get         Extract the next__ token from the text input,
@@ -98,8 +99,14 @@ namespace cx{
 
 		skip_whitespace();
 
+		char_code code;
+
+		wchar_t ch = p_text_in_buffer->current_char();
+
+		code = char_map[(int)ch];
+
 		// Determine the token class, based on the current character.
-		switch (char_map[p_text_in_buffer->current_char()]) {
+		switch (code) {
 		case CC_LETTER: p_token = &word_token;
 			break;
 		case CC_DIGIT: p_token = &number_token;

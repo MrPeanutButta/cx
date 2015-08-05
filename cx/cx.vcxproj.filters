@@ -153,7 +153,7 @@
     <ClCompile Include="..\examples\type_size.cxx">
       <Filter>Examples</Filter>
     </ClCompile>
-    <ClCompile Include="double operations.cpp">
+    <ClCompile Include="removed\double operations.cpp">
       <Filter>Snippits</Filter>
     </ClCompile>
   </ItemGroup>

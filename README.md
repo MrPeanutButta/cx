@@ -1,16 +1,13 @@
 Cx
 ==
-A type-safe, interpreted, procedural, object oriented language intended to be a subset of C/C++ syntax. Cx intended use is aimed towards system administrative tasks, and network programmability.
+A scripting language for fun and profit.
 
 ``` cpp
-#include io
+use io;
 
-int main(){
-	
-	io::puts("Hello, World!");
+io.puts("Hello, World!");
 
-	return 0;
-}
+return 0;
 ```
 
 ### Supported compilers and platforms
