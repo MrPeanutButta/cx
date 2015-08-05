@@ -171,11 +171,11 @@ namespace cx{
 	void list_buffer::put_line(void) {
 
 		// Truncate the line if it's too long.
-		text[max_printline_length] = '\0';
+		text[max_printline_length] = L'\0';
 
 		// print the text line, and then blank out the text.
-		std::wcout << text << std::endl;
-		memset(text, '\0', sizeof(text));
+		_putws(text);// << std::endl;
+		memset(text, L'\0', sizeof(text));
 
 		++line_count;
 	}

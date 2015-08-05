@@ -49,8 +49,16 @@ namespace cx{
 	 */
 	void string_token::get(text_in_buffer &buffer) {
 		wchar_t ch = buffer.current_char(); // current character
-
 		wchar_t *ps = string; // ptr to char in string
+
+		bool verbatim = (ch == L'@');
+
+		if (verbatim){
+			ch = buffer.get_char();
+			if (ch != L'\"'){
+				cx_error(ERR_MISSING_DOUBLE_QUOTE);
+			}
+		}
 
 		*ps++ = L'\"'; // opening quote
 
@@ -71,7 +79,7 @@ namespace cx{
 			}// Replace the end of line character with a blank.
 			else if (ch == L'\0') ch = L' ';
 
-			if (ch == L'\\') {
+			if (ch == L'\\' && (!verbatim)) {
 				*ps++ = get_escape_char(buffer.get_char());
 			}
 			else {

@@ -1,4 +1,4 @@
 
-char t = '凧';
+char t = @o";
 
-return t;
+return ++t;

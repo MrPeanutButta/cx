@@ -44,11 +44,11 @@ namespace cx{
 
 		char_map['\''] = CC_QUOTE;
 		char_map['\"'] = CC_DOUBLE_QUOTE;
-		char_map['L'] = CC_DOUBLE_QUOTE;
+		char_map['@'] = CC_DOUBLE_QUOTE;
 
 		char_map[EOF_CHAR] = CC_END_OF_FILE;
 
-		char_map['`'] = char_map['@'] = CC_ERROR;
+		char_map['`'] = CC_ERROR;
 	}
 
 	/** skip_whitespace      Repeatedly fetch characters from the
