@@ -1,6 +1,4 @@
-int i = 5;
-int b = 10;
 
-int a = (b * i++);
+char t = '凧';
 
-return a;
+return t;

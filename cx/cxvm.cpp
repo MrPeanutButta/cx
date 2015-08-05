@@ -8,142 +8,143 @@
 
 namespace cx{
 
-	const char* opcode_string[] = {
-		"AALOAD",
-		"AASTORE",
-		"ACONST_NULL",
-		"ALOAD",
-		"ANEWARRAY",
-		"ARRAYLENGTH",
-		"ASTORE",
-		"ATHROW",
-		"BALOAD",
-		"BASTORE",
-		"BEQ",
-		"BGE",
-		"BGT",
-		"BIPUSH",
-		"BLE",
-		"BLT",
-		"BNE",
-		"CALL",
-		"CALOAD",
-		"CASTORE",
-		"CHECKCAST",
-		"D2F",
-		"D2I",
-		"D2L",
-		"DADD",
-		"DALOAD",
-		"DASTORE",
-		"DCMP",
-		"DCONST",
-		"DDIV",
-		"DEQ_EQ",
-		"DGT",
-		"DGT_EQ",
-		"DLOAD",
-		"DLT",
-		"DLT_EQ",
-		"DMUL",
-		"DNEG",
-		"DNOT_EQ",
-		"DREM",
-		"DRETURN",
-		"DSTORE",
-		"DSUB",
-		"DUP",
-		"DUP2",
-		"DUP2_X1",
-		"DUP2_X2",
-		"DUP_X1",
-		"DUP_X2",
-		"GETFIELD",
-		"GETSTATIC",
-		"GOTO",
-		"HALT",
-		"I2B",
-		"I2C",
-		"I2D",
-		"I2W",
-		"IADD",
-		"IALOAD",
-		"IAND",
-		"IASTORE",
-		"ICMP",
-		"ICONST",
-		"IDIV",
-		"IEQ_EQ",
-		"IFEQ",
-		"IFNE",
-		"IFLT",
-		"IFGE",
-		"IFGT",
-		"IFLE",
-		"IF_ACMPEQ",
-		"IF_ACMPNE",
-		"IF_ICMPEQ",
-		"IF_ICMPNE",
-		"IF_ICMPLT",
-		"IF_ICMPGE",
-		"IF_ICMPGT",
-		"IF_ICMPLE",
-		"IFNONNULL",
-		"IFNULL",
-		"IGT",
-		"IGT_EQ",
-		"IINC",
-		"ILOAD",
-		"ILT",
-		"ILT_EQ",
-		"IMUL",
-		"INEG",
-		"INOT",
-		"INOT_EQ",
-		"INSTANCEOF",
-		"INVOKEDYNAMIC",
-		"INVOKEFUNCT",
-		"INVOKEINTERFACE",
-		"INVOKESPECIAL",
-		"INVOKESTATIC",
-		"INVOKEVIRTUAL",
-		"IOR",
-		"IREM",
-		"IRETURN",
-		"ISHL",
-		"ISHR",
-		"ISTORE",
-		"ISUB",
-		"IXOR",
-		"JSR",
-		"JSR_W",
-		"LDC",
-		"LDC2_W",
-		"LDC_W",
-		"LOOKUPSWITCH",
-		"LOGIC_OR",
-		"LOGIC_AND",
-		"LOGIC_NOT",
-		"MONITORENTER",
-		"MONITOREXIT",
-		"MULTIANEWARRAY",
-		"NEW",
-		"NEWARRAY",
-		"NOP",
-		"PLOAD",
-		"POSTOP",
-		"POP",
-		"POP2",
-		"PREOP",
-		"PUTFIELD",
-		"PUTSTATIC",
-		"RET",
-		"RETURN",
-		"SWAP",
-		"TABLESWITCH",
-		"WALOAD",
-		"WASTORE",
-		"WIDE"
+	const wchar_t *opcode_string[] = {
+		L"AALOAD",
+		L"AASTORE",
+		L"ACONST_NULL",
+		L"ALOAD",
+		L"ANEWARRAY",
+		L"ARRAYLENGTH",
+		L"ASTORE",
+		L"ATHROW",
+		L"BALOAD",
+		L"BASTORE",
+		L"BEQ",
+		L"BGE",
+		L"BGT",
+		L"BIPUSH",
+		L"BLE",
+		L"BLT",
+		L"BNE",
+		L"C2I",
+		L"CALL",
+		L"CALOAD",
+		L"CASTORE",
+		L"CHECKCAST",
+		L"D2F",
+		L"D2I",
+		L"D2L",
+		L"DADD",
+		L"DALOAD",
+		L"DASTORE",
+		L"DCMP",
+		L"DCONST",
+		L"DDIV",
+		L"DEQ_EQ",
+		L"DGT",
+		L"DGT_EQ",
+		L"DLOAD",
+		L"DLT",
+		L"DLT_EQ",
+		L"DMUL",
+		L"DNEG",
+		L"DNOT_EQ",
+		L"DREM",
+		L"DRETURN",
+		L"DSTORE",
+		L"DSUB",
+		L"DUP",
+		L"DUP2",
+		L"DUP2_X1",
+		L"DUP2_X2",
+		L"DUP_X1",
+		L"DUP_X2",
+		L"GETFIELD",
+		L"GETSTATIC",
+		L"GOTO",
+		L"HALT",
+		L"I2B",
+		L"I2C",
+		L"I2D",
+//		L"I2W",
+		L"IADD",
+		L"IALOAD",
+		L"IAND",
+		L"IASTORE",
+		L"ICMP",
+		L"ICONST",
+		L"IDIV",
+		L"IEQ_EQ",
+		L"IFEQ",
+		L"IFNE",
+		L"IFLT",
+		L"IFGE",
+		L"IFGT",
+		L"IFLE",
+		L"IF_ACMPEQ",
+		L"IF_ACMPNE",
+		L"IF_ICMPEQ",
+		L"IF_ICMPNE",
+		L"IF_ICMPLT",
+		L"IF_ICMPGE",
+		L"IF_ICMPGT",
+		L"IF_ICMPLE",
+		L"IFNONNULL",
+		L"IFNULL",
+		L"IGT",
+		L"IGT_EQ",
+		L"IINC",
+		L"ILOAD",
+		L"ILT",
+		L"ILT_EQ",
+		L"IMUL",
+		L"INEG",
+		L"INOT",
+		L"INOT_EQ",
+		L"INSTANCEOF",
+		L"INVOKEDYNAMIC",
+		L"INVOKEFUNCT",
+		L"INVOKEINTERFACE",
+		L"INVOKESPECIAL",
+		L"INVOKESTATIC",
+		L"INVOKEVIRTUAL",
+		L"IOR",
+		L"IREM",
+		L"IRETURN",
+		L"ISHL",
+		L"ISHR",
+		L"ISTORE",
+		L"ISUB",
+		L"IXOR",
+		L"JSR",
+		L"JSR_W",
+		L"LDC",
+		L"LDC2_W",
+		L"LDC_W",
+		L"LOOKUPSWITCH",
+		L"LOGIC_OR",
+		L"LOGIC_AND",
+		L"LOGIC_NOT",
+		L"MONITORENTER",
+		L"MONITOREXIT",
+		L"MULTIANEWARRAY",
+		L"NEW",
+		L"NEWARRAY",
+		L"NOP",
+		L"PLOAD",
+		L"POSTOP",
+		L"POP",
+		L"POP2",
+		L"PREOP",
+		L"PUTFIELD",
+		L"PUTSTATIC",
+		L"RET",
+		L"RETURN",
+		L"SWAP",
+		L"TABLESWITCH",
+		L"WALOAD",
+		L"WASTORE",
+		L"WIDE"
 	};
 
 	namespace heap{
@@ -162,7 +163,7 @@ namespace cx{
 		sizeof(cx_bool),
 		sizeof(cx_char),
 		sizeof(cx_byte),
-		sizeof(cx_wchar),
+	//	sizeof(cx_wchar),
 		sizeof(cx_int),
 		sizeof(cx_real)
 	};
@@ -186,7 +187,7 @@ namespace cx{
     cx_int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     _PUSHS->t_ = *((type *) ((char *) mem + (*index * sizeof (type))));  \
-								}
+									}
 
 	// Store to memory
 #define _ASTORE(t_, type) {     \
@@ -194,7 +195,7 @@ namespace cx{
     cx_int *index = &_POPS->i_;     \
     void *mem = _POPS->a_;       \
     *((type *) ((char *) mem + (*index * sizeof (type)))) = *v_;        \
-								}
+									}
 
 	// Value object
 #define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item
@@ -204,7 +205,7 @@ namespace cx{
     cx_int value2 = _POPS->i_; \
     cx_int value1 = _POPS->i_; \
     if(value1 op value2) _JMP(i_);  \
-								}
+									}
 
 #define _IF(op) if(_POPS->i_ op 0) _JMP(i_)
 
@@ -213,20 +214,20 @@ namespace cx{
 	type b = _POPS->t_; \
 	type a = _POPS->t_; \
 	_PUSHS->t_ = (a op b); \
-				}
+					}
 
 	// Unary Operators
 #define _UNA_OP(t_, type, op)  { \
 	type a = _POPS->t_; \
 	_PUSHS->t_ = op(a); \
-			}
+				}
 
 	// Relational Operators (bool)
 #define _REL_OP(t_, type, op)  { \
 	type b = _POPS->t_; \
 	type a = _POPS->t_; \
 	_PUSHS->i_ = (a op b); \
-				}
+					}
 
 	cxvm::cxvm(){
 		// Pointer to the allocated stack
@@ -314,8 +315,9 @@ namespace cx{
 
 				throw std::string(message);
 			} break;
-			case BALOAD: _ALOAD(b_, cx_byte); break;
-			case BASTORE: _ASTORE(b_, cx_byte); break;
+			case BALOAD:	_ALOAD(b_, cx_byte); break;
+			case BASTORE:	_ASTORE(b_, cx_byte); break;
+			case C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); break;
 			case CALL:{
 				symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
 				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
@@ -334,7 +336,7 @@ namespace cx{
 				cx->enter_function(p_function_id);
 				cx->go();
 
-				std::cout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
+				std::wcout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
 
 				// If void function, pop off it's return value.
 				if (p_function_id->p_type->typecode == T_VOID){
@@ -387,7 +389,7 @@ namespace cx{
 			case DDIV:		_BIN_OP(d_, cx_real, / ); break;
 			case DEQ_EQ:	_REL_OP(d_, cx_real, == ); break;
 			case DGT:		_REL_OP(d_, cx_real, > ); break;
-			case DGT_EQ:	_REL_OP(d_, cx_real, >=); break;
+			case DGT_EQ:	_REL_OP(d_, cx_real, >= ); break;
 			case DLOAD:		_PUSHS->d_ = _VALUE->d_; break;
 			case DLT:		_REL_OP(d_, cx_real, < ); break;
 			case DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;
@@ -408,7 +410,7 @@ namespace cx{
 			case I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
 			case I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
 			case I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
-			case I2W:		_PUSHS->w_ = static_cast<cx_wchar> (_POPS->i_); break;
+//			case I2W:		_PUSHS->w_ = static_cast<cx_wchar> (_POPS->i_); break;
 			case IADD:		_BIN_OP(i_, cx_int, +); break;
 			case IALOAD:	_ALOAD(i_, cx_int); break;
 			case ILT:		_REL_OP(i_, cx_int, < ); break;
@@ -488,8 +490,8 @@ namespace cx{
 			case LDC_W: break;
 			case LOOKUPSWITCH: break;
 			case LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); break;
-			case LOGIC_AND:	_BIN_OP(z_, cx_bool, && ); break;
-			case LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; break;
+			case LOGIC_AND:	_BIN_OP(z_, cx_bool, &&); break;
+ 			case LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; break;
 			case MONITORENTER:
 			case MONITOREXIT: break;
 			case MULTIANEWARRAY: break;
@@ -531,8 +533,8 @@ namespace cx{
 				break;
 			case SWAP: break;
 			case TABLESWITCH: break;
-			case WALOAD: _ALOAD(w_, wchar_t); break;
-			case WASTORE: _ASTORE(w_, wchar_t); break;
+			case WALOAD: _ALOAD(c_, cx_char); break;
+			case WASTORE: _ASTORE(c_, cx_char); break;
 			case WIDE: break;
 
 				/**

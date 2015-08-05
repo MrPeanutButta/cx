@@ -16,7 +16,7 @@ namespace cx{
 
 	enum token_code {
 		TC_DUMMY = 0,
-		TC_IDENTIFIER, TC_NUMBER, TC_STRING, TC_CHAR, TC_END_OF_FILE, TC_ERROR,
+		TC_IDENTIFIER, TC_NUMBER, TC_STRING, TC_WSTRING, TC_CHAR, TC_WCHAR, TC_END_OF_FILE, TC_ERROR,
 
 		//OPERATORS AND PUNCTUATION
 		//BITWISE
@@ -100,7 +100,7 @@ namespace cx{
 		MC_LINE_MARKER = 127
 	};
 
-	typedef std::map<std::string, token_code> token_map;
+	typedef std::map<std::wstring, token_code> token_map;
 
 	// tokens that can start a statement
 	extern const token_code tokenlist_statement_start[];
@@ -149,7 +149,8 @@ namespace cx{
 		value value__;
 		
 	public:
-		char string[MAX_INPUT_BUFFER_SIZE];
+		//char string[MAX_INPUT_BUFFER_SIZE];
+		wchar_t string[MAX_INPUT_BUFFER_SIZE];
 
 		token(void) {
 			code__ = TC_DUMMY;
@@ -162,7 +163,7 @@ namespace cx{
 		type_code type() const { return type__; }
 		value value() const { return value__; }
 
-		char get_escape_char(const char &c);
+		wchar_t get_escape_char(const wchar_t &c);
 		virtual void get(text_in_buffer &buffer) = 0;
 		virtual int is_delimiter(void) const = 0;
 	};
@@ -184,8 +185,8 @@ namespace cx{
 	//  number_token        Number token subclass of token.
 
 	class number_token : public token {
-		char ch; // char fetched from input buffer
-		char *ps; // ptr into token string
+		wchar_t ch; // char fetched from input buffer
+		wchar_t *ps; // ptr into token string
 		int digit_count; // total no. of digits in number
 		bool count_error_flag; // true if too many digits, else false
 
@@ -194,8 +195,8 @@ namespace cx{
 		int accumulate_value(text_in_buffer &buffer,
 			cx_real &value, error_code ec);
 
-		bool is_x_digit(const char &c);
-		int char_value(const unsigned char &c);
+		bool is_x_digit(const wchar_t &c);
+		int char_value(const wchar_t &c);
 
 	public:
 
@@ -221,6 +222,7 @@ namespace cx{
 		}
 
 		virtual void get(text_in_buffer &buffer);
+		void wget(text_in_buffer &buffer);
 
 		virtual int is_delimiter(void) const {
 			return true;
@@ -236,7 +238,8 @@ namespace cx{
 		}
 
 		virtual void get(text_in_buffer &buffer);
-
+		void wget(text_in_buffer &buffer);
+		
 		virtual int is_delimiter(void) const {
 			return true;
 		}

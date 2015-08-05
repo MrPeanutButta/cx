@@ -33,7 +33,7 @@ namespace cx{
 		symbol_table_node_ptr p_program_id;// = nullptr;
 
 		if (!is_module) {
-			p_program_id = std::make_shared<symbol_table_node>("__main__", DC_PROGRAM);
+			p_program_id = std::make_shared<symbol_table_node>(L"__main__", DC_PROGRAM);
 			p_program_id->defined.routine.function_type = FUNC_DECLARED;
 			p_program_id->p_type = p_integer_type;
 
@@ -57,10 +57,10 @@ namespace cx{
 			conditional_get_token_append(TC_END_OF_FILE, ERR_MISSING_RIGHT_BRACKET);
 
 			if (cx_dev_debug_flag) {
+				//list.put_line();
+				swprintf(list.text, L"%20d source lines.", current_line_number);
 				list.put_line();
-				sprintf(list.text, "%20d source lines.", current_line_number);
-				list.put_line();
-				sprintf(list.text, "%20d syntax errors.", error_count);
+				swprintf(list.text, L"%20d syntax errors.", error_count);
 				list.put_line();
 			}
 		}
@@ -402,14 +402,14 @@ namespace cx{
 	}
 
 	// env variable that holds the path to stdlib
-#define __CX_STDLIB__   "CX_STDLIB"
+#define __CX_STDLIB__   L"CX_STDLIB"
 
-	void load_lib(const char *lib, symbol_table *p_symtab) {
+	void load_lib(const wchar_t *lib, symbol_table *p_symtab) {
 
 		static const cx_type * cx_types_[] = {
 			p_integer_type.get(),
 			p_char_type.get(),
-			p_wchar_type.get(),
+			//p_wchar_type.get(),
 			p_double_type.get(),
 			p_boolean_type.get(),
 			p_byte_type.get(),
@@ -426,23 +426,23 @@ namespace cx{
 		void *lib_handle = nullptr;
 #endif
 
-		std::string lib_path;
-		char *env_path = getenv(__CX_STDLIB__);
+		std::wstring lib_path;
+		wchar_t *env_path = _wgetenv(__CX_STDLIB__);
 
 		if (env_path != nullptr) {
 			lib_path = env_path;
 #ifdef _WIN32
-			lib_path += "\\";
+			lib_path += L"\\";
 #elif defined __linux__
-			lib_path += "/";
+			lib_path += L"/";
 #endif
 		}
 
 #if defined _WIN32
-		std::string dll = std::string(lib) + ".dll";
+		std::wstring dll = std::wstring(lib) + L".dll";
 		lib_path += dll;
 		// Get a handle to the DLL module.
-		lib_handle = LoadLibrary(lib_path.c_str());
+		lib_handle = LoadLibrary((LPCSTR)lib_path.c_str());
 #elif defined __linux__
 		std::string so = std::string(lib) + ".so";
 		lib_path += so;
@@ -497,15 +497,15 @@ namespace cx{
 		switch (token) {
 		case TC_INCLUDE:
 		{
-			std::string lib_path;
-			char *env_path = getenv(__CX_STDLIB__);
+			std::wstring lib_path;
+			wchar_t *env_path = _wgetenv(__CX_STDLIB__);
 
 			if (env_path != nullptr) {
 				lib_path = env_path;
 #ifdef _WIN32
-				lib_path += "\\";
+				lib_path += L"\\";
 #else
-				lib_path += "/";
+				lib_path += L"/";
 #endif
 			}
 
@@ -551,10 +551,10 @@ namespace cx{
 			}
 
 			{
-				std::string msg = p_token->string;
+				std::wstring msg = p_token->string;
 				msg[0] = ' ';
-				msg[msg.length() - 1] = '\0';
-				std::cerr << "warning:" << msg << std::endl;
+				msg[msg.length() - 1] = L'\0';
+				std::wcerr << "warning:" << msg << std::endl;
 			}
 
 			get_token_append();
@@ -591,9 +591,9 @@ namespace cx{
 			op = token;
 			get_token();
 			p_operand_type = parse_simple_expression(p_function_id);
-			
+
 			check_relational_op_operands(p_function_id, p_result_type, p_operand_type);
-			
+
 			p_result_type = p_boolean_type;
 
 			switch (op){
@@ -666,14 +666,14 @@ namespace cx{
 				// TODO emit ABS
 				// TODO emit NEG
 				break;
-			/*case TC_PLUS_PLUS:{
-				check_integer_or_real(p_result_type, nullptr);
-				this->emit_inc(p_function_id, p_result_type, { 1 });
-			}break;
-			case TC_MINUS_MINUS:{
-				check_integer_or_real(p_result_type, nullptr);
-				this->emit_inc(p_function_id, p_result_type, { -1 });
-			}break;*/
+				/*case TC_PLUS_PLUS:{
+					check_integer_or_real(p_result_type, nullptr);
+					this->emit_inc(p_function_id, p_result_type, { 1 });
+					}break;
+					case TC_MINUS_MINUS:{
+					check_integer_or_real(p_result_type, nullptr);
+					this->emit_inc(p_function_id, p_result_type, { -1 });
+					}break;*/
 			default:
 				break;
 			}
@@ -956,7 +956,22 @@ namespace cx{
 			this->emit(p_function_id, op, p_node->defined.constant.value);
 
 		}break;
-		case TC_CHAR:
+		case TC_CHAR: // TODO TC_WCHAR
+		{
+			symbol_table_node_ptr &p_id = search_all(p_token->string);
+
+			if (p_id == nullptr) {
+				p_id = enter_local(p_token->string);
+				p_id->p_type = p_char_type;
+				p_id->defined.constant.value.c_ = p_token->string[1];
+			}
+
+			p_result_type = p_char_type;
+
+			this->emit(p_function_id, ICONST, p_id->defined.constant.value.c_);
+			get_token();
+		}break;
+		/*case TC_CHAR: 
 		{
 			symbol_table_node_ptr &p_id = search_all(p_token->string);
 
@@ -971,23 +986,25 @@ namespace cx{
 			this->emit(p_function_id, ICONST, p_id->defined.constant.value);
 			get_token();
 		}
-		break;
+		break;*/
 		case TC_STRING:
+		case TC_WSTRING: // TODO TC_WSTRING
 		{
+			// TODO fix string constants
 			symbol_table_node_ptr &p_id = search_all(p_token->string);
 
 			if (p_id == nullptr) {
 				p_id = enter_local(p_token->string);
 			}
 
-			if (p_token->type() == T_WCHAR){
-				p_id->p_type = p_wchar_type;
-				p_id->defined.constant.value.w_ = (wchar_t)p_token->string[1];
+			if (p_token->type() == T_CHAR){
+				p_id->p_type = p_char_type;
+				p_id->defined.constant.value.c_ = (wchar_t)p_token->string[1];
 
 				this->emit(p_function_id, ICONST, p_id->defined.constant.value);
 				get_token();
 
-				return p_wchar_type;
+				return p_char_type;
 			}
 
 			//	char *p_string = p_token->string__();
@@ -1025,7 +1042,7 @@ namespace cx{
 			p_result_type = parse_expression(p_function_id);
 			conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 			break;
-/*		*/
+			/*		*/
 			//case tc_left_bracket:
 			//{
 			//	get_token_append();
@@ -2584,11 +2601,13 @@ namespace cx{
 		{
 		case T_BOOLEAN:
 		case T_BYTE:
-		case T_CHAR:
-		case T_WCHAR:
 		case T_INT:
 			op = ICONST;
 			p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.i_ });
+			break;
+		case T_CHAR:
+			op = ICONST;
+			p_function_id->defined.routine.program_code.push_back({ op, p_id.get()->defined.constant.value.c_ });
 			break;
 		case T_DOUBLE:
 			op = DCONST;
@@ -2611,7 +2630,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = INOT_EQ;
 			break;
@@ -2636,7 +2655,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ILT_EQ;
 			break;
@@ -2659,7 +2678,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IEQ_EQ;
 			break;
@@ -2684,7 +2703,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IGT;
 			break;
@@ -2706,7 +2725,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IGT_EQ;
 			break;
@@ -2728,7 +2747,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ILT;
 			break;
@@ -2750,7 +2769,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IADD;
 			break;
@@ -2775,7 +2794,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IDIV;
 			break;
@@ -2800,7 +2819,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ISUB;
 			break;
@@ -2825,7 +2844,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IREM;
 			break;
@@ -2846,7 +2865,7 @@ namespace cx{
 		{
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = IMUL;
 			break;
@@ -2895,7 +2914,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ISTORE;
 			break;
@@ -2920,7 +2939,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			op = ISTORE;
 			break;
@@ -2946,7 +2965,6 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
 		case T_INT:
 			op = ILOAD;
 			break;
@@ -2970,7 +2988,7 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-		case T_WCHAR:
+//		case T_WCHAR:
 		case T_INT:
 			this->emit(p_function_id, IINC, { v_.i_ });
 			break;

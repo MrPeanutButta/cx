@@ -6,7 +6,8 @@
 
 #include <iostream>
 #include <memory>
-//#include <vld.h>
+#include <locale>
+#include <codecvt>
 
 #ifdef __CX_PROFILE_EXECUTION__
 #include <chrono>
@@ -52,9 +53,12 @@ int main(int argc, char *argv[]) {
     list_flag = cx_dev_debug_flag;
     error_arrow_flag = cx_dev_debug_flag;
 
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::string args = argv[1];
+
     // Create the parser for the source file,
     // and then parse the file.
-	std::shared_ptr<cx::parser> parser = std::make_shared<cx::parser>(new source_buffer(argv[1]));
+	std::shared_ptr<cx::parser> parser = std::make_shared<cx::parser>(new source_buffer(converter.from_bytes(args)));
 
 #ifdef __CX_PROFILE_EXECUTION__
     using namespace std::chrono;
@@ -62,7 +66,7 @@ int main(int argc, char *argv[]) {
 #endif
     symbol_table_node_ptr p_program_id = parser->parse();
 
-	std::ofstream output("debug.cxvm");
+	std::wofstream output("debug.cxvm");
 	output << "function:\t" << p_program_id->node_name << "\naddress:\t" << p_program_id << std::endl;
 	for (auto &code : p_program_id->defined.routine.program_code){
 		output << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
@@ -95,7 +99,7 @@ int main(int argc, char *argv[]) {
 		cx->enter_function(p_program_id.get());
 		cx->go();
 
-		std::cout << p_program_id->node_name << " returned " << p_program_id->runstack_item->i_ << std::endl;
+		std::wcout << p_program_id->node_name << " returned " << p_program_id->runstack_item->i_ << std::endl;
 
 #ifdef __CX_PROFILE_EXECUTION__
         t2 = high_resolution_clock::now();

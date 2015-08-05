@@ -51,7 +51,7 @@ namespace cx {
 		extern malloc_map heap_;		// HEAP: For storing raw memory allocations
 	}
 
-	extern const char* opcode_string[];
+	extern const wchar_t* opcode_string[];
 
 	// Op codes
 	enum opcode {
@@ -72,6 +72,7 @@ namespace cx {
 		BLE,
 		BLT,
 		BNE,
+		C2I,
 		CALL,
 		CALOAD,
 		CASTORE,
@@ -111,7 +112,7 @@ namespace cx {
 		I2B,
 		I2C,
 		I2D,
-		I2W,
+//		I2W,
 		IADD,
 		IALOAD,
 		IAND,

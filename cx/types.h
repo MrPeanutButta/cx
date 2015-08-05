@@ -21,18 +21,17 @@ namespace cx{
 	typedef long long cx_int;
 	typedef double cx_real;
 	typedef bool cx_bool;
-	typedef char cx_char;
-	typedef wchar_t cx_wchar;
+	typedef wchar_t cx_char;
 	typedef uint8_t cx_byte;
 
 	enum type_code {
 		T_BOOLEAN = 0x00,
 		T_CHAR = 0x01,
 		T_BYTE = 0x02,
-		T_WCHAR = 0x04,
-		T_INT = 0x05,
-		T_DOUBLE = 0x07,
-		T_REFERENCE = 0x09,
+//		T_WCHAR = 0x04,
+		T_INT = 0x03,
+		T_DOUBLE = 0x04,
+		T_REFERENCE = 0x05,
 		T_VOID = 0xA,
 		T_DUMMY = 0xF
 	};
@@ -50,7 +49,7 @@ namespace cx{
 		cx_bool z_;
 		cx_byte b_;
 		cx_char c_;
-		cx_wchar w_;
+		//cx_wchar w_;
 		cx_int i_;
 		cx_real d_;
 		void *a_;
@@ -58,7 +57,6 @@ namespace cx{
 		value(cx_bool z) : z_(z) {}
 		value(cx_byte b) : b_(b) {}
 		value(cx_char c) : c_(c) {}
-		value(cx_wchar w) : w_(w) {}
 		value(cx_int i) : i_(i) {}
 		value(int i) : i_(i) {}
 		value(cx_real d) : d_(d) {}
@@ -169,7 +167,7 @@ namespace cx{
 	extern cx_type::type_ptr p_boolean_type;
 	extern cx_type::type_ptr p_char_type;
 	extern cx_type::type_ptr p_byte_type;
-	extern cx_type::type_ptr p_wchar_type;
+	//extern cx_type::type_ptr p_wchar_type;
 	extern cx_type::type_ptr p_integer_type;
 	extern cx_type::type_ptr p_double_type;
 	extern cx_type::type_ptr p_reference_type;

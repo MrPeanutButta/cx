@@ -44,7 +44,7 @@ namespace cx{
 	 * @param p_str : ptr to the symbol string.
 	 * @param dc    : definition code.
 	 */
-	symbol_table_node::symbol_table_node(std::string name, define_code dc)
+	symbol_table_node::symbol_table_node(std::wstring name, define_code dc)
 		: node_name(name) {
 
 		this->global_finish_location = 0;
@@ -67,7 +67,7 @@ namespace cx{
 	 * @param p_string : ptr to the name string to search for.
 	 * @return ptr to the node if found, else nullptr.
 	 */
-	symbol_table_node_ptr symbol_table::search(std::string name) {
+	symbol_table_node_ptr symbol_table::search(std::wstring name) {
 		for (auto &node : this->symbols){
 			if (node.first == name) return node.second;
 		}
@@ -85,7 +85,7 @@ namespace cx{
 	 * @param dc      : definition code.
 	 * @return ptr to the node, whether existing or newly-entered.
 	 */
-	symbol_table_node_ptr symbol_table::enter(std::string name, define_code dc) {
+	symbol_table_node_ptr symbol_table::enter(std::wstring name, define_code dc) {
 		symbol_table_node_ptr p_node = symbols[name];
 
 		if (p_node == nullptr) {
@@ -104,7 +104,7 @@ namespace cx{
 	 * @param dc      : definition code.
 	 * @return ptr to symbol table node.
 	 */
-	symbol_table_node_ptr symbol_table::enter_new(std::string name, define_code dc) {
+	symbol_table_node_ptr symbol_table::enter_new(std::wstring name, define_code dc) {
 		symbol_table_node_ptr p_node = symbols[name];
 
 		if (p_node == nullptr) p_node = enter(name, dc);
@@ -158,7 +158,7 @@ namespace cx{
 	 * @param p_string : ptr to name string to find.
 	 * @return ptr to symbol table node if found, else nullptr.
 	 */
-	symbol_table_node_ptr symbol_table_stack::search_all(std::string name) const {
+	symbol_table_node_ptr symbol_table_stack::search_all(std::wstring name) const {
 		
 		symbol_table_node_ptr p_node;
 
@@ -179,7 +179,7 @@ namespace cx{
 	 * @param p_string : ptr to name string to find.
 	 * @return ptr to symbol table node.
 	 */
-	symbol_table_node_ptr symbol_table_stack::find(std::string name) const {
+	symbol_table_node_ptr symbol_table_stack::find(std::wstring name) const {
 
 		symbol_table_node_ptr p_node = search_all(name);
 
