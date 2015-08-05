@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Cx by ahebert</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Cx</h1>
+        <p class="header">A scripting language for fun and profit.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/ahebert/cx/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/ahebert/cx/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/ahebert/cx">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/ahebert">ahebert</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a id="cx" class="anchor" href="#cx" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cx</h1>
+
+<p>A scripting language for fun and profit.<br></p>
+
+<div class="highlight highlight-cpp"><pre>use io;
+
+io.puts(<span class="pl-s"><span class="pl-pds">"</span>Hello, World!<span class="pl-pds">"</span></span>);
+
+<span class="pl-k">return</span> <span class="pl-c1">0</span>;</pre></div>
+
+<p>Cx syntax is designed to be a hybrid of C++ and C#. What makes Cx unique is the ability to easy extend the language using C or C++. Even basic data types can be extended to add functionality.<br>
+All data types can be extended by additional class declarations. This makes it easy to define objects in C/C++ to later extend those objects in Cx without having to recompile the library.<br>
+For example, the below code will add the function <i><b>is_digit</b></i> to the basic Cx char type.</p>
+
+<div class="highlight highlight-cpp"><pre><span class="pl-k">class</span> <span class="pl-en">char</span> {
+    <span class="pl-c">/** is_digit - Check if character is decimal digit</span>
+<span class="pl-c">     * Checks whether "this" is a decimal digit character.</span>
+<span class="pl-c">     * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 </span>
+<span class="pl-c">     *</span>
+<span class="pl-c">     * @param this : char to test if digit.</span>
+<span class="pl-c">     * @return true if digit, false if not. */</span>
+
+    <span class="pl-k">bool</span> <span class="pl-en">is_digit</span>() {
+        <span class="pl-k">return</span> ((<span class="pl-v">this</span> &gt;= <span class="pl-s"><span class="pl-pds">'</span>0<span class="pl-pds">'</span></span>) &amp;&amp; (<span class="pl-v">this</span> &lt;= <span class="pl-s"><span class="pl-pds">'</span>9<span class="pl-pds">'</span></span>));
+    }
+};</pre></div>
+
+<p>The added function can then be called as follows:</p>
+
+<div class="highlight highlight-cpp"><pre><span class="pl-k">char</span> c = <span class="pl-s"><span class="pl-pds">'</span>5<span class="pl-pds">'</span></span>;
+<span class="pl-k">if</span>(c.is_digit)
+    <span class="pl-c">// true</span>
+<span class="pl-k">else</span>
+    <span class="pl-c">// false</span></pre></div>
+
+<h3>
+<a id="supported-compilers-and-platforms" class="anchor" href="#supported-compilers-and-platforms" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported compilers and platforms</h3>
+
+<p>Popular compilers which support C++11 are used to build the Cx interpreter.</p>
+
+<ul>
+<li>clang++</li>
+<li>g++4.7 or later</li>
+<li>VS 2012 express</li>
+</ul>
+
+<p>Cx language features are restricted to the C++11 standard library and will compile on OSX, Linux, and Windows. Any features deemed platform specific will be implemented in dynamic libraries which can be loaded at run-time.</p>
+
+<h3>
+<a id="cx-documentation" class="anchor" href="#cx-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cx Documentation</h3>
+
+<p>All documentation will be posted and updated at the link below. More information may be found in Cx/doc</p>
+
+<ul>
+<li><a href="https://github.com/ahebert/cx/wiki">Cx-doc</a></li>
+</ul>
+
+<h3>
+<a id="status" class="anchor" href="#status" aria-hidden="true"><span class="octicon octicon-link"></span></a>Status</h3>
+
+<p>This project is for educational purposes only and is still in early development.<br></p>
+
+<h3>
+<a id="getting-involved" class="anchor" href="#getting-involved" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting involved</h3>
+
+<ul>
+<li>Fork a copy of the repo.</li>
+<li>Create one branch per feature/bug fix.</li>
+<li>Submit pull request to develop branch for code review.</li>
+<li>???</li>
+<li>profit!</li>
+</ul>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
