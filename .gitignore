@@ -7,3 +7,5 @@
 !cx.sln
 !.gitignore
 !README.md
+*.sdf
+cx/Debug/cx.log
