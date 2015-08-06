@@ -66,7 +66,6 @@ namespace cx{
 		L"I2B",
 		L"I2C",
 		L"I2D",
-//		L"I2W",
 		L"IADD",
 		L"IALOAD",
 		L"IAND",
@@ -163,7 +162,6 @@ namespace cx{
 		sizeof(cx_bool),
 		sizeof(cx_char),
 		sizeof(cx_byte),
-	//	sizeof(cx_wchar),
 		sizeof(cx_int),
 		sizeof(cx_real)
 	};
@@ -293,8 +291,8 @@ namespace cx{
 				mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
 
 				/* Compile with -D INSTRUCTION_TEST if testing.
-				* If undefined, RAM gets released and tests allocating RAM
-				* will fail.   */
+				 * If undefined, RAM gets released and tests allocating RAM
+				 * will fail.   */
 
 				// assign mem to smart pointer, release using free()
 				mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);
@@ -410,7 +408,6 @@ namespace cx{
 			case I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
 			case I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
 			case I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
-//			case I2W:		_PUSHS->w_ = static_cast<cx_wchar> (_POPS->i_); break;
 			case IADD:		_BIN_OP(i_, cx_int, +); break;
 			case IALOAD:	_ALOAD(i_, cx_int); break;
 			case ILT:		_REL_OP(i_, cx_int, < ); break;
@@ -548,7 +545,6 @@ namespace cx{
 		} // for
 
 	end:
-		// return frame header
 		return;
 	}
 }

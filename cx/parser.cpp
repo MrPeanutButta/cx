@@ -119,16 +119,12 @@ namespace cx{
 	*/
 	void parser::parse_declarations_or_assignment(symbol_table_node_ptr &p_function_id) {
 
-		//		if (!p_program_ptr_id->found_global_end) {
-		////			p_program_ptr_id->global_finish_location = icode.current_location();
-		//		}
-		//
-		//		// track if we seen '*'
+		// track if we seen '*'
 		bool is_unk_array_size = false;
 		symbol_table_node_ptr p_node = find(p_token->string);
 		cx_type::type_ptr assignment_expression_ptr = nullptr;
-		//
-		//		// if complex then this is an object
+		
+		// if complex then this is an object
 		if (p_node->p_type->typeform == F_REFERENCE) {
 			//parse_complex_type(p_function_id, p_node);
 			//			// predefined type name found
@@ -151,7 +147,7 @@ namespace cx{
 				p_new_id = search_local(p_token->string);
 
 				/* if not nullptr, it's already defined.
-				* check if forwarded */
+				 * check if forwarded */
 				if (p_new_id != nullptr) {
 					if (p_new_id->defined.defined_how == DC_FUNCTION &&
 						p_new_id->defined.routine.function_type == FUNC_FORWARD) {
@@ -162,11 +158,9 @@ namespace cx{
 				}
 				else {
 					p_new_id = enter_new_local(p_token->string);
-					//	icode.put(p_new_id);
 				}
 
 				// set type
-				//	set_type(p_new_id->p_type, p_node->p_type);
 				p_new_id->p_type = p_node->p_type;
 				get_token();
 
@@ -179,7 +173,6 @@ namespace cx{
 					parse_unksize_array_type(p_function_id, p_new_id);
 				}
 				else if (token == TC_LEFT_PAREN) {
-
 					parse_function_header(p_new_id);
 				}
 				else if ((token != TC_COMMA) && (token != TC_END_OF_FILE)) {
@@ -202,14 +195,9 @@ namespace cx{
 					}
 				}
 
-				/*if (assignment_expression_ptr != nullptr){
-					//	EMIT_STORE(p_function_id.get(), p_new_id.get());
-					}*/
-
 			} while (token == TC_COMMA);
 		}
 		else if (p_node->defined.defined_how == DC_FUNCTION) {
-			//icode.put(p_node);
 
 			get_token();
 
@@ -219,10 +207,8 @@ namespace cx{
 			else {
 				parse_assignment(p_function_id, p_node);
 			}
-
 		}
 		else {
-			//icode.put(p_node);
 			get_token();
 			parse_assignment(p_function_id, p_node);
 		}
