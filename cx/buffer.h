@@ -7,6 +7,10 @@
 #include <wchar.h>
 #include "error.h"
 
+#ifdef _DEBUG
+#include <iostream>
+#endif
+
 namespace cx{
 
 #define MAX_INPUT_BUFFER_SIZE 1024
@@ -87,6 +91,9 @@ namespace cx{
 
 		void wbuffer(const wchar_t *p_text, int line_number, int nesting_level) {
 			swprintf(text, L"%4d %d: %s", line_number, nesting_level, p_text);
+#ifdef _DEBUG
+			std::wcout << text << std::endl;
+#endif
 		}
 
 		void buffer(const wchar_t *p_text, int line_number, int nesting_level) {

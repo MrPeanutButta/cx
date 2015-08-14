@@ -28,7 +28,6 @@ namespace cx{
 		T_BOOLEAN = 0x00,
 		T_CHAR = 0x01,
 		T_BYTE = 0x02,
-//		T_WCHAR = 0x04,
 		T_INT = 0x03,
 		T_DOUBLE = 0x04,
 		T_REFERENCE = 0x05,
@@ -49,7 +48,6 @@ namespace cx{
 		cx_bool z_;
 		cx_byte b_;
 		cx_char c_;
-		//cx_wchar w_;
 		cx_int i_;
 		cx_real d_;
 		void *a_;

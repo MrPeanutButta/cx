@@ -1,8 +1,4 @@
+char i = new char[5];
+i[0] = 'a';
 
-char test(){
-	return '凧';
-}
-
-char t = test;
-
-return ++t;
+return i[0];

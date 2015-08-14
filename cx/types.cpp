@@ -253,17 +253,17 @@ namespace cx{
 				switch (value_type) {
 				case T_INT:					
 				case T_BOOLEAN:
-					p_function_id->defined.routine.program_code.push_back({ I2B });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2B });
 					return;
 					break;
 				case T_DOUBLE:
-					p_function_id->defined.routine.program_code.push_back({ D2I });
-					p_function_id->defined.routine.program_code.push_back({ I2B });
+					p_function_id->defined.routine.program_code.push_back({ opcode::D2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2B });
 					return;
 					break;
 				case T_CHAR:
-					p_function_id->defined.routine.program_code.push_back({ C2I });
-					p_function_id->defined.routine.program_code.push_back({ I2B });
+					p_function_id->defined.routine.program_code.push_back({ opcode::C2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2B });
 					return;
 					break;
 				default:
@@ -277,11 +277,11 @@ namespace cx{
 					return;
 					break;
 				case T_DOUBLE:
-					p_function_id->defined.routine.program_code.push_back({ D2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::D2I });
 					return;
 					break;
 				case T_CHAR:
-					p_function_id->defined.routine.program_code.push_back({ C2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::C2I });
 					return;
 				default:
 					break;
@@ -291,13 +291,13 @@ namespace cx{
 				switch (value_type) {
 				case T_INT:
 				case T_BYTE:
-					p_function_id->defined.routine.program_code.push_back({ I2C });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2C });
 					return;
 					return;
 					break;
 				case T_DOUBLE:
-					p_function_id->defined.routine.program_code.push_back({ D2I });
-					p_function_id->defined.routine.program_code.push_back({ I2C });
+					p_function_id->defined.routine.program_code.push_back({ opcode::D2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2C });
 					return;
 					break;
 				default:
@@ -308,12 +308,12 @@ namespace cx{
 				switch (value_type) {
 				case T_INT:
 				case T_BYTE:
-					p_function_id->defined.routine.program_code.push_back({ I2D });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2D });
 					return;
 					break;
 				case T_CHAR:
-					p_function_id->defined.routine.program_code.push_back({ C2I });
-					p_function_id->defined.routine.program_code.push_back({ I2D });
+					p_function_id->defined.routine.program_code.push_back({ opcode::C2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::I2D });
 					return;
 					break;
 				default:
@@ -327,11 +327,11 @@ namespace cx{
 					return;
 					break;
 				case T_DOUBLE:
-					p_function_id->defined.routine.program_code.push_back({ D2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::D2I });
 					return;
 					break;
 				case T_CHAR:
-					p_function_id->defined.routine.program_code.push_back({ C2I });
+					p_function_id->defined.routine.program_code.push_back({ opcode::C2I });
 					return;
 					break;
 				default:

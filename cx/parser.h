@@ -85,9 +85,10 @@ namespace cx{
 		cx_type::type_ptr parse_term(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_factor(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false);
-		cx_type::type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		cx_type::type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		cx_type::type_ptr parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type);
 		cx_type::type_ptr parse_iterator(symbol_table_node_ptr &p_iterator);
+		cx_type::type_ptr parse_new(symbol_table_node_ptr &p_function_id);
 
 		// statements
 		void parse_statement(symbol_table_node_ptr &p_function_id);
@@ -168,7 +169,7 @@ namespace cx{
 		}
 
 		void conditional_get_token_append(token_code tc, error_code ec) {
-			if (tc == token) get_token_append();
+			if (tc == token) get_token();
 			else cx_error(ec);
 		}
 
@@ -180,7 +181,9 @@ namespace cx{
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1);
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1, value arg2);
 		void emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
-		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference);
+		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
+		void emit_aload(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
+		void emit_astore(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_);
 		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
