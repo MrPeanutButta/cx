@@ -273,8 +273,8 @@ namespace cx {
 	void cxvm::go(void) {
 		using namespace heap;
 
-		for (vpu.inst_ptr = this->vpu.code_ptr->begin();
-		vpu.inst_ptr != this->vpu.code_ptr->end();
+		for (vpu.inst_ptr = std::begin(*this->vpu.code_ptr);
+		vpu.inst_ptr != std::end(*this->vpu.code_ptr);
 			++vpu.inst_ptr) {
 
 			switch (vpu.inst_ptr->op) {
@@ -321,8 +321,8 @@ namespace cx {
 				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
 
 				// Load parameters from the stack
-				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
-				for (; parameter != p_function_id->defined.routine.p_parameter_ids.rend(); ++parameter) {
+				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = std::rbegin(p_function_id->defined.routine.p_parameter_ids);
+				for (; parameter != std::rend(p_function_id->defined.routine.p_parameter_ids); ++parameter) {
 					value *stack_item = ((value *)&_POPS->a_);
 
 					symbol_table_node *p_node = parameter->get();
