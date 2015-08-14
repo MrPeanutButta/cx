@@ -54,7 +54,7 @@ namespace cx {
 	extern const wchar_t* opcode_string[];
 
 	// Op codes
-	enum opcode {
+	enum class opcode : uint8_t {
 		AALOAD,
 		AASTORE,
 		ACONST_NULL,
@@ -112,7 +112,6 @@ namespace cx {
 		I2B,
 		I2C,
 		I2D,
-//		I2W,
 		IADD,
 		IALOAD,
 		IAND,

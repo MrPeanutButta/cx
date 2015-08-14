@@ -69,14 +69,14 @@ int main(int argc, char *argv[]) {
 	std::wofstream output("debug.cxvm");
 	output << "function:\t" << p_program_id->node_name << "\naddress:\t" << p_program_id << std::endl;
 	for (auto &code : p_program_id->defined.routine.program_code){
-		output << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
+		output << opcode_string[(int)code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
 	}
 
 	for (auto node : p_global_symbol_table->symbols){
 		if ((node.second->defined.defined_how == DC_FUNCTION) || (node.second->defined.defined_how == DC_PROGRAM)){
 			output << "\nfunction:\t" << node.second->node_name << "\naddress:\t" << node.second << std::endl;
 			for (auto &code : node.second->defined.routine.program_code){
-				output << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
+				output << opcode_string[(int)code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
 			}
 		}
 	}
