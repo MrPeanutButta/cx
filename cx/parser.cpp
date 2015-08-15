@@ -864,7 +864,7 @@ namespace cx{
 			case DC_MEMBER:
 			case DC_NAMESPACE:
 				get_token();
-				p_result_type = parse_variable(p_function_id, p_node, true);
+				p_result_type = parse_variable(p_function_id, p_node);
 
 				switch (op)
 				{
@@ -908,7 +908,7 @@ namespace cx{
 		case TC_NUMBER:
 		{
 			symbol_table_node_ptr &p_node = search_all(p_token->string);
-			opcode op;
+			opcode op = opcode::NOP;
 
 			if (p_node == nullptr) {
 				p_node = enter_local(p_token->string);
@@ -1055,7 +1055,7 @@ namespace cx{
 	* @param p_id : variable node id.
 	* @return variables type object ptr.
 	*/
-	cx_type::type_ptr parser::parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference) {
+	cx_type::type_ptr parser::parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id) {
 		cx_type::type_ptr p_result_type = p_id->p_type;
 
 		switch (p_id->defined.defined_how) {
@@ -1989,6 +1989,7 @@ namespace cx{
 		if (p_function_id->p_type->typecode == T_VOID){
 			// if token != ; (void function returning a value)
 			this->emit(p_function_id, opcode::RETURN);
+			return;
 		}
 
 		// expr 1

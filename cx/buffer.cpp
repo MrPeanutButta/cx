@@ -66,7 +66,9 @@ namespace cx{
 		const int tab_size = 8; // size of tabs
 		wchar_t ch; // character to return
 
-		if (*p_char == EOF_CHAR) return EOF_CHAR; // end of file
+		if (*p_char == EOF_CHAR) {
+			return EOF_CHAR; // end of file
+		}
 		else if (*p_char == L'\0') ch = get_line(); // null
 		else { // next__ char
 			++p_char;
@@ -119,13 +121,20 @@ namespace cx{
 		extern int current_nesting_level;
 
 		// If at the end of the source file, return the end-of-file char.
-		if (file.eof()) p_char = (wchar_t *)&EOF_CHAR;
+		if (file.eof()) {
+			p_char = (wchar_t *)&EOF_CHAR;
 
-		// Else read the next__ source line and print it to the list file.
+			file.close();
+			// Else read the next__ source line and print it to the list file.
+		}
 		else {
 			memset(text, L'\0', sizeof(text));
 
 			while (!wcscmp(text, L"\0")) {
+				if (file.eof()) {
+					break;
+				}
+
 				file.getline(text, MAX_INPUT_BUFFER_SIZE);
 				++current_line_number;
 			}

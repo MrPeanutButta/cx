@@ -245,7 +245,7 @@ namespace cx {
 		this->p_my_function_id = p_function_id;
 
 		this->vpu.code_ptr = &this->p_my_function_id->defined.routine.program_code;
-		this->vpu.inst_ptr = this->vpu.code_ptr->begin();
+		this->vpu.inst_ptr = std::begin(*this->vpu.code_ptr);
 
 		// load variables
 		if (!p_my_function_id->defined.routine.p_variable_ids.empty()) {
@@ -330,16 +330,14 @@ namespace cx {
 				}
 
 				_POPS;
-				p_function_id->runstack_item = _PUSHS;
+
+				// Only push non-void functions to the stack.
+				if (p_function_id->p_type->typecode != T_VOID) {
+					p_function_id->runstack_item = _PUSHS;
+				}
+
 				cx->enter_function(p_function_id);
 				cx->go();
-
-				std::wcout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
-
-				// If void function, pop off it's return value.
-				if (p_function_id->p_type->typecode == T_VOID) {
-					_POPS;
-				}
 			} break;
 			case opcode::CALOAD: _ALOAD(c_, cx_char); break;
 			case opcode::CASTORE: _ASTORE(c_, cx_char); break;

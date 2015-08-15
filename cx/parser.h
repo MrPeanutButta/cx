@@ -70,21 +70,14 @@ namespace cx{
 
 		//void parse_variable_declarations(symbol_table_node_ptr &p_function_id);
 		void parse_member_decls(symbol_table_node_ptr &p_function_id, cx_type::type_ptr p_complex_type, int offset);
-		//void ParseVarOrFieldDecls(symbol_table_node_ptr &p_function_id,
-		//cx_type::type_ptr p_complex_type,
-		//int offset);
-		//symbol_table_node_ptr &parse_id_sublist(const symbol_table_node_ptr &p_function_id,
-		//const cx_type::type_ptr &p_complex_type, symbol_table_node_ptr &p_last_id);
 
 		// expressions
 		cx_type::type_ptr parse_rvalue(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &lhs, cx_type::type_ptr &rhs);
 		cx_type::type_ptr parse_expression(symbol_table_node_ptr &p_function_id);
-		//cx_type::type_ptr ParseSuffix(symbol_table_node_ptr &p_node);
-		//void ParseSizeOf(void);
 		cx_type::type_ptr parse_simple_expression(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_term(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_factor(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false);
+		cx_type::type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		cx_type::type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		cx_type::type_ptr parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type);
 		cx_type::type_ptr parse_iterator(symbol_table_node_ptr &p_iterator);
@@ -114,7 +107,6 @@ namespace cx{
 		// TODO - this should be deleted
 		void get_token_append(void) {
 			get_token();
-			//icode.put(token);
 		}
 
 		void insert_line_marker(void) {

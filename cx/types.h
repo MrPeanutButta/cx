@@ -165,7 +165,6 @@ namespace cx{
 	extern cx_type::type_ptr p_boolean_type;
 	extern cx_type::type_ptr p_char_type;
 	extern cx_type::type_ptr p_byte_type;
-	//extern cx_type::type_ptr p_wchar_type;
 	extern cx_type::type_ptr p_integer_type;
 	extern cx_type::type_ptr p_double_type;
 	extern cx_type::type_ptr p_reference_type;
