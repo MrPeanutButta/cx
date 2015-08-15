@@ -9,7 +9,6 @@ namespace cx{
 	cx_type::type_ptr p_boolean_type;
 	cx_type::type_ptr p_char_type;
 	cx_type::type_ptr p_byte_type;
-//	cx_type::type_ptr p_wchar_type;
 	cx_type::type_ptr p_integer_type;
 	cx_type::type_ptr p_double_type;
 	cx_type::type_ptr p_reference_type;
@@ -65,7 +64,6 @@ namespace cx{
 		symbol_table_node_ptr p_reference_id = p_symtab->enter(L"class", DC_TYPE);
 		symbol_table_node_ptr p_boolean_id = p_symtab->enter(L"bool", DC_TYPE);
 		symbol_table_node_ptr p_char_id = p_symtab->enter(L"char", DC_TYPE);
-		//symbol_table_node_ptr p_wchar_id = p_symtab->enter(L"wchar", DC_TYPE);
 		symbol_table_node_ptr p_false_id = p_symtab->enter(L"false", DC_CONSTANT);
 		symbol_table_node_ptr p_true_id = p_symtab->enter(L"true", DC_CONSTANT);
 		symbol_table_node_ptr p_void_id = p_symtab->enter(L"void", DC_TYPE);
@@ -95,10 +93,6 @@ namespace cx{
 			p_char_type = std::make_shared<cx_type>(F_SCALAR, T_CHAR, sizeof(wchar_t), p_char_id, p_std_type_members);
 		}
 
-		/*if (p_wchar_type == nullptr) {
-			p_wchar_type = std::make_shared<cx_type>(F_SCALAR, T_WCHAR, sizeof(wchar_t), p_wchar_id, p_std_type_members);
-		}*/
-
 		if (p_reference_type == nullptr) {
 			p_reference_type = std::make_shared<cx_type>(F_REFERENCE, T_REFERENCE, sizeof(uintptr_t), p_reference_id, p_std_type_members);
 		}
@@ -110,11 +104,9 @@ namespace cx{
 		p_reference_id->p_type = p_reference_type;
 		p_boolean_id->p_type = p_boolean_type;
 		p_char_id->p_type = p_char_type;
-//		p_wchar_id->p_type = p_wchar_type;
 		p_false_id->p_type = p_boolean_type;
 		p_true_id->p_type = p_boolean_type;
-		p_void_id->p_type = p_reference_type;
-
+		p_void_id->p_type = p_void_type;
 
 		p_boolean_type->enumeration.max = 1;
 		p_boolean_type->enumeration.p_const_ids = p_false_id;
