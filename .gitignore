@@ -9,3 +9,5 @@
 !README.md
 *.sdf
 cx/Debug/cx.log
+cx/Debug/cx.log
+*.sdf
