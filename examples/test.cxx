@@ -6,7 +6,6 @@ void t(){
 char i = new char[5];
 i[0] = 'a';
 t;
-return i[0];
 
 
 

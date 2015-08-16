@@ -125,7 +125,6 @@ namespace cx{
 			p_char = (wchar_t *)&EOF_CHAR;
 
 			file.close();
-			// Else read the next__ source line and print it to the list file.
 		}
 		else {
 			memset(text, L'\0', sizeof(text));
