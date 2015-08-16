@@ -1322,7 +1322,6 @@ namespace cx{
 			cx_type::type_ptr p_expr_type = this->parse_expression(p_function_id);
 
 			check_assignment_type_compatible(p_function_id, p_integer_type, p_expr_type, ERR_INVALID_INDEX_TYPE);
-			//this->emit_aload(p_function_id, p_id);
 			++count;
 		} while (token == TC_LEFT_SUBSCRIPT);
 
@@ -1330,13 +1329,6 @@ namespace cx{
 
 		if (!token_in(token, tokenlist_assign_ops)) {
 			this->emit_aload(p_function_id, p_id);
-		}
-
-		if (count > 1){
-
-		}
-		else{
-			
 		}
 
 		return p_id->p_type->array.p_element_type;
@@ -1360,7 +1352,7 @@ namespace cx{
 	* @return ptr to the field's type object.
 	*/
 	cx_type::type_ptr parser::parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type) {
-		get_token_append();
+		get_token();
 
 		if (token == TC_IDENTIFIER) {
 			symbol_table_node_ptr &p_field_id = p_type->complex.p_class_scope->search(p_token->string);
@@ -1597,7 +1589,7 @@ namespace cx{
 		}
 
 		std::vector <std::shared_ptr<symbol_table_node>>::iterator p_formal_id;
-		p_formal_id = p_node_id->defined.routine.p_parameter_ids.begin();
+		p_formal_id = std::begin(p_node_id->defined.routine.p_parameter_ids);
 
 		cx::cx_type::type_ptr p_expr_type;
 
