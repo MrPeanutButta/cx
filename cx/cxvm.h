@@ -40,6 +40,7 @@ namespace cx {
 			managedmem shared_ref;	// VM memory allocations
 			size_t size;			// sizeof
 			type_code typecode;
+			type_code basetypecode;
 			type_form typeform;
 			bool is_rvalue;			// Evaluates to a temporary value that does not persist beyond the expression that defines it.
 			size_t count(void);		// memory size / element size

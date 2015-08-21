@@ -958,34 +958,28 @@ namespace cx{
 				p_id = enter_local(p_token->string);
 			}
 
-			//	char *p_string = p_token->string__();
-			//	symbol_table_node_ptr &p_node = search_all(p_token->string__());
-			//	const int length = strlen(p_string) - 2;
+			wchar_t *p_string = p_token->string;
+			const int length = wcslen(p_string) - 2;
+			const int size = (sizeof(cx_char) * length) + sizeof(cx_char);
 
-			//	if (!p_node) {
-			//		p_node = enter_local(p_token->string__());
-			//		p_node->p_type = new cx_type(F_ARRAY, length, nullptr);
-			//		set_type(p_node->p_type->array.p_element_type, p_char_type);
-			//		p_node->p_type->type_code = cx_char;
-			//		const int size = sizeof(char) * (length + 1);
-			//		p_node->defined.constant.value.addr__ = new char[size];
-			//		memset(p_node->defined.constant.value.addr__, '\0', size);
-			//		memcpy(p_node->defined.constant.value.addr__,
-			//			&p_string[1], size);
+			p_id->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
+			p_id->p_type->array.p_element_type = p_char_type;
 
-			//		// remove the quote
-			//		char *t = (char *)p_node->defined.constant.value.addr__;
-			//		t[length] = '\0';
+			p_id->p_type->array.element_count = length;
+			p_id->p_type->array.max_index = length - 1;
+			p_id->p_type->size = size - sizeof(cx_char);
+			p_id->defined.defined_how = DC_CONSTANT;
 
-			//		p_node->p_type->array.element_count = length;
-			//		p_node->p_type->array.max_index = length;
+			p_id->defined.constant.value.a_ = std::malloc(size);
+			memcpy(p_id->defined.constant.value.a_, &p_string[1], size);
+			
+			wchar_t *c = (wchar_t *)p_id->defined.constant.value.a_;
+			c[size / sizeof(wchar_t) - 1] = L'\0';
 
-			//	}
+			this->emit(p_function_id, { opcode::DUP }, { p_id.get() });
 
-			//	p_result_type = p_node->p_type;
-			//	icode.put(p_node);
-
-			//	get_token_append();
+			get_token();
+			return p_id->p_type;
 		}break;
 
 		case TC_LEFT_PAREN:
@@ -1062,7 +1056,6 @@ namespace cx{
 		case DC_VARIABLE:
 		case DC_VALUE_PARM:
 		case DC_REFERENCE:
-		case DC_POINTER:
 			this->emit_load(p_function_id, p_id);
 			break;
 		case DC_FUNCTION:
@@ -1143,7 +1136,7 @@ namespace cx{
 
 					// TODO check if array
 					this->emit_store(p_function_id, p_id);
-					p_id->p_type->typecode = p_expr_type->base_type()->typecode;
+					//p_id->p_type->typecode = p_expr_type->base_type()->typecode;
 				}
 				else if(p_id->p_type->typeform == F_ARRAY){
 					this->emit_astore(p_function_id, p_id);
@@ -2967,7 +2960,7 @@ namespace cx{
 	void parser::emit_aload(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
 		opcode op;
 
-		switch (p_id->p_type->typecode)
+		switch (p_id->p_type->base_type()->typecode)
 		{
 		case T_CHAR:
 			op = opcode::CALOAD;
@@ -3095,12 +3088,12 @@ namespace cx{
 					this->emit(p_function_id, { opcode::NEWARRAY }, { p_node->p_type->typecode });
 				}
 				else {
-					this->emit(p_function_id, { opcode::ANEWARRAY }, { p_node->p_type->typecode });
+					this->emit(p_function_id, { opcode::ANEWARRAY }, { T_REFERENCE });
 					// Array or refence
 				}
 			}
 
-			p_result_type = std::make_shared<cx_type>(F_ARRAY, p_node->p_type->typecode);
+			p_result_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
 			p_result_type->array.p_element_type = p_node->p_type;
 			p_result_type->array.element_count = count;
 			p_result_type->typecode = T_REFERENCE;

@@ -168,7 +168,7 @@ namespace cx {
 
 
 	size_t heap::mem_mapping::count(void) {
-		return (this->size / type_size[this->typecode]);
+		return (this->size / type_size[this->basetypecode]);
 	}
 
 	// Stack Ops
@@ -347,30 +347,36 @@ namespace cx {
 				 * Duplicate the top value on the operand stack and push
 				 * the duplicated value onto the operand stack. */
 			case opcode::DUP: {
-				value *val = (value *)(vpu.stack_ptr - 1);
-				assert(val != nullptr);
+				const symbol_table_node *p_id = (const symbol_table_node *)this->vpu.inst_ptr->arg0.a_;
+				assert(p_id != nullptr);
 
-				// Allow the compiler to build copy CTOR
-				value *new_value_copy = new value(*val);
+				if (p_id->p_type->is_scalar_type()) {
+					value *v_ = p_id->runstack_item;
+					value *s_ = _PUSHS;
+					std::memcpy(s_, v_, sizeof(value));
+				}
+				else {
+					void *mem = std::malloc(p_id->p_type->size + 1);
+					assert(mem != nullptr);
 
-				assert(new_value_copy != nullptr);
-				assert(new_value_copy->a_ == val->a_);
+					if (p_id->defined.defined_how == DC_CONSTANT) {
+						std::memcpy(mem, p_id->defined.constant.value.a_, p_id->p_type->size);
+					}
 
-				heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(new_value_copy)]; // point to, only 1 hash calculation
+					heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
+   				  // Assign mem to smart pointer, release using free()
+					mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);
+					mem_map->size = p_id->p_type->size; // size
+					mem_map->typecode = p_id->p_type->typecode; // type
+					mem_map->basetypecode = p_id->p_type->base_type()->typecode;
+					mem_map->typeform = p_id->p_type->typeform;
 
-				/* Compile with -D INSTRUCTION_TEST if testing.
-				* If undefined, RAM gets released and tests that allocate RAM
-				* will fail.   */
+					char *c = (char *)mem;
+					c[mem_map->count()] = '\0';
 
-				// Assign mem to smart pointer, release using delete
-				mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)new_value_copy));
-				mem_map->size = sizeof(value); // size
-				mem_map->typecode = T_REFERENCE; // type
-				mem_map->typeform = F_SCALAR;
-
-				// Push new copy
-				_PUSHS->a_ = (void *)new_value_copy;
-
+					// Push new copy
+					_PUSHS->a_ = mem;
+				}
 			} break;
 			case opcode::DUP2:		break;
 			case opcode::DUP2_X1:	break;
