@@ -1,12 +1,16 @@
 
-int t = 600;
-int a = 1;
-int b = a;
+int a = 0;
+int b = 0;
+int c = 0;
 
-if((a * b) > t){
-	return 1;
-} else if((a * t) > 5000){
-	return 2;
-} else if(a == b) return 3;
+/*while(a < 1000000) {
+	a++;
+}
 
-return 0;
+*/
+while(a < 1000000)	c += a++ * b++;
+
+
+//while(letter < 'z') letter++;
+
+return a;

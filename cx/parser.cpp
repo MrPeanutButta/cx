@@ -96,7 +96,7 @@ namespace cx{
 				(!token_in(token, p_list3)) &&
 				(token != TC_RETURN) &&
 				(token != TC_END_OF_FILE)) {
-				get_token_append();
+				get_token();
 			}
 
 			if ((token == TC_END_OF_FILE) &&
@@ -530,15 +530,11 @@ namespace cx{
 				catch (...) {
 
 				}
-
-				//delete p_parser;
 			}
 
 			current_line_number = old_line_num;
-			//icode.reset();
-			//icode.put(tc_left_bracket);
 			p_program_ptr_id->found_global_end = false;
-			get_token_append();
+			get_token();
 		}
 		break;
 		case TC_WARN:
@@ -556,7 +552,7 @@ namespace cx{
 				std::wcerr << "warning:" << msg << std::endl;
 			}
 
-			get_token_append();
+			get_token();
 		}
 		break;
 		case TC_IMPORT:
@@ -565,7 +561,7 @@ namespace cx{
 
 			load_lib(p_token->string, symtab_stack.get_current_symtab());
 
-			get_token_append();
+			get_token();
 		}
 		break;
 		default:
@@ -1033,7 +1029,7 @@ namespace cx{
 			//	p_result_type = p_node->p_type;
 			//	icode.put(p_node);
 
-			//	get_token_append();
+			//	get_token();
 		}break;
 
 		case TC_LEFT_PAREN:
@@ -1177,7 +1173,7 @@ namespace cx{
 			switch (token) {
 			case TC_EQUAL:
 			{
-				get_token_append();
+				get_token();
 				p_expr_type = parse_expression(p_function_id);
 
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
@@ -1357,7 +1353,7 @@ namespace cx{
 		int column = 0;
 
 		do {
-			get_token_append();
+			get_token();
 
 			if (p_type->typeform == F_ARRAY) {
 				check_assignment_type_compatible(p_function_id, p_integer_type,
@@ -1401,14 +1397,14 @@ namespace cx{
 	* @return ptr to the field's type object.
 	*/
 	cx_type::type_ptr parser::parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type) {
-		get_token_append();
+		get_token();
 
 		if (token == TC_IDENTIFIER) {
 			symbol_table_node_ptr &p_field_id = p_type->complex.p_class_scope->search(p_token->string);
 			if (p_field_id == nullptr) cx_error(ERR_INVALID_FIELD);
 
 			//icode.put(p_field_id);
-			get_token_append();
+			get_token();
 
 			if (p_field_id->defined.defined_how == DC_FUNCTION) {
 				parse_subroutine_call(p_function_id, p_field_id);
@@ -1589,7 +1585,7 @@ namespace cx{
 	* @return ptr to the subroutine's type object
 	*/
 	cx_type::type_ptr parser::parse_subroutine_call(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id) {
-		//get_token_append();
+		//get_token();
 		cx_type::type_ptr p_result_type = nullptr;
 		p_result_type = parse_declared_subroutine_call(p_function_id, p_node_id);
 		p_function_id->defined.routine.program_code.push_back({ CALL, p_node_id.get() });
@@ -1614,7 +1610,7 @@ namespace cx{
 
 		if (token == TC_LEFT_PAREN) {
 			parse_actual_parm_list(p_function_id, p_node_id);
-			//get_token_append();
+			//get_token();
 		}
 
 		return p_function_id->p_type;
@@ -1678,9 +1674,7 @@ namespace cx{
 		//insert_line_marker();
 
 		switch (this->token) {
-		case TC_IDENTIFIER: parse_declarations_or_assignment(p_function_id);
-
-			break;
+		case TC_IDENTIFIER: parse_declarations_or_assignment(p_function_id);break;
 			//	// not a type but a cv-qualifier
 			//case TC_CONST:
 			//	get_token_append();
@@ -1692,8 +1686,7 @@ namespace cx{
 			//	//break;
 			//case TC_DO: parse_DO(p_function_id);
 			//	break;
-			//case TC_WHILE: parse_WHILE(p_function_id);
-			//	break;
+		case TC_WHILE: parse_WHILE(p_function_id); break;
 		case TC_IF: parse_IF(p_function_id); break;
 			//case TC_FOR: parse_FOR(p_function_id);
 			//	break;
@@ -1756,7 +1749,7 @@ namespace cx{
 	void parser::parse_statement_list(symbol_table_node_ptr &p_function_id, token_code terminator) {
 		do {
 			parse_statement(p_function_id);
-			while (token == TC_SEMICOLON)get_token_append();
+			while (token == TC_SEMICOLON)get_token();
 		} while ((token != terminator) && (token != TC_END_OF_FILE));
 	}
 
@@ -1810,19 +1803,20 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_WHILE(symbol_table_node_ptr &p_function_id) {
+		get_token();
+		int while_start = current_location(p_function_id);
 
-		////int break_point = put_location_marker();
+		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
+		check_boolean(parse_expression(p_function_id), nullptr);
+		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
+		
+		this->emit(p_function_id, opcode::IF, 0); // Push 0 for now, come back and fix location jump.
+		int break_marker = put_location_marker(p_function_id);
 
-		//get_token_append(); // while
-		//conditional_get_token_append(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
-
-		//check_boolean(parse_expression(), nullptr);
-
-		//conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
-
-		//parse_statement(p_function_id);
-
-		//fixup_location_marker(break_point);
+		parse_statement(p_function_id);
+		this->emit(p_function_id, opcode::GOTO, { while_start });
+		this->emit(p_function_id, opcode::NOP);
+		fixup_location_marker(p_function_id, break_marker);
 	}
 
 	/** parse_IF             parse if/else statements.
@@ -1849,12 +1843,14 @@ namespace cx{
 		this->emit(p_function_id, opcode::IF, 0); // Push 0 for now, come back and fix location jump.
 		int at_false_location_marker = put_location_marker(p_function_id);
 		parse_statement(p_function_id);
+		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, at_false_location_marker);
 		get_token();
 
 		if (token == TC_ELSE) {
 			get_token();
 			parse_statement(p_function_id);
+			this->emit(p_function_id, opcode::NOP);
 		}
 	}
 
@@ -1989,7 +1985,7 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_compound(symbol_table_node_ptr &p_function_id) {
-		get_token_append();
+		get_token();
 
 		
 		parse_statement_list(p_function_id, TC_RIGHT_BRACKET);
@@ -2121,7 +2117,7 @@ namespace cx{
 	* @return ptr to type object of <id-2>.
 	*/
 	cx_type::type_ptr parser::parse_identifier_type(symbol_table_node_ptr &p_id2) {
-		get_token_append();
+		get_token();
 		return p_id2->p_type;
 	}
 
@@ -2262,7 +2258,7 @@ namespace cx{
 		const bool is_expression = token_in(this->token, tokenlist_assign_ops);
 
 		if ((this->token != TC_LEFT_PAREN) && (token != TC_RIGHT_PAREN) &&
-			(!is_expression)) get_token_append();
+			(!is_expression)) get_token();
 		else if ((this->token != TC_RIGHT_PAREN) && (!is_expression)) is_function = true;
 
 		p_array_type->array.element_count = 0;
@@ -2754,7 +2750,6 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-//		case T_WCHAR:
 		case T_INT:
 			op = IADD;
 			break;
@@ -2924,7 +2919,6 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-//		case T_WCHAR:
 		case T_INT:
 			op = ISTORE;
 			break;

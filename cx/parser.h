@@ -108,16 +108,6 @@ namespace cx{
 			token = p_token->code();
 		}
 
-		// TODO - this should be deleted
-		void get_token_append(void) {
-			get_token();
-			//icode.put(token);
-		}
-
-		void insert_line_marker(void) {
-			//icode.insert_line_marker();
-		}
-
 		int get_location_marker(symbol_table_node_ptr &p_function_id) {
 			return 0;
 		}
@@ -133,6 +123,11 @@ namespace cx{
 				p_function_id->defined.routine.program_code.end());
 
 			p_function_id->defined.routine.program_code.at(location).arg0.i_ = jump_location;
+		}
+
+		int current_location(symbol_table_node_ptr &p_function_id) {
+			return std::distance(p_function_id->defined.routine.program_code.begin(),
+				p_function_id->defined.routine.program_code.end());
 		}
 
 		symbol_table_node_ptr search_local(const std::wstring name) {
@@ -175,7 +170,7 @@ namespace cx{
 		}
 
 		void conditional_get_token_append(token_code tc, error_code ec) {
-			if (tc == token) get_token_append();
+			if (tc == token) get_token();
 			else cx_error(ec);
 		}
 

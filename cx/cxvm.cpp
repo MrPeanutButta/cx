@@ -273,9 +273,9 @@ namespace cx{
 	void cxvm::go(void) {
 		using namespace heap;
 
-		for (vpu.inst_ptr = this->vpu.code_ptr->begin();
-			vpu.inst_ptr < this->vpu.code_ptr->end();
-			++vpu.inst_ptr) {
+		for (vpu.inst_ptr = vpu.code_ptr->begin();
+			vpu.inst_ptr < vpu.code_ptr->end();
+			vpu.inst_ptr++) {
 
 			switch (vpu.inst_ptr->op){
 			case AALOAD: _PUSHS->a_ = _VALUE->a_; break;
@@ -283,7 +283,7 @@ namespace cx{
 			case ACONST_NULL: _PUSHS->a_ = nullptr; break;
 			case ALOAD: _PUSHS->a_ = _VALUE->a_;  break;
 			case ANEWARRAY: {
-				size_t size = (size_t)_POPS->i_ * sizeof(void *); //data_type::type_size[(dt = static_cast<data_type::dtype> (vpu.inst_ptr->arg0.b_))];
+				size_t size = (size_t)_POPS->i_ * sizeof(void *);
 
 				void **mem = (void **)malloc(size);
 				assert(mem != nullptr);
@@ -404,11 +404,13 @@ namespace cx{
 			case DSUB:		_BIN_OP(d_, cx_real, -); break;
 			case GETFIELD: break;
 			case GETSTATIC: break;
-			case GOTO:		_JMP(i_); break;
+			case GOTO: {
+				cx_int location = vpu.inst_ptr->arg0.i_;
+				vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
+			} break;
 			case I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
 			case I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
 			case I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
-//			case I2W:		_PUSHS->w_ = static_cast<cx_wchar> (_POPS->i_); break;
 			case IADD:		_BIN_OP(i_, cx_int, +); break;
 			case IALOAD:	_ALOAD(i_, cx_int); break;
 			case ILT:		_REL_OP(i_, cx_int, < ); break;
@@ -460,7 +462,7 @@ namespace cx{
 			case IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
 			case IINC:{
 				cx_int a = _POPS->i_;
-				_PUSHS->i_ += vpu.inst_ptr->arg0.i_;
+				_PUSHS->i_ = (a + vpu.inst_ptr->arg0.i_);
 			}break;
 			case ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
 			case ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;

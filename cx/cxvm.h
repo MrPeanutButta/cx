@@ -211,11 +211,11 @@ namespace cx {
 	typedef program::iterator instr_ptr;
 
 	// Virtual CPU
-	typedef struct _vcpu {
+	struct _vcpu {
 		value *stack_ptr;	// Pointer to the current position in stack
 		instr_ptr inst_ptr; // Instruction pointer
 		program *code_ptr;
-	} vcpu;
+	};
 
 	enum {
 		_STACK_SIZE = 255
@@ -223,7 +223,7 @@ namespace cx {
 
 	class cxvm {
 	private:
-		vcpu vpu;					// VPU: Virtual Proc Unit
+		_vcpu vpu;					// VPU: Virtual Proc Unit
 		value stack[_STACK_SIZE];	// STACK:
 
 		//std::mutex vm_lock;				// VM lock during execution
