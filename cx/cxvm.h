@@ -121,7 +121,7 @@ namespace cx {
 		ICONST,
 		IDIV,
 		IEQ_EQ,
-		IFEQ,
+		IF,
 		IFNE,
 		IFLT,
 		IFGE,

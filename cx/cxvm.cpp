@@ -66,7 +66,6 @@ namespace cx{
 		L"I2B",
 		L"I2C",
 		L"I2D",
-//		L"I2W",
 		L"IADD",
 		L"IALOAD",
 		L"IAND",
@@ -75,7 +74,7 @@ namespace cx{
 		L"ICONST",
 		L"IDIV",
 		L"IEQ_EQ",
-		L"IFEQ",
+		L"IF",
 		L"IFNE",
 		L"IFLT",
 		L"IFGE",
@@ -163,7 +162,6 @@ namespace cx{
 		sizeof(cx_bool),
 		sizeof(cx_char),
 		sizeof(cx_byte),
-	//	sizeof(cx_wchar),
 		sizeof(cx_int),
 		sizeof(cx_real)
 	};
@@ -207,7 +205,7 @@ namespace cx{
     if(value1 op value2) _JMP(i_);  \
 									}
 
-#define _IF(op) if(_POPS->i_ op 0) _JMP(i_)
+#define _IF(op) if(vpu.inst_ptr->arg0.i_ op 0) _JMP(i_)
 
 	// Binary Operators
 #define _BIN_OP(t_, type, op)  { \
@@ -276,7 +274,7 @@ namespace cx{
 		using namespace heap;
 
 		for (vpu.inst_ptr = this->vpu.code_ptr->begin();
-			vpu.inst_ptr != this->vpu.code_ptr->end();
+			vpu.inst_ptr < this->vpu.code_ptr->end();
 			++vpu.inst_ptr) {
 
 			switch (vpu.inst_ptr->op){
@@ -422,7 +420,14 @@ namespace cx{
 			case ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
 			case IDIV:		_BIN_OP(i_, cx_int, / ); break;
 			case IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
-			case IFEQ: _IF(== ); break;
+			case IF:
+			{
+				cx_int is_true = _POPS->i_;
+				if (is_true == 0) {
+					cx_int location = vpu.inst_ptr->arg0.i_;
+					vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
+				}
+			}break;
 			case IFNE: _IF(!= ); break;
 			case IFLT: _IF(< ); break;
 			case IFGE: _IF(>= ); break;

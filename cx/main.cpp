@@ -3,25 +3,14 @@
  *
  * main entry point for the Cx interpretor.
  */
+#ifdef __CX_PROFILE_EXECUTION__
+#include <chrono>
+#endif
 
 #include <iostream>
 #include <memory>
 #include <locale>
 #include <codecvt>
-
-#ifdef __CX_PROFILE_EXECUTION__
-#include <chrono>
-/*
-#ifdef _WIN32_LEAK_DETECT
-#ifdef _WIN32
-#define _CRTDBG_MAP_ALLOC // below for leak detection on windows
-#include <stdlib.h>
-#include <crtdbg.h>
-#endif*/
-//#endif
-
-#endif
-
 #include "error.h"
 #include "buffer.h"
 #include "parser.h"
@@ -64,6 +53,7 @@ int main(int argc, char *argv[]) {
     using namespace std::chrono;
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 #endif
+
     symbol_table_node_ptr p_program_id = parser->parse();
 
 	std::wofstream output("debug.cxvm");

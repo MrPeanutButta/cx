@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdio>
-#//include "common.h"
 #include "buffer.h"
 #include "error.h"
 #include "parser.h"
@@ -1695,8 +1694,7 @@ namespace cx{
 			//	break;
 			//case TC_WHILE: parse_WHILE(p_function_id);
 			//	break;
-			//case TC_IF: parse_IF(p_function_id);
-			//	break;
+		case TC_IF: parse_IF(p_function_id); break;
 			//case TC_FOR: parse_FOR(p_function_id);
 			//	break;
 			//case TC_SWITCH: parse_SWITCH(p_function_id);
@@ -1706,10 +1704,8 @@ namespace cx{
 			//	//  break;
 			//case TC_BREAK: get_token_append();
 			//	break;
-			//case TC_LEFT_BRACKET: parse_compound(p_function_id);
-			//	break;
-		case TC_RETURN: parse_RETURN(p_function_id);
-			break;
+		case TC_LEFT_BRACKET: parse_compound(p_function_id); break;
+		case TC_RETURN: parse_RETURN(p_function_id); break;
 			//case TC_POUND:
 			//	get_token();
 			//	parse_execute_directive(p_function_id);
@@ -1758,12 +1754,10 @@ namespace cx{
 	* @param terminator : the token that terminates the list.
 	*/
 	void parser::parse_statement_list(symbol_table_node_ptr &p_function_id, token_code terminator) {
-
 		do {
 			parse_statement(p_function_id);
 			while (token == TC_SEMICOLON)get_token_append();
 		} while ((token != terminator) && (token != TC_END_OF_FILE));
-
 	}
 
 	/** parse_assignment         parse an assignment statement.
@@ -1844,34 +1838,24 @@ namespace cx{
 	*/
 	void parser::parse_IF(symbol_table_node_ptr &p_function_id) {
 
-		//// Append a placeholder location marker for where to go to if
-		//// <expr> is false.  Remember the location of this placeholder
-		//// so it can be fixed up below.
-		////int at_false_location_marker = put_location_marker();
+		get_token();
+		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
+		check_boolean(parse_expression(p_function_id), nullptr);
+		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 
-		//get_token_append();
-		//conditional_get_token_append(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
+		// Append a placeholder location marker for where to go to if
+		// <expr> is false.  Remember the location of this placeholder
+		// so it can be fixed up below.
+		this->emit(p_function_id, opcode::IF, 0); // Push 0 for now, come back and fix location jump.
+		int at_false_location_marker = put_location_marker(p_function_id);
+		parse_statement(p_function_id);
+		fixup_location_marker(p_function_id, at_false_location_marker);
+		get_token();
 
-		//check_boolean(parse_expression(), nullptr);
-
-		//conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
-
-		//parse_statement(p_function_id);
-		//while (token == TC_SEMICOLON) get_token_append();
-
-		////fixup_location_marker(at_false_location_marker);
-		//if (token == TC_ELSE) {
-		//	// Append a placeholder location marker for the token that
-		//	// follows the IF statement.  Remember the location of this
-		//	// placeholder so it can be fixed up below.
-		//	//int at_follow_location_marker = put_location_marker();
-
-		//	get_token_append();
-		//	parse_statement(p_function_id);
-		//	while (token == TC_SEMICOLON) get_token_append();
-
-		//	//fixup_location_marker(at_follow_location_marker);
-		//}
+		if (token == TC_ELSE) {
+			get_token();
+			parse_statement(p_function_id);
+		}
 	}
 
 	/** parse_FOR            parse for statements.
@@ -2007,6 +1991,7 @@ namespace cx{
 	void parser::parse_compound(symbol_table_node_ptr &p_function_id) {
 		get_token_append();
 
+		
 		parse_statement_list(p_function_id, TC_RIGHT_BRACKET);
 
 		//    if ((p_function_id->defined.routine.function_type == func_std_iterator)) return;

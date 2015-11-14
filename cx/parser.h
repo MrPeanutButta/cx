@@ -1,9 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
-//#pragma once
 #include <string>
 #include <cwchar>
-//#include "misc.h"
 #include "buffer.h"
 #include "error.h"
 #include "token.h"
@@ -120,13 +118,22 @@ namespace cx{
 			//icode.insert_line_marker();
 		}
 
-/*		int put_location_marker(void) {
-			return icode.put_location_marker();
-		}*/
+		int get_location_marker(symbol_table_node_ptr &p_function_id) {
+			return 0;
+		}
 
-	/*	void fixup_location_marker(int location) {
-			icode.fixup_location_marker(location);
-		}*/
+		int put_location_marker(symbol_table_node_ptr &p_function_id) {
+			int location = std::distance(p_function_id->defined.routine.program_code.begin(),
+				p_function_id->defined.routine.program_code.end());
+			return location - 1;
+		}
+
+		void fixup_location_marker(symbol_table_node_ptr &p_function_id, int location) {
+			int jump_location = std::distance(p_function_id->defined.routine.program_code.begin(),
+				p_function_id->defined.routine.program_code.end());
+
+			p_function_id->defined.routine.program_code.at(location).arg0.i_ = jump_location;
+		}
 
 		symbol_table_node_ptr search_local(const std::wstring name) {
 			return symtab_stack.search_local(name);

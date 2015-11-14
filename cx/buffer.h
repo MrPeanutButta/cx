@@ -25,15 +25,11 @@ namespace cx{
 
 	class text_in_buffer {
 	protected:
-		std::wifstream file; // input text file
-		std::wstring file_name_; // ptr to the file name
-		//char text[MAX_INPUT_BUFFER_SIZE]; // input text buffer
-		wchar_t text[MAX_INPUT_BUFFER_SIZE]; // input text buffer
-		//char *p_char; /* ptr to the current char
-		//			   * in the text buffer */
-		wchar_t *p_char;
+		std::wifstream file;					// Input text file
+		std::wstring file_name_;				// File name
+		wchar_t text[MAX_INPUT_BUFFER_SIZE];	// Input text buffer
+		wchar_t *p_char;						// Pointer to the current char position
 		virtual wchar_t get_line(void) = 0;
-
 	public:
 		text_in_buffer(std::wstring input_file_name, abort_code ac);
 		virtual ~text_in_buffer(void) {	file.close();}
@@ -56,10 +52,7 @@ namespace cx{
 
 	class text_out_buffer {
 	public:
-
-		//char text[MAX_INPUT_BUFFER_SIZE + 16]; // output text buffer
 		wchar_t text[MAX_INPUT_BUFFER_SIZE + 16]; // output text buffer
-		
 		virtual ~text_out_buffer() = 0;
 		virtual void put_line(void) = 0;
 
