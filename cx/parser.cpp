@@ -890,11 +890,11 @@ namespace cx{
 					case T_DOUBLE:
 						this->emit(p_function_id, { DCONST }, { 1.0 });
 						this->emit(p_function_id, { DADD });
-						this->emit_store(p_function_id, p_node);
+						//this->emit_store(p_function_id, p_node);
 						break;
 					default:
 						this->emit(p_function_id, { IINC }, { 1 });
-						this->emit_store(p_function_id, p_node);
+						/////this->emit_store(p_function_id, p_node);
 						break;
 					}
 					break;
@@ -903,11 +903,11 @@ namespace cx{
 					case T_DOUBLE:
 						this->emit(p_function_id, { DCONST }, { -1.0 });
 						this->emit(p_function_id, { DSUB });
-						this->emit_store(p_function_id, p_node);
+						//this->emit_store(p_function_id, p_node);
 						break;
 					default:
 						this->emit(p_function_id, { IINC }, { -1 });
-						this->emit_store(p_function_id, p_node);
+						//this->emit_store(p_function_id, p_node);
 						break;
 					}
 					break;
@@ -1139,11 +1139,12 @@ namespace cx{
 				case T_DOUBLE:
 					this->emit(p_function_id, { DCONST }, { 1.0 });
 					this->emit(p_function_id, { DADD });
-					this->emit_store_no_load(p_function_id, p_id);
+					this->emit_store(p_function_id, p_id);
+//					this->emit_load(p_function_id, p_id);
 					break;
 				default:
-					this->emit(p_function_id, { IINC }, { 1 });
-					this->emit_store(p_function_id, p_id);
+					this->emit(p_function_id, { IINC }, (void *)p_id.get(), { 1 });
+					//this->emit_store(p_function_id, p_id);
 					break;
 				}
 				break;
@@ -1157,7 +1158,7 @@ namespace cx{
 					break;
 				default:
 					this->emit(p_function_id, { IINC }, { -1 });
-					this->emit_store(p_function_id, p_id);
+					//this->emit_store(p_function_id, p_id);
 					break;
 				}
 				break;
@@ -1192,6 +1193,7 @@ namespace cx{
 
 				this->emit_add(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
+				this->emit(p_function_id, opcode::POP);
 			}
 			break;
 			case TC_MINUS_EQUAL:
@@ -1810,7 +1812,7 @@ namespace cx{
 		check_boolean(parse_expression(p_function_id), nullptr);
 		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 		
-		this->emit(p_function_id, opcode::IF, 0); // Push 0 for now, come back and fix location jump.
+		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
 		int break_marker = put_location_marker(p_function_id);
 
 		parse_statement(p_function_id);
@@ -1840,7 +1842,7 @@ namespace cx{
 		// Append a placeholder location marker for where to go to if
 		// <expr> is false.  Remember the location of this placeholder
 		// so it can be fixed up below.
-		this->emit(p_function_id, opcode::IF, 0); // Push 0 for now, come back and fix location jump.
+		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
 		int at_false_location_marker = put_location_marker(p_function_id);
 		parse_statement(p_function_id);
 		this->emit(p_function_id, opcode::NOP);
@@ -2933,7 +2935,7 @@ namespace cx{
 		}
 
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
-		this->emit_load(p_function_id, p_id, false);
+		//this->emit_load(p_function_id, p_id, false);
 	}
 
 	void parser::emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false){
@@ -2957,7 +2959,7 @@ namespace cx{
 			break;
 		}
 
-		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
+		p_function_id->defined.routine.program_code.push_back({ op, (void *)p_id.get() });
 	}
 
 	void parser::emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_){

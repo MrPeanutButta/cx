@@ -74,7 +74,7 @@ namespace cx{
 		L"ICONST",
 		L"IDIV",
 		L"IEQ_EQ",
-		L"IF",
+		L"IF_FALSE",
 		L"IFNE",
 		L"IFLT",
 		L"IFGE",
@@ -422,7 +422,7 @@ namespace cx{
 			case ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
 			case IDIV:		_BIN_OP(i_, cx_int, / ); break;
 			case IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
-			case IF:
+			case IF_FALSE:
 			{
 				cx_int is_true = _POPS->i_;
 				if (is_true == 0) {
@@ -461,8 +461,8 @@ namespace cx{
 			case IGT:		_REL_OP(i_, cx_int, > ); break;
 			case IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
 			case IINC:{
-				cx_int a = _POPS->i_;
-				_PUSHS->i_ = (a + vpu.inst_ptr->arg0.i_);
+				cx_int i_ = _VALUE->i_;
+				_VALUE->i_ = (i_ + vpu.inst_ptr->arg1.i_);
 			}break;
 			case ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
 			case ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
@@ -484,8 +484,8 @@ namespace cx{
 			case ISHL: 		_BIN_OP(i_, cx_int, << ); break;
 			case ISHR: 		_BIN_OP(i_, cx_int, >> ); break;
 			case ISTORE: {
-				cx_int i = _POPS->i_;
-				_VALUE->i_ = i;
+				cx_int i_ = _POPS->i_;
+				_VALUE->i_ = i_;
 			}break;
 			case ISUB:		_BIN_OP(i_, cx_int, -); break;
 				// Bitwise exclusive OR
