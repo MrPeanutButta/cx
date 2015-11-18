@@ -1458,6 +1458,8 @@ namespace cx{
 
 		if (token == TC_SEMICOLON) {
 			p_function_id->defined.routine.function_type = FUNC_FORWARD;
+
+			//for()
 		}
 		else if (token == TC_LEFT_BRACKET) {
 			p_function_id->defined.routine.function_type = FUNC_DECLARED;
@@ -1531,14 +1533,11 @@ namespace cx{
 				is_array = true;
 			}
 
-			// TODO if token !== identifier, this must be a forward decaration
-
-			symbol_table_node_ptr p_param = enter_new_local(p_token->string, DC_REFERENCE);
+			symbol_table_node_ptr p_param = nullptr;
+				p_param = enter_new_local(p_token->string, DC_REFERENCE);
+				get_token();
 			p_param->p_type = p_node->p_type;
 			p_function_id->defined.routine.p_parameter_ids.push_back(p_param);
-
-			//  , or )
-			get_token();
 
 			/*if (is_array) {
 			//set_type(p_parm_type->array.p_element_type, p_parm_type);
@@ -1686,8 +1685,7 @@ namespace cx{
 			//	//get_token_append();
 			//	//            parse_enum_header(p_function_id);
 			//	//break;
-			//case TC_DO: parse_DO(p_function_id);
-			//	break;
+		case TC_DO: parse_DO(p_function_id); break;
 		case TC_WHILE: parse_WHILE(p_function_id); break;
 		case TC_IF: parse_IF(p_function_id); break;
 			//case TC_FOR: parse_FOR(p_function_id);
@@ -1780,21 +1778,26 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_DO(symbol_table_node_ptr &p_function_id) {
+		get_token();
+		int do_start = put_location_marker(p_function_id);
 
+		// Enter new scoped block
+		symtab_stack.enter_scope();
+		parse_statement(p_function_id);
+		symtab_stack.exit_scope();
 
-		//int break_point = put_location_marker();
-		//get_token_append(); //do
+		conditional_get_token(TC_WHILE, ERR_MISSING_WHILE);
+		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
+		check_boolean(parse_expression(p_function_id), nullptr);
+		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 
-		//parse_statement_list(p_function_id, TC_WHILE);
+		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
+		int break_marker = put_location_marker(p_function_id);
 
-		//conditional_get_token_append(TC_WHILE, ERR_MISSING_WHILE);
-		//conditional_get_token_append(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
+		this->emit(p_function_id, opcode::GOTO, { do_start });
+		this->emit(p_function_id, opcode::NOP);
 
-		//check_boolean(parse_expression(), nullptr);
-
-		//conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
-
-		//fixup_location_marker(break_point);
+		fixup_location_marker(p_function_id, break_marker);
 	}
 
 	/** parse_WHILE          parse while statement.
@@ -1815,7 +1818,11 @@ namespace cx{
 		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
 		int break_marker = put_location_marker(p_function_id);
 
+		// Enter new scoped block
+		symtab_stack.enter_scope();
 		parse_statement(p_function_id);
+		symtab_stack.exit_scope();
+
 		this->emit(p_function_id, opcode::GOTO, { while_start });
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, break_marker);
@@ -1844,14 +1851,24 @@ namespace cx{
 		// so it can be fixed up below.
 		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
 		int at_false_location_marker = put_location_marker(p_function_id);
+		
+		// Enter new scoped block
+		symtab_stack.enter_scope();
 		parse_statement(p_function_id);
+		symtab_stack.exit_scope();
+
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, at_false_location_marker);
 		get_token();
 
 		if (token == TC_ELSE) {
 			get_token();
+
+			// Enter new scoped block
+			symtab_stack.enter_scope();
 			parse_statement(p_function_id);
+			symtab_stack.exit_scope();
+
 			this->emit(p_function_id, opcode::NOP);
 		}
 	}

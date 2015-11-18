@@ -1,21 +1,65 @@
 
-int a = 3;
-int b = 6;
-int c = 0;
-int d = 5;
-int i = 0;
+// while loop tests
+int while_test_0(int count){
+	int a = 3;
+	int b = 6;
+	int c = 0;
+	int d = 5;
+	int i = 0;
 
-/*while(a < 1000000) {
-	a++;
+	while(i < count)	{
+		c += a++ * b++ + d++;
+		i++;
+	}
+	
+	return c;
 }
 
-*/
-while(i < 100000)	{
-	c += a++ * b++ + d++;
-	i++;
+// if statement tests
+int if_test_0(int count){
+	int i = 0;
+	int return_value = 50;
+	
+	while(i < count){
+		if(i >= return_value){
+			i = 0;
+			while(i < return_value) i++;
+			
+			return i;
+		} else {
+			i++;
+		}
+		
+		if((i / 2) == 0){
+			// even number
+			int dummy = 0;
+		} else {
+			// odd number
+			int dummy = 5;
+		}
+	}
+	
+	return 0;
 }
 
+int do_test_0(int count){
+	int i = 0;
+	int a = 0;
+	
+	do{
+		//i++;
+		a = i;
+	} while(i++ < count);
+	
+	return a;
+}
 
-//while(letter < 'z') letter++;
+bool while_pass = false;
+bool if_pass = false;
+bool do_pass = false;
 
-return c;
+if(while_test_0(100) == 380150) while_pass = true;
+if(if_test_0(200) == 50) if_pass = true;
+if(do_test_0(100) == 100) do_pass = true;
+
+return do_pass;
