@@ -65,14 +65,27 @@ int break_test_0(int count){
 	return i;
 }
 
+int break_test_1(int count){
+	int i = 0;
+	
+	while(true){
+		i++;
+		if(i == count) break;
+	}
+	
+	return i;
+}
+
 bool while_pass = false;
 bool if_pass = false;
 bool do_pass = false;
-bool break_pass = false;
+bool break_0_pass = false;
+bool break_1_pass = false;
 
 if(while_test_0(100) == 380150) while_pass = true;
 if(if_test_0(200) == 50) if_pass = true;
 if(do_test_0(100) == 100) do_pass = true;
-if(break_test_0(20) == 20) break_pass = true;
+if(break_test_0(20) == 20) break_0_pass = true;
+if(break_test_1(100) == 100) break_1_pass = true;
 
-return break_pass;
+return break_1_pass;

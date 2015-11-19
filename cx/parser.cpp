@@ -1800,7 +1800,6 @@ namespace cx{
 		this->emit(p_function_id, opcode::NOP);
 
 		fixup_location_marker(p_function_id, break_marker);
-
 		set_break_jump(p_function_id, do_start);
 	}
 
@@ -1830,6 +1829,7 @@ namespace cx{
 		this->emit(p_function_id, opcode::GOTO, { while_start });
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, break_marker);
+		set_break_jump(p_function_id, while_start);
 	}
 
 	/** parse_IF             parse if/else statements.
