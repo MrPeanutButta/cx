@@ -125,6 +125,19 @@ namespace cx{
 			p_function_id->defined.routine.program_code.at(location).arg0.i_ = jump_location;
 		}
 
+		void set_break_jump(symbol_table_node_ptr &p_function_id, int start_marker) {
+			int break_point = current_location(p_function_id);
+
+			// Search for any emitted BREAK_MARKER
+			for (int i = start_marker; i < break_point; ++i) {
+				if (p_function_id->defined.routine.program_code[i].op == opcode::BREAK_MARKER) {
+					p_function_id->defined.routine.program_code[i].op = opcode::GOTO;
+					p_function_id->defined.routine.program_code[i].arg0.i_ = break_point;
+					break;
+				}
+			}
+		}
+
 		int current_location(symbol_table_node_ptr &p_function_id) {
 			return std::distance(p_function_id->defined.routine.program_code.begin(),
 				p_function_id->defined.routine.program_code.end());

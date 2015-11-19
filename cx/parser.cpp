@@ -1695,8 +1695,10 @@ namespace cx{
 			//	//case tc_CASE:
 			//	//case tc_DEFAULT:parse_case_label(p_function_id);
 			//	//  break;
-			//case TC_BREAK: get_token_append();
-			//	break;
+		case TC_BREAK: 
+			get_token(); 
+			this->emit(p_function_id, opcode::BREAK_MARKER);
+			break;
 		case TC_LEFT_BRACKET: parse_compound(p_function_id); break;
 		case TC_RETURN: parse_RETURN(p_function_id); break;
 			//case TC_POUND:
@@ -1779,7 +1781,7 @@ namespace cx{
 	*/
 	void parser::parse_DO(symbol_table_node_ptr &p_function_id) {
 		get_token();
-		int do_start = put_location_marker(p_function_id);
+		int do_start = current_location(p_function_id);//put_location_marker(p_function_id);
 
 		// Enter new scoped block
 		symtab_stack.enter_scope();
@@ -1798,6 +1800,8 @@ namespace cx{
 		this->emit(p_function_id, opcode::NOP);
 
 		fixup_location_marker(p_function_id, break_marker);
+
+		set_break_jump(p_function_id, do_start);
 	}
 
 	/** parse_WHILE          parse while statement.

@@ -112,7 +112,6 @@ namespace cx {
 		I2B,
 		I2C,
 		I2D,
-//		I2W,
 		IADD,
 		IALOAD,
 		IAND,
@@ -190,7 +189,8 @@ namespace cx {
 		TABLESWITCH,
 		WALOAD,
 		WASTORE,
-		WIDE
+		WIDE,
+		BREAK_MARKER
 	};
 
 	// Instruction
