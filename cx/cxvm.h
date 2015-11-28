@@ -208,13 +208,13 @@ namespace cx {
 	// Program instructions
 	typedef std::vector<inst> program;
 	// Instruction pointer
-	typedef program::iterator instr_ptr;
+	typedef std::vector<inst>::const_iterator instr_ptr;
 
 	// Virtual CPU
 	struct _vcpu {
 		value *stack_ptr;	// Pointer to the current position in stack
 		instr_ptr inst_ptr; // Instruction pointer
-		program *code_ptr;
+		const program *code_ptr;
 	};
 
 	enum {
@@ -225,9 +225,10 @@ namespace cx {
 	private:
 		_vcpu vpu;					// VPU: Virtual Proc Unit
 		value stack[_STACK_SIZE];	// STACK:
+		heap::malloc_map heap_;			// HEAP: For storing raw memory allocations
 
 		//std::mutex vm_lock;				// VM lock during execution
-		symbol_table_node *p_my_function_id;
+		const symbol_table_node *p_my_function_id;
 		void nano_sleep(int nano_secs);	// Thread sleep while waiting for VM lock
 
 	public:

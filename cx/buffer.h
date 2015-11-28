@@ -7,12 +7,17 @@
 #include <wchar.h>
 #include "error.h"
 
+#ifdef _DEBUG
+#include <iostream>
+#endif
+
 namespace cx{
 
 #define MAX_INPUT_BUFFER_SIZE 1024
 
 	class list_buffer;
 
+	extern bool cx_dev_debug_flag;
 	extern const char EOF_CHAR;
 	extern int input_position;
 	extern int list_flag;
@@ -79,6 +84,10 @@ namespace cx{
 		}
 
 		void wbuffer(const wchar_t *p_text, int line_number, int nesting_level) {
+			if (cx::cx_dev_debug_flag == true) {
+				std::wcout << p_text << std::endl;
+			}
+
 			swprintf(text, L"%4d %d: %s", line_number, nesting_level, p_text);
 		}
 

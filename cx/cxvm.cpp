@@ -146,10 +146,6 @@ namespace cx{
 		L"WIDE"
 	};
 
-	namespace heap{
-		malloc_map heap_;		// HEAP: For storing raw memory allocations
-	}
-
 	// turn on to view Cx debugging
 #ifdef _DEBUG
 	bool cx_dev_debug_flag = true;
@@ -175,6 +171,9 @@ namespace cx{
 #define _POPS (--vpu.stack_ptr)
 #define _PUSHS (vpu.stack_ptr++)
 
+	// Value object
+#define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item 
+
 	// Top of stack
 #define _TOS vpu.stack_ptr[-1]
 
@@ -195,8 +194,6 @@ namespace cx{
     *((type *) ((char *) mem + (*index * sizeof (type)))) = *v_;        \
 									}
 
-	// Value object
-#define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item
 #define _JMP(t_) vpu.inst_ptr = this->vpu.code_ptr->begin() + ((int)vpu.inst_ptr->arg0.t_ - 1)
 
 #define _IFICMP(op) {       \
@@ -227,14 +224,18 @@ namespace cx{
 	_PUSHS->i_ = (a op b); \
 					}
 
+#define _TRACE(t_) {\
+	std::wcout << L" " << t_ << std::endl; \
+	}\
+
 	cxvm::cxvm(){
 		// Pointer to the allocated stack
-		this->vpu.stack_ptr = stack;
+		this->vpu.stack_ptr = this->stack;
 		//this->lock();
 	}
 
 	cxvm::~cxvm(void){
-		this->unlock();
+		//this->unlock();
 	}
 
 	value *cxvm::push(void){
@@ -250,8 +251,7 @@ namespace cx{
 		// load variables
 		if (!p_my_function_id->defined.routine.p_variable_ids.empty()){
 			for (auto &local : p_my_function_id->defined.routine.p_variable_ids){
-				_PUSHS->a_ = nullptr;
-				local->runstack_item = &_TOS;
+				local->runstack_item = _PUSHS;
 			}
 		}
 	}
@@ -277,7 +277,15 @@ namespace cx{
 			vpu.inst_ptr < vpu.code_ptr->end();
 			vpu.inst_ptr++) {
 
+			if (cx::cx_dev_debug_flag == true) {
+				/*if (vpu.stack_ptr == &stack[_STACK_SIZE]) {
+					std::cout << "stack overflow\n";
+				}*/
+				//std::wcout << opcode_string[vpu.inst_ptr->op];
+			}
+
 			switch (vpu.inst_ptr->op){
+
 			case AALOAD: _PUSHS->a_ = _VALUE->a_; break;
 			case AASTORE: _VALUE->a_ = _POPS->a_; break;
 			case ACONST_NULL: _PUSHS->a_ = nullptr; break;
@@ -318,28 +326,73 @@ namespace cx{
 			case C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); break;
 			case CALL:{
 				symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
+
+				if (cx_dev_debug_flag) {
+					_TRACE(p_function_id->node_name);
+				}
+
 				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
+				p_function_id->runstack_item = cx->push();
 
 				// Load parameters from the stack
 				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
 				for (; parameter != p_function_id->defined.routine.p_parameter_ids.rend(); ++parameter){
-					value *stack_item = ((value *)&_POPS->a_);
+					value *p_param = _POPS;
+					parameter->get()->runstack_item = cx->push();
 
-					symbol_table_node *p_node = parameter->get();
-					p_node->runstack_item = stack_item;
+					switch (parameter->get()->p_type->typecode) {
+					case type_code::T_BOOLEAN:
+						parameter->get()->runstack_item->z_ = p_param->z_;
+						break;
+					case type_code::T_BYTE:
+						parameter->get()->runstack_item->b_ = p_param->b_;
+						break;
+					case type_code::T_CHAR:
+						parameter->get()->runstack_item->c_ = p_param->c_;
+						break;
+					case type_code::T_DOUBLE:
+						parameter->get()->runstack_item->d_ = p_param->d_;
+						break;
+					case type_code::T_INT:
+						parameter->get()->runstack_item->i_ = p_param->i_;
+						break;
+					case type_code::T_REFERENCE:
+						parameter->get()->runstack_item->a_ = p_param->a_;
+						break;
+					}
 				}
 
-				_POPS;
-				p_function_id->runstack_item = _PUSHS;
 				cx->enter_function(p_function_id);
 				cx->go();
 
-				std::wcout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
-
-				// If void function, pop off it's return value.
-				if (p_function_id->p_type->typecode == T_VOID){
+				switch (p_function_id->p_type->typecode) {
+				case type_code::T_BOOLEAN:
+					_PUSHS->z_ = p_function_id->runstack_item->z_;
+					break;
+				case type_code::T_BYTE:
+					_PUSHS->b_ = p_function_id->runstack_item->b_;
+					break;
+				case type_code::T_CHAR:
+					_PUSHS->c_ = p_function_id->runstack_item->c_;
+					break;
+				case type_code::T_DOUBLE:
+					_PUSHS->d_ = p_function_id->runstack_item->d_;
+					break;
+				case type_code::T_INT:
+					_PUSHS->i_ = p_function_id->runstack_item->i_;
+					break;
+				case type_code::T_REFERENCE:
+					_PUSHS->a_ = p_function_id->runstack_item->a_;
+					break;
+				case type_code::T_VOID:
 					_POPS;
+					break;
 				}
+
+				if (cx_dev_debug_flag) {
+					std::wcout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
+				}
+
 			} break;
 			case CALOAD: _ALOAD(c_, cx_char); break;
 			case CASTORE: _ASTORE(c_, cx_char); break;
@@ -460,10 +513,7 @@ namespace cx{
 			case IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); break;
 			case IGT:		_REL_OP(i_, cx_int, > ); break;
 			case IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
-			case IINC:{
-				cx_int i_ = _VALUE->i_;
-				_VALUE->i_ = (i_ + vpu.inst_ptr->arg1.i_);
-			}break;
+			case IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; break;
 			case ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
 			case ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
 			case IMUL:		_BIN_OP(i_, cx_int, *); break;
@@ -483,10 +533,7 @@ namespace cx{
 			case IREM: 		_BIN_OP(i_, cx_int, %); break;
 			case ISHL: 		_BIN_OP(i_, cx_int, << ); break;
 			case ISHR: 		_BIN_OP(i_, cx_int, >> ); break;
-			case ISTORE: {
-				cx_int i_ = _POPS->i_;
-				_VALUE->i_ = i_;
-			}break;
+			case ISTORE:	_VALUE->i_ = _POPS->i_; break;
 			case ISUB:		_BIN_OP(i_, cx_int, -); break;
 				// Bitwise exclusive OR
 			case IXOR: 		_BIN_OP(i_, cx_int, ^); break;

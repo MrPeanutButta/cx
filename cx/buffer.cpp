@@ -14,7 +14,6 @@
 #include <ctime>
 #endif
 
-//#include "common.h"
 #include <iostream>
 #include <string>
 #include "buffer.h"

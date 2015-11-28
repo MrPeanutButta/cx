@@ -1,4 +1,23 @@
 
+int benchmark_test_0(){
+	int s = 0;
+	int i = 0;
+	int j = 0;
+	
+	for (; i < 10000;)
+		for (j = 0; j < 10000;) 
+			s += i++ * j++; 
+	
+	return s;
+}
+
+int recursive_test_0(int count){
+	if(count == 100) return count;
+	// count++ will continue to pass initial value of
+	// count and cause a stack overflow.
+	return recursive_test_0(++count);
+}
+
 // while loop tests
 int while_test_0(int count){
 	int a = 3;
@@ -30,7 +49,7 @@ int if_test_0(int count){
 			i++;
 		}
 		
-		if((i / 2) == 0){
+		if((i % 2) == 0){
 			// even number
 			int dummy = 0;
 		} else {
@@ -47,7 +66,6 @@ int do_test_0(int count){
 	int a = 0;
 	
 	do{
-		//i++;
 		a = i;
 	} while(i++ < count);
 	
@@ -60,7 +78,7 @@ int break_test_0(int count){
 	do{
 		i++;
 		if(i == count) break;
-	}while(true);
+	}while(i < count + 5);
 	
 	return i;
 }
@@ -76,16 +94,62 @@ int break_test_1(int count){
 	return i;
 }
 
+int for_test_0(int count){
+	int a = 0;
+
+	for(int i = 0; i < count; i++){
+		a = i;
+	}
+	
+	for(int i = 0; i < count; i++){
+		a = i;
+	}
+	
+	int i = 0;
+	for(a = 0; a < count;){
+		i = a;
+		a++;
+	}
+	
+	for(;a < count + 100;){
+		a++;
+	}
+	
+	for(;;){
+		if(a++ == 1000) break;
+	}
+	
+	return count;
+}
+
+bool pass_check(bool expression){
+	return expression; 
+}
+
+bool for_test_0_pass = false;
 bool while_pass = false;
 bool if_pass = false;
 bool do_pass = false;
 bool break_0_pass = false;
 bool break_1_pass = false;
+bool recursive_test_0_pass = false;
 
-if(while_test_0(100) == 380150) while_pass = true;
-if(if_test_0(200) == 50) if_pass = true;
-if(do_test_0(100) == 100) do_pass = true;
-if(break_test_0(20) == 20) break_0_pass = true;
-if(break_test_1(100) == 100) break_1_pass = true;
+if(pass_check(recursive_test_0(0) == 100)) recursive_test_0_pass = true;
+if(pass_check(pass_check(pass_check(pass_check((while_test_0(100) == 380150)))))) while_pass = true;
+if(pass_check((if_test_0(200) == 50)) == true) if_pass = true;
+if(pass_check((do_test_0(100) == 100)) == true) do_pass = true;
+if(pass_check((while_test_0(100) == 380150)) == true) while_pass = true;
+if(pass_check((if_test_0(200) == 50)) == true) if_pass = true;
+if(pass_check((do_test_0(100) == 100)) == true) do_pass = true;
+if(pass_check((while_test_0(100) == 380150)) == true) while_pass = true;
+if(pass_check((if_test_0(200) == 50)) == true) if_pass = true;
+if(pass_check((do_test_0(100) == 100)) == true) do_pass = true;
+if(pass_check((while_test_0(100) == 380150)) == true) while_pass = true;
+if(pass_check((if_test_0(200) == 50)) == true) if_pass = true;
+if(pass_check((do_test_0(100) == 100)) == true) do_pass = true;
+if(pass_check((break_test_0(20) == 20))) break_0_pass = true;
+if(pass_check((break_test_1(100) == 100))) break_1_pass = true;
+if(pass_check((for_test_0(100) == 100))) for_test_0_pass = true;
 
-return break_1_pass;
+
+return benchmark_test_0();
