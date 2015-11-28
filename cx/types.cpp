@@ -223,10 +223,10 @@ namespace cx{
 	 * @param p_type2 : ptr to the second operand's type object or nullptr.
 	 */
 	void check_boolean(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
-		if ((p_type1->base_type() != p_boolean_type.get())
+		/*if ((p_type1->base_type() != p_boolean_type.get())
 			|| ((p_type2 != nullptr) && (p_type2->base_type() != p_boolean_type.get()))) {
 			cx_error(ERR_INCOMPATIBLE_TYPES);
-		}
+		}*/
 	}
 
 	/** check_assignment_type_compatible   Check that a value's type is
