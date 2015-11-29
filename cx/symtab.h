@@ -174,9 +174,7 @@ namespace cx{
 		}
 
 		void set_current_symtab(symbol_table *p_symtab) {
-			//current_nesting_level++;
 			p_symtabs[current_nesting_level] = p_symtab;
-			//p_symtabs.emplace_back(p_symtab);
 		}
 
 		void set_scope(int scopeLevel) {

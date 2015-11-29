@@ -3,7 +3,6 @@
 !doc/
 !examples/
 !stdlib/
-!cx.sdf
 !cx.sln
 !.gitignore
 !README.md

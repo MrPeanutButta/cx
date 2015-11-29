@@ -208,7 +208,6 @@ namespace cx{
 			} while (token == TC_COMMA);
 		}
 		else if (p_node->defined.defined_how == DC_FUNCTION) {
-			//icode.put(p_node);
 
 			get_token();
 
@@ -221,7 +220,6 @@ namespace cx{
 
 		}
 		else {
-			//icode.put(p_node);
 			get_token();
 			parse_assignment(p_function_id, p_node);
 		}
@@ -881,7 +879,7 @@ namespace cx{
 			case DC_MEMBER:
 			case DC_NAMESPACE:
 				get_token();
-				p_result_type = parse_variable(p_function_id, p_node, true);
+				p_result_type = parse_variable(p_function_id, p_node, false);
 
 				switch (op)
 				{
@@ -893,7 +891,9 @@ namespace cx{
 						//this->emit_store(p_function_id, p_node);
 						break;
 					default:
-						this->emit(p_function_id, { IINC }, { 1 });
+						this->emit(p_function_id, opcode::IINC, { p_node.get() }, { 1 });
+						this->emit(p_function_id, opcode::POP);
+						this->emit_load(p_function_id, p_node, false);
 						/////this->emit_store(p_function_id, p_node);
 						break;
 					}
@@ -925,7 +925,7 @@ namespace cx{
 		case TC_NUMBER:
 		{
 			symbol_table_node_ptr &p_node = search_all(p_token->string);
-			opcode op;
+			opcode op = opcode::NOP;
 
 			if (p_node == nullptr) {
 				p_node = enter_local(p_token->string);
@@ -1104,7 +1104,9 @@ namespace cx{
 		case DC_VALUE_PARM:
 		case DC_REFERENCE:
 		case DC_POINTER:
-			this->emit_load(p_function_id, p_id, reference);
+			if (!reference) {
+				this->emit_load(p_function_id, p_id, reference);
+			}
 			break;
 		case DC_FUNCTION:
 		case DC_UNDEFINED:
@@ -1139,12 +1141,11 @@ namespace cx{
 				case T_DOUBLE:
 					this->emit(p_function_id, { DCONST }, { 1.0 });
 					this->emit(p_function_id, { DADD });
-					this->emit_store(p_function_id, p_id);
+//					this->emit_store(p_function_id, p_id);
 //					this->emit_load(p_function_id, p_id);
 					break;
 				default:
-					this->emit(p_function_id, { IINC }, (void *)p_id.get(), { 1 });
-					//this->emit_store(p_function_id, p_id);
+					this->emit(p_function_id, opcode::IINC, { p_id.get() }, { 1 });
 					break;
 				}
 				break;
@@ -1154,7 +1155,7 @@ namespace cx{
 				case T_DOUBLE:
 					this->emit(p_function_id, { DCONST }, { -1.0 });
 					this->emit(p_function_id, { DSUB });
-					this->emit_store(p_function_id, p_id);
+//					this->emit_store(p_function_id, p_id);
 					break;
 				default:
 					this->emit(p_function_id, { IINC }, { -1 });
@@ -1181,29 +1182,28 @@ namespace cx{
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
 				this->emit_store(p_function_id, p_id);
+				//this->emit(p_function_id, opcode::POP);
 			}
 			break;
 			case TC_PLUS_EQUAL:
 			{
 				get_token();
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit_add(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
-				this->emit(p_function_id, opcode::POP);
+				//this->emit(p_function_id, opcode::POP);
 			}
 			break;
 			case TC_MINUS_EQUAL:
 			{
 				get_token();
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit_sub(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1211,11 +1211,10 @@ namespace cx{
 			case TC_STAR_EQUAL:
 			{
 				get_token();
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit_mul(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1223,11 +1222,10 @@ namespace cx{
 			case TC_DIVIDE_EQUAL:
 			{
 				get_token();
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit_div(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1235,11 +1233,10 @@ namespace cx{
 			case TC_MODULAS_EQUAL:
 			{
 				get_token();
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit_mod(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1247,13 +1244,11 @@ namespace cx{
 			case TC_BIT_LEFTSHIFT_EQUAL:
 			{
 				get_token();
-
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit(p_function_id, ISHL);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1261,13 +1256,11 @@ namespace cx{
 			case TC_BIT_RIGHTSHIFT_EQUAL:
 			{
 				get_token();
-
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit(p_function_id, ISHR);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1275,13 +1268,11 @@ namespace cx{
 			case TC_BIT_AND_EQUAL:
 			{
 				get_token();
-
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit(p_function_id, IAND);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1289,13 +1280,11 @@ namespace cx{
 			case TC_BIT_XOR_EQUAL:
 			{
 				get_token();
-
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit(p_function_id, IXOR);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1303,13 +1292,11 @@ namespace cx{
 			case TC_BIT_OR_EQUAL:
 			{
 				get_token();
-
+				this->emit_load(p_function_id, p_id, reference);
 				p_expr_type = parse_expression(p_function_id);
-
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-
 				this->emit(p_function_id, IOR);
 				this->emit_store(p_function_id, p_id);
 			}
@@ -1589,7 +1576,7 @@ namespace cx{
 		//get_token();
 		cx_type::type_ptr p_result_type = nullptr;
 		p_result_type = parse_declared_subroutine_call(p_function_id, p_node_id);
-		p_function_id->defined.routine.program_code.push_back({ CALL, p_node_id.get() });
+		p_function_id->defined.routine.program_code.push_back({ CALL, (void *)p_node_id.get() });
 		return p_result_type;
 		/*return (p_function_id->defined.routine.function_type == FUNC_DECLARED) ||
 			(p_function_id->defined.routine.function_type == FUNC_FORWARD)
@@ -1688,15 +1675,16 @@ namespace cx{
 		case TC_DO: parse_DO(p_function_id); break;
 		case TC_WHILE: parse_WHILE(p_function_id); break;
 		case TC_IF: parse_IF(p_function_id); break;
-			//case TC_FOR: parse_FOR(p_function_id);
-			//	break;
+		case TC_FOR: parse_FOR(p_function_id); break;
 			//case TC_SWITCH: parse_SWITCH(p_function_id);
 			//	break;
 			//	//case tc_CASE:
 			//	//case tc_DEFAULT:parse_case_label(p_function_id);
 			//	//  break;
-			//case TC_BREAK: get_token_append();
-			//	break;
+		case TC_BREAK: 
+			get_token(); 
+			this->emit(p_function_id, opcode::BREAK_MARKER);
+			break;
 		case TC_LEFT_BRACKET: parse_compound(p_function_id); break;
 		case TC_RETURN: parse_RETURN(p_function_id); break;
 			//case TC_POUND:
@@ -1764,7 +1752,7 @@ namespace cx{
 	*/
 	cx_type::type_ptr parser::parse_assignment(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_target_id) {
 
-		cx_type::type_ptr p_target_type = parse_variable(p_function_id, p_target_id);
+		cx_type::type_ptr p_target_type = parse_variable(p_function_id, p_target_id, true);
 
 		return p_target_type;
 	}
@@ -1779,10 +1767,11 @@ namespace cx{
 	*/
 	void parser::parse_DO(symbol_table_node_ptr &p_function_id) {
 		get_token();
-		int do_start = put_location_marker(p_function_id);
-
 		// Enter new scoped block
 		symtab_stack.enter_scope();
+
+		int do_start = current_location(p_function_id);//put_location_marker(p_function_id);
+
 		parse_statement(p_function_id);
 		symtab_stack.exit_scope();
 
@@ -1798,6 +1787,7 @@ namespace cx{
 		this->emit(p_function_id, opcode::NOP);
 
 		fixup_location_marker(p_function_id, break_marker);
+		set_break_jump(p_function_id, do_start);
 	}
 
 	/** parse_WHILE          parse while statement.
@@ -1809,6 +1799,9 @@ namespace cx{
 	*/
 	void parser::parse_WHILE(symbol_table_node_ptr &p_function_id) {
 		get_token();
+		// Enter new scoped block
+		symtab_stack.enter_scope();
+
 		int while_start = current_location(p_function_id);
 
 		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
@@ -1818,14 +1811,13 @@ namespace cx{
 		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
 		int break_marker = put_location_marker(p_function_id);
 
-		// Enter new scoped block
-		symtab_stack.enter_scope();
 		parse_statement(p_function_id);
 		symtab_stack.exit_scope();
 
 		this->emit(p_function_id, opcode::GOTO, { while_start });
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, break_marker);
+		set_break_jump(p_function_id, while_start);
 	}
 
 	/** parse_IF             parse if/else statements.
@@ -1842,6 +1834,9 @@ namespace cx{
 	void parser::parse_IF(symbol_table_node_ptr &p_function_id) {
 
 		get_token();
+		// Enter new scoped block
+		symtab_stack.enter_scope();
+
 		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
 		check_boolean(parse_expression(p_function_id), nullptr);
 		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
@@ -1852,8 +1847,6 @@ namespace cx{
 		this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
 		int at_false_location_marker = put_location_marker(p_function_id);
 		
-		// Enter new scoped block
-		symtab_stack.enter_scope();
 		parse_statement(p_function_id);
 		symtab_stack.exit_scope();
 
@@ -1881,43 +1874,44 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_FOR(symbol_table_node_ptr &p_function_id) {
+		get_token();
+		// Enter new scoped block
+		symtab_stack.enter_scope();
 
-		///*int break_point = put_location_marker();
-		//int statementMarker = put_location_marker();
-		//int condition_marker = put_location_marker();
-		//int increment_marker = put_location_marker();*/
+		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
 
-		//get_token_append(); // for
+		if (token != TC_SEMICOLON) {
+			// Initialization
+			parse_declarations_or_assignment(p_function_id);
+		}
 
-		//conditional_get_token_append(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
+		conditional_get_token(TC_SEMICOLON, ERR_MISSING_SEMICOLON);
 
-		//if (token != TC_SEMICOLON) {
-		//	// declaration would go here //
-		//	parse_declarations_or_assignment(p_function_id);
-		//	conditional_get_token_append(TC_SEMICOLON, ERR_MISSING_SEMICOLON);
-		//}
-		//else get_token_append();
+		int for_start = current_location(p_function_id);
+		int break_marker = 0;
 
-		////fixup_location_marker(condition_marker);
-		//if (token != TC_SEMICOLON) {
+		if (token != TC_SEMICOLON) {
+			// Condition
+			check_boolean(parse_expression(p_function_id), nullptr);
+			// IF_FALSE emit GOTO end of loop
+			this->emit(p_function_id, opcode::IF_FALSE, 0); // Push 0 for now, come back and fix location jump.
+			break_marker = put_location_marker(p_function_id);
+		}
 
-		//	// expr 2
-		//	check_boolean(parse_expression(), nullptr);
-		//	conditional_get_token_append(TC_SEMICOLON, ERR_MISSING_SEMICOLON);
-		//}
-		//else get_token_append();
+		conditional_get_token(TC_SEMICOLON, ERR_MISSING_SEMICOLON);
 
-		////	fixup_location_marker(increment_marker);
-		//if (token != TC_RIGHT_PAREN) {
-		//	// expr 3
-		//	parse_expression();
-		//}
+		if (token != TC_RIGHT_PAREN) {
+			parse_expression(p_function_id);
+		}
 
-		//conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
-		////	fixup_location_marker(statementMarker);
-		//parse_statement(p_function_id);
-		////fixup_location_marker(break_point);
+		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
+		parse_statement(p_function_id);
+		this->emit(p_function_id, opcode::GOTO, { for_start });
+		this->emit(p_function_id, opcode::NOP);
 
+		symtab_stack.exit_scope();
+		fixup_location_marker(p_function_id, break_marker);
+		set_break_jump(p_function_id, for_start);
 	}
 
 	/** parse_SWITCH         parse switch statements.
@@ -2031,6 +2025,7 @@ namespace cx{
 		if (p_function_id->p_type->typecode == T_VOID){
 			// if token != ; (void function returning a value)
 			this->emit(p_function_id, RETURN);
+			return;
 		}
 
 		// expr 1
@@ -2623,7 +2618,7 @@ namespace cx{
 	}
 
 	void parser::emit_not_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2648,7 +2643,7 @@ namespace cx{
 	}
 
 	void parser::emit_lt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2671,7 +2666,7 @@ namespace cx{
 
 
 	void parser::emit_eq_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2696,7 +2691,7 @@ namespace cx{
 	}
 
 	void parser::emit_gt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2718,7 +2713,7 @@ namespace cx{
 	}
 
 	void parser::emit_gt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2740,7 +2735,7 @@ namespace cx{
 	}
 
 	void parser::emit_lt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2762,7 +2757,7 @@ namespace cx{
 	}
 
 	void parser::emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2786,7 +2781,7 @@ namespace cx{
 	}
 
 	void parser::emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2811,7 +2806,7 @@ namespace cx{
 	}
 
 	void parser::emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2836,7 +2831,7 @@ namespace cx{
 	}
 
 	void parser::emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2858,7 +2853,7 @@ namespace cx{
 	}
 
 	void parser::emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
-		cx::opcode op;
+		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
 		{
@@ -2906,7 +2901,7 @@ namespace cx{
 	}
 
 	void parser::emit_store_no_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
-		opcode op;
+		opcode op = opcode::NOP;
 
 		switch (p_id->p_type->typecode)
 		{
@@ -2931,7 +2926,7 @@ namespace cx{
 	}
 
 	void parser::emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id){
-		opcode op;
+		opcode op = opcode::NOP;
 
 		switch (p_id->p_type->typecode)
 		{
@@ -2952,11 +2947,10 @@ namespace cx{
 		}
 
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
-		//this->emit_load(p_function_id, p_id, false);
 	}
 
 	void parser::emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false){
-		opcode op;
+		opcode op = opcode::NOP;
 
 		switch (p_id->p_type->typecode)
 		{
@@ -2986,7 +2980,6 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-//		case T_WCHAR:
 		case T_INT:
 			this->emit(p_function_id, IINC, { v_.i_ });
 			break;
