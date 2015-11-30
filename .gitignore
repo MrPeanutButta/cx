@@ -1,8 +1,9 @@
 *
 !cx/
-!doc/
+!doc/*
 !examples/
 !stdlib/
+!notepad++/
 !cx.sln
 !.gitignore
 !README.md
