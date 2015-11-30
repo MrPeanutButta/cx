@@ -1,3 +1,27 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #ifndef PARSER_H
 #define PARSER_H
 #include <string>
@@ -57,8 +81,8 @@ namespace cx{
 
 		cx_type::type_ptr parse_string_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_string_node);
-		cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
-			symbol_table_node_ptr &p_array_node);
+		//cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
+		//	symbol_table_node_ptr &p_array_node);
 		cx_type::type_ptr parse_unksize_array_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_array_node);
 
@@ -75,7 +99,7 @@ namespace cx{
 		//const cx_type::type_ptr &p_complex_type, symbol_table_node_ptr &p_last_id);
 
 		// expressions
-		cx_type::type_ptr parse_rvalue(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &lhs, cx_type::type_ptr &rhs);
+		//cx_type::type_ptr parse_rvalue(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &lhs, cx_type::type_ptr &rhs);
 		cx_type::type_ptr parse_expression(symbol_table_node_ptr &p_function_id);
 		//cx_type::type_ptr ParseSuffix(symbol_table_node_ptr &p_node);
 		//void ParseSizeOf(void);
@@ -84,7 +108,7 @@ namespace cx{
 		cx_type::type_ptr parse_factor(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false);
 		cx_type::type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		cx_type::type_ptr parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type);
+		//cx_type::type_ptr parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type);
 		cx_type::type_ptr parse_iterator(symbol_table_node_ptr &p_iterator);
 
 		// statements
@@ -106,10 +130,6 @@ namespace cx{
 		void get_token(void) {
 			p_token = p_scanner->get();
 			token = p_token->code();
-		}
-
-		int get_location_marker(symbol_table_node_ptr &p_function_id) {
-			return 0;
 		}
 
 		int put_location_marker(symbol_table_node_ptr &p_function_id) {
@@ -162,7 +182,7 @@ namespace cx{
 		}
 
 		void copy_quoted_string(wchar_t *p_string, const wchar_t *p_quoted_string) const {
-			int length = wcslen(p_quoted_string) - 2;
+			size_t length = wcslen(p_quoted_string) - 2;
 			wcscpy(p_string, &p_quoted_string[1]);// , length);
 			p_string[length] = '\0';
 		}
@@ -195,7 +215,7 @@ namespace cx{
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1);
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1, value arg2);
 		void emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
-		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference);
+		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_);
 		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);

@@ -1,5 +1,25 @@
 /*
-*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 
 #include <iostream>
@@ -9,141 +29,134 @@
 namespace cx{
 
 	const wchar_t *opcode_string[] = {
-		L"AALOAD",
-		L"AASTORE",
-		L"ACONST_NULL",
-		L"ALOAD",
-		L"ANEWARRAY",
-		L"ARRAYLENGTH",
-		L"ASTORE",
-		L"ATHROW",
-		L"BALOAD",
-		L"BASTORE",
-		L"BEQ",
-		L"BGE",
-		L"BGT",
-		L"BIPUSH",
-		L"BLE",
-		L"BLT",
-		L"BNE",
-		L"C2I",
-		L"CALL",
-		L"CALOAD",
-		L"CASTORE",
-		L"CHECKCAST",
-		L"D2F",
-		L"D2I",
-		L"D2L",
-		L"DADD",
-		L"DALOAD",
-		L"DASTORE",
-		L"DCMP",
-		L"DCONST",
-		L"DDIV",
-		L"DEQ_EQ",
-		L"DGT",
-		L"DGT_EQ",
-		L"DLOAD",
-		L"DLT",
-		L"DLT_EQ",
-		L"DMUL",
-		L"DNEG",
-		L"DNOT_EQ",
-		L"DREM",
-		L"DRETURN",
-		L"DSTORE",
-		L"DSUB",
-		L"DUP",
-		L"DUP2",
-		L"DUP2_X1",
-		L"DUP2_X2",
-		L"DUP_X1",
-		L"DUP_X2",
-		L"GETFIELD",
-		L"GETSTATIC",
-		L"GOTO",
-		L"HALT",
-		L"I2B",
-		L"I2C",
-		L"I2D",
-		L"IADD",
-		L"IALOAD",
-		L"IAND",
-		L"IASTORE",
-		L"ICMP",
-		L"ICONST",
-		L"IDIV",
-		L"IEQ_EQ",
-		L"IF_FALSE",
-		L"IFNE",
-		L"IFLT",
-		L"IFGE",
-		L"IFGT",
-		L"IFLE",
-		L"IF_ACMPEQ",
-		L"IF_ACMPNE",
-		L"IF_ICMPEQ",
-		L"IF_ICMPNE",
-		L"IF_ICMPLT",
-		L"IF_ICMPGE",
-		L"IF_ICMPGT",
-		L"IF_ICMPLE",
-		L"IFNONNULL",
-		L"IFNULL",
-		L"IGT",
-		L"IGT_EQ",
-		L"IINC",
-		L"ILOAD",
-		L"ILT",
-		L"ILT_EQ",
-		L"IMUL",
-		L"INEG",
-		L"INOT",
-		L"INOT_EQ",
-		L"INSTANCEOF",
-		L"INVOKEDYNAMIC",
-		L"INVOKEFUNCT",
-		L"INVOKEINTERFACE",
-		L"INVOKESPECIAL",
-		L"INVOKESTATIC",
-		L"INVOKEVIRTUAL",
-		L"IOR",
-		L"IREM",
-		L"IRETURN",
-		L"ISHL",
-		L"ISHR",
-		L"ISTORE",
-		L"ISUB",
-		L"IXOR",
-		L"JSR",
-		L"JSR_W",
-		L"LDC",
-		L"LDC2_W",
-		L"LDC_W",
-		L"LOOKUPSWITCH",
-		L"LOGIC_OR",
-		L"LOGIC_AND",
-		L"LOGIC_NOT",
-		L"MONITORENTER",
-		L"MONITOREXIT",
-		L"MULTIANEWARRAY",
-		L"NEW",
-		L"NEWARRAY",
-		L"NOP",
-		L"PLOAD",
-		L"POSTOP",
-		L"POP",
-		L"POP2",
-		L"PREOP",
-		L"PUTFIELD",
-		L"PUTSTATIC",
-		L"RET",
-		L"RETURN",
-		L"SWAP",
-		L"TABLESWITCH",
-		L"WALOAD",
-		L"WASTORE",
-		L"WIDE"
+		L"aaload",
+		L"aastore",
+		L"aconst_null",
+		L"aload",
+		L"anewarray",
+		L"arraylength",
+		L"astore",
+		L"athrow",
+		L"baload",
+		L"bastore",
+		L"beq",
+		L"bge",
+		L"bgt",
+		L"bipush",
+		L"ble",
+		L"blt",
+		L"bne",
+		L"c2i",
+		L"call",
+		L"caload",
+		L"castore",
+		L"checkcast",
+		L"d2f",
+		L"d2i",
+		L"d2l",
+		L"dadd",
+		L"daload",
+		L"dastore",
+		L"dcmp",
+		L"dconst",
+		L"ddiv",
+		L"deq_eq",
+		L"dgt",
+		L"dgt_eq",
+		L"dload",
+		L"dlt",
+		L"dlt_eq",
+		L"dmul",
+		L"dneg",
+		L"dnot_eq",
+		L"drem",
+		L"dstore",
+		L"dsub",
+		L"dup",
+		L"dup2",
+		L"dup2_x1",
+		L"dup2_x2",
+		L"dup_x1",
+		L"dup_x2",
+		L"getfield",
+		L"getstatic",
+		L"goto",
+		L"i2b",
+		L"i2c",
+		L"i2d",
+		L"iadd",
+		L"iaload",
+		L"iand",
+		L"iastore",
+		L"icmp",
+		L"iconst",
+		L"idiv",
+		L"ieq_eq",
+		L"if_false",
+		L"ifne",
+		L"iflt",
+		L"ifge",
+		L"ifgt",
+		L"ifle",
+		L"if_acmpeq",
+		L"if_acmpne",
+		L"if_icmpeq",
+		L"if_icmpne",
+		L"if_icmplt",
+		L"if_icmpge",
+		L"if_icmpgt",
+		L"if_icmple",
+		L"ifnonnull",
+		L"ifnull",
+		L"igt",
+		L"igt_eq",
+		L"iinc",
+		L"iload",
+		L"ilt",
+		L"ilt_eq",
+		L"imul",
+		L"ineg",
+		L"inot",
+		L"inot_eq",
+		L"instanceof",
+		L"invokedynamic",
+		L"invokefunct",
+		L"invokeinterface",
+		L"invokespecial",
+		L"invokestatic",
+		L"invokevirtual",
+		L"ior",
+		L"irem",
+		L"ishl",
+		L"ishr",
+		L"istore",
+		L"isub",
+		L"ixor",
+		L"jsr",
+		L"jsr_w",
+		L"ldc",
+		L"ldc2_w",
+		L"ldc_w",
+		L"lookupswitch",
+		L"logic_or",
+		L"logic_and",
+		L"logic_not",
+		L"monitorenter",
+		L"monitorexit",
+		L"multianewarray",
+		L"new",
+		L"newarray",
+		L"nop",
+		L"pload",
+		L"postop",
+		L"pop",
+		L"pop2",
+		L"preop",
+		L"putfield",
+		L"putstatic",
+		L"return",
+		L"swap",
+		L"tableswitch"
 	};
 
 	// turn on to view Cx debugging
@@ -224,10 +237,6 @@ namespace cx{
 	_PUSHS->i_ = (a op b); \
 					}
 
-#define _TRACE(t_) {\
-	std::wcout << L" " << t_ << std::endl; \
-	}\
-
 	cxvm::cxvm(){
 		// Pointer to the allocated stack
 		this->vpu.stack_ptr = this->stack;
@@ -240,6 +249,10 @@ namespace cx{
 
 	value *cxvm::push(void){
 		return _PUSHS;
+	}
+
+	value *cxvm::pop(void) {
+		return _POPS;
 	}
 
 	void cxvm::enter_function(symbol_table_node *p_function_id){
@@ -327,12 +340,9 @@ namespace cx{
 			case CALL:{
 				symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
 
-				if (cx_dev_debug_flag) {
-					_TRACE(p_function_id->node_name);
-				}
-
 				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
 				p_function_id->runstack_item = cx->push();
+				p_function_id->runstack_item->i_ = 555;
 
 				// Load parameters from the stack
 				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
@@ -388,11 +398,6 @@ namespace cx{
 					_POPS;
 					break;
 				}
-
-				if (cx_dev_debug_flag) {
-					std::wcout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
-				}
-
 			} break;
 			case CALOAD: _ALOAD(c_, cx_char); break;
 			case CASTORE: _ASTORE(c_, cx_char); break;
@@ -581,28 +586,14 @@ namespace cx{
 			case POP2: _POPS; _POPS; break;
 			case PUTFIELD: break;
 			case PUTSTATIC: break;
-			case RET:
 			case RETURN:
 				return;
 				break;
 			case SWAP: break;
 			case TABLESWITCH: break;
-			case WALOAD: _ALOAD(c_, cx_char); break;
-			case WASTORE: _ASTORE(c_, cx_char); break;
-			case WIDE: break;
-
-				/**
-				 * Halts VM and returns
-				 * @param prog
-				 * @return exit status (int)
-				 */
-			case HALT:
-				goto end;
 			} //switch
 		} // for
 
-	end:
-		// return frame header
 		return;
 	}
 }

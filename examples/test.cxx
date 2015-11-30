@@ -1,3 +1,42 @@
+/*
+ this is a block comment.
+*/
+
+/*int assembly_test_0(int i){
+	asm{
+		iconst 0b11111111
+		iconst 0xff
+		iadd
+		istore i
+		iload i
+		istore assembly_test_0
+		ret
+	}
+}*/
+
+byte binary_test_0(){
+	return 0b11111111;
+}
+
+byte hex_test_0(){
+	return 0xff;
+}
+
+byte octal_test_0(){
+	return 0377;
+}
+
+/*int operator_test_0(){
+	bool return_passing = false;
+	
+	int i = 0;
+	char c = 'a';
+	real r = 2.0;
+	byte z0 = 0b11111111;	// 255
+	byte z1 = 0xff;			// 255
+	
+	return z0;
+}*/
 
 int benchmark_test_0(){
 	int s = 0;
@@ -12,7 +51,7 @@ int benchmark_test_0(){
 }
 
 int recursive_test_0(int count){
-	if(count == 100) return count;
+	if(count == 50) return count;
 	// count++ will continue to pass initial value of
 	// count and cause a stack overflow.
 	return recursive_test_0(++count);
@@ -133,8 +172,11 @@ bool do_pass = false;
 bool break_0_pass = false;
 bool break_1_pass = false;
 bool recursive_test_0_pass = false;
+bool binary_test_0_pass = false;
+bool hex_test_0_pass = false;
+bool octal_test_0_pass = false;
 
-if(pass_check(recursive_test_0(0) == 100)) recursive_test_0_pass = true;
+if(pass_check(recursive_test_0(0) == 50)) recursive_test_0_pass = true;
 if(pass_check(pass_check(pass_check(pass_check((while_test_0(100) == 380150)))))) while_pass = true;
 if(pass_check((if_test_0(200) == 50)) == true) if_pass = true;
 if(pass_check((do_test_0(100) == 100)) == true) do_pass = true;
@@ -150,6 +192,8 @@ if(pass_check((do_test_0(100) == 100)) == true) do_pass = true;
 if(pass_check((break_test_0(20) == 20))) break_0_pass = true;
 if(pass_check((break_test_1(100) == 100))) break_1_pass = true;
 if(pass_check((for_test_0(100) == 100))) for_test_0_pass = true;
-
+if(pass_check((binary_test_0() == 255))) binary_test_0_pass = true;
+if(pass_check((hex_test_0() == 255))) hex_test_0_pass = true;
+if(pass_check((octal_test_0() == 255))) octal_test_0_pass = true;
 
 return benchmark_test_0();

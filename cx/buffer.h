@@ -1,4 +1,29 @@
-#pragma once
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+#ifndef BUFFER_H
+#define BUFFER_H
 
 #include <fstream>
 #include <cstdio>
@@ -6,10 +31,6 @@
 #include <memory>
 #include <wchar.h>
 #include "error.h"
-
-#ifdef _DEBUG
-#include <iostream>
-#endif
 
 namespace cx{
 
@@ -84,22 +105,12 @@ namespace cx{
 		}
 
 		void wbuffer(const wchar_t *p_text, int line_number, int nesting_level) {
-			if (cx::cx_dev_debug_flag == true) {
-				std::wcout << p_text << std::endl;
-			}
-
-			swprintf(text, L"%4d %d: %s", line_number, nesting_level, p_text);
-		}
-
-		void buffer(const wchar_t *p_text, int line_number, int nesting_level) {
-//			sprintf(text, "%4d %d: %s", line_number, nesting_level, p_text);
-		}
-
-		void put_line(const char *p_text, int line_number, int nesting_level) {
-	//		sprintf(text, "%4d %d: %s", line_number, nesting_level, p_text);
-			put_line();
+			//swprintf(text, L"%4d %d: %s", line_number, nesting_level, p_text);
+			_swprintf(text, L"%4d %d: %s", line_number, nesting_level, p_text);
 		}
 	};
 
 	typedef std::shared_ptr<text_in_buffer> text_in_buffer_ptr;
 }
+
+#endif
