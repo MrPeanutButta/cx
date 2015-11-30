@@ -1,9 +1,10 @@
 *
-!cx/
+!cx/*
 !doc/*
-!examples/
-!stdlib/
-!notepad++/
+!examples/*
+!stdlib/*
+!notepad++/*
 !cx.sln
 !.gitignore
 !README.md
+!LICENSE
