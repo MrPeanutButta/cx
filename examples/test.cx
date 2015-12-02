@@ -38,19 +38,88 @@ byte octal_test_0(){
 	return 0377;
 }
 
-/*
-int operator_test_0(){
+
+bool operator_test_0(){
 	bool return_passing = false;
 	
-	int i = 0;
+	int i = 1;
+	
+	i++;
+	i--;
+	++i;
+	--i;
+	
+	i = -i;
+	i = +i;
+	
+	i += 1;
+	i -= 1;
+	
+	i *= 2;
+	i /= 2;
+	i++;
+	
+	i %= 2;
+	
+	i <<= 2;
+	i >>= 1;
+	i &= 1;
+	i ^= 1;
+	i |= 1;
+	
 	char c = 'a';
+	c++;
+	c--;
+	++c;
+	--c;
+	
+	c += 1;
+	c -= 1;
+	
 	real r = 2.0;
+	
+	r++;
+	r--;
+	++r;
+	--r;
+	
+	r += 1.0;
+	r -= 1.0;
+	
+	r *= 50.5;
+	r /= 2.0;
+	r++;
+	
+	r %= 2.0;
+	
+	real rr = (r + 3.0) / 1.0;
+	
 	byte z0 = 0b11111111;	// 255
 	byte z1 = 0xff;			// 255
 	
-	return z0;
+	z0++;
+	z0--;
+	++z0;
+	--z0;
+	
+	z0 += 1;
+	z0 -= 1;
+	
+	z0 *= 2;
+	z0 /= 2;
+	z0++;
+	
+	z0 %= 2;	// i == 1;
+	
+	z0 <<= 2;
+	z0 >>= 1;
+	z0 &= 1;
+	z0 ^= 1;
+	z0 |= 1;
+	
+	return true;
 }
-*/
+
 
 // Basic performance testing
 int benchmark_test_0(){
@@ -80,7 +149,7 @@ int recursive_test_0(int count){
 	// 69 seems to be the native call stack limit
 	// for a release build. Debug build may be more
 	// forgiving.
-	if(count == 69) return count;
+	if(count == 50) return count;
 	
 	// count++ will continue to pass initial value of
 	// count(0) and cause a stack overflow.
@@ -205,6 +274,7 @@ bool binary_test_0_pass = (binary_test_0() == 255);
 bool hex_test_0_pass = (hex_test_0() == 255);
 bool octal_test_0_pass = (octal_test_0() == 255);
 bool assembly_test_0_pass = (assembly_test_0(100) == 1355);
+bool operator_test_0_pass = operator_test_0();
 
 // TEST HOOK
 // return benchmark_test_1();

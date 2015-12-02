@@ -106,6 +106,7 @@ namespace cx {
 		DEQ_EQ,
 		DGT,
 		DGT_EQ,
+		DINC,
 		DLOAD,
 		DLT,
 		DLT_EQ,

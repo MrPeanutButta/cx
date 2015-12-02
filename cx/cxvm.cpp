@@ -62,6 +62,7 @@ namespace cx{
 		L"deq_eq",
 		L"dgt",
 		L"dgt_eq",
+		L"dinc",
 		L"dload",
 		L"dlt",
 		L"dlt_eq",
@@ -445,6 +446,7 @@ namespace cx{
 			case opcode::DEQ_EQ:	_REL_OP(d_, cx_real, == ); break;
 			case opcode::DGT:		_REL_OP(d_, cx_real, > ); break;
 			case opcode::DGT_EQ:	_REL_OP(d_, cx_real, >= ); break;
+			case opcode::DINC:		_VALUE->d_ += vpu.inst_ptr->arg1.d_; break;
 			case opcode::DLOAD:		_PUSHS->d_ = _VALUE->d_; break;
 			case opcode::DLT:		_REL_OP(d_, cx_real, < ); break;
 			case opcode::DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;

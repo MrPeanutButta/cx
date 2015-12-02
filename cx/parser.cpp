@@ -660,11 +660,11 @@ namespace cx{
 				break;
 			case TC_BIT_NOT:
 				check_bitwise_integer(p_result_type);
-				this->emit(p_function_id, { INOT });
+				this->emit(p_function_id, opcode::INOT);
 				break;
 			case TC_PLUS: // TODO use ABS?
 				check_integer_or_real(p_result_type, nullptr);
-				// TODO emit ABS
+				//this->emit(p_function_id, opcode::I);
 				break;
 			case TC_MINUS:
 				check_integer_or_real(p_result_type, nullptr);
@@ -889,28 +889,20 @@ namespace cx{
 				case TC_PLUS_PLUS:
 					switch (p_result_type->typecode){
 					case T_DOUBLE:
-						this->emit(p_function_id, { DCONST }, { 1.0L });
-						this->emit(p_function_id, { DADD });
-						//this->emit_store(p_function_id, p_node);
+						this->emit(p_function_id, opcode::DINC, p_node.get(), 1.0L);
 						break;
 					default:
-						this->emit(p_function_id, opcode::IINC, { p_node.get() }, { 1 });
-						//this->emit(p_function_id, opcode::POP);
-						//this->emit_load(p_function_id, p_node, false);
-						/////this->emit_store(p_function_id, p_node);
+						this->emit(p_function_id, opcode::IINC, p_node.get(), 1);
 						break;
 					}
 					break;
 				case TC_MINUS_MINUS:
 					switch (p_result_type->typecode){
 					case T_DOUBLE:
-						this->emit(p_function_id, { DCONST }, { -1.0L });
-						this->emit(p_function_id, { DSUB });
-						//this->emit_store(p_function_id, p_node);
+						this->emit(p_function_id, opcode::DINC, p_node.get(), -1.0L);
 						break;
 					default:
-						this->emit(p_function_id, { IINC }, { -1 });
-						//this->emit_store(p_function_id, p_node);
+						this->emit(p_function_id, opcode::IINC, p_node.get(), -1);
 						break;
 					}
 					break;
@@ -1145,13 +1137,10 @@ namespace cx{
 				this->get_token();
 				switch (p_result_type->typecode){
 				case T_DOUBLE:
-					this->emit(p_function_id, { DCONST }, { 1.0L });
-					this->emit(p_function_id, { DADD });
-//					this->emit_store(p_function_id, p_id);
-//					this->emit_load(p_function_id, p_id);
+					this->emit(p_function_id, opcode::DINC, p_id.get(), 1.0L);
 					break;
 				default:
-					this->emit(p_function_id, opcode::IINC, { p_id.get() }, { 1 });
+					this->emit(p_function_id, opcode::IINC, p_id.get(), 1);
 					break;
 				}
 				break;
@@ -1159,13 +1148,10 @@ namespace cx{
 				this->get_token();
 				switch (p_result_type->typecode){
 				case T_DOUBLE:
-					this->emit(p_function_id, { DCONST }, { -1.0L });
-					this->emit(p_function_id, { DSUB });
-//					this->emit_store(p_function_id, p_id);
+					this->emit(p_function_id, opcode::DINC, p_id.get(), -1.0L);
 					break;
 				default:
-					this->emit(p_function_id, { IINC }, { -1 });
-					//this->emit_store(p_function_id, p_id);
+					this->emit(p_function_id, opcode::IINC, p_id.get(), -1);
 					break;
 				}
 				break;
@@ -1188,7 +1174,6 @@ namespace cx{
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 
 				this->emit_store(p_function_id, p_id);
-				//this->emit(p_function_id, opcode::POP);
 			}
 			break;
 			case TC_PLUS_EQUAL:
@@ -1200,7 +1185,6 @@ namespace cx{
 					ERR_INCOMPATIBLE_ASSIGNMENT);
 				this->emit_add(p_function_id, p_result_type);
 				this->emit_store(p_function_id, p_id);
-				//this->emit(p_function_id, opcode::POP);
 			}
 			break;
 			case TC_MINUS_EQUAL:
@@ -3043,6 +3027,7 @@ namespace cx{
 			std::make_pair(L"deq_eq",          cx::opcode::DEQ_EQ),
 			std::make_pair(L"dgt",             cx::opcode::DGT),
 			std::make_pair(L"dgt_eq",          cx::opcode::DGT_EQ),
+			std::make_pair(L"dinc",            cx::opcode::DINC),
 			std::make_pair(L"dload",           cx::opcode::DLOAD),
 			std::make_pair(L"dlt",             cx::opcode::DLT),
 			std::make_pair(L"dlt_eq",          cx::opcode::DLT_EQ),
@@ -3192,6 +3177,7 @@ namespace cx{
 			case opcode::DEQ_EQ: get_token(); break;
 			case opcode::DGT: get_token(); break;
 			case opcode::DGT_EQ: get_token(); break;
+			case opcode::DINC: get_token(); break;
 			case opcode::DLOAD: get_token(); break;
 			case opcode::DLT: get_token(); break;
 			case opcode::DLT_EQ: get_token(); break;
