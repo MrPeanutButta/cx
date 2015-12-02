@@ -130,7 +130,8 @@ namespace cx{
 		L"Missing '",
 		L"Invalid escape character",
 		L"Could not load library",
-		L"No cx_lib_init in library"
+		L"No cx_lib_init in library",
+		L"Invalid VM opcode"
 	};
 
 	/** cx_error       print an arrow under the error and then

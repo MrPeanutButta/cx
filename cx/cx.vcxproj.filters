@@ -144,9 +144,6 @@
     <ClCompile Include="..\examples\reopen.cxx">
       <Filter>Examples</Filter>
     </ClCompile>
-    <ClCompile Include="..\examples\test.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
     <ClCompile Include="..\examples\to_str.cxx">
       <Filter>Examples</Filter>
     </ClCompile>
@@ -255,6 +252,9 @@
     </None>
     <None Include="..\doc\language reference\expressions.md">
       <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\examples\test.cx">
+      <Filter>Examples</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

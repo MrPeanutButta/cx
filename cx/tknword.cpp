@@ -82,6 +82,7 @@ namespace cx{
 		std::make_pair(L"include", TC_INCLUDE),
 		std::make_pair(L"warn", TC_WARN),
 		std::make_pair(L"import", TC_IMPORT),
+		std::make_pair(L"asm", TC_ASM)
 	};
 
 	token_map cx_reserved_words(map_data, map_data + sizeof map_data / sizeof map_data[0]);

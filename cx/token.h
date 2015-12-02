@@ -25,7 +25,6 @@ THE SOFTWARE.
 #ifndef TOKEN_H
 #define TOKEN_H
 #include <cstdint>
-///#include "misc.h"
 #include "error.h"
 #include "buffer.h"
 #include "types.h"
@@ -121,7 +120,8 @@ namespace cx{
 		TC_INCLUDE, TC_WARN, TC_IMPORT,
 
 		MC_LOCATION_MARKER = 126,
-		MC_LINE_MARKER = 127
+		MC_LINE_MARKER = 127,
+		TC_ASM
 	};
 
 	typedef std::map<std::wstring, token_code> token_map;

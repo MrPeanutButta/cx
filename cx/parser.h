@@ -124,6 +124,7 @@ namespace cx{
 		void parse_case_label(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
 		void parse_compound(symbol_table_node_ptr &p_function_id);
 		void parse_RETURN(symbol_table_node_ptr &p_function_id);
+		void parse_ASM(symbol_table_node_ptr &p_function_id);
 
 		void parse_execute_directive(symbol_table_node_ptr &p_function_id);
 
