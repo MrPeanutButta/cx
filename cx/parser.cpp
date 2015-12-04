@@ -1839,7 +1839,6 @@ namespace cx{
 		symtab_stack.exit_scope();
 
 		int if_end = current_location(p_function_id);
-		//this->emit(p_function_id, opcode::GOTO, 0);
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, at_false_location_marker);
 
@@ -1854,7 +1853,6 @@ namespace cx{
 			symtab_stack.exit_scope();
 
 			this->emit(p_function_id, opcode::NOP);
-			//fixup_location_marker(p_function_id, if_end);
 			p_function_id->defined.routine.program_code.insert(p_function_id->defined.routine.program_code.begin() + if_end, { opcode::GOTO, current_location(p_function_id) });
 		}
 	}
