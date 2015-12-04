@@ -90,69 +90,6 @@
     <ClCompile Include="..\stdlib\lib\std\std.cpp">
       <Filter>Standard Library\lib</Filter>
     </ClCompile>
-    <ClCompile Include="..\examples\array.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\exec_test.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\fileio.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\fileio2.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\fileio3.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\fileio4.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\fizzbuzz.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\get_put.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\gets.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\int.to_str.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\logical_not.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\namespace.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\namespace2.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\namespace3.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\namespace4.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\open.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\radix.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\reopen.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\to_str.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\to_str2.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\examples\type_size.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
     <ClCompile Include="removed\double operations.cpp">
       <Filter>Snippits</Filter>
     </ClCompile>
