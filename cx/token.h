@@ -1,7 +1,30 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #ifndef TOKEN_H
 #define TOKEN_H
 #include <cstdint>
-///#include "misc.h"
 #include "error.h"
 #include "buffer.h"
 #include "types.h"
@@ -97,7 +120,8 @@ namespace cx{
 		TC_INCLUDE, TC_WARN, TC_IMPORT,
 
 		MC_LOCATION_MARKER = 126,
-		MC_LINE_MARKER = 127
+		MC_LINE_MARKER = 127,
+		TC_ASM
 	};
 
 	typedef std::map<std::wstring, token_code> token_map;
@@ -139,7 +163,7 @@ namespace cx{
 
 	bool token_in(token_code tc, const token_code *p_list);
 
-	typedef std::map<char, char_code> char_code_map;
+	typedef std::map<wchar_t, char_code> char_code_map;
 	extern char_code_map char_map;
 
 	class token {
@@ -149,7 +173,6 @@ namespace cx{
 		value value__;
 		
 	public:
-		//char string[MAX_INPUT_BUFFER_SIZE];
 		wchar_t string[MAX_INPUT_BUFFER_SIZE];
 
 		token(void) {
@@ -175,10 +198,7 @@ namespace cx{
 
 	public:
 		virtual void get(text_in_buffer &buffer);
-
-		virtual int is_delimiter(void) const {
-			return false;
-		}
+		virtual int is_delimiter(void) const {return false;}
 		virtual void print(void) const;
 	};
 
@@ -205,10 +225,7 @@ namespace cx{
 		}
 
 		virtual void get(text_in_buffer &buffer);
-
-		virtual int is_delimiter(void) const {
-			return false;
-		}
+		virtual int is_delimiter(void) const {return false;}
 		virtual void print(void) const;
 	};
 
@@ -222,11 +239,7 @@ namespace cx{
 		}
 
 		virtual void get(text_in_buffer &buffer);
-		void wget(text_in_buffer &buffer);
-
-		virtual int is_delimiter(void) const {
-			return true;
-		}
+		virtual int is_delimiter(void) const {return true;}
 		virtual void print(void) const;
 	};
 
@@ -237,12 +250,8 @@ namespace cx{
 			code__ = TC_CHAR;
 		}
 
-		virtual void get(text_in_buffer &buffer);
-		void wget(text_in_buffer &buffer);
-		
-		virtual int is_delimiter(void) const {
-			return true;
-		}
+		virtual void get(text_in_buffer &buffer);		
+		virtual int is_delimiter(void) const {return true;}
 		virtual void print(void) const;
 	};
 
@@ -251,10 +260,7 @@ namespace cx{
 	class special_token : public token {
 	public:
 		virtual void get(text_in_buffer &buffer);
-
-		virtual int is_delimiter(void) const {
-			return true;
-		}
+		virtual int is_delimiter(void) const {return true;}
 		virtual void print(void) const;
 	};
 
@@ -263,19 +269,15 @@ namespace cx{
 	class eof_token : public token {
 	public:
 
-		eof_token() {
+		virtual void get(text_in_buffer &buffer) {
+			// Squelch comile errors
+			if (buffer.current_char()) {}
+
 			code__ = TC_END_OF_FILE;
 		}
 
-		virtual void get(text_in_buffer &buffer) {
-		}
-
-		virtual int is_delimiter(void) const {
-			return false;
-		}
-
-		virtual void print(void) const {
-		}
+		virtual int is_delimiter(void) const {return false;}
+		virtual void print(void) const {}
 	};
 
 	///  error_token         error token subclass of token.
@@ -288,13 +290,8 @@ namespace cx{
 		}
 
 		virtual void get(text_in_buffer &buffer);
-
-		virtual int is_delimiter(void) const {
-			return false;
-		}
-
-		virtual void print(void) const {
-		}
+		virtual int is_delimiter(void) const {return false;}
+		virtual void print(void) const {}
 	};
 
 }

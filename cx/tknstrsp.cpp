@@ -1,3 +1,27 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include <cstdio>
 #include <cstdint>
 #include "token.h"
@@ -49,7 +73,6 @@ namespace cx{
 	 */
 	void string_token::get(text_in_buffer &buffer) {
 		wchar_t ch = buffer.current_char(); // current character
-
 		wchar_t *ps = string; // ptr to char in string
 
 		*ps++ = L'\"'; // opening quote
@@ -59,7 +82,6 @@ namespace cx{
 		ch = buffer.get_char(); // first char after opening quote
 		
 		while (ch != EOF_CHAR) {
-		
 			if (ch == L'\"') { // look for another quote
 
 				/* Fetched a quote.  Now check for an adjacent quote,
@@ -86,52 +108,6 @@ namespace cx{
 
 		*ps++ = L'\"'; // closing quote
 		*ps = L'\0';
-	}
-
-	void string_token::wget(text_in_buffer &buffer) {
-		wchar_t ch = (buffer.current_char() | buffer.current_char() | buffer.current_char() | buffer.current_char());
-
-		// TODO check for L call wget and return
-
-		wchar_t *ps = string; // ptr to char in string
-
-		*ps++ = L'\"'; // opening quote
-
-		// get the string.
-
-		ch = buffer.get_char(); // first char after opening quote
-
-		while (ch != EOF_CHAR) {
-
-			if (ch == L'\"') { // look for another quote
-
-				/* Fetched a quote.  Now check for an adjacent quote,
-				* since two consecutive quotes represent a single
-				* quote in the string. */
-				ch = buffer.get_char();
-				if (ch != L'\"') break; /* not another quote, so previous
-									   * quote ended the string */
-			}// Replace the end of line character with a blank.
-			else if (ch == L'\0') ch = L' ';
-
-			if (ch == L'\\') {
-				// TODO needs to check wchar
-				*ps++ = get_escape_char(buffer.get_char());
-			}
-			else {
-				// Append current char to string, then get the next__ char.
-				*ps++ = ch;
-			}
-
-			ch = buffer.get_char();
-		}
-
-		if (ch == EOF_CHAR) cx_error(ERR_UNEXPECTED_EOF);
-
-		*ps++ = L'\"'; // closing quote
-		*ps = L'\0';
-
-		this->code__ = TC_WSTRING;
 	}
 
 	/** get         Extract single quoted char ' '

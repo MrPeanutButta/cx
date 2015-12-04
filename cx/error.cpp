@@ -1,8 +1,26 @@
-/** Errors
- * error.cpp
- *
- * Routines to handle translation-time and runtime errors.
- */
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 #include <cstdlib>
 #include <cstring>
@@ -112,7 +130,8 @@ namespace cx{
 		L"Missing '",
 		L"Invalid escape character",
 		L"Could not load library",
-		L"No cx_lib_init in library"
+		L"No cx_lib_init in library",
+		L"Invalid VM opcode"
 	};
 
 	/** cx_error       print an arrow under the error and then
@@ -127,11 +146,11 @@ namespace cx{
 
 		// print the arrow pointing to the token just scanned.
 		list.put_line(); // print current line info
-		swprintf(list.text, L"%*s^", error_position, L" ");
+		_swprintf(list.text, L"%*s^", error_position, L" ");
 		list.put_line();
 
 		// print the error message.
-		swprintf(list.text, L"*** error: %s", error_messages[ec]);
+		_swprintf(list.text, L"*** error: %s", error_messages[ec]);
 		list.put_line();
 
 		if (++error_count > max_syntax_errors) {

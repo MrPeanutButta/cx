@@ -1,3 +1,27 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include <cstdio>
 #include "buffer.h"
 #include "error.h"
@@ -9,7 +33,6 @@ namespace cx{
 	cx_type::type_ptr p_boolean_type;
 	cx_type::type_ptr p_char_type;
 	cx_type::type_ptr p_byte_type;
-//	cx_type::type_ptr p_wchar_type;
 	cx_type::type_ptr p_integer_type;
 	cx_type::type_ptr p_double_type;
 	cx_type::type_ptr p_reference_type;
@@ -65,7 +88,6 @@ namespace cx{
 		symbol_table_node_ptr p_reference_id = p_symtab->enter(L"class", DC_TYPE);
 		symbol_table_node_ptr p_boolean_id = p_symtab->enter(L"bool", DC_TYPE);
 		symbol_table_node_ptr p_char_id = p_symtab->enter(L"char", DC_TYPE);
-		//symbol_table_node_ptr p_wchar_id = p_symtab->enter(L"wchar", DC_TYPE);
 		symbol_table_node_ptr p_false_id = p_symtab->enter(L"false", DC_CONSTANT);
 		symbol_table_node_ptr p_true_id = p_symtab->enter(L"true", DC_CONSTANT);
 		symbol_table_node_ptr p_void_id = p_symtab->enter(L"void", DC_TYPE);
@@ -95,10 +117,6 @@ namespace cx{
 			p_char_type = std::make_shared<cx_type>(F_SCALAR, T_CHAR, sizeof(wchar_t), p_char_id, p_std_type_members);
 		}
 
-		/*if (p_wchar_type == nullptr) {
-			p_wchar_type = std::make_shared<cx_type>(F_SCALAR, T_WCHAR, sizeof(wchar_t), p_wchar_id, p_std_type_members);
-		}*/
-
 		if (p_reference_type == nullptr) {
 			p_reference_type = std::make_shared<cx_type>(F_REFERENCE, T_REFERENCE, sizeof(uintptr_t), p_reference_id, p_std_type_members);
 		}
@@ -110,7 +128,6 @@ namespace cx{
 		p_reference_id->p_type = p_reference_type;
 		p_boolean_id->p_type = p_boolean_type;
 		p_char_id->p_type = p_char_type;
-//		p_wchar_id->p_type = p_wchar_type;
 		p_false_id->p_type = p_boolean_type;
 		p_true_id->p_type = p_boolean_type;
 		p_void_id->p_type = p_reference_type;
@@ -156,16 +173,12 @@ namespace cx{
 	 * @param p_type2 : ptr to the second operand's type object or nullptr.
 	 */
 	void check_integer_or_real(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
-		///p_type1 = std::make_shared<cx_type>(p_type1->base_type());
-
-		if ((p_type1 != p_integer_type) && (p_type1 != p_double_type)) {
+		if ((p_type1->typecode != T_INT) && (p_type1->typecode != T_DOUBLE)) {
 			cx_error(ERR_INCOMPATIBLE_TYPES);
 		}
 
 		if (p_type2 != nullptr) {
-			//p_type2 = p_type2->base_type();
-
-			if ((p_type2 != p_integer_type) && (p_type2 != p_double_type)) {
+			if ((p_type2->typecode != T_INT) && (p_type2->typecode != T_DOUBLE)) {
 				cx_error(ERR_INCOMPATIBLE_TYPES);
 			}
 		}
@@ -178,12 +191,10 @@ namespace cx{
 		switch (target_type) {
 		case T_INT:
 		case T_CHAR:
-//		case T_WCHAR:
 		case T_BYTE:
 			switch (value_type) {
 			case T_INT:
 			case T_CHAR:
-//			case T_WCHAR:
 			case T_BYTE:
 				return;
 				break;
@@ -204,7 +215,6 @@ namespace cx{
 		switch (target_type) {
 		case T_INT:
 		case T_CHAR:
-//		case T_WCHAR:
 		case T_BYTE:
 			return;
 			break;
@@ -223,6 +233,7 @@ namespace cx{
 	 * @param p_type2 : ptr to the second operand's type object or nullptr.
 	 */
 	void check_boolean(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+		// TODO Check boolean
 		/*if ((p_type1->base_type() != p_boolean_type.get())
 			|| ((p_type2 != nullptr) && (p_type2->base_type() != p_boolean_type.get()))) {
 			cx_error(ERR_INCOMPATIBLE_TYPES);

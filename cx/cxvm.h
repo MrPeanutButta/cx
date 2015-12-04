@@ -1,8 +1,25 @@
 /*
-* File:   cxvm.h
-* Author: aaron.hebert@gmail.com
-*
-* Created on October 7, 2014, 12:19 AM
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 
 #ifndef CXVM_H
@@ -89,14 +106,15 @@ namespace cx {
 		DEQ_EQ,
 		DGT,
 		DGT_EQ,
+		DINC,
 		DLOAD,
 		DLT,
 		DLT_EQ,
 		DMUL,
 		DNEG,
 		DNOT_EQ,
+		DPOS,
 		DREM,
-		DRETURN,
 		DSTORE,
 		DSUB,
 		DUP,
@@ -108,7 +126,6 @@ namespace cx {
 		GETFIELD,
 		GETSTATIC,
 		GOTO,
-		HALT,
 		I2B,
 		I2C,
 		I2D,
@@ -154,8 +171,8 @@ namespace cx {
 		INVOKESTATIC,
 		INVOKEVIRTUAL,
 		IOR,
+		IPOS,
 		IREM,
-		IRETURN,
 		ISHL,
 		ISHR,
 		ISTORE,
@@ -183,13 +200,9 @@ namespace cx {
 		PREOP,
 		PUTFIELD,
 		PUTSTATIC,
-		RET,
 		RETURN,
 		SWAP,
 		TABLESWITCH,
-		WALOAD,
-		WASTORE,
-		WIDE,
 		BREAK_MARKER
 	};
 
@@ -234,6 +247,7 @@ namespace cx {
 	public:
 		
 		value *push(void);
+		value *pop(void);
 		void enter_function(symbol_table_node *p_function_id);
 		void go(void);
 		cxvm();

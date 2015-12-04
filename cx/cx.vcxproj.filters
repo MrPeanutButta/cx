@@ -28,17 +28,20 @@
     <Filter Include="Standard Library\lib">
       <UniqueIdentifier>{0cdb9356-24e8-4592-a73b-93a9fa9dc65b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Documentation\dev">
-      <UniqueIdentifier>{727f67b1-d803-4dad-a3be-b27b50e315c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Documentation\cx language">
-      <UniqueIdentifier>{684eef4f-6c2e-4161-b030-a1c07e72e755}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Examples">
       <UniqueIdentifier>{2155e37f-bcce-439b-8b16-a624c4c14d56}</UniqueIdentifier>
     </Filter>
     <Filter Include="Snippits">
       <UniqueIdentifier>{15f14760-ce3e-49b0-9748-f21480f9d15c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documentation\dev">
+      <UniqueIdentifier>{230c1ad0-34c7-4578-9e6f-847b1789cc08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documentation\language reference">
+      <UniqueIdentifier>{95b0e866-476b-4f58-9b34-534a3fb5ac46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\notepad++">
+      <UniqueIdentifier>{a1954634-dc4b-4ba1-84f7-db926d15b45b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,9 +144,6 @@
     <ClCompile Include="..\examples\reopen.cxx">
       <Filter>Examples</Filter>
     </ClCompile>
-    <ClCompile Include="..\examples\test.cxx">
-      <Filter>Examples</Filter>
-    </ClCompile>
     <ClCompile Include="..\examples\to_str.cxx">
       <Filter>Examples</Filter>
     </ClCompile>
@@ -208,53 +208,58 @@
     <None Include="..\stdlib\lib\std\std.def">
       <Filter>Standard Library\lib</Filter>
     </None>
-    <None Include="..\doc\preprocessors">
-      <Filter>Documentation\dev</Filter>
-    </None>
-    <None Include="..\doc\draft\cx_coding_standards.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\data-types.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\directives.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\doc.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\expr.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\expression_design (draft).md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\extending.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\if.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\index.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\io.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\keywords.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\kw-template.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\operators.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
-    <None Include="..\doc\draft\ptypes.md">
-      <Filter>Documentation\cx language</Filter>
-    </None>
     <None Include="..\README.md">
       <Filter>Documentation</Filter>
     </None>
+    <None Include="..\LICENSE">
+      <Filter>Documentation</Filter>
+    </None>
+    <None Include="..\doc\dev\cx_coding_standards.md">
+      <Filter>Documentation\dev</Filter>
+    </None>
+    <None Include="..\doc\dev\preprocessors">
+      <Filter>Documentation\dev</Filter>
+    </None>
+    <None Include="..\doc\language reference\directives.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\doc.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\extending.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\if.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\index.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\io.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\keywords.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\kw-template.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\operators.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\types.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\doc\language reference\expressions.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
+    <None Include="..\examples\test.cx">
+      <Filter>Examples</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\notepad++\userDefineLang_Cx.xml">
+      <Filter>Resource Files\notepad++</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

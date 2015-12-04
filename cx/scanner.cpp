@@ -1,3 +1,27 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #include <map>
 #include "scanner.h"
 
@@ -16,39 +40,38 @@ namespace cx{
 		char i;
 
 		// Initialize the character code map.
-		for (i = 'a'; i <= 'z'; ++i) char_map[i] = CC_LETTER;
-		for (i = 'A'; i <= 'Z'; ++i) char_map[i] = CC_LETTER;
-		for (i = '0'; i <= '9'; ++i) char_map[i] = CC_DIGIT;
+		for (i = L'a'; i <= L'z'; ++i) char_map[i] = CC_LETTER;
+		for (i = L'A'; i <= L'Z'; ++i) char_map[i] = CC_LETTER;
+		for (i = L'0'; i <= L'9'; ++i) char_map[i] = CC_DIGIT;
 
-		char_map['_'] = CC_LETTER;
+		char_map[L'_'] = CC_LETTER;
 
-		char_map['+'] = char_map['-'] = CC_SPECIAL;
-		char_map['*'] = char_map['/'] = CC_SPECIAL;
-		char_map['='] = char_map['^'] = CC_SPECIAL;
-		char_map['.'] = char_map[','] = CC_SPECIAL;
-		char_map['<'] = char_map['>'] = CC_SPECIAL;
-		char_map['('] = char_map[')'] = CC_SPECIAL;
-		char_map['['] = char_map[']'] = CC_SPECIAL;
-		char_map['{'] = char_map['}'] = CC_SPECIAL;
-		char_map[':'] = char_map[';'] = CC_SPECIAL;
+		char_map[L'+'] = char_map[L'-'] = CC_SPECIAL;
+		char_map[L'*'] = char_map[L'/'] = CC_SPECIAL;
+		char_map[L'='] = char_map[L'^'] = CC_SPECIAL;
+		char_map[L'.'] = char_map[L','] = CC_SPECIAL;
+		char_map[L'<'] = char_map[L'>'] = CC_SPECIAL;
+		char_map[L'('] = char_map[L')'] = CC_SPECIAL;
+		char_map[L'['] = char_map[L']'] = CC_SPECIAL;
+		char_map[L'{'] = char_map[L'}'] = CC_SPECIAL;
+		char_map[L':'] = char_map[L';'] = CC_SPECIAL;
 
-		char_map['#'] = char_map['?'] = CC_SPECIAL;
-		char_map['~'] = char_map['|'] = CC_SPECIAL;
-		char_map['&'] = char_map['!'] = CC_SPECIAL;
-		char_map['%'] = CC_SPECIAL;
+		char_map[L'#'] = char_map[L'?'] = CC_SPECIAL;
+		char_map[L'~'] = char_map[L'|'] = CC_SPECIAL;
+		char_map[L'&'] = char_map[L'!'] = CC_SPECIAL;
+		char_map[L'%'] = CC_SPECIAL;
 
-		char_map[' '] = char_map['\t'] = CC_WHITE_SPACE;
-		char_map['\n'] = char_map['\0'] = CC_WHITE_SPACE;
-		char_map['\r'] = char_map['\f'] = CC_WHITE_SPACE;
-		char_map['\\'] = CC_WHITE_SPACE;
+		char_map[L' '] = char_map[L'\t'] = CC_WHITE_SPACE;
+		char_map[L'\n'] = char_map[L'\0'] = CC_WHITE_SPACE;
+		char_map[L'\r'] = char_map[L'\f'] = CC_WHITE_SPACE;
+		char_map[L'\\'] = CC_WHITE_SPACE;
 
-		char_map['\''] = CC_QUOTE;
-		char_map['\"'] = CC_DOUBLE_QUOTE;
-		char_map['L'] = CC_DOUBLE_QUOTE;
+		char_map[L'\''] = CC_QUOTE;
+		char_map[L'\"'] = CC_DOUBLE_QUOTE;
 
 		char_map[EOF_CHAR] = CC_END_OF_FILE;
 
-		char_map['`'] = char_map['@'] = CC_ERROR;
+		char_map[L'`'] = char_map[L'@'] = CC_ERROR;
 	}
 
 	/** skip_whitespace      Repeatedly fetch characters from the
@@ -61,7 +84,7 @@ namespace cx{
 		wchar_t ch = p_text_in_buffer->current_char();
 
 		do {
-			if (char_map[(int)ch] == CC_WHITE_SPACE) {
+			if (char_map[ch] == CC_WHITE_SPACE) {
 				ch = p_text_in_buffer->get_char();
 			}
 			else if (ch == L'/') {
@@ -86,7 +109,7 @@ namespace cx{
 					break;
 				}
 			}
-		} while ((char_map[(int)ch] == CC_WHITE_SPACE) || (ch == L'/'));
+		} while ((char_map[ch] == CC_WHITE_SPACE) || (ch == L'/'));
 	}
 
 	/** get         Extract the next__ token from the text input,
@@ -102,8 +125,7 @@ namespace cx{
 		char_code code;
 
 		wchar_t ch = p_text_in_buffer->current_char();
-
-		code = char_map[(int)ch];
+		code = char_map[ch];
 
 		// Determine the token class, based on the current character.
 		switch (code) {

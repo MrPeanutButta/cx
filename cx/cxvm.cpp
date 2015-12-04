@@ -1,5 +1,25 @@
 /*
-*
+The MIT License (MIT)
+
+Copyright (c) 2015 Aaron Hebert <aaron.hebert@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 
 #include <iostream>
@@ -7,143 +27,138 @@
 #include "symtab.h"
 
 namespace cx{
-
 	const wchar_t *opcode_string[] = {
-		L"AALOAD",
-		L"AASTORE",
-		L"ACONST_NULL",
-		L"ALOAD",
-		L"ANEWARRAY",
-		L"ARRAYLENGTH",
-		L"ASTORE",
-		L"ATHROW",
-		L"BALOAD",
-		L"BASTORE",
-		L"BEQ",
-		L"BGE",
-		L"BGT",
-		L"BIPUSH",
-		L"BLE",
-		L"BLT",
-		L"BNE",
-		L"C2I",
-		L"CALL",
-		L"CALOAD",
-		L"CASTORE",
-		L"CHECKCAST",
-		L"D2F",
-		L"D2I",
-		L"D2L",
-		L"DADD",
-		L"DALOAD",
-		L"DASTORE",
-		L"DCMP",
-		L"DCONST",
-		L"DDIV",
-		L"DEQ_EQ",
-		L"DGT",
-		L"DGT_EQ",
-		L"DLOAD",
-		L"DLT",
-		L"DLT_EQ",
-		L"DMUL",
-		L"DNEG",
-		L"DNOT_EQ",
-		L"DREM",
-		L"DRETURN",
-		L"DSTORE",
-		L"DSUB",
-		L"DUP",
-		L"DUP2",
-		L"DUP2_X1",
-		L"DUP2_X2",
-		L"DUP_X1",
-		L"DUP_X2",
-		L"GETFIELD",
-		L"GETSTATIC",
-		L"GOTO",
-		L"HALT",
-		L"I2B",
-		L"I2C",
-		L"I2D",
-		L"IADD",
-		L"IALOAD",
-		L"IAND",
-		L"IASTORE",
-		L"ICMP",
-		L"ICONST",
-		L"IDIV",
-		L"IEQ_EQ",
-		L"IF_FALSE",
-		L"IFNE",
-		L"IFLT",
-		L"IFGE",
-		L"IFGT",
-		L"IFLE",
-		L"IF_ACMPEQ",
-		L"IF_ACMPNE",
-		L"IF_ICMPEQ",
-		L"IF_ICMPNE",
-		L"IF_ICMPLT",
-		L"IF_ICMPGE",
-		L"IF_ICMPGT",
-		L"IF_ICMPLE",
-		L"IFNONNULL",
-		L"IFNULL",
-		L"IGT",
-		L"IGT_EQ",
-		L"IINC",
-		L"ILOAD",
-		L"ILT",
-		L"ILT_EQ",
-		L"IMUL",
-		L"INEG",
-		L"INOT",
-		L"INOT_EQ",
-		L"INSTANCEOF",
-		L"INVOKEDYNAMIC",
-		L"INVOKEFUNCT",
-		L"INVOKEINTERFACE",
-		L"INVOKESPECIAL",
-		L"INVOKESTATIC",
-		L"INVOKEVIRTUAL",
-		L"IOR",
-		L"IREM",
-		L"IRETURN",
-		L"ISHL",
-		L"ISHR",
-		L"ISTORE",
-		L"ISUB",
-		L"IXOR",
-		L"JSR",
-		L"JSR_W",
-		L"LDC",
-		L"LDC2_W",
-		L"LDC_W",
-		L"LOOKUPSWITCH",
-		L"LOGIC_OR",
-		L"LOGIC_AND",
-		L"LOGIC_NOT",
-		L"MONITORENTER",
-		L"MONITOREXIT",
-		L"MULTIANEWARRAY",
-		L"NEW",
-		L"NEWARRAY",
-		L"NOP",
-		L"PLOAD",
-		L"POSTOP",
-		L"POP",
-		L"POP2",
-		L"PREOP",
-		L"PUTFIELD",
-		L"PUTSTATIC",
-		L"RET",
-		L"RETURN",
-		L"SWAP",
-		L"TABLESWITCH",
-		L"WALOAD",
-		L"WASTORE",
-		L"WIDE"
+		L"aaload",
+		L"aastore",
+		L"aconst_null",
+		L"aload",
+		L"anewarray",
+		L"arraylength",
+		L"astore",
+		L"athrow",
+		L"baload",
+		L"bastore",
+		L"beq",
+		L"bge",
+		L"bgt",
+		L"bipush",
+		L"ble",
+		L"blt",
+		L"bne",
+		L"c2i",
+		L"call",
+		L"caload",
+		L"castore",
+		L"checkcast",
+		L"d2f",
+		L"d2i",
+		L"d2l",
+		L"dadd",
+		L"daload",
+		L"dastore",
+		L"dcmp",
+		L"dconst",
+		L"ddiv",
+		L"deq_eq",
+		L"dgt",
+		L"dgt_eq",
+		L"dinc",
+		L"dload",
+		L"dlt",
+		L"dlt_eq",
+		L"dmul",
+		L"dneg",
+		L"dnot_eq",
+		L"dpos",
+		L"drem",
+		L"dstore",
+		L"dsub",
+		L"dup",
+		L"dup2",
+		L"dup2_x1",
+		L"dup2_x2",
+		L"dup_x1",
+		L"dup_x2",
+		L"getfield",
+		L"getstatic",
+		L"goto",
+		L"i2b",
+		L"i2c",
+		L"i2d",
+		L"iadd",
+		L"iaload",
+		L"iand",
+		L"iastore",
+		L"icmp",
+		L"iconst",
+		L"idiv",
+		L"ieq_eq",
+		L"if_false",
+		L"ifne",
+		L"iflt",
+		L"ifge",
+		L"ifgt",
+		L"ifle",
+		L"if_acmpeq",
+		L"if_acmpne",
+		L"if_icmpeq",
+		L"if_icmpne",
+		L"if_icmplt",
+		L"if_icmpge",
+		L"if_icmpgt",
+		L"if_icmple",
+		L"ifnonnull",
+		L"ifnull",
+		L"igt",
+		L"igt_eq",
+		L"iinc",
+		L"iload",
+		L"ilt",
+		L"ilt_eq",
+		L"imul",
+		L"ineg",
+		L"inot",
+		L"inot_eq",
+		L"instanceof",
+		L"invokedynamic",
+		L"invokefunct",
+		L"invokeinterface",
+		L"invokespecial",
+		L"invokestatic",
+		L"invokevirtual",
+		L"ior",
+		L"ipos",
+		L"irem",
+		L"ishl",
+		L"ishr",
+		L"istore",
+		L"isub",
+		L"ixor",
+		L"jsr",
+		L"jsr_w",
+		L"ldc",
+		L"ldc2_w",
+		L"ldc_w",
+		L"lookupswitch",
+		L"logic_or",
+		L"logic_and",
+		L"logic_not",
+		L"monitorenter",
+		L"monitorexit",
+		L"multianewarray",
+		L"new",
+		L"newarray",
+		L"nop",
+		L"pload",
+		L"postop",
+		L"pop",
+		L"pop2",
+		L"preop",
+		L"putfield",
+		L"putstatic",
+		L"return",
+		L"swap",
+		L"tableswitch"
 	};
 
 	// turn on to view Cx debugging
@@ -214,7 +229,7 @@ namespace cx{
 	// Unary Operators
 #define _UNA_OP(t_, type, op)  { \
 	type a = _POPS->t_; \
-	_PUSHS->t_ = op(a); \
+	_PUSHS->t_ = op a; \
 				}
 
 	// Relational Operators (bool)
@@ -223,10 +238,6 @@ namespace cx{
 	type a = _POPS->t_; \
 	_PUSHS->i_ = (a op b); \
 					}
-
-#define _TRACE(t_) {\
-	std::wcout << L" " << t_ << std::endl; \
-	}\
 
 	cxvm::cxvm(){
 		// Pointer to the allocated stack
@@ -240,6 +251,10 @@ namespace cx{
 
 	value *cxvm::push(void){
 		return _PUSHS;
+	}
+
+	value *cxvm::pop(void) {
+		return _POPS;
 	}
 
 	void cxvm::enter_function(symbol_table_node *p_function_id){
@@ -273,336 +288,333 @@ namespace cx{
 	void cxvm::go(void) {
 		using namespace heap;
 
-		for (vpu.inst_ptr = vpu.code_ptr->begin();
+		try {
+			for (vpu.inst_ptr = vpu.code_ptr->begin();
 			vpu.inst_ptr < vpu.code_ptr->end();
-			vpu.inst_ptr++) {
+				vpu.inst_ptr++) {
 
-			if (cx::cx_dev_debug_flag == true) {
-				/*if (vpu.stack_ptr == &stack[_STACK_SIZE]) {
-					std::cout << "stack overflow\n";
-				}*/
-				//std::wcout << opcode_string[vpu.inst_ptr->op];
-			}
-
-			switch (vpu.inst_ptr->op){
-
-			case AALOAD: _PUSHS->a_ = _VALUE->a_; break;
-			case AASTORE: _VALUE->a_ = _POPS->a_; break;
-			case ACONST_NULL: _PUSHS->a_ = nullptr; break;
-			case ALOAD: _PUSHS->a_ = _VALUE->a_;  break;
-			case ANEWARRAY: {
-				size_t size = (size_t)_POPS->i_ * sizeof(void *);
-
-				void **mem = (void **)malloc(size);
-				assert(mem != nullptr);
-
-				mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
-
-				/* Compile with -D INSTRUCTION_TEST if testing.
-				* If undefined, RAM gets released and tests allocating RAM
-				* will fail.   */
-
-				// assign mem to smart pointer, release using free()
-				mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);
-				mem_map->size = size; // size
-				mem_map->typecode = T_REFERENCE; // type
-				mem_map->typeform = F_ARRAY;
-				_PUSHS->a_ = (void *)mem;
-			} break;
-			case ARRAYLENGTH: {
-				void *mem = _POPS->a_;
-				assert(mem != nullptr);
-				_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
-			} break;
-			case ASTORE: _VALUE->a_ = _POPS->a_; break;
-			case ATHROW: { // Throws a string message
-				char *message = (char *)_POPS->a_;
-				assert(message != nullptr);
-
-				throw std::string(message);
-			} break;
-			case BALOAD:	_ALOAD(b_, cx_byte); break;
-			case BASTORE:	_ASTORE(b_, cx_byte); break;
-			case C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); break;
-			case CALL:{
-				symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
-
-				if (cx_dev_debug_flag) {
-					_TRACE(p_function_id->node_name);
+				if (cx::cx_dev_debug_flag == true) {
+					/*if (vpu.stack_ptr == &stack[_STACK_SIZE]) {
+						std::cout << "stack overflow\n";
+					}*/
+					//std::wcout << opcode_string[vpu.inst_ptr->op] << std::endl;
 				}
 
-				std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
-				p_function_id->runstack_item = cx->push();
+				switch (vpu.inst_ptr->op) {
 
-				// Load parameters from the stack
-				std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
-				for (; parameter != p_function_id->defined.routine.p_parameter_ids.rend(); ++parameter){
-					value *p_param = _POPS;
-					parameter->get()->runstack_item = cx->push();
+				case opcode::AALOAD: _PUSHS->a_ = _VALUE->a_; break;
+				case opcode::AASTORE: _VALUE->a_ = _POPS->a_; break;
+				case opcode::ACONST_NULL: _PUSHS->a_ = nullptr; break;
+				case opcode::ALOAD: _PUSHS->a_ = _VALUE->a_;  break;
+				case opcode::ANEWARRAY: {
+					size_t size = (size_t)_POPS->i_ * sizeof(void *);
 
-					switch (parameter->get()->p_type->typecode) {
+					void **mem = (void **)malloc(size);
+					assert(mem != nullptr);
+
+					mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
+
+					/* Compile with -D INSTRUCTION_TEST if testing.
+					* If undefined, RAM gets released and tests allocating RAM
+					* will fail.   */
+
+					// assign mem to smart pointer, release using free()
+					mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);
+					mem_map->size = size; // size
+					mem_map->typecode = T_REFERENCE; // type
+					mem_map->typeform = F_ARRAY;
+					_PUSHS->a_ = (void *)mem;
+				} break;
+				case opcode::ARRAYLENGTH: {
+					void *mem = _POPS->a_;
+					assert(mem != nullptr);
+					_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
+				} break;
+				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; break;
+				case opcode::ATHROW: { // Throws a string message
+					char *message = (char *)_POPS->a_;
+					assert(message != nullptr);
+
+					throw std::string(message);
+				} break;
+				case opcode::BALOAD:	_ALOAD(b_, cx_byte); break;
+				case opcode::BASTORE:	_ASTORE(b_, cx_byte); break;
+				case opcode::C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); break;
+				case opcode::CALL: {
+					symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
+
+					std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
+					p_function_id->runstack_item = cx->push();
+					p_function_id->runstack_item->a_ = nullptr;
+
+					// Load parameters from the stack
+					std::vector<std::shared_ptr<symbol_table_node>>::reverse_iterator parameter = p_function_id->defined.routine.p_parameter_ids.rbegin();
+					for (; parameter != p_function_id->defined.routine.p_parameter_ids.rend(); ++parameter) {
+						value *p_param = _POPS;
+						parameter->get()->runstack_item = cx->push();
+
+						switch (parameter->get()->p_type->typecode) {
+						case type_code::T_BOOLEAN:
+							parameter->get()->runstack_item->z_ = p_param->z_;
+							break;
+						case type_code::T_BYTE:
+							parameter->get()->runstack_item->b_ = p_param->b_;
+							break;
+						case type_code::T_CHAR:
+							parameter->get()->runstack_item->c_ = p_param->c_;
+							break;
+						case type_code::T_DOUBLE:
+							parameter->get()->runstack_item->d_ = p_param->d_;
+							break;
+						case type_code::T_INT:
+							parameter->get()->runstack_item->i_ = p_param->i_;
+							break;
+						case type_code::T_REFERENCE:
+							parameter->get()->runstack_item->a_ = p_param->a_;
+							break;
+						}
+					}
+
+					cx->enter_function(p_function_id);
+					cx->go();
+
+					switch (p_function_id->p_type->typecode) {
 					case type_code::T_BOOLEAN:
-						parameter->get()->runstack_item->z_ = p_param->z_;
+						_PUSHS->z_ = p_function_id->runstack_item->z_;
+
+						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->z_ << std::endl;
 						break;
 					case type_code::T_BYTE:
-						parameter->get()->runstack_item->b_ = p_param->b_;
+						_PUSHS->b_ = p_function_id->runstack_item->b_;
+
+						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->b_ << std::endl;
 						break;
 					case type_code::T_CHAR:
-						parameter->get()->runstack_item->c_ = p_param->c_;
+						_PUSHS->c_ = p_function_id->runstack_item->c_;
+
+						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->c_ << std::endl;
 						break;
 					case type_code::T_DOUBLE:
-						parameter->get()->runstack_item->d_ = p_param->d_;
+						_PUSHS->d_ = p_function_id->runstack_item->d_;
+
+						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->d_ << std::endl;
 						break;
 					case type_code::T_INT:
-						parameter->get()->runstack_item->i_ = p_param->i_;
+						_PUSHS->i_ = p_function_id->runstack_item->i_;
+
+						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->i_ << std::endl;
 						break;
 					case type_code::T_REFERENCE:
-						parameter->get()->runstack_item->a_ = p_param->a_;
+						_PUSHS->a_ = p_function_id->runstack_item->a_;
+						break;
+					case type_code::T_VOID:
+						//_POPS;
 						break;
 					}
-				}
+				} break;
+				case opcode::CALOAD: _ALOAD(c_, cx_char); break;
+				case opcode::CASTORE: _ASTORE(c_, cx_char); break;
+				case opcode::CHECKCAST: break;
 
-				cx->enter_function(p_function_id);
-				cx->go();
+					/** Duplicate the top operand stack value
+					 * Duplicate the top value on the operand stack and push
+					 * the duplicated value onto the operand stack. */
+				case opcode::DUP: {
+					value *val = (value *)(vpu.stack_ptr - 1);
+					assert(val != nullptr);
 
-				switch (p_function_id->p_type->typecode) {
-				case type_code::T_BOOLEAN:
-					_PUSHS->z_ = p_function_id->runstack_item->z_;
-					break;
-				case type_code::T_BYTE:
-					_PUSHS->b_ = p_function_id->runstack_item->b_;
-					break;
-				case type_code::T_CHAR:
-					_PUSHS->c_ = p_function_id->runstack_item->c_;
-					break;
-				case type_code::T_DOUBLE:
-					_PUSHS->d_ = p_function_id->runstack_item->d_;
-					break;
-				case type_code::T_INT:
-					_PUSHS->i_ = p_function_id->runstack_item->i_;
-					break;
-				case type_code::T_REFERENCE:
-					_PUSHS->a_ = p_function_id->runstack_item->a_;
-					break;
-				case type_code::T_VOID:
-					_POPS;
-					break;
-				}
+					// Allow the compiler to build copy CTOR
+					value *new_value_copy = new value(*val);
 
-				if (cx_dev_debug_flag) {
-					std::wcout << "function " << p_function_id->node_name << " returned " << p_function_id->runstack_item->i_ << std::endl;
-				}
+					assert(new_value_copy != nullptr);
+					assert(new_value_copy->a_ == val->a_);
 
-			} break;
-			case CALOAD: _ALOAD(c_, cx_char); break;
-			case CASTORE: _ASTORE(c_, cx_char); break;
-			case CHECKCAST: break;
+					heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(new_value_copy)]; // point to, only 1 hash calculation
 
-				/** Duplicate the top operand stack value
-				 * Duplicate the top value on the operand stack and push
-				 * the duplicated value onto the operand stack. */
-			case DUP: {
-				value *val = (value *)(vpu.stack_ptr - 1);
-				assert(val != nullptr);
+					/* Compile with -D INSTRUCTION_TEST if testing.
+					* If undefined, RAM gets released and tests that allocate RAM
+					* will fail.   */
 
-				// Allow the compiler to build copy CTOR
-				value *new_value_copy = new value(*val);
+					// Assign mem to smart pointer, release using delete
+					mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)new_value_copy));
+					mem_map->size = sizeof(value); // size
+					mem_map->typecode = T_REFERENCE; // type
+					mem_map->typeform = F_SCALAR;
 
-				assert(new_value_copy != nullptr);
-				assert(new_value_copy->a_ == val->a_);
+					// Push new copy
+					_PUSHS->a_ = (void *)new_value_copy;
 
-				heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(new_value_copy)]; // point to, only 1 hash calculation
-
-				/* Compile with -D INSTRUCTION_TEST if testing.
-				* If undefined, RAM gets released and tests that allocate RAM
-				* will fail.   */
-
-				// Assign mem to smart pointer, release using delete
-				mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)new_value_copy));
-				mem_map->size = sizeof(value); // size
-				mem_map->typecode = T_REFERENCE; // type
-				mem_map->typeform = F_SCALAR;
-
-				// Push new copy
-				_PUSHS->a_ = (void *)new_value_copy;
-
-			} break;
-			case DUP2:		break;
-			case DUP2_X1:	break;
-			case DUP2_X2:	break;
-			case DUP_X1:	break;
-			case DUP_X2:	break;
-			case D2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->d_); break;
-			case DADD:		_BIN_OP(d_, cx_real, +); break;
-			case DALOAD:	_ALOAD(d_, cx_real); break;
-			case DASTORE:	_ASTORE(d_, cx_real); break;
-			case DCONST:	_PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
-			case DDIV:		_BIN_OP(d_, cx_real, / ); break;
-			case DEQ_EQ:	_REL_OP(d_, cx_real, == ); break;
-			case DGT:		_REL_OP(d_, cx_real, > ); break;
-			case DGT_EQ:	_REL_OP(d_, cx_real, >= ); break;
-			case DLOAD:		_PUSHS->d_ = _VALUE->d_; break;
-			case DLT:		_REL_OP(d_, cx_real, < ); break;
-			case DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;
-			case DMUL:		_BIN_OP(d_, cx_real, *); break;
-			case DNEG:		_UNA_OP(d_, cx_real, -); break;
-			case DNOT_EQ:	_REL_OP(d_, cx_real, != ); break;
-			case DREM: {
-				cx_real b = _POPS->d_;
-				cx_real a = _POPS->d_;
-
-				_PUSHS->d_ = fmod(a, b);
-			}break;
-			case DSTORE:	_VALUE->d_ = _POPS->d_; break;
-			case DSUB:		_BIN_OP(d_, cx_real, -); break;
-			case GETFIELD: break;
-			case GETSTATIC: break;
-			case GOTO: {
-				cx_int location = vpu.inst_ptr->arg0.i_;
-				vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
-			} break;
-			case I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
-			case I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
-			case I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
-			case IADD:		_BIN_OP(i_, cx_int, +); break;
-			case IALOAD:	_ALOAD(i_, cx_int); break;
-			case ILT:		_REL_OP(i_, cx_int, < ); break;
-				// Bitwise AND
-			case IAND:		_BIN_OP(i_, cx_int, &); break;
-			case IASTORE:	_ASTORE(i_, cx_int); break;
-			case ICMP:
-				break;
-			case ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
-			case IDIV:		_BIN_OP(i_, cx_int, / ); break;
-			case IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
-			case IF_FALSE:
-			{
-				cx_int is_true = _POPS->i_;
-				if (is_true == 0) {
+				} break;
+				case opcode::DUP2:		break;
+				case opcode::DUP2_X1:	break;
+				case opcode::DUP2_X2:	break;
+				case opcode::DUP_X1:	break;
+				case opcode::DUP_X2:	break;
+				case opcode::D2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->d_); break;
+				case opcode::DADD:		_BIN_OP(d_, cx_real, +); break;
+				case opcode::DALOAD:	_ALOAD(d_, cx_real); break;
+				case opcode::DASTORE:	_ASTORE(d_, cx_real); break;
+				case opcode::DCONST:	_PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
+				case opcode::DDIV:		_BIN_OP(d_, cx_real, / ); break;
+				case opcode::DEQ_EQ:	_REL_OP(d_, cx_real, == ); break;
+				case opcode::DGT:		_REL_OP(d_, cx_real, > ); break;
+				case opcode::DGT_EQ:	_REL_OP(d_, cx_real, >= ); break;
+				case opcode::DINC:		_VALUE->d_ += vpu.inst_ptr->arg1.d_; break;
+				case opcode::DLOAD:		_PUSHS->d_ = _VALUE->d_; break;
+				case opcode::DLT:		_REL_OP(d_, cx_real, < ); break;
+				case opcode::DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;
+				case opcode::DMUL:		_BIN_OP(d_, cx_real, *); break;
+				case opcode::DNEG:		_PUSHS->d_ = -abs(_POPS->d_); break;
+				case opcode::DNOT_EQ:	_REL_OP(d_, cx_real, != ); break;
+				case opcode::DPOS:		_PUSHS->d_ = abs(_POPS->d_); break;
+				case opcode::DREM: {
+					cx_real b = _POPS->d_;
+					cx_real a = _POPS->d_;
+					_PUSHS->d_ = fmod(a, b);
+				}break;
+				case opcode::DSTORE:	_VALUE->d_ = _POPS->d_; break;
+				case opcode::DSUB:		_BIN_OP(d_, cx_real, -); break;
+				case opcode::GETFIELD: break;
+				case opcode::GETSTATIC: break;
+				case opcode::GOTO: {
 					cx_int location = vpu.inst_ptr->arg0.i_;
 					vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
-				}
-			}break;
-			case IFNE: _IF(!= ); break;
-			case IFLT: _IF(< ); break;
-			case IFGE: _IF(>= ); break;
-			case IFGT: _IF(> ); break;
-			case IFLE: _IF(<= ); break;
+				} break;
+				case opcode::I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
+				case opcode::I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
+				case opcode::I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
+				case opcode::IADD:		_BIN_OP(i_, cx_int, +); break;
+				case opcode::IALOAD:	_ALOAD(i_, cx_int); break;
+				case opcode::ILT:		_REL_OP(i_, cx_int, < ); break;
+					// Bitwise AND
+				case opcode::IAND:		_BIN_OP(i_, cx_int, &); break;
+				case opcode::IASTORE:	_ASTORE(i_, cx_int); break;
+				case opcode::ICMP:
+					break;
+				case opcode::ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
+				case opcode::IDIV:		_BIN_OP(i_, cx_int, / ); break;
+				case opcode::IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
+				case opcode::IF_FALSE:
+				{
+					if (!_POPS->z_) {
+						cx_int location = vpu.inst_ptr->arg0.i_;
+						vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
+					}
+				}break;
+				case opcode::IFNE: _IF(!= ); break;
+				case opcode::IFLT: _IF(< ); break;
+				case opcode::IFGE: _IF(>= ); break;
+				case opcode::IFGT: _IF(> ); break;
+				case opcode::IFLE: _IF(<= ); break;
 
-			case IF_ACMPEQ: {
-				void *value2 = _POPS->a_;
-				void *value1 = _POPS->a_;
+				case opcode::IF_ACMPEQ: {
+					void *value2 = _POPS->a_;
+					void *value1 = _POPS->a_;
 
-				if (!memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
-			} break;
+					if (!memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
+				} break;
 
-			case IF_ACMPNE: {
-				void *value2 = _POPS->a_;
-				void *value1 = _POPS->a_;
+				case opcode::IF_ACMPNE: {
+					void *value2 = _POPS->a_;
+					void *value1 = _POPS->a_;
 
-				if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
-			} break;
+					if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
+				} break;
 
-			case IF_ICMPEQ: _IFICMP(== ); break;
-			case IF_ICMPNE: _IFICMP(!= ); break;
-			case IF_ICMPLT: _IFICMP(< ); break;
-			case IF_ICMPGE: _IFICMP(>= ); break;
-			case IF_ICMPGT: _IFICMP(> ); break;
-			case IF_ICMPLE: _IFICMP(<= ); break;
-			case IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); break;
-			case IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); break;
-			case IGT:		_REL_OP(i_, cx_int, > ); break;
-			case IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
-			case IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; break;
-			case ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
-			case ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
-			case IMUL:		_BIN_OP(i_, cx_int, *); break;
-			case INEG:		_UNA_OP(i_, cx_int, -); break;
-				// Unary complement (bit inversion)
-			case INOT: 		_UNA_OP(i_, cx_int, ~); break;
-			case INOT_EQ:	_REL_OP(i_, cx_int, != ); break;
-			case INSTANCEOF: break;
-			case INVOKEDYNAMIC: break;
-			case INVOKEFUNCT: break;
-			case INVOKEINTERFACE: break;
-			case INVOKESPECIAL: break;
-			case INVOKESTATIC: break;
-			case INVOKEVIRTUAL: break;
-				// Bitwise inclusive OR
-			case IOR:		_BIN_OP(i_, cx_int, | ); break;
-			case IREM: 		_BIN_OP(i_, cx_int, %); break;
-			case ISHL: 		_BIN_OP(i_, cx_int, << ); break;
-			case ISHR: 		_BIN_OP(i_, cx_int, >> ); break;
-			case ISTORE:	_VALUE->i_ = _POPS->i_; break;
-			case ISUB:		_BIN_OP(i_, cx_int, -); break;
-				// Bitwise exclusive OR
-			case IXOR: 		_BIN_OP(i_, cx_int, ^); break;
-			case JSR:
-			case JSR_W: break;
-			case LDC:
-			case LDC2_W:
-			case LDC_W: break;
-			case LOOKUPSWITCH: break;
-			case LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); break;
-			case LOGIC_AND:	_BIN_OP(z_, cx_bool, &&); break;
- 			case LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; break;
-			case MONITORENTER:
-			case MONITOREXIT: break;
-			case MULTIANEWARRAY: break;
-			case NEW: break;
+				case opcode::IF_ICMPEQ: _IFICMP(== ); break;
+				case opcode::IF_ICMPNE: _IFICMP(!= ); break;
+				case opcode::IF_ICMPLT: _IFICMP(< ); break;
+				case opcode::IF_ICMPGE: _IFICMP(>= ); break;
+				case opcode::IF_ICMPGT: _IFICMP(> ); break;
+				case opcode::IF_ICMPLE: _IFICMP(<= ); break;
+				case opcode::IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); break;
+				case opcode::IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); break;
+				case opcode::IGT:		_REL_OP(i_, cx_int, > ); break;
+				case opcode::IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
+				case opcode::IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; break;
+				case opcode::ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
+				case opcode::ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
+				case opcode::IMUL:		_BIN_OP(i_, cx_int, *); break;
+				case opcode::INEG:		_PUSHS->i_ = -abs(_POPS->i_); break;
+					// Unary complement (bit inversion)
+				case opcode::INOT: 		_UNA_OP(i_, cx_int, ~); break;
+				case opcode::INOT_EQ:	_REL_OP(i_, cx_int, != ); break;
+				case opcode::INSTANCEOF: break;
+				case opcode::INVOKEDYNAMIC: break;
+				case opcode::INVOKEFUNCT: break;
+				case opcode::INVOKEINTERFACE: break;
+				case opcode::INVOKESPECIAL: break;
+				case opcode::INVOKESTATIC: break;
+				case opcode::INVOKEVIRTUAL: break;
+					// Bitwise inclusive OR
+				case opcode::IOR:		_BIN_OP(i_, cx_int, | ); break;
+				case opcode::IPOS: 		_PUSHS->i_ = abs(_POPS->i_); break;
+				case opcode::IREM: 		_BIN_OP(i_, cx_int, %); break;
+				case opcode::ISHL: 		_BIN_OP(i_, cx_int, << ); break;
+				case opcode::ISHR: 		_BIN_OP(i_, cx_int, >> ); break;
+				case opcode::ISTORE:	_VALUE->i_ = _POPS->i_; break;
+				case opcode::ISUB:		_BIN_OP(i_, cx_int, -); break;
+					// Bitwise exclusive OR
+				case opcode::IXOR: 		_BIN_OP(i_, cx_int, ^); break;
+				case opcode::JSR:
+				case opcode::JSR_W: break;
+				case opcode::LDC:
+				case opcode::LDC2_W:
+				case opcode::LDC_W: break;
+				case opcode::LOOKUPSWITCH: break;
+				case opcode::LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); break;
+				case opcode::LOGIC_AND:	_BIN_OP(z_, cx_bool, &&); break;
+				case opcode::LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; break;
+				case opcode::MONITORENTER:
+				case opcode::MONITOREXIT: break;
+				case opcode::MULTIANEWARRAY: break;
+				case opcode::NEW: break;
 
-				/** newarray: allocate new array
-				 * @param: vpu.stack_ptr[-1].l_ - number of elements
-				 * @param: vpu.inst_ptr->arg0.b_ - type code
-				 * @return: new array allocation managed by GC */
-			case NEWARRAY: {
-				type_code dt;
-				size_t size = static_cast<size_t>(_POPS->i_ * type_size[(dt = static_cast<type_code> (vpu.inst_ptr->arg0.b_))]);
+					/** newarray: allocate new array
+					 * @param: vpu.stack_ptr[-1].l_ - number of elements
+					 * @param: vpu.inst_ptr->arg0.b_ - type code
+					 * @return: new array allocation managed by GC */
+				case opcode::NEWARRAY: {
+					type_code dt;
+					size_t size = static_cast<size_t>(_POPS->i_ * type_size[(dt = static_cast<type_code> (vpu.inst_ptr->arg0.b_))]);
 
-				void *mem = malloc(size);
-				assert(mem != nullptr);
+					void *mem = malloc(size);
+					assert(mem != nullptr);
 
-				heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
+					heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
 
-				/* Compile with -D INSTRUCTION_TEST if testing.
-				* If undefined, RAM gets released and tests allocating RAM
-				* will fail.   */
+					/* Compile with -D INSTRUCTION_TEST if testing.
+					* If undefined, RAM gets released and tests allocating RAM
+					* will fail.   */
 
-				// assign mem to smart pointer, release using free()
-				mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)mem, free));
-				mem_map->size = size; // size
-				mem_map->typecode = dt; // type
-				mem_map->typeform = F_ARRAY;
-				_PUSHS->a_ = mem;
-			} break;
-			case NOP: break;
-			case PLOAD: _PUSHS->a_ = _VALUE->a_; break;
-			case POP: _POPS; break;
-			case POP2: _POPS; _POPS; break;
-			case PUTFIELD: break;
-			case PUTSTATIC: break;
-			case RET:
-			case RETURN:
-				return;
-				break;
-			case SWAP: break;
-			case TABLESWITCH: break;
-			case WALOAD: _ALOAD(c_, cx_char); break;
-			case WASTORE: _ASTORE(c_, cx_char); break;
-			case WIDE: break;
+					// assign mem to smart pointer, release using free()
+					mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)mem, free));
+					mem_map->size = size; // size
+					mem_map->typecode = dt; // type
+					mem_map->typeform = type_form::F_ARRAY;
+					_PUSHS->a_ = mem;
+				} break;
+				case opcode::NOP: break;
+				case opcode::PLOAD: _PUSHS->a_ = _VALUE->a_; break;
+				case opcode::POP: _POPS; break;
+				case opcode::POP2: _POPS; _POPS; break;
+				case opcode::PUTFIELD: break;
+				case opcode::PUTSTATIC: break;
+				case opcode::RETURN:
+					return;
+					break;
+				case opcode::SWAP: break;
+				case opcode::TABLESWITCH: break;
+				} //switch
+			} // for
+		}
 
-				/**
-				 * Halts VM and returns
-				 * @param prog
-				 * @return exit status (int)
-				 */
-			case HALT:
-				goto end;
-			} //switch
-		} // for
+		catch (std::exception ex) {
+			std::cerr << ex.what();
+			std::wcerr << L"caught fatal exception in: " << this->p_my_function_id->node_name << std::endl;
+			throw ex;
+		}
 
-	end:
-		// return frame header
 		return;
 	}
 }
