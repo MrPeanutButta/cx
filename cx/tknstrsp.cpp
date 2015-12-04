@@ -110,49 +110,6 @@ namespace cx{
 		*ps = L'\0';
 	}
 
-///*	void string_token::wget(text_in_buffer &buffer) {
-//		wchar_t ch = (buffer.current_char() | buffer.current_char() | buffer.current_char() | buffer.current_char());
-//		wchar_t *ps = string; // ptr to char in string
-//
-//		*ps++ = L'\"'; // opening quote
-//
-//		// get the string.
-//
-//		ch = buffer.get_char(); // first char after opening quote
-//
-//		while (ch != EOF_CHAR) {
-//
-//			if (ch == L'\"') { // look for another quote
-//
-//				/* Fetched a quote.  Now check for an adjacent quote,
-//				* since two consecutive quotes represent a single
-//				* quote in the string. */
-///*				ch = buffer.get_char();
-//				if (ch != L'\"') break; /* not another quote, so previous
-//									   * quote ended the string */
-//			}// Replace the end of line character with a blank.
-//			else if (ch == L'\0') ch = L' ';
-//
-//			if (ch == L'\\') {
-//				// TODO needs to check wchar
-//				*ps++ = get_escape_char(buffer.get_char());
-//			}
-//			else {
-//				// Append current char to string, then get the next__ char.
-//				*ps++ = ch;
-//			}
-//
-//			ch = buffer.get_char();
-//		}
-//
-//		if (ch == EOF_CHAR) cx_error(ERR_UNEXPECTED_EOF);
-//
-//		*ps++ = L'\"'; // closing quote
-//		*ps = L'\0';
-//
-//		this->code__ = TC_WSTRING;
-//	}
-
 	/** get         Extract single quoted char ' '
 	 *
 	 * @param buffer : ptr to text input buffer.

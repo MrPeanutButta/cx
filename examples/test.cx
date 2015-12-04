@@ -4,6 +4,56 @@ If a language feature is implemented, the test should
 be located in this file.
 */
 
+// Euclidean Greatest Common Divisor (GCD) algorithm
+int igcd(int x,  int y){
+	if(x == y){
+		return x;
+	}else if(x < y){
+		return igcd(x, y - x);
+	}
+	
+	return igcd(x - y, y);
+}
+
+// Binary numeral system (base 2) square root (integer)
+int isqrt(int num) {
+    int res = 0;
+    int bit = 1 << 62; // The second-to-top bit is set: 1 << 30 for 32 bits
+ 
+    // "bit" starts at the highest power of four <= the argument.
+    while (bit > num)
+        bit >>= 1;
+        
+    while (bit != 0) {
+        if (num >= res + bit) {
+            num -= res + bit;
+            res = (res >> 1) + bit;
+        }
+        else
+            res >>= 1;
+			
+        bit >>= 2;
+    }
+	
+    return res;
+}
+
+int neg_test_0(int i){
+	return -i;
+}
+
+int pos_test_0(int i){
+	return +i;
+}
+
+real neg_test_1(real d){
+	return -d;
+}
+
+real pos_test_1(real d){
+	return +d;
+}
+
 int assembly_test_0(int i){
 	
 	int a;
@@ -120,7 +170,6 @@ bool operator_test_0(){
 	return true;
 }
 
-
 // Basic performance testing
 int benchmark_test_0(){
 	int s = 0;
@@ -199,6 +248,15 @@ int if_test_0(int count){
 	return 0;
 }
 
+int if_test_1(int i){
+	if(i > 0)
+		i = 5;
+	else
+		i = 10;
+		
+	return i;
+}
+
 // Do loop testing
 int do_test_0(int count){
 	int i = 0;
@@ -275,8 +333,17 @@ bool hex_test_0_pass = (hex_test_0() == 255);
 bool octal_test_0_pass = (octal_test_0() == 255);
 bool assembly_test_0_pass = (assembly_test_0(100) == 1355);
 bool operator_test_0_pass = operator_test_0();
+bool pos_test_0_pass = (pos_test_0(-5) == 5);
+bool neg_test_0_pass = (neg_test_0(5) == -5);
+bool pos_test_1_pass = (pos_test_1(-5.5) == 5.5);
+bool neg_test_1_pass = (neg_test_1(5.5) == -5.5);
+bool gcd_pass = (igcd(100,1000) == 100);
+bool sqr_root_pass = (isqrt(1048576) == 1024);
+//bool if_test_1_pass = (if_test_1(1) == 5);
+//bool if_test_1_pass = (if_test_1(-1) == 10);
 
 // TEST HOOK
 // return benchmark_test_1();
+// return benchmark_test_0();
 
-return benchmark_test_0();
+return sqr_root_pass;

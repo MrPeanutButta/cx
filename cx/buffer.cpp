@@ -148,6 +148,7 @@ namespace cx{
 
 			p_char = text; // point to first source line char
 
+			std::wcout << text << std::endl;
 			// just buffer current line, we can display on error
 			list.wbuffer(
 				text,

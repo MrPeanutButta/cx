@@ -230,7 +230,7 @@ namespace cx{
 
 	// TODO add ++ --
 	const token_code tokenlist_unary_ops[] = {
-		TC_PLUS, TC_MINUS, TC_BIT_NOT,TC_LOGIC_NOT, TC_DUMMY
+		TC_PLUS, TC_MINUS, TC_BIT_NOT, TC_LOGIC_NOT, TC_DUMMY
 	};
 
 	const token_code tokenlist_add_ops[] = {

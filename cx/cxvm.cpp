@@ -69,6 +69,7 @@ namespace cx{
 		L"dmul",
 		L"dneg",
 		L"dnot_eq",
+		L"dpos",
 		L"drem",
 		L"dstore",
 		L"dsub",
@@ -126,6 +127,7 @@ namespace cx{
 		L"invokestatic",
 		L"invokevirtual",
 		L"ior",
+		L"ipos",
 		L"irem",
 		L"ishl",
 		L"ishr",
@@ -227,7 +229,7 @@ namespace cx{
 	// Unary Operators
 #define _UNA_OP(t_, type, op)  { \
 	type a = _POPS->t_; \
-	_PUSHS->t_ = op(a); \
+	_PUSHS->t_ = op a; \
 				}
 
 	// Relational Operators (bool)
@@ -294,7 +296,7 @@ namespace cx{
 				/*if (vpu.stack_ptr == &stack[_STACK_SIZE]) {
 					std::cout << "stack overflow\n";
 				}*/
-				//std::wcout << opcode_string[vpu.inst_ptr->op];
+				//std::wcout << opcode_string[vpu.inst_ptr->op] << std::endl;
 			}
 
 			switch (vpu.inst_ptr->op){
@@ -378,24 +380,34 @@ namespace cx{
 				switch (p_function_id->p_type->typecode) {
 				case type_code::T_BOOLEAN:
 					_PUSHS->z_ = p_function_id->runstack_item->z_;
+
+					std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->z_ << std::endl;
 					break;
 				case type_code::T_BYTE:
 					_PUSHS->b_ = p_function_id->runstack_item->b_;
+
+					std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->b_ << std::endl;
 					break;
 				case type_code::T_CHAR:
 					_PUSHS->c_ = p_function_id->runstack_item->c_;
+
+					std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->c_ << std::endl;
 					break;
 				case type_code::T_DOUBLE:
 					_PUSHS->d_ = p_function_id->runstack_item->d_;
+
+					std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->d_ << std::endl;
 					break;
 				case type_code::T_INT:
 					_PUSHS->i_ = p_function_id->runstack_item->i_;
+
+					std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->i_ << std::endl;
 					break;
 				case type_code::T_REFERENCE:
 					_PUSHS->a_ = p_function_id->runstack_item->a_;
 					break;
 				case type_code::T_VOID:
-					_POPS;
+					//_POPS;
 					break;
 				}
 			} break;
@@ -451,8 +463,9 @@ namespace cx{
 			case opcode::DLT:		_REL_OP(d_, cx_real, < ); break;
 			case opcode::DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;
 			case opcode::DMUL:		_BIN_OP(d_, cx_real, *); break;
-			case opcode::DNEG:		_UNA_OP(d_, cx_real, -); break;
+			case opcode::DNEG:		_PUSHS->d_ = -abs(_POPS->d_); break;
 			case opcode::DNOT_EQ:	_REL_OP(d_, cx_real, != ); break;
+			case opcode::DPOS:		_PUSHS->d_ = abs(_POPS->d_); break;
 			case opcode::DREM: {
 				cx_real b = _POPS->d_;
 				cx_real a = _POPS->d_;
@@ -483,8 +496,7 @@ namespace cx{
 			case opcode::IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
 			case opcode::IF_FALSE:
 			{
-				cx_int is_true = _POPS->i_;
-				if (is_true == 0) {
+				if (!_POPS->z_) {
 					cx_int location = vpu.inst_ptr->arg0.i_;
 					vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
 				}
@@ -523,7 +535,7 @@ namespace cx{
 			case opcode::ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
 			case opcode::ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
 			case opcode::IMUL:		_BIN_OP(i_, cx_int, *); break;
-			case opcode::INEG:		_UNA_OP(i_, cx_int, -); break;
+			case opcode::INEG:		_PUSHS->i_ = -abs(_POPS->i_); break;
 				// Unary complement (bit inversion)
 			case opcode::INOT: 		_UNA_OP(i_, cx_int, ~); break;
 			case opcode::INOT_EQ:	_REL_OP(i_, cx_int, != ); break;
@@ -536,6 +548,7 @@ namespace cx{
 			case opcode::INVOKEVIRTUAL: break;
 				// Bitwise inclusive OR
 			case opcode::IOR:		_BIN_OP(i_, cx_int, | ); break;
+			case opcode::IPOS: 		_PUSHS->i_ = abs(_POPS->i_); break;
 			case opcode::IREM: 		_BIN_OP(i_, cx_int, %); break;
 			case opcode::ISHL: 		_BIN_OP(i_, cx_int, << ); break;
 			case opcode::ISHR: 		_BIN_OP(i_, cx_int, >> ); break;

@@ -651,7 +651,6 @@ namespace cx{
 
 		p_result_type = parse_term(p_function_id);
 
-		// TODO ++ -- should be in this section
 		if (unary_op_flag) {
 			switch (unary_op){
 			case TC_LOGIC_NOT:
@@ -662,14 +661,23 @@ namespace cx{
 				check_bitwise_integer(p_result_type);
 				this->emit(p_function_id, opcode::INOT);
 				break;
-			case TC_PLUS: // TODO use ABS?
+			case TC_PLUS:
 				check_integer_or_real(p_result_type, nullptr);
-				//this->emit(p_function_id, opcode::I);
+				if (p_result_type->typecode == T_INT) {
+					this->emit(p_function_id, opcode::IPOS);
+				}
+				else {
+					this->emit(p_function_id, opcode::DPOS);
+				}
 				break;
 			case TC_MINUS:
 				check_integer_or_real(p_result_type, nullptr);
-				// TODO emit ABS
-				// TODO emit NEG
+				if (p_result_type->typecode == T_INT) {
+					this->emit(p_function_id, opcode::INEG);
+				}
+				else {
+					this->emit(p_function_id, opcode::DNEG);
+				}
 				break;
 			default:
 				break;
@@ -687,9 +695,7 @@ namespace cx{
 				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
 					ERR_INCOMPATIBLE_TYPES);
 
-//				p_result_type = parse_rvalue(p_function_id, p_result_type, p_operand_type);
 				this->emit_add(p_function_id, p_operand_type);
-
 				break;
 			case TC_MINUS:
 				check_assignment_type_compatible(p_function_id, p_result_type, p_operand_type,
@@ -700,37 +706,31 @@ namespace cx{
 			case TC_BIT_LEFTSHIFT:
 				check_bitwise_integer(p_result_type);
 				check_bitwise_integer(p_operand_type);
-
-				this->emit(p_function_id, { ISHL });
+				this->emit(p_function_id, opcode::ISHL);
 				break;
 			case TC_BIT_RIGHTSHIFT:
 				check_bitwise_integer(p_result_type);
 				check_bitwise_integer(p_operand_type);
-
-				this->emit(p_function_id, { ISHR });
+				this->emit(p_function_id, opcode::ISHR);
 				break;
 			case TC_BIT_AND:
 				check_bitwise_integer(p_result_type);
 				check_bitwise_integer(p_operand_type);
-
-				this->emit(p_function_id, { IAND });
+				this->emit(p_function_id, opcode::IAND);
 				break;
 			case TC_BIT_XOR:
 				check_bitwise_integer(p_result_type);
 				check_bitwise_integer(p_operand_type);
-
-				this->emit(p_function_id, { IXOR });
+				this->emit(p_function_id, opcode::IXOR);
 				break;
 			case TC_BIT_OR:
 				check_bitwise_integer(p_result_type);
 				check_bitwise_integer(p_operand_type);
-
-				this->emit(p_function_id, { IOR });
+				this->emit(p_function_id, opcode::IOR);
 				break;
 			case TC_LOGIC_OR:
 				check_boolean(p_result_type, p_operand_type);
-
-				this->emit(p_function_id, { LOGIC_OR });
+				this->emit(p_function_id, opcode::LOGIC_OR);
 				break;
 			default:
 				break;
@@ -920,10 +920,8 @@ namespace cx{
 			}
 		}
 		break;
-		case TC_NUMBER:
-		{
+		case TC_NUMBER:{
 			symbol_table_node_ptr p_node = search_all(p_token->string);
-			opcode opr = opcode::NOP;
 
 			if (p_node == nullptr) {
 				p_node = enter_local(p_token->string);
@@ -933,21 +931,19 @@ namespace cx{
 			case T_INT:
 				p_node->p_type = p_integer_type;
 				p_node->defined.constant.value.i_ = p_token->value().i_;
-				opr = ICONST;
+				this->emit(p_function_id, opcode::ICONST, p_node->defined.constant.value.i_);
 				break;
 			case T_DOUBLE:
 				p_node->p_type = p_double_type;
 				p_node->defined.constant.value.d_ = p_token->value().d_;
-				opr = DCONST;
+				this->emit(p_function_id, opcode::DCONST, p_node->defined.constant.value.d_);
 				break;
 			default:
 				cx_error(ERR_INCOMPATIBLE_ASSIGNMENT);
 			}
 
-			get_token();
 			p_result_type = p_node->p_type;
-			this->emit(p_function_id, opr, p_node->defined.constant.value);
-
+			get_token();
 		}break;
 		case TC_CHAR: // TODO TC_WCHAR
 		{
@@ -1239,7 +1235,7 @@ namespace cx{
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-				this->emit(p_function_id, ISHL);
+				this->emit(p_function_id, opcode::ISHL);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1251,7 +1247,7 @@ namespace cx{
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-				this->emit(p_function_id, ISHR);
+				this->emit(p_function_id, opcode::ISHR);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1263,7 +1259,7 @@ namespace cx{
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-				this->emit(p_function_id, IAND);
+				this->emit(p_function_id, opcode::IAND);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1275,7 +1271,7 @@ namespace cx{
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-				this->emit(p_function_id, IXOR);
+				this->emit(p_function_id, opcode::IXOR);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1287,7 +1283,7 @@ namespace cx{
 				check_bitwise_integer(p_result_type, p_expr_type);
 				check_assignment_type_compatible(p_function_id, p_result_type, p_expr_type,
 					ERR_INCOMPATIBLE_ASSIGNMENT);
-				this->emit(p_function_id, IOR);
+				this->emit(p_function_id, opcode::IOR);
 				this->emit_store(p_function_id, p_id);
 			}
 			break;
@@ -1511,8 +1507,8 @@ namespace cx{
 			}
 
 			symbol_table_node_ptr p_param = nullptr;
-				p_param = enter_new_local(p_token->string, DC_REFERENCE);
-				get_token();
+			p_param = enter_new_local(p_token->string, DC_VARIABLE);
+			get_token();
 			p_param->p_type = p_node->p_type;
 			p_function_id->defined.routine.p_parameter_ids.push_back(p_param);
 
@@ -1566,7 +1562,7 @@ namespace cx{
 		//get_token();
 		cx_type::type_ptr p_result_type = nullptr;
 		p_result_type = parse_declared_subroutine_call(p_function_id, p_node_id);
-		p_function_id->defined.routine.program_code.push_back({ CALL, (void *)p_node_id.get() });
+		p_function_id->defined.routine.program_code.push_back({ CALL, p_node_id.get() });
 		return p_result_type;
 		/*return (p_function_id->defined.routine.function_type == FUNC_DECLARED) ||
 			(p_function_id->defined.routine.function_type == FUNC_FORWARD)
@@ -1591,7 +1587,7 @@ namespace cx{
 			//get_token();
 		}
 
-		return p_function_id->p_type;
+		return p_node_id->p_type;
 	}
 
 	/** parse_actual_parm_list     parse an actual parameter list:
@@ -1842,9 +1838,12 @@ namespace cx{
 		parse_statement(p_function_id);
 		symtab_stack.exit_scope();
 
+		int if_end = current_location(p_function_id);
+		//this->emit(p_function_id, opcode::GOTO, 0);
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, at_false_location_marker);
-		get_token();
+
+		if(token == TC_SEMICOLON) get_token();
 
 		if (token == TC_ELSE) {
 			get_token();
@@ -1855,6 +1854,8 @@ namespace cx{
 			symtab_stack.exit_scope();
 
 			this->emit(p_function_id, opcode::NOP);
+			//fixup_location_marker(p_function_id, if_end);
+			p_function_id->defined.routine.program_code.insert(p_function_id->defined.routine.program_code.begin() + if_end, { opcode::GOTO, current_location(p_function_id) });
 		}
 	}
 
@@ -1899,7 +1900,7 @@ namespace cx{
 
 		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 		parse_statement(p_function_id);
-		this->emit(p_function_id, opcode::GOTO, { for_start });
+		this->emit(p_function_id, opcode::GOTO, for_start);
 		this->emit(p_function_id, opcode::NOP);
 
 		symtab_stack.exit_scope();
@@ -2618,7 +2619,6 @@ namespace cx{
 		case T_BOOLEAN:
 		case T_BYTE:
 		case T_CHAR:
-//		case T_WCHAR:
 		case T_INT:
 			op = INOT_EQ;
 			break;
@@ -2948,6 +2948,7 @@ namespace cx{
 		switch (p_id->p_type->typecode)
 		{
 		case T_BOOLEAN:
+
 		case T_BYTE:
 		case T_CHAR:
 		case T_INT:
@@ -2963,7 +2964,7 @@ namespace cx{
 			break;
 		}
 
-		p_function_id->defined.routine.program_code.push_back({ op, (void *)p_id.get() });
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
 	}
 
 	void parser::emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_){
