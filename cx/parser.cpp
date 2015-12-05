@@ -41,18 +41,14 @@ std::vector<void *> linux_libs;
 
 namespace cx{
 	extern bool cx_dev_debug_flag;
-	// might not always be true in some cases.
-	bool exec_flag(true);
+	symbol_table_node_ptr p_program_ptr_id;
 
-	symbol_table_node_ptr p_program_ptr_id;// = nullptr;
 	/** parse       parse the source file.  After listing each
 	 *              source line, extract and list its tokens.
 	 *
 	 * @return ptr to '__cx_global__' program Id.
 	 */
 	symbol_table_node_ptr parser::parse(void) {
-
-		extern bool cx_dev_debug_flag;
 		symbol_table_node_ptr p_program_id;// = nullptr;
 
 		if (!is_module) {
@@ -62,15 +58,10 @@ namespace cx{
 
 			p_program_ptr_id = p_program_id;
 		}
+
 		current_nesting_level = 0;
-		// enter the nesting level 0 and open a new scope for the program.
-		//symtab_stack.set_current_symtab(p_global_symbol_table);
-
-		//if (!is_module) icode.put(TC_LEFT_BRACKET);
 		get_token();
-
 		parse_statement_list(p_program_id, TC_END_OF_FILE);
-
 		get_token();
 
 		if (!is_module) {
@@ -80,7 +71,6 @@ namespace cx{
 			conditional_get_token_append(TC_END_OF_FILE, ERR_MISSING_RIGHT_BRACKET);
 
 			if (cx_dev_debug_flag) {
-				//list.put_line();
 				_swprintf(list.text, L"%20d source lines.", current_line_number);
 				list.put_line();
 				_swprintf(list.text, L"%20d syntax errors.", error_count);
@@ -852,11 +842,12 @@ namespace cx{
 		case TC_IDENTIFIER:
 		{
 			symbol_table_node_ptr p_node = search_all(p_token->string);
-			p_result_type = p_node->p_type;
 
 			if (p_node == nullptr){
 				cx_error(ERR_UNDEFINED_IDENTIFIER);
 			}
+
+			p_result_type = p_node->p_type;
 
 			switch (p_node->defined.defined_how) {
 			case DC_FUNCTION:
@@ -870,13 +861,17 @@ namespace cx{
 			case DC_CONSTANT:
 				get_token();
 				p_result_type = p_node->p_type;
-
 				this->emit_const(p_function_id, p_node);
 				break;
 
 			case DC_TYPE:
 				get_token();
-				p_result_type = p_node->p_type;
+
+				if (p_node->p_type->typeform == F_ENUM) {
+					p_result_type = parse_variable(p_function_id, p_node);
+				}
+
+				//p_result_type = p_node->p_type;
 				break;
 			case DC_VARIABLE:
 			case DC_VALUE_PARM:
@@ -945,7 +940,7 @@ namespace cx{
 			p_result_type = p_node->p_type;
 			get_token();
 		}break;
-		case TC_CHAR: // TODO TC_WCHAR
+		case TC_CHAR:
 		{
 			symbol_table_node_ptr p_id = search_all(p_token->string);
 
@@ -960,24 +955,7 @@ namespace cx{
 			this->emit(p_function_id, ICONST, p_id->defined.constant.value.c_);
 			get_token();
 		}break;
-		/*case TC_CHAR: 
-		{
-			symbol_table_node_ptr &p_id = search_all(p_token->string);
-
-			if (p_id == nullptr) {
-				p_id = enter_local(p_token->string);
-				p_id->p_type = p_char_type;
-				p_id->defined.constant.value.c_ = p_token->string[1];
-			}
-
-			p_result_type = p_char_type;
-
-			this->emit(p_function_id, ICONST, p_id->defined.constant.value);
-			get_token();
-		}
-		break;*/
 		case TC_STRING:
-		case TC_WSTRING: // TODO TC_WSTRING
 		{
 			// TODO fix string constants
 			symbol_table_node_ptr p_id = search_all(p_token->string);
@@ -1105,8 +1083,9 @@ namespace cx{
 		case DC_FUNCTION:
 		case DC_UNDEFINED:
 		case DC_NAMESPACE:
+		case DC_TYPE:
 			break;
-
+	
 		default:
 			p_result_type = p_dummy_type;
 			cx_error(ERR_INVALID_IDENTIFIER_USAGE);
@@ -1125,6 +1104,16 @@ namespace cx{
 
 			case TC_DOT:
 			case TC_COLON_COLON:
+				if (p_id->p_type->typeform == F_ENUM) {
+					get_token();
+					symbol_table_node_ptr p_enum_id = p_id->p_type->p_enum_ids->search(p_token->string);
+					if (p_enum_id == nullptr) cx_error(error_code::ERR_UNDEFINED_IDENTIFIER);
+
+					this->emit_const(p_function_id, p_enum_id);
+					p_result_type = p_enum_id->p_type;
+					get_token();
+				}
+
 //				p_result_type = parse_field(p_function_id, p_id, p_prev_type);
 				p_prev_type = p_result_type;
 				break;
@@ -1654,10 +1643,7 @@ namespace cx{
 			//	get_token_append();
 			//	parse_constant_declaration(p_function_id);
 			//	break;
-			//	//case tcEnum:
-			//	//get_token_append();
-			//	//            parse_enum_header(p_function_id);
-			//	//break;
+		case TC_ENUM: parse_ENUM(p_function_id); break;
 		case TC_DO: parse_DO(p_function_id); break;
 		case TC_WHILE: parse_WHILE(p_function_id); break;
 		case TC_IF: parse_IF(p_function_id); break;
@@ -1743,6 +1729,85 @@ namespace cx{
 		cx_type::type_ptr p_target_type = parse_variable(p_function_id, p_target_id, true);
 
 		return p_target_type;
+	}
+
+	void parser::parse_ENUM(symbol_table_node_ptr &p_function_id) {
+		get_token();
+		if (token != TC_IDENTIFIER) {
+			cx_error(ERR_MISSING_IDENTIFIER);
+		}
+
+		if (p_function_id == nullptr) {}
+
+		symbol_table_node_ptr p_enum_id = this->enter_new_local(p_token->string, DC_TYPE);
+
+		//std::wcout << p_enum_id->node_name;
+		get_token();
+
+		cx::cx_type::type_ptr p_result_type = p_integer_type;
+		symbol_table_node_ptr p_node;
+		symbol_table_node_ptr p_id;
+
+		switch (token)
+		{
+		case TC_COLON:
+			get_token();
+			if (token != TC_IDENTIFIER) cx_error(error_code::ERR_NOT_A_TYPE_IDENTIFIER);
+		case TC_IDENTIFIER: {
+			p_node = search_all(p_token->string);
+			if (p_node->defined.defined_how != DC_TYPE) cx_error(error_code::ERR_INVALID_TYPE);
+
+			if (p_node->p_type->typecode != T_BYTE && p_node->p_type->typecode != T_INT)
+				cx_error(error_code::ERR_INCOMPATIBLE_TYPES);
+
+			p_result_type = p_node->p_type;
+			get_token();
+		}
+		case TC_LEFT_BRACKET: {
+			p_enum_id->p_type = std::make_shared<cx_type>(F_ENUM, p_result_type->typecode);
+			p_enum_id->p_type->p_enum_ids = std::make_shared<symbol_table>();
+
+			conditional_get_token(TC_LEFT_BRACKET, error_code::ERR_MISSING_LEFT_BRACKET);
+			cx_int tc_number = 0;
+
+			do {
+				while (token == TC_COMMA) get_token();
+
+				if (token != TC_IDENTIFIER) cx_error(error_code::ERR_MISSING_IDENTIFIER);
+
+				p_id = p_enum_id->p_type->p_enum_ids->enter(p_token->string, DC_CONSTANT);
+				p_id->p_type = p_result_type;
+				get_token();
+
+				if (token == TC_EQUAL) {
+					get_token();
+					// TODO: Add constant check for enum
+					if (token != TC_NUMBER) cx_error(error_code::ERR_INVALID_CONSTANT);
+
+					switch (p_result_type->typecode)
+					{
+					case T_INT:
+						tc_number = p_token->value().i_;
+						break;
+					case T_BYTE:
+						tc_number = p_token->value().b_;
+						break;
+					default:
+						cx_error(error_code::ERR_INCOMPATIBLE_TYPES);
+						break;
+					}
+					get_token();
+				}
+				
+				p_id->defined.constant.value.i_ = tc_number++;
+			} while (token == TC_COMMA);
+
+			conditional_get_token(TC_RIGHT_BRACKET, error_code::ERR_MISSING_RIGHT_BRACKET);
+		}break;
+		default:
+			cx_error(error_code::ERR_UNEXPECTED_TOKEN);
+			break;
+		}
 	}
 
 	/** parse_DO     parse do/while statement.
@@ -1853,7 +1918,9 @@ namespace cx{
 			symtab_stack.exit_scope();
 
 			this->emit(p_function_id, opcode::NOP);
-			p_function_id->defined.routine.program_code.insert(p_function_id->defined.routine.program_code.begin() + if_end, { opcode::GOTO, current_location(p_function_id) });
+			p_function_id->defined.routine.program_code.insert(
+				p_function_id->defined.routine.program_code.begin() + if_end, 
+				{ opcode::GOTO, current_location(p_function_id) });
 		}
 	}
 

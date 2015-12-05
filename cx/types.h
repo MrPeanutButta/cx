@@ -125,10 +125,9 @@ namespace cx{
 		type_code typecode;
 		type_form typeform;
 
-		struct {
-			symbol_table_node_ptr p_const_ids; // TODO should be symbol_table_node_ptr
-			int max;
-		} enumeration;
+		//struct {
+			symbol_table_ptr p_enum_ids; // TODO should be symbol_table_node_ptr
+		//} enumeration;
 
 		struct {
 			type_ptr p_index_type;

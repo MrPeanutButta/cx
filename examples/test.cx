@@ -1,8 +1,32 @@
-/*
-This file contains test cases for all language features.
-If a language feature is implemented, the test should
-be located in this file.
-*/
+enum enum_value_1 : byte {
+	E0 = 10,
+	E1 = 20,
+	E2 = 30
+}
+
+enum enum_value_0 {
+	E0,
+	E1, 
+	E2 = 5
+}
+
+enum_value_0 enum_test_0(enum_value_0 e2){
+	return e2;
+}
+
+
+enum_value_1 enum_test_1(enum_value_1 e2){
+	return e2
+}
+
+bool enum_test_0_pass = (enum_test_0(enum_value_0.E2) == enum_value_0.E2);
+enum_test_0(enum_value_0.E0);
+enum_test_0(enum_value_0.E1);
+enum_test_0(enum_value_0::E2);
+
+enum_test_1(enum_value_1.E0);
+enum_test_1(enum_value_1.E1);
+enum_test_1(enum_value_1::E2);
 
 // Euclidean Greatest Common Divisor (GCD) algorithm
 int igcd(int x,  int y){
@@ -87,7 +111,6 @@ byte hex_test_0(){
 byte octal_test_0(){
 	return 0377;
 }
-
 
 bool operator_test_0(){
 	bool return_passing = false;

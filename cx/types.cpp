@@ -133,8 +133,8 @@ namespace cx{
 		p_void_id->p_type = p_reference_type;
 
 
-		p_boolean_type->enumeration.max = 1;
-		p_boolean_type->enumeration.p_const_ids = p_false_id;
+		//p_boolean_type->enumeration.max = 1;
+		//p_boolean_type->enumeration.p_const_ids = p_false_id;
 
 		p_false_id->defined.constant.value.z_ = false;
 		p_true_id->defined.constant.value.z_ = true;

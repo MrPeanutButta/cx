@@ -77,22 +77,27 @@ int main(int argc, char *argv[]) {
 
 		symbol_table_node_ptr p_program_id = parser->parse();
 
-		std::wofstream output("debug.cxvm");
-		output << "function:\t" << p_program_id->node_name << "\naddress:\t" << p_program_id << std::endl;
-		for (auto &code : p_program_id->defined.routine.program_code) {
-			output << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
-		}
+		if (cx::cx_dev_debug_flag) {
+			std::wstring asm_file = parser->code_filename() + L".i";
+			std::wofstream output(asm_file);
+			output << "function: " << p_program_id->node_name << " address: " << p_program_id << std::endl;
+			int label_number = 0;
+			for (auto &code : p_program_id->defined.routine.program_code) {
+				output << std::setw(5) << label_number++ << ":" << std::setw(10) << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
+			}
 
-		for (auto node : p_global_symbol_table->symbols) {
-			if ((node.second->defined.defined_how == DC_FUNCTION) || (node.second->defined.defined_how == DC_PROGRAM)) {
-				output << "\nfunction:\t" << node.second->node_name << "\naddress:\t" << node.second << std::endl;
-				for (auto &code : node.second->defined.routine.program_code) {
-					output << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
+			for (auto node : p_global_symbol_table->symbols) {
+				label_number = 0;
+				if ((node.second->defined.defined_how == DC_FUNCTION) || (node.second->defined.defined_how == DC_PROGRAM)) {
+					output << "\nfunction: " << node.second->node_name << " address: " << node.second << std::endl;
+					for (auto &code : node.second->defined.routine.program_code) {
+						output << std::setw(5) << label_number++ << ":" << std::setw(10) << opcode_string[code.op] << "\t\t" << code.arg0.a_ << " " << code.arg1.a_ << std::endl;
+					}
 				}
 			}
-		}
 
-		output.close();
+			output.close();
+		}
 
 #ifdef __CX_PROFILE_EXECUTION__
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
