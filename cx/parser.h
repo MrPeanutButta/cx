@@ -40,6 +40,12 @@ namespace cx{
 	///  cx_parser     Parser class.
 
 	class parser {
+	public:
+		const std::wstring code_filename(void) const {
+			return this->file_name;
+		}
+
+	private:
 		text_scanner * const p_scanner; // ptr to the scanner
 		token *p_token; // ptr to the current token
 		token_code token; // code of current token
@@ -115,6 +121,7 @@ namespace cx{
 		void parse_statement(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_assignment(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_target_id);
 		void parse_statement_list(symbol_table_node_ptr &p_function_id, token_code terminator);
+		void parse_ENUM(symbol_table_node_ptr &p_function_id);
 		void parse_DO(symbol_table_node_ptr &p_function_id);
 		void parse_WHILE(symbol_table_node_ptr &p_function_id);
 		void parse_IF(symbol_table_node_ptr &p_function_id);
@@ -193,9 +200,9 @@ namespace cx{
 			return symtab_stack.enter_local(p_string, dc);
 		}
 
-		symbol_table_node_ptr enter_new_local(const wchar_t *p_string,
+		symbol_table_node_ptr enter_new_local(std::wstring name,
 			define_code dc = DC_UNDEFINED) {
-			return symtab_stack.enter_new_local(p_string, dc);
+			return symtab_stack.enter_new_local(name, dc);
 		}
 
 		void conditional_get_token(token_code tc, error_code ec) {

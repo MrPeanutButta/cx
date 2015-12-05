@@ -156,8 +156,6 @@ namespace cx{
 		symbol_table_node *p_referenced_id;
 		// pointer to runstack item
 		value *runstack_item;
-
-		//symbol_table_node();
 		symbol_table_node(std::wstring name, define_code dc = DC_UNDEFINED);
 		~symbol_table_node();
 	};

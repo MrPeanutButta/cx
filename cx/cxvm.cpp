@@ -302,10 +302,10 @@ namespace cx{
 
 				switch (vpu.inst_ptr->op) {
 
-				case opcode::AALOAD: _PUSHS->a_ = _VALUE->a_; break;
-				case opcode::AASTORE: _VALUE->a_ = _POPS->a_; break;
-				case opcode::ACONST_NULL: _PUSHS->a_ = nullptr; break;
-				case opcode::ALOAD: _PUSHS->a_ = _VALUE->a_;  break;
+				case opcode::AALOAD: _PUSHS->a_ = _VALUE->a_; continue;
+				case opcode::AASTORE: _VALUE->a_ = _POPS->a_; continue;
+				case opcode::ACONST_NULL: _PUSHS->a_ = nullptr; continue;
+				case opcode::ALOAD: _PUSHS->a_ = _VALUE->a_;  continue;
 				case opcode::ANEWARRAY: {
 					size_t size = (size_t)_POPS->i_ * sizeof(void *);
 
@@ -324,22 +324,22 @@ namespace cx{
 					mem_map->typecode = T_REFERENCE; // type
 					mem_map->typeform = F_ARRAY;
 					_PUSHS->a_ = (void *)mem;
-				} break;
+				} continue;
 				case opcode::ARRAYLENGTH: {
 					void *mem = _POPS->a_;
 					assert(mem != nullptr);
 					_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
-				} break;
-				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; break;
+				} continue;
+				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; continue;
 				case opcode::ATHROW: { // Throws a string message
 					char *message = (char *)_POPS->a_;
 					assert(message != nullptr);
 
 					throw std::string(message);
-				} break;
-				case opcode::BALOAD:	_ALOAD(b_, cx_byte); break;
-				case opcode::BASTORE:	_ASTORE(b_, cx_byte); break;
-				case opcode::C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); break;
+				} continue;
+				case opcode::BALOAD:	_ALOAD(b_, cx_byte); continue;
+				case opcode::BASTORE:	_ASTORE(b_, cx_byte); continue;
+				case opcode::C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); continue;
 				case opcode::CALL: {
 					symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
 
@@ -411,10 +411,10 @@ namespace cx{
 						//_POPS;
 						break;
 					}
-				} break;
-				case opcode::CALOAD: _ALOAD(c_, cx_char); break;
-				case opcode::CASTORE: _ASTORE(c_, cx_char); break;
-				case opcode::CHECKCAST: break;
+				} continue;
+				case opcode::CALOAD: _ALOAD(c_, cx_char); continue;
+				case opcode::CASTORE: _ASTORE(c_, cx_char); continue;
+				case opcode::CHECKCAST: continue;
 
 					/** Duplicate the top operand stack value
 					 * Duplicate the top value on the operand stack and push
@@ -444,131 +444,131 @@ namespace cx{
 					// Push new copy
 					_PUSHS->a_ = (void *)new_value_copy;
 
-				} break;
-				case opcode::DUP2:		break;
-				case opcode::DUP2_X1:	break;
-				case opcode::DUP2_X2:	break;
-				case opcode::DUP_X1:	break;
-				case opcode::DUP_X2:	break;
-				case opcode::D2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->d_); break;
-				case opcode::DADD:		_BIN_OP(d_, cx_real, +); break;
-				case opcode::DALOAD:	_ALOAD(d_, cx_real); break;
-				case opcode::DASTORE:	_ASTORE(d_, cx_real); break;
-				case opcode::DCONST:	_PUSHS->d_ = vpu.inst_ptr->arg0.d_; break;
-				case opcode::DDIV:		_BIN_OP(d_, cx_real, / ); break;
-				case opcode::DEQ_EQ:	_REL_OP(d_, cx_real, == ); break;
-				case opcode::DGT:		_REL_OP(d_, cx_real, > ); break;
-				case opcode::DGT_EQ:	_REL_OP(d_, cx_real, >= ); break;
-				case opcode::DINC:		_VALUE->d_ += vpu.inst_ptr->arg1.d_; break;
-				case opcode::DLOAD:		_PUSHS->d_ = _VALUE->d_; break;
-				case opcode::DLT:		_REL_OP(d_, cx_real, < ); break;
-				case opcode::DLT_EQ:	_REL_OP(d_, cx_real, <= ); break;
-				case opcode::DMUL:		_BIN_OP(d_, cx_real, *); break;
-				case opcode::DNEG:		_PUSHS->d_ = -abs(_POPS->d_); break;
-				case opcode::DNOT_EQ:	_REL_OP(d_, cx_real, != ); break;
-				case opcode::DPOS:		_PUSHS->d_ = abs(_POPS->d_); break;
+				} continue;
+				case opcode::DUP2:		continue;
+				case opcode::DUP2_X1:	continue;
+				case opcode::DUP2_X2:	continue;
+				case opcode::DUP_X1:	continue;
+				case opcode::DUP_X2:	continue;
+				case opcode::D2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->d_); continue;
+				case opcode::DADD:		_BIN_OP(d_, cx_real, +); continue;
+				case opcode::DALOAD:	_ALOAD(d_, cx_real); continue;
+				case opcode::DASTORE:	_ASTORE(d_, cx_real); continue;
+				case opcode::DCONST:	_PUSHS->d_ = vpu.inst_ptr->arg0.d_; continue;
+				case opcode::DDIV:		_BIN_OP(d_, cx_real, / ); continue;
+				case opcode::DEQ_EQ:	_REL_OP(d_, cx_real, == ); continue;
+				case opcode::DGT:		_REL_OP(d_, cx_real, > ); continue;
+				case opcode::DGT_EQ:	_REL_OP(d_, cx_real, >= ); continue;
+				case opcode::DINC:		_VALUE->d_ += vpu.inst_ptr->arg1.d_; continue;
+				case opcode::DLOAD:		_PUSHS->d_ = _VALUE->d_; continue;
+				case opcode::DLT:		_REL_OP(d_, cx_real, < ); continue;
+				case opcode::DLT_EQ:	_REL_OP(d_, cx_real, <= ); continue;
+				case opcode::DMUL:		_BIN_OP(d_, cx_real, *); continue;
+				case opcode::DNEG:		_PUSHS->d_ = -abs(_POPS->d_); continue;
+				case opcode::DNOT_EQ:	_REL_OP(d_, cx_real, != ); continue;
+				case opcode::DPOS:		_PUSHS->d_ = abs(_POPS->d_); continue;
 				case opcode::DREM: {
 					cx_real b = _POPS->d_;
 					cx_real a = _POPS->d_;
 					_PUSHS->d_ = fmod(a, b);
-				}break;
-				case opcode::DSTORE:	_VALUE->d_ = _POPS->d_; break;
-				case opcode::DSUB:		_BIN_OP(d_, cx_real, -); break;
-				case opcode::GETFIELD: break;
-				case opcode::GETSTATIC: break;
+				}continue;
+				case opcode::DSTORE:	_VALUE->d_ = _POPS->d_; continue;
+				case opcode::DSUB:		_BIN_OP(d_, cx_real, -); continue;
+				case opcode::GETFIELD: continue;
+				case opcode::GETSTATIC: continue;
 				case opcode::GOTO: {
 					cx_int location = vpu.inst_ptr->arg0.i_;
 					vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
-				} break;
-				case opcode::I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); break;
-				case opcode::I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); break;
-				case opcode::I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); break;
-				case opcode::IADD:		_BIN_OP(i_, cx_int, +); break;
-				case opcode::IALOAD:	_ALOAD(i_, cx_int); break;
-				case opcode::ILT:		_REL_OP(i_, cx_int, < ); break;
+				} continue;
+				case opcode::I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); continue;
+				case opcode::I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); continue;
+				case opcode::I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); continue;
+				case opcode::IADD:		_BIN_OP(i_, cx_int, +); continue;
+				case opcode::IALOAD:	_ALOAD(i_, cx_int); continue;
+				case opcode::ILT:		_REL_OP(i_, cx_int, < ); continue;
 					// Bitwise AND
-				case opcode::IAND:		_BIN_OP(i_, cx_int, &); break;
-				case opcode::IASTORE:	_ASTORE(i_, cx_int); break;
+				case opcode::IAND:		_BIN_OP(i_, cx_int, &); continue;
+				case opcode::IASTORE:	_ASTORE(i_, cx_int); continue;
 				case opcode::ICMP:
-					break;
-				case opcode::ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; break;
-				case opcode::IDIV:		_BIN_OP(i_, cx_int, / ); break;
-				case opcode::IEQ_EQ:	_REL_OP(i_, cx_int, == ); break;
+					continue;
+				case opcode::ICONST:	_PUSHS->i_ = vpu.inst_ptr->arg0.i_; continue;
+				case opcode::IDIV:		_BIN_OP(i_, cx_int, / ); continue;
+				case opcode::IEQ_EQ:	_REL_OP(i_, cx_int, == ); continue;
 				case opcode::IF_FALSE:
 				{
 					if (!_POPS->z_) {
 						cx_int location = vpu.inst_ptr->arg0.i_;
 						vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
 					}
-				}break;
-				case opcode::IFNE: _IF(!= ); break;
-				case opcode::IFLT: _IF(< ); break;
-				case opcode::IFGE: _IF(>= ); break;
-				case opcode::IFGT: _IF(> ); break;
-				case opcode::IFLE: _IF(<= ); break;
+				}continue;
+				case opcode::IFNE: _IF(!= ); continue;
+				case opcode::IFLT: _IF(< ); continue;
+				case opcode::IFGE: _IF(>= ); continue;
+				case opcode::IFGT: _IF(> ); continue;
+				case opcode::IFLE: _IF(<= ); continue;
 
 				case opcode::IF_ACMPEQ: {
 					void *value2 = _POPS->a_;
 					void *value1 = _POPS->a_;
 
 					if (!memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
-				} break;
+				} continue;
 
 				case opcode::IF_ACMPNE: {
 					void *value2 = _POPS->a_;
 					void *value1 = _POPS->a_;
 
 					if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
-				} break;
+				} continue;
 
-				case opcode::IF_ICMPEQ: _IFICMP(== ); break;
-				case opcode::IF_ICMPNE: _IFICMP(!= ); break;
-				case opcode::IF_ICMPLT: _IFICMP(< ); break;
-				case opcode::IF_ICMPGE: _IFICMP(>= ); break;
-				case opcode::IF_ICMPGT: _IFICMP(> ); break;
-				case opcode::IF_ICMPLE: _IFICMP(<= ); break;
-				case opcode::IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); break;
-				case opcode::IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); break;
-				case opcode::IGT:		_REL_OP(i_, cx_int, > ); break;
-				case opcode::IGT_EQ:	_REL_OP(i_, cx_int, >= ); break;
-				case opcode::IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; break;
-				case opcode::ILOAD:		_PUSHS->i_ = _VALUE->i_; break;
-				case opcode::ILT_EQ:	_REL_OP(i_, cx_int, <= ); break;
-				case opcode::IMUL:		_BIN_OP(i_, cx_int, *); break;
-				case opcode::INEG:		_PUSHS->i_ = -abs(_POPS->i_); break;
+				case opcode::IF_ICMPEQ: _IFICMP(== ); continue;
+				case opcode::IF_ICMPNE: _IFICMP(!= ); continue;
+				case opcode::IF_ICMPLT: _IFICMP(< ); continue;
+				case opcode::IF_ICMPGE: _IFICMP(>= ); continue;
+				case opcode::IF_ICMPGT: _IFICMP(> ); continue;
+				case opcode::IF_ICMPLE: _IFICMP(<= ); continue;
+				case opcode::IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); continue;
+				case opcode::IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); continue;
+				case opcode::IGT:		_REL_OP(i_, cx_int, > ); continue;
+				case opcode::IGT_EQ:	_REL_OP(i_, cx_int, >= ); continue;
+				case opcode::IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; continue;
+				case opcode::ILOAD:		_PUSHS->i_ = _VALUE->i_; continue;
+				case opcode::ILT_EQ:	_REL_OP(i_, cx_int, <= ); continue;
+				case opcode::IMUL:		_BIN_OP(i_, cx_int, *); continue;
+				case opcode::INEG:		_PUSHS->i_ = -abs(_POPS->i_); continue;
 					// Unary complement (bit inversion)
-				case opcode::INOT: 		_UNA_OP(i_, cx_int, ~); break;
-				case opcode::INOT_EQ:	_REL_OP(i_, cx_int, != ); break;
-				case opcode::INSTANCEOF: break;
-				case opcode::INVOKEDYNAMIC: break;
-				case opcode::INVOKEFUNCT: break;
-				case opcode::INVOKEINTERFACE: break;
-				case opcode::INVOKESPECIAL: break;
-				case opcode::INVOKESTATIC: break;
-				case opcode::INVOKEVIRTUAL: break;
+				case opcode::INOT: 		_UNA_OP(i_, cx_int, ~); continue;
+				case opcode::INOT_EQ:	_REL_OP(i_, cx_int, != ); continue;
+				case opcode::INSTANCEOF: continue;
+				case opcode::INVOKEDYNAMIC: continue;
+				case opcode::INVOKEFUNCT: continue;
+				case opcode::INVOKEINTERFACE: continue;
+				case opcode::INVOKESPECIAL: continue;
+				case opcode::INVOKESTATIC: continue;
+				case opcode::INVOKEVIRTUAL: continue;
 					// Bitwise inclusive OR
-				case opcode::IOR:		_BIN_OP(i_, cx_int, | ); break;
-				case opcode::IPOS: 		_PUSHS->i_ = abs(_POPS->i_); break;
-				case opcode::IREM: 		_BIN_OP(i_, cx_int, %); break;
-				case opcode::ISHL: 		_BIN_OP(i_, cx_int, << ); break;
-				case opcode::ISHR: 		_BIN_OP(i_, cx_int, >> ); break;
-				case opcode::ISTORE:	_VALUE->i_ = _POPS->i_; break;
-				case opcode::ISUB:		_BIN_OP(i_, cx_int, -); break;
+				case opcode::IOR:		_BIN_OP(i_, cx_int, | ); continue;
+				case opcode::IPOS: 		_PUSHS->i_ = abs(_POPS->i_); continue;
+				case opcode::IREM: 		_BIN_OP(i_, cx_int, %); continue;
+				case opcode::ISHL: 		_BIN_OP(i_, cx_int, << ); continue;
+				case opcode::ISHR: 		_BIN_OP(i_, cx_int, >> ); continue;
+				case opcode::ISTORE:	_VALUE->i_ = _POPS->i_; continue;
+				case opcode::ISUB:		_BIN_OP(i_, cx_int, -); continue;
 					// Bitwise exclusive OR
-				case opcode::IXOR: 		_BIN_OP(i_, cx_int, ^); break;
+				case opcode::IXOR: 		_BIN_OP(i_, cx_int, ^); continue;
 				case opcode::JSR:
-				case opcode::JSR_W: break;
+				case opcode::JSR_W: continue;
 				case opcode::LDC:
 				case opcode::LDC2_W:
-				case opcode::LDC_W: break;
-				case opcode::LOOKUPSWITCH: break;
-				case opcode::LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); break;
-				case opcode::LOGIC_AND:	_BIN_OP(z_, cx_bool, &&); break;
-				case opcode::LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; break;
+				case opcode::LDC_W: continue;
+				case opcode::LOOKUPSWITCH: continue;
+				case opcode::LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); continue;
+				case opcode::LOGIC_AND:	_BIN_OP(z_, cx_bool, &&); continue;
+				case opcode::LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; continue;
 				case opcode::MONITORENTER:
-				case opcode::MONITOREXIT: break;
-				case opcode::MULTIANEWARRAY: break;
-				case opcode::NEW: break;
+				case opcode::MONITOREXIT: continue;
+				case opcode::MULTIANEWARRAY: continue;
+				case opcode::NEW: continue;
 
 					/** newarray: allocate new array
 					 * @param: vpu.stack_ptr[-1].l_ - number of elements
@@ -593,18 +593,18 @@ namespace cx{
 					mem_map->typecode = dt; // type
 					mem_map->typeform = type_form::F_ARRAY;
 					_PUSHS->a_ = mem;
-				} break;
-				case opcode::NOP: break;
-				case opcode::PLOAD: _PUSHS->a_ = _VALUE->a_; break;
-				case opcode::POP: _POPS; break;
-				case opcode::POP2: _POPS; _POPS; break;
-				case opcode::PUTFIELD: break;
-				case opcode::PUTSTATIC: break;
+				} continue;
+				case opcode::NOP: continue;
+				case opcode::PLOAD: _PUSHS->a_ = _VALUE->a_; continue;
+				case opcode::POP: _POPS; continue;
+				case opcode::POP2: _POPS; _POPS; continue;
+				case opcode::PUTFIELD: continue;
+				case opcode::PUTSTATIC: continue;
 				case opcode::RETURN:
 					return;
-					break;
-				case opcode::SWAP: break;
-				case opcode::TABLESWITCH: break;
+					continue;
+				case opcode::SWAP: continue;
+				case opcode::TABLESWITCH: continue;
 				} //switch
 			} // for
 		}
