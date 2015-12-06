@@ -50,9 +50,7 @@ io.puts(<span class="pl-s"><span class="pl-pds">"</span>Hello, World!<span class
 <h2>
 <a id="intro" class="anchor" href="#intro" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intro</h2>
 
-<p>The Cx language is designed to be a very simple subset of C++ and C#. What makes Cx unique is the ability to easy extend the language using C++, and Cx. Basic data types can also be extended to add functionality.<br>
-All data types can be extended by additional class declarations. This makes it easy to define objects in C++ to later extend those objects in Cx without having to recompile the library.<br>
-For example, the below code will add the function <i><b>is_digit</b></i> to the basic Cx char type.</p>
+<p>The Cx language is designed to be a very simple subset of C++ and C#. What makes Cx unique is the ability to easy extend the language using C++, and Cx. Basic data types can also be extended to add functionality. All data types can be extended by additional class declarations. This makes it easy to define objects in C++ to later extend those objects in Cx without having to recompile the library. For example, the below code will add the function <i><b>is_digit</b></i> to the basic Cx char type.</p>
 
 <div class="highlight highlight-source-c++"><pre><span class="pl-k">class</span> <span class="pl-en">char</span> {
     <span class="pl-c">/*!is_digit - Check if character is decimal digit</span>
@@ -63,7 +61,7 @@ For example, the below code will add the function <i><b>is_digit</b></i> to the 
     <span class="pl-k">bool</span> <span class="pl-en">is_digit</span>() {
         <span class="pl-k">return</span> ((<span class="pl-v">this</span> &gt;= <span class="pl-s"><span class="pl-pds">'</span>0<span class="pl-pds">'</span></span>) &amp;&amp; (<span class="pl-v">this</span> &lt;= <span class="pl-s"><span class="pl-pds">'</span>9<span class="pl-pds">'</span></span>));
     }
-};</pre></div>
+}<span class="pl-ii"></span></pre></div>
 
 <p>The added function can then be called as follows:</p>
 
@@ -124,6 +122,14 @@ For example, the below code will add the function <i><b>is_digit</b></i> to the 
 
 <ul>
 <li><a href="https://github.com/ahebert/cx/wiki">Cx-doc</a></li>
+</ul>
+
+<h4>
+<a id="influences" class="anchor" href="#influences" aria-hidden="true"><span class="octicon octicon-link"></span></a>Influences</h4>
+
+<ul>
+<li><a href="http://www.amazon.com/dp/0471113530/ref=cm_sw_r_tw_dp_Trazwb07Z6NRP">Writing Compilers and Interpreters 2nd Edition</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/jvms/se7/html/">The Java® Virtual Machine Specification</a></li>
 </ul>
 
 <h3>
