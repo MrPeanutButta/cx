@@ -1,26 +1,25 @@
-Cx
+The Cx Language
 ==
 A scripting language for fun and profit.<br>
 ``` cpp
-use io;
+use io;	// Standard IO
 
 io.puts("Hello, World!");
-
-return 0;
 ```
 
-Cx syntax is designed to be a hybrid of C++ and C#. What makes Cx unique is the ability to easy extend the language using C or C++. Even basic data types can be extended to add functionality.<br>
-All data types can be extended by additional class declarations. This makes it easy to define objects in C/C++ to later extend those objects in Cx without having to recompile the library.<br>
+Intro
+--
+
+The Cx language is designed to be a very simple subset of C++ and C#. What makes Cx unique is the ability to easy extend the language using C++, and Cx. Basic data types can also be extended to add functionality.<br>
+All data types can be extended by additional class declarations. This makes it easy to define objects in C++ to later extend those objects in Cx without having to recompile the library.<br>
 For example, the below code will add the function <i><b>is_digit</b></i> to the basic Cx char type.
 ``` cpp
 class char {
-    /** is_digit - Check if character is decimal digit
-     * Checks whether "this" is a decimal digit character.
-     * Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9 
-     *
-     * @param this : char to test if digit.
-     * @return true if digit, false if not. */
-     
+    /*!is_digit - Check if character is decimal digit
+       Checks whether "this" is a decimal digit character.
+       Decimal digits are any of: 0 1 2 3 4 5 6 7 8 9
+       @param this : char to test if digit.
+       @return true if digit, false if not. */
     bool is_digit() {
         return ((this >= '0') && (this <= '9'));
     }
@@ -35,7 +34,40 @@ if(c.is_digit)
 else
 	// false
 ```
-### Supported compilers and platforms
+
+The Cx Virtual Machine (CxVM)
+--
+The Cx back-end is a very simple op-code, stack-based processor built from scratch which (very) loosely follows the JVM instruction syntax. CxVM instrucions can be directly emitted from within Cx source.
+
+``` cpp
+
+int assembly_example(int i){
+	
+	int a;
+	asm iconst 0x3E8;	// Load 1000
+	asm istore a;		// a = 1000
+	
+	asm{
+		iconst 0b11111111 		// Load 255
+		iload a		     		// Load 1000 (a == 1000)
+		iadd				 	// a + 255 = 1255
+		iload i			 		// Load 100 (if i == 100)
+		iadd				 	// 1255 + 100 = 1355
+		istore i			 	// i = 1355
+		iload i          		// Load 1355
+		istore assembly_test_0 	// assembly_test_0 = 1355
+		ret						// return
+	}
+}
+
+// Returns 1355 to the OS
+return assembly_example(100);
+```
+
+Supported Compilers and Platforms
+--
+##### 32bit and 64bit
+
 Popular compilers which support C++11 are used to build the Cx interpreter.
 
 * clang++
@@ -49,11 +81,8 @@ All documentation will be posted and updated at the link below. More information
 * [Cx-doc](https://github.com/ahebert/cx/wiki)
 
 ### Status
-This project is for educational purposes only and is still in early development.<br>
+This project is for educational purposes only and is still in early development.
+A working prototype is well underway and current work is focused on the base language.
 
 ### Getting involved
-* Fork a copy of the repo.
-* Create one branch per feature/bug fix.
-* Submit pull request to develop branch for code review.
-* ???
-* profit!
+* Why would you?

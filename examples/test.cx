@@ -14,7 +14,6 @@ enum_value_0 enum_test_0(enum_value_0 e2){
 	return e2;
 }
 
-
 enum_value_1 enum_test_1(enum_value_1 e2){
 	return e2
 }

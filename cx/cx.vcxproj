@@ -214,6 +214,7 @@
     <None Include="..\doc\dev\preprocessors" />
     <None Include="..\doc\language reference\directives.md" />
     <None Include="..\doc\language reference\doc.md" />
+    <None Include="..\doc\language reference\enum.md" />
     <None Include="..\doc\language reference\expressions.md" />
     <None Include="..\doc\language reference\extending.md" />
     <None Include="..\doc\language reference\if.md" />

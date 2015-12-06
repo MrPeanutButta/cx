@@ -1113,8 +1113,10 @@ namespace cx{
 					p_result_type = p_enum_id->p_type;
 					get_token();
 				}
-
-//				p_result_type = parse_field(p_function_id, p_id, p_prev_type);
+				// TODO: Else 
+				else {
+					//				p_result_type = parse_field(p_function_id, p_id, p_prev_type);
+				}
 				p_prev_type = p_result_type;
 				break;
 
