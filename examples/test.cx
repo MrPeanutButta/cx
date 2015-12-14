@@ -10,22 +10,43 @@ enum enum_value_0 {
 	E2 = 5
 }
 
-enum_value_0 enum_test_0(enum_value_0 e2){
-	return e2;
+// Function statement body type
+int func(int count) while(++count < 100){
+	int i = count + count;
 }
 
-enum_value_1 enum_test_1(enum_value_1 e2){
-	return e2
+int int_array_test_0(int *a1, int index) return a1[index] + 2;
+
+int recursive_array_test(int *a2, int index){
+	if(index == 9) return int_array_test_0(a2, index);
+	
+	return recursive_array_test(a2, ++index);
 }
 
-bool enum_test_0_pass = (enum_test_0(enum_value_0.E2) == enum_value_0.E2);
-enum_test_0(enum_value_0.E0);
-enum_test_0(enum_value_0.E1);
-enum_test_0(enum_value_0::E2);
+int array_index_check_0(int *a2, int count){
+	int i = 0;
+	int sum = 0;
+	
+	do{
+		sum += int_array_test_0(a2, i);
+	}while(i++ < count);
+	
+	return sum;
+}
 
-enum_test_1(enum_value_1.E0);
-enum_test_1(enum_value_1.E1);
-enum_test_1(enum_value_1::E2);
+byte array_index_check_1(byte *a2, int count){
+	int i = 0;
+	byte sum = 0;
+	
+	do{
+		sum += a2[i];
+	}while(i++ < count);
+	
+	return sum;
+}
+
+enum_value_0 enum_test_0(enum_value_0 e2) return e2;
+enum_value_1 enum_test_1(enum_value_1 e2) return e2;
 
 // Euclidean Greatest Common Divisor (GCD) algorithm
 int igcd(int x,  int y){
@@ -61,21 +82,10 @@ int isqrt(int num) {
     return res;
 }
 
-int neg_test_0(int i){
-	return -i;
-}
-
-int pos_test_0(int i){
-	return +i;
-}
-
-real neg_test_1(real d){
-	return -d;
-}
-
-real pos_test_1(real d){
-	return +d;
-}
+int neg_test_0(int i) return -i;
+int pos_test_0(int i) return +i;
+real neg_test_1(real d)	return -d;
+real pos_test_1(real d)	return +d;
 
 int assembly_test_0(int i){
 	
@@ -97,19 +107,11 @@ int assembly_test_0(int i){
 }
 
 // Radix testing
-byte binary_test_0(){
-	return 0b11111111;
-}
-
+byte binary_test_0()return 0b11111111;
 // Radix testing
-byte hex_test_0(){
-	return 0xff;
-}
-
+byte hex_test_0()return 0xff;
 // Radix testing
-byte octal_test_0(){
-	return 0377;
-}
+byte octal_test_0()	return 0377;
 
 bool operator_test_0(){
 	bool return_passing = false;
@@ -343,6 +345,72 @@ int for_test_0(int count){
 	return count;
 }
 
+// Initialize
+int *a0 = new int[10];
+
+a0[0] = 10;
+a0[1] = 9;
+a0[2] = 8;
+a0[3] = 7;
+a0[4] = 6;
+a0[5] = 5;
+a0[6] = 4;
+a0[7] = 3;
+a0[8] = 2;
+a0[9] = 1;
+
+byte *a1 = new byte[10];
+
+a1[0] = 10;
+a1[1] = 9;
+a1[2] = 8;
+a1[3] = 7;
+a1[4] = 6;
+a1[5] = 5;
+a1[6] = 4;
+a1[7] = 3;
+a1[8] = 2;
+a1[9] = 1;
+
+
+/*
+char *a2 = new char[10];
+
+a2[0] = '10';
+a2[1] = '9';
+a2[2] = '8';
+a2[3] = '7';
+a2[4] = '6';
+a2[5] = '5';
+a2[6] = '4';
+a2[7] = '3';
+a2[8] = '2';
+a2[9] = '1';
+
+real *a3 = new real[10];
+
+a3[0] = 10.5;
+a3[1] = 9.5;
+a3[2] = 8.5;
+a3[3] = 7.5;
+a3[4] = 6.5;
+a3[5] = 5.5;
+a3[6] = 4.5;
+a3[7] = 3.5;
+a3[8] = 2.5;
+a3[9] = 1.5;
+
+*/
+
+//
+
+enum_test_0(enum_value_0.E0);
+enum_test_0(enum_value_0.E1);
+enum_test_0(enum_value_0::E2);
+enum_test_1(enum_value_1.E0);
+enum_test_1(enum_value_1.E1);
+enum_test_1(enum_value_1::E2);
+
 bool for_test_0_pass = (for_test_0(100) == 100);
 bool while_pass = (while_test_0(100) == 380150);
 bool if_pass = (if_test_0(200) == 50);
@@ -350,22 +418,38 @@ bool do_pass = (do_test_0(100) == 100);
 bool break_0_pass = (break_test_0(20) == 20);
 bool break_1_pass = (break_test_1(100) == 100);
 bool recursive_test_0_pass = (recursive_test_0(0) == 50);
-bool binary_test_0_pass = (binary_test_0() == 255);
-bool hex_test_0_pass = (hex_test_0() == 255);
-bool octal_test_0_pass = (octal_test_0() == 255);
+bool binary_test_0_pass = (binary_test_0 == 255);
+bool hex_test_0_pass = (hex_test_0 == 255);
+bool octal_test_0_pass = (octal_test_0 == 255);
 bool assembly_test_0_pass = (assembly_test_0(100) == 1355);
-bool operator_test_0_pass = operator_test_0();
+bool operator_test_0_pass = operator_test_0;
 bool pos_test_0_pass = (pos_test_0(-5) == 5);
 bool neg_test_0_pass = (neg_test_0(5) == -5);
 bool pos_test_1_pass = (pos_test_1(-5.5) == 5.5);
 bool neg_test_1_pass = (neg_test_1(5.5) == -5.5);
 bool gcd_pass = (igcd(100,1000) == 100);
 bool sqr_root_pass = (isqrt(1048576) == 1024);
+bool enum_test_0_pass = (enum_test_0(enum_value_0.E2) == enum_value_0.E2);
+
+
+//bool array_test_0_pass = (array_index_check_0(a0, 9) == 55);
+//bool array_test_1_pass = (array_index_check_1(a1, 9) == 55);
+
+
 //bool if_test_1_pass = (if_test_1(1) == 5);
 //bool if_test_1_pass = (if_test_1(-1) == 10);
 
 // TEST HOOK
 // return benchmark_test_1();
 // return benchmark_test_0();
-
-return sqr_root_pass;
+/*bool sucess = (
+	for_test_0_pass && while_pass  && if_pass && do_pass &&
+	break_0_pass && break_1_pass && recursive_test_0_pass &&
+	binary_test_0_pass && hex_test_0_pass && octal_test_0_pass &&
+	assembly_test_0_pass && operator_test_0_pass && pos_test_0_pass &&
+	neg_test_0_pass && pos_test_1_pass && neg_test_1_pass && 
+	gcd_pass && sqr_root_pass && array_test_0_pass && array_test_1_pass
+	);*/
+	
+return int_array_test_0(a0, 0);
+//return int_array_test_0(a0, 5);

@@ -99,16 +99,14 @@ namespace cx{
 		}
 
 		~define();
+		
+		value constant_value;
 
 		struct {
 			bool is_this_ptr;
 			symbol_table_node_ptr p_node;
 			value *p_stack_item;
 		} this_ptr;
-
-		struct {
-			value value;
-		} constant;
 
 		struct {
 			function_code function_type;

@@ -132,12 +132,8 @@ namespace cx{
 		p_true_id->p_type = p_boolean_type;
 		p_void_id->p_type = p_reference_type;
 
-
-		//p_boolean_type->enumeration.max = 1;
-		//p_boolean_type->enumeration.p_const_ids = p_false_id;
-
-		p_false_id->defined.constant.value.z_ = false;
-		p_true_id->defined.constant.value.z_ = true;
+		p_false_id->defined.constant_value.z_ = false;
+		p_true_id->defined.constant_value.z_ = true;
 		
 		// initialize standard type members
 		//init_std_members();
@@ -285,6 +281,7 @@ namespace cx{
 				switch (value_type) {
 				case T_BOOLEAN:
 				case T_BYTE:
+					p_function_id->defined.routine.program_code.push_back({ B2I });
 					return;
 					break;
 				case T_DOUBLE:

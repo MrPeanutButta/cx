@@ -53,13 +53,14 @@ namespace cx {
 		class mem_mapping {
 		private:
 		public:
-			mem_mapping() : is_rvalue(false) {}
+			mem_mapping() {}// : is_rvalue(false) {}
 			managedmem shared_ref;	// VM memory allocations
-			size_t size;			// sizeof
+			cx_type::type_ptr p_type;
+			/*size_t size;			// sizeof
 			type_code typecode;
 			type_form typeform;
 			bool is_rvalue;			// Evaluates to a temporary value that does not persist beyond the expression that defines it.
-			size_t count(void);		// memory size / element size
+			size_t count(void);		// memory size / element size*/
 		};
 
 		typedef void* address;
@@ -80,9 +81,11 @@ namespace cx {
 		ARRAYLENGTH,
 		ASTORE,
 		ATHROW,
+		B2I,
 		BALOAD,
 		BASTORE,
 		BEQ,
+		BEQ_EQ,
 		BGE,
 		BGT,
 		BIPUSH,

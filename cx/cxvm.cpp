@@ -36,9 +36,11 @@ namespace cx{
 		L"arraylength",
 		L"astore",
 		L"athrow",
+		L"b2i",
 		L"baload",
 		L"bastore",
 		L"beq",
+		L"beq_eq",
 		L"bge",
 		L"bgt",
 		L"bipush",
@@ -178,9 +180,9 @@ namespace cx{
 	};
 
 
-	size_t heap::mem_mapping::count(void){
+/*	size_t heap::mem_mapping::count(void){
 		return (this->size / type_size[this->typecode]);
-	}
+	}*/
 
 	// Stack Ops
 #define _POPS (--vpu.stack_ptr)
@@ -192,22 +194,23 @@ namespace cx{
 	// Top of stack
 #define _TOS vpu.stack_ptr[-1]
 
-#define _ADDRTOINT(addr) (uintptr_t)*&addr
+#define _ADDRTOINT(addr) (uintptr_t)*&addr	
 
 	// Load Array or reference to stack
 #define _ALOAD(t_, type) {      \
-    cx_int *index = &_POPS->i_;     \
-    void *mem = _POPS->a_;       \
-    _PUSHS->t_ = *((type *) ((char *) mem + (*index * sizeof (type))));  \
-									}
+	cx_int index = _POPS->i_;    \
+	void *mem = _POPS->a_;\
+	type v_ = *((type *)((char *)mem + (index * sizeof(type))));\
+	_PUSHS->t_ = v_;\
+}
 
 	// Store to memory
 #define _ASTORE(t_, type) {     \
-    type *v_ = &_POPS->t_;       \
-    cx_int *index = &_POPS->i_;     \
-    void *mem = _POPS->a_;       \
-    *((type *) ((char *) mem + (*index * sizeof (type)))) = *v_;        \
-									}
+	type v_ = _POPS->t_;\
+	cx_int index = _POPS->i_;\
+	void *mem = _VALUE->a_;       \
+	*((type *)((char *)mem + (index * sizeof(type)))) = v_;\
+}
 
 #define _JMP(t_) vpu.inst_ptr = this->vpu.code_ptr->begin() + ((int)vpu.inst_ptr->arg0.t_ - 1)
 
@@ -306,7 +309,7 @@ namespace cx{
 				case opcode::AASTORE: _VALUE->a_ = _POPS->a_; continue;
 				case opcode::ACONST_NULL: _PUSHS->a_ = nullptr; continue;
 				case opcode::ALOAD: _PUSHS->a_ = _VALUE->a_;  continue;
-				case opcode::ANEWARRAY: {
+/*				case opcode::ANEWARRAY: {
 					size_t size = (size_t)_POPS->i_ * sizeof(void *);
 
 					void **mem = (void **)malloc(size);
@@ -319,7 +322,7 @@ namespace cx{
 					* will fail.   */
 
 					// assign mem to smart pointer, release using free()
-					mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);
+/*					mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);
 					mem_map->size = size; // size
 					mem_map->typecode = T_REFERENCE; // type
 					mem_map->typeform = F_ARRAY;
@@ -329,7 +332,7 @@ namespace cx{
 					void *mem = _POPS->a_;
 					assert(mem != nullptr);
 					_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
-				} continue;
+				} continue;*/
 				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; continue;
 				case opcode::ATHROW: { // Throws a string message
 					char *message = (char *)_POPS->a_;
@@ -337,8 +340,10 @@ namespace cx{
 
 					throw std::string(message);
 				} continue;
+				case opcode::B2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->b_); continue;
 				case opcode::BALOAD:	_ALOAD(b_, cx_byte); continue;
 				case opcode::BASTORE:	_ASTORE(b_, cx_byte); continue;
+				case opcode::BEQ_EQ:	_REL_OP(b_, cx_byte, == ); continue;
 				case opcode::C2I:		_PUSHS->i_ = static_cast<cx_int> (_POPS->c_); continue;
 				case opcode::CALL: {
 					symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
@@ -408,7 +413,6 @@ namespace cx{
 						_PUSHS->a_ = p_function_id->runstack_item->a_;
 						break;
 					case type_code::T_VOID:
-						//_POPS;
 						break;
 					}
 				} continue;
@@ -419,7 +423,7 @@ namespace cx{
 					/** Duplicate the top operand stack value
 					 * Duplicate the top value on the operand stack and push
 					 * the duplicated value onto the operand stack. */
-				case opcode::DUP: {
+/*				case opcode::DUP: {
 					value *val = (value *)(vpu.stack_ptr - 1);
 					assert(val != nullptr);
 
@@ -436,7 +440,7 @@ namespace cx{
 					* will fail.   */
 
 					// Assign mem to smart pointer, release using delete
-					mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)new_value_copy));
+/*					mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)new_value_copy));
 					mem_map->size = sizeof(value); // size
 					mem_map->typecode = T_REFERENCE; // type
 					mem_map->typeform = F_SCALAR;
@@ -444,7 +448,7 @@ namespace cx{
 					// Push new copy
 					_PUSHS->a_ = (void *)new_value_copy;
 
-				} continue;
+				} continue;*/
 				case opcode::DUP2:		continue;
 				case opcode::DUP2_X1:	continue;
 				case opcode::DUP2_X2:	continue;
@@ -507,7 +511,7 @@ namespace cx{
 				case opcode::IFGT: _IF(> ); continue;
 				case opcode::IFLE: _IF(<= ); continue;
 
-				case opcode::IF_ACMPEQ: {
+/*				case opcode::IF_ACMPEQ: {
 					void *value2 = _POPS->a_;
 					void *value1 = _POPS->a_;
 
@@ -520,7 +524,7 @@ namespace cx{
 
 					if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
 				} continue;
-
+*/
 				case opcode::IF_ICMPEQ: _IFICMP(== ); continue;
 				case opcode::IF_ICMPNE: _IFICMP(!= ); continue;
 				case opcode::IF_ICMPLT: _IFICMP(< ); continue;
@@ -575,12 +579,12 @@ namespace cx{
 					 * @param: vpu.inst_ptr->arg0.b_ - type code
 					 * @return: new array allocation managed by GC */
 				case opcode::NEWARRAY: {
-					type_code dt;
-					size_t size = static_cast<size_t>(_POPS->i_ * type_size[(dt = static_cast<type_code> (vpu.inst_ptr->arg0.b_))]);
-
+					size_t element_count = static_cast<size_t>(_POPS->i_);
+					cx_type *p_type = (cx_type *)vpu.inst_ptr->arg0.a_;
+					size_t size = p_type->size;
 					void *mem = malloc(size);
+					std::memset(mem, 0, size);
 					assert(mem != nullptr);
-
 					heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
 
 					/* Compile with -D INSTRUCTION_TEST if testing.
@@ -588,10 +592,15 @@ namespace cx{
 					* will fail.   */
 
 					// assign mem to smart pointer, release using free()
-					mem_map->shared_ref = std::move(heap::managedmem((uintptr_t *)mem, free));
-					mem_map->size = size; // size
-					mem_map->typecode = dt; // type
-					mem_map->typeform = type_form::F_ARRAY;
+					mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);		
+					mem_map->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
+					mem_map->p_type->array.element_count = element_count;
+					mem_map->p_type->array.max_index = 0;
+					mem_map->p_type->array.max_index = static_cast<int>(element_count) - 1;
+					mem_map->p_type->size = size;
+					mem_map->p_type->array.p_element_type = p_type->array.p_element_type;
+					mem_map->p_type->array.p_index_type = p_type->array.p_index_type;
+				
 					_PUSHS->a_ = mem;
 				} continue;
 				case opcode::NOP: continue;
@@ -600,9 +609,7 @@ namespace cx{
 				case opcode::POP2: _POPS; _POPS; continue;
 				case opcode::PUTFIELD: continue;
 				case opcode::PUTSTATIC: continue;
-				case opcode::RETURN:
-					return;
-					continue;
+				case opcode::RETURN: return; break;
 				case opcode::SWAP: continue;
 				case opcode::TABLESWITCH: continue;
 				} //switch

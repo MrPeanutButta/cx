@@ -57,9 +57,6 @@ namespace cx{
 	text_in_buffer::text_in_buffer(std::wstring input_file_name,
 		abort_code ac) : file_name_(input_file_name) {
 
-		// Copy the input file name.
-		//strcpy(p_file_name, p_input_file_name);
-
 		// Open the input file.  Abort if failed.
 		file.open(file_name_.c_str(), std::ios::in);
 		file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::little_endian>));
@@ -148,7 +145,10 @@ namespace cx{
 
 			p_char = text; // point to first source line char
 
+#ifdef _DEBUG
 			std::wcout << text << std::endl;
+#endif
+
 			// just buffer current line, we can display on error
 			list.wbuffer(
 				text,
@@ -197,7 +197,5 @@ namespace cx{
 		++line_count;
 	}
 
-	text_out_buffer::~text_out_buffer() {
-
-	}
+	text_out_buffer::~text_out_buffer() {}
 }

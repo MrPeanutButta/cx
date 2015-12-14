@@ -190,6 +190,9 @@
     <None Include="..\examples\test.cx">
       <Filter>Examples</Filter>
     </None>
+    <None Include="..\doc\language reference\enum.md">
+      <Filter>Documentation\language reference</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\notepad++\userDefineLang_Cx.xml">
