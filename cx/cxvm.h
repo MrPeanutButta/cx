@@ -251,8 +251,8 @@ namespace cx {
 		_vcpu vpu;					// VPU: Virtual Proc Unit
 		value stack[_STACK_SIZE];	// STACK:
 		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
-
 		heap::mem_mapping &get_managed_reference(uintptr_t address);
+
 		//std::mutex vm_lock;				// VM lock during execution
 		const symbol_table_node *p_my_function_id;
 		void nano_sleep(int nano_secs);	// Thread sleep while waiting for VM lock

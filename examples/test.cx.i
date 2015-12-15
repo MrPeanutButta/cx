@@ -1,28 +1,30 @@
-function: __main__ address: 00EB83D8
-    0:      call		00EB9D18 00000000
-    1:    iconst		000001F4 00000000
-    2:    iaload		00EACA4C 00000000
-    3:    istore		00EB83D8 00000000
-    4:    return		00000000 00000000
+function: __main__ address: 00FF83B0
+    0:      call		00FF9CF0 00000000
+    1:    astore		00FFC8E0 00000000
+    2:     aload		00FFC8E0 00000000
+    3:    iconst		000001F4 00000000
+    4:    iaload		00FECA1C 00000000
+    5:    istore		00FF83B0 00000000
+    6:    return		00000000 00000000
 
-function: m_ref_test_3 address: 00EB9D18
+function: m_ref_test_3 address: 00FF9CF0
     0:    iconst		00002710 00000000
-    1:  newarray		00EB7CFC 00000000
-    2:    astore		00EB9E48 00000000
+    1:  newarray		00FF7784 00000000
+    2:    astore		00FF9E20 00000000
     3:    iconst		00000000 00000000
-    4:    istore		00EBB0B0 00000000
-    5:     iload		00EBB0B0 00000000
-    6:      iinc		00EBB0B0 00000001
+    4:    istore		00FFB088 00000000
+    5:     iload		00FFB088 00000000
+    6:      iinc		00FFB088 00000001
     7:    iconst		00002710 00000000
     8:       ilt		00000000 00000000
     9:  if_false		00000011 00000000
-   10:     iload		00EBB0B0 00000000
-   11:     iload		00EBB0B0 00000000
+   10:     iload		00FFB088 00000000
+   11:     iload		00FFB088 00000000
    12:    iconst		00000002 00000000
    13:      iadd		00000000 00000000
-   14:   iastore		00EB9E48 00000000
+   14:   iastore		00FF9E20 00000000
    15:      goto		00000005 00000000
    16:       nop		00000000 00000000
-   17:     aload		00EB9E48 00000000
-   18:    astore		00EB9D18 00000000
+   17:     aload		00FF9E20 00000000
+   18:    astore		00FF9CF0 00000000
    19:    return		00000000 00000000
