@@ -854,6 +854,9 @@ namespace cx{
 				if (token == TC_DOT) {
 					p_result_type = parse_variable(p_function_id, p_node);
 				}
+				else if (token == TC_LEFT_SUBSCRIPT) {
+					p_result_type = parse_variable(p_function_id, p_node);
+				}
 				break;
 			case DC_CONSTANT:
 				get_token();
@@ -1387,10 +1390,10 @@ namespace cx{
 			}
 		}
 
-		while (token_in(token, tokenlist_subscript_or_field_start)) {
+		//while (token_in(token, tokenlist_subscript_or_field_start)) {
 			/*p_result_type = token == TC_LEFT_SUBSCRIPT ? parse_subscripts(p_function_id, p_result_type)
 				: parse_field(p_function_id, p_id, p_result_type);*/
-		}
+		//}
 
 		return p_result_type;
 	}

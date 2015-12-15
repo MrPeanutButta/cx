@@ -186,6 +186,7 @@ namespace cx{
 	// tokens that can follow a statement
 	const token_code tokenlist_statement_follow[] = {
 		TC_SEMICOLON, TC_LEFT_BRACKET, TC_RIGHT_BRACKET, TC_ELSE, TC_WHILE,
+		TC_LEFT_SUBSCRIPT,
 		TC_DUMMY
 	};
 
