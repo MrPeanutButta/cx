@@ -40,8 +40,7 @@ std::vector<void *> linux_libs;
 #endif
 
 namespace cx{
-	extern bool cx_dev_debug_flag;
-	symbol_table_node_ptr p_program_ptr_id;
+	//symbol_table_node_ptr p_program_ptr_id;
 
 	/** parse       parse the source file.  After listing each
 	 *              source line, extract and list its tokens.
@@ -49,17 +48,15 @@ namespace cx{
 	 * @return ptr to '__cx_global__' program Id.
 	 */
 	symbol_table_node_ptr parser::parse(void) {
-		symbol_table_node_ptr p_program_id;// = nullptr;
+		symbol_table_node_ptr p_program_id = nullptr;
 
 		if (!is_module) {
 			p_program_id = std::make_shared<symbol_table_node>(L"__main__", DC_PROGRAM);
 			p_program_id->defined.routine.function_type = FUNC_DECLARED;
 			p_program_id->p_type = p_integer_type;
-
-			p_program_ptr_id = p_program_id;
 		}
 
-		current_nesting_level = 0;
+		scoping::current_nesting_level = 0;
 		get_token();
 		parse_statement_list(p_program_id, TC_END_OF_FILE);
 		get_token();
@@ -70,15 +67,14 @@ namespace cx{
 			resync(tokenlist_program_end);
 			conditional_get_token_append(TC_END_OF_FILE, ERR_MISSING_RIGHT_BRACKET);
 
-			if (cx_dev_debug_flag) {
-				_swprintf(list.text, L"%20d source lines.", current_line_number);
-				list.put_line();
-				_swprintf(list.text, L"%20d syntax errors.", error_count);
-				list.put_line();
+			if (vm_settings::dev_debug_flag) {
+				_swprintf(buffer::list.text, L"%20d source lines.", buffer::current_line_number);
+				buffer::list.put_line();
+				_swprintf(buffer::list.text, L"%20d syntax errors.", error::error_count);
+				buffer::list.put_line();
 			}
 		}
 		return p_program_id;
-
 	}
 
 	/** resync          Resynchronize the parser.  If the current
@@ -1598,7 +1594,9 @@ namespace cx{
 			p_param->p_type = p_node->p_type;
 
 			if (is_array) {
-				p_param->p_type = parse_array_type(p_function_id, p_param);
+				p_param->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
+				p_param->p_type->array.p_element_type = p_node->p_type;
+
 			}
 
 			get_token();
@@ -1895,14 +1893,13 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_DO(symbol_table_node_ptr &p_function_id) {
-		get_token();
 		// Enter new scoped block
 		symtab_stack.enter_scope();
+		get_token();
 
 		int do_start = current_location(p_function_id);//put_location_marker(p_function_id);
 
 		parse_statement(p_function_id);
-		symtab_stack.exit_scope();
 
 		conditional_get_token(TC_WHILE, ERR_MISSING_WHILE);
 		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
@@ -1917,6 +1914,8 @@ namespace cx{
 
 		fixup_location_marker(p_function_id, break_marker);
 		set_break_jump(p_function_id, do_start);
+
+		symtab_stack.exit_scope();
 	}
 
 	/** parse_WHILE          parse while statement.
@@ -1927,9 +1926,9 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_WHILE(symbol_table_node_ptr &p_function_id) {
-		get_token();
 		// Enter new scoped block
 		symtab_stack.enter_scope();
+		get_token();
 
 		int while_start = current_location(p_function_id);
 
@@ -1941,12 +1940,12 @@ namespace cx{
 		int break_marker = put_location_marker(p_function_id);
 
 		parse_statement(p_function_id);
-		symtab_stack.exit_scope();
 
 		this->emit(p_function_id, opcode::GOTO, { while_start });
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, break_marker);
 		set_break_jump(p_function_id, while_start);
+		symtab_stack.exit_scope();
 	}
 
 	/** parse_IF             parse if/else statements.
@@ -1961,10 +1960,9 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_IF(symbol_table_node_ptr &p_function_id) {
-
-		get_token();
 		// Enter new scoped block
 		symtab_stack.enter_scope();
+		get_token();
 
 		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
 		check_boolean(parse_expression(p_function_id), nullptr);
@@ -1977,26 +1975,26 @@ namespace cx{
 		int at_false_location_marker = put_location_marker(p_function_id);
 		
 		parse_statement(p_function_id);
-		symtab_stack.exit_scope();
+
 
 		int if_end = current_location(p_function_id);
 		this->emit(p_function_id, opcode::NOP);
 		fixup_location_marker(p_function_id, at_false_location_marker);
 
 		if(token == TC_SEMICOLON) get_token();
-
+		symtab_stack.exit_scope();
 		if (token == TC_ELSE) {
-			get_token();
-
 			// Enter new scoped block
 			symtab_stack.enter_scope();
+			get_token();
 			parse_statement(p_function_id);
-			symtab_stack.exit_scope();
 
 			this->emit(p_function_id, opcode::NOP);
 			p_function_id->defined.routine.program_code.insert(
 				p_function_id->defined.routine.program_code.begin() + if_end, 
 				{ opcode::GOTO, current_location(p_function_id) });
+
+			symtab_stack.exit_scope();
 		}
 	}
 
@@ -2008,10 +2006,9 @@ namespace cx{
 	* @param p_function_id : ptr to this statements function Id.
 	*/
 	void parser::parse_FOR(symbol_table_node_ptr &p_function_id) {
-		get_token();
 		// Enter new scoped block
 		symtab_stack.enter_scope();
-
+		get_token();
 		conditional_get_token(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
 
 		if (token != TC_SEMICOLON) {
@@ -2044,9 +2041,9 @@ namespace cx{
 		this->emit(p_function_id, opcode::GOTO, for_start);
 		this->emit(p_function_id, opcode::NOP);
 
-		symtab_stack.exit_scope();
 		fixup_location_marker(p_function_id, break_marker);
 		set_break_jump(p_function_id, for_start);
+		symtab_stack.exit_scope();
 	}
 
 	/** parse_SWITCH         parse switch statements.
@@ -2411,14 +2408,14 @@ namespace cx{
 		bool is_function = false;
 		const bool is_expression = token_in(this->token, tokenlist_assign_ops);
 
-		/*if ((this->token != TC_LEFT_PAREN) && (token != TC_RIGHT_PAREN) &&
+		if ((this->token != TC_LEFT_PAREN) && (token != TC_RIGHT_PAREN) &&
 			(!is_expression)) get_token();
-		else*/ 
-			
-			if ((this->token != TC_RIGHT_PAREN) && (!is_expression)) is_function = true;
+		else	
+		if ((this->token == TC_LEFT_PAREN) && (!is_expression)) is_function = true;
 
 		if (is_function) {
 			p_array_node->p_type = p_array_type;
+			parse_function_header(p_array_node);
 			return p_array_node->p_type;
 		}
 

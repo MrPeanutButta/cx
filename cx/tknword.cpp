@@ -312,17 +312,4 @@ namespace cx{
 		if (c_ > 0) code__ = c_;
 
 	}
-
-	/** print       print the token to the list file.
-	 */
-	void word_token::print(void) const {
-		if (code__ == TC_IDENTIFIER) {
-//			sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
-		}
-		else {
-//			sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
-		}
-
-		list.put_line();
-	}
 }

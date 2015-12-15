@@ -30,11 +30,13 @@ THE SOFTWARE.
 #include "error.h"
 
 namespace cx{
-	int error_count = 0; // count of syntax errors
-	bool error_arrow_flag = true; // true if print arrows under syntax
-
-	//   errors, false if not
-	int error_arrow_offset = 8; // offset for printing the error arrow
+	namespace error {
+		bool error_arrow_flag = true; // true if print arrows under syntax
+		//   errors, false if not
+		const int error_arrow_offset = 8; // offset for printing the error arrow
+		int error_count = 0; // count of syntax errors
+		int max_syntax_errors = 0;
+	}
 
 	///  Abort messages      Keyed to enumeration type cx_abort_code.
 	const char *abort_message[] = {
@@ -140,21 +142,19 @@ namespace cx{
 	 * @param ec : error code
 	 */
 	void cx_error(error_code ec) {
-		const int max_syntax_errors = 0;
-
-		int error_position = error_arrow_offset + input_position - 1;
+		int error_position = error::error_arrow_offset + buffer::input_position - 1;
 
 		// print the arrow pointing to the token just scanned.
-		list.put_line(); // print current line info
-		_swprintf(list.text, L"%*s^", error_position, L" ");
-		list.put_line();
+		buffer::list.put_line(); // print current line info
+		_swprintf(buffer::list.text, L"%*s^", error_position, L" ");
+		buffer::list.put_line();
 
 		// print the error message.
-		_swprintf(list.text, L"*** error: %s", error_messages[ec]);
-		list.put_line();
+		_swprintf(buffer::list.text, L"*** error: %s", error_messages[ec]);
+		buffer::list.put_line();
 
-		if (++error_count > max_syntax_errors) {
-			list.put_line(L"Too many syntax errors.  Translation aborted.");
+		if (++error::error_count > error::max_syntax_errors) {
+			buffer::list.put_line(L"Too many syntax errors.  Translation aborted.");
 			std::cin.get();
 			exit(ec);
 			//abort_translation(abort_too_many_syntax_errors);
@@ -174,9 +174,7 @@ namespace cx{
 	};
 
 	void cx_runtime_error(runtime_error_code ec) {
-		extern int current_line_number;
-
-		std::cout << "\nruntime error in line <" << current_line_number << ">: "
+		std::cout << "\nruntime error in line <" << buffer::current_line_number << ">: "
 			<< runtime_error_messages[ec] << std::endl;
 
 		exit(ABORT_RUNTIME_ERROR);

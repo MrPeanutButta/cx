@@ -46,21 +46,35 @@ THE SOFTWARE.
 #include "symtab.h"
 
 namespace cx {
+	namespace vm_settings {
+		extern bool dev_debug_flag;
+		extern bool verbose_gc;
+	}
+
 	namespace heap {
+
 		// Memory allocation representation class
 		typedef std::shared_ptr<uintptr_t> managedmem;
 
 		class mem_mapping {
 		private:
 		public:
-			mem_mapping() {}// : is_rvalue(false) {}
-			managedmem shared_ref;	// VM memory allocations
+			mem_mapping() {
+				if (vm_settings::verbose_gc) {
+					std::cout << "\nnew allocation\n";
+				}
+			}
+
+			~mem_mapping() {
+				if (vm_settings::verbose_gc) {
+					std::cout << "\nreference deleted\n";
+					std::cout << "releasing " << p_type->size << " bytes\n";
+					std::cout << "references remaining: " << shared_ref.use_count() - 1 << std::endl;
+				}
+			}
+
+			managedmem shared_ref;		// VM memory allocations
 			cx_type::type_ptr p_type;
-			/*size_t size;			// sizeof
-			type_code typecode;
-			type_form typeform;
-			bool is_rvalue;			// Evaluates to a temporary value that does not persist beyond the expression that defines it.
-			size_t count(void);		// memory size / element size*/
 		};
 
 		typedef void* address;
@@ -236,8 +250,9 @@ namespace cx {
 	private:
 		_vcpu vpu;					// VPU: Virtual Proc Unit
 		value stack[_STACK_SIZE];	// STACK:
-		heap::malloc_map heap_;			// HEAP: For storing raw memory allocations
+		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
 
+		heap::mem_mapping &get_managed_reference(uintptr_t address);
 		//std::mutex vm_lock;				// VM lock during execution
 		const symbol_table_node *p_my_function_id;
 		void nano_sleep(int nano_secs);	// Thread sleep while waiting for VM lock

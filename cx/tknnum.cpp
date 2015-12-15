@@ -243,28 +243,4 @@ namespace cx{
 
 		return (c - L'0');
 	}
-
-	/** C already has this function
-	bool cx_number_token::is_x_digit(const char& c) {
-	return (c == 'a') || (c == 'A') || (c == 'b') || (c == 'B') ||
-	(c == 'c') || (c == 'C') || (c == 'd') || (c == 'D') ||
-	(c == 'e') || (c == 'E') || (c == 'f') || (c == 'F') ||
-	((c >= '0') && (c <= '9'));
-	}*/
-
-	/** print       print the token to the list file.
-	 *
-	 */
-	void number_token::print(void) const {
-		if (type__ == T_INT) {
-	//		sprintf(list.text, "\t%-18s =%d", ">> integer:",
-	//			value__.i_);
-		}
-		else {
-	//		sprintf(list.text, "\t%-18s =%g", ">> real:",
-	//			value__.d_);
-		}
-
-		list.put_line();
-	}
 }

@@ -27,6 +27,13 @@ THE SOFTWARE.
 #include "symtab.h"
 
 namespace cx{
+	namespace vm_settings {
+		// VM settings
+		// Turn on to view Cx debugging
+		bool dev_debug_flag = false;
+		bool verbose_gc = false;
+	}
+
 	const wchar_t *opcode_string[] = {
 		L"aaload"            ,
 		L"aastore"           ,
@@ -159,13 +166,6 @@ namespace cx{
 		L"break_marker"
 	};
 
-	// turn on to view Cx debugging
-#ifdef _DEBUG
-	bool cx_dev_debug_flag = true;
-#else
-	bool cx_dev_debug_flag = false;
-#endif
-
 	// Type sizes
 	const size_t type_size[] = {
 		sizeof(cx_bool),
@@ -256,6 +256,13 @@ namespace cx{
 		return _POPS;
 	}
 
+	heap::mem_mapping &cxvm::get_managed_reference(uintptr_t address) {
+#ifdef _DEBUG
+		std::cout << "reference copied\n";
+#endif
+		return heap_[address];
+	}
+
 	void cxvm::enter_function(symbol_table_node *p_function_id){
 		this->p_my_function_id = p_function_id;
 
@@ -292,7 +299,7 @@ namespace cx{
 			vpu.inst_ptr < vpu.code_ptr->end();
 				vpu.inst_ptr++) {
 
-				if (cx::cx_dev_debug_flag == true) {
+				if (vm_settings::dev_debug_flag == true) {
 					/*if (vpu.stack_ptr == &stack[_STACK_SIZE]) {
 						std::cout << "stack overflow\n";
 					}*/
@@ -405,9 +412,11 @@ namespace cx{
 
 						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->i_ << std::endl;
 						break;
-					case type_code::T_REFERENCE:
+					case type_code::T_REFERENCE: {
+						uintptr_t reference = _ADDRTOINT(p_function_id->runstack_item->a_);
+						this->heap_.emplace(reference, cx->get_managed_reference(reference));
 						_PUSHS->a_ = p_function_id->runstack_item->a_;
-						break;
+					}break;
 					case type_code::T_VOID:
 						break;
 					}

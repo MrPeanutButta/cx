@@ -40,7 +40,14 @@ namespace cx{
 	cx_type::type_ptr p_dummy_type;
 
 	cx_type::cx_type(type_form form, type_code type)
-		: typeform(form), typecode(type){}
+		: typeform(form), typecode(type){
+		this->array.element_count = 0;
+		this->array.max_index = 0;
+		this->array.min_index = 0;
+		this->array.p_element_type = nullptr;
+		this->array.p_index_type = p_integer_type;
+		this->size = 0;
+	}
 
 	/** Constructors    General.
 	 *

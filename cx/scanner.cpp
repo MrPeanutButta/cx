@@ -69,7 +69,7 @@ namespace cx{
 		char_map[L'\''] = CC_QUOTE;
 		char_map[L'\"'] = CC_DOUBLE_QUOTE;
 
-		char_map[EOF_CHAR] = CC_END_OF_FILE;
+		char_map[buffer::EOF_CHAR] = CC_END_OF_FILE;
 
 		char_map[L'`'] = char_map[L'@'] = CC_ERROR;
 	}
@@ -93,7 +93,7 @@ namespace cx{
 					while (ch != L'\0') ch = p_text_in_buffer->get_char();
 				}
 				else if (ch == L'*') {
-					while (ch != EOF_CHAR) {
+					while (ch != buffer::EOF_CHAR) {
 						ch = p_text_in_buffer->get_char();
 						if (ch == L'*') {
 							ch = p_text_in_buffer->get_char();

@@ -29,14 +29,10 @@ THE SOFTWARE.
 #include "types.h"
 
 namespace cx{
-
-	//int asm_label_index = 0; // assembly label index
-	bool xreference_flag = false; // true = cross-referencing on, false = off
-
-	// current scope level
-	int current_nesting_level = 0;
-	const int MAX_NESTING_LEVEL = 512;
-	//symbol_table_node_ptr p_main_function_id;
+	namespace scoping {
+		int current_nesting_level = 0;
+		const int MAX_NESTING_LEVEL = 512;
+	}
 
    /** Global symbols
 	*
@@ -69,10 +65,7 @@ namespace cx{
 	 */
 	symbol_table_node::symbol_table_node(std::wstring name, define_code dc)
 		: node_name(name) {
-
-		this->global_finish_location = 0;
-		this->found_global_end = false;
-		this->level = current_nesting_level;
+		this->level = scoping::current_nesting_level;
 		this->defined.defined_how = dc;
 		this->runstack_item = nullptr;
 	}
@@ -157,7 +150,7 @@ namespace cx{
 
 		void initialize_std_functions(symbol_table *p_symtab);
 
-		current_nesting_level = 0;
+		scoping::current_nesting_level = 0;
 		//for (int i = 1; i < MAX_NESTING_LEVEL; ++i) p_symtabs[i] = nullptr;
 
 		// Initialize the global nesting level.
@@ -185,7 +178,7 @@ namespace cx{
 		
 		symbol_table_node_ptr p_node;
 
-		for (int i = current_nesting_level; i >= 0; --i) {
+		for (int i = scoping::current_nesting_level; i >= 0; --i) {
 			p_node = p_symtabs[i]->search(name);
 			if (p_node != nullptr) return p_node;
 		}
@@ -220,7 +213,7 @@ namespace cx{
 	 */
 	void symbol_table_stack::enter_scope(void) {
 
-		if (++current_nesting_level > MAX_NESTING_LEVEL) {
+		if (++scoping::current_nesting_level >= scoping::MAX_NESTING_LEVEL) {
 			cx_error(ERR_NESTING_TOO_DEEP);
 			abort_translation(ABORT_NESTING_TOO_DEEP);
 		}
@@ -237,6 +230,6 @@ namespace cx{
 	 * @return ptr to closed scope's symbol table.
 	 */
 	symbol_table *symbol_table_stack::exit_scope(void) {
-		return p_symtabs[current_nesting_level--];
+		return p_symtabs[scoping::current_nesting_level--];
 	}
 }

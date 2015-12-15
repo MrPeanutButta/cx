@@ -10,6 +10,49 @@ enum enum_value_0 {
 	E2 = 5
 }
 
+int *m_ref_test_0(int i){
+	int *ref = new int[5];
+	ref[3] = i;
+	
+	return ref;
+}
+
+byte *m_ref_test_1(int i){
+	int *ref = new int[500];
+	ref[4] = i;
+	
+	return ref;
+}
+
+real *m_ref_test_2() {
+	real *d = new real[10000];
+	int i = 0;
+	
+	while(i++ < 100){
+		d = new real[10000];
+	}
+	
+	return d;
+}
+
+int *m_ref_test_3() {
+	int *i_ = new int[10000];
+	int i = 0;
+	
+	while(i++ < 10000){
+		i_[i] = i;
+	}
+	
+	return i_;
+}
+
+int *aref = m_ref_test_0(100);
+int *bref = m_ref_test_1(500);
+int ret_val = aref[3] + bref[4];
+
+real *d_ret_val = m_ref_test_2;
+int func_array = m_ref_test_3[500];
+
 // Function statement body type
 /* Broken
 int func(int count)	while(++count < 100){
