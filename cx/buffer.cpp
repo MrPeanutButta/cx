@@ -129,10 +129,11 @@ namespace cx{
 	 *          end-of-file character if at the end of the file
 	 */
 	wchar_t source_buffer::get_line(void) {
-		extern int current_nesting_level;
-
-		// If at the end of the source file, return the end-of-file char.
-		if (file.eof()) p_char = (wchar_t *)&EOF_CHAR;
+		extern int current_nesting_level;		// If at the end of the source file, return the end-of-file char.
+		if (file.eof()) {
+			p_char = (wchar_t *)&EOF_CHAR;
+			file.close();
+		}
 
 		// Else read the next__ source line and print it to the list file.
 		else {
@@ -140,6 +141,9 @@ namespace cx{
 
 			while (!wcscmp(text, L"\0")) {
 				file.getline(text, MAX_INPUT_BUFFER_SIZE);
+
+				if (file.eof()) break;
+
 				++current_line_number;
 			}
 

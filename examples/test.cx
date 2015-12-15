@@ -11,9 +11,10 @@ enum enum_value_0 {
 }
 
 // Function statement body type
-int func(int count) while(++count < 100){
-	int i = count + count;
-}
+/* Broken
+int func(int count)	while(++count < 100){
+		if(count + count > 150) return (count + count);
+} */
 
 int int_array_test_0(int *a1, int index) return a1[index] + 2;
 
@@ -107,11 +108,11 @@ int assembly_test_0(int i){
 }
 
 // Radix testing
-byte binary_test_0()return 0b11111111;
+byte binary_test_0() return 0b11111111;
 // Radix testing
-byte hex_test_0()return 0xff;
+byte hex_test_0() return 0xff;
 // Radix testing
-byte octal_test_0()	return 0377;
+byte octal_test_0() return 0377;
 
 bool operator_test_0(){
 	bool return_passing = false;
@@ -430,26 +431,21 @@ bool neg_test_1_pass = (neg_test_1(5.5) == -5.5);
 bool gcd_pass = (igcd(100,1000) == 100);
 bool sqr_root_pass = (isqrt(1048576) == 1024);
 bool enum_test_0_pass = (enum_test_0(enum_value_0.E2) == enum_value_0.E2);
+bool array_test_0_pass = (array_index_check_0(a0, 9) == 75);
+bool array_test_1_pass = (array_index_check_1(a1, 9) == 55);
 
-
-//bool array_test_0_pass = (array_index_check_0(a0, 9) == 55);
-//bool array_test_1_pass = (array_index_check_1(a1, 9) == 55);
-
-
-//bool if_test_1_pass = (if_test_1(1) == 5);
-//bool if_test_1_pass = (if_test_1(-1) == 10);
-
-// TEST HOOK
-// return benchmark_test_1();
-// return benchmark_test_0();
-/*bool sucess = (
+bool success = (
 	for_test_0_pass && while_pass  && if_pass && do_pass &&
 	break_0_pass && break_1_pass && recursive_test_0_pass &&
 	binary_test_0_pass && hex_test_0_pass && octal_test_0_pass &&
 	assembly_test_0_pass && operator_test_0_pass && pos_test_0_pass &&
 	neg_test_0_pass && pos_test_1_pass && neg_test_1_pass && 
 	gcd_pass && sqr_root_pass && array_test_0_pass && array_test_1_pass
-	);*/
+	);
 	
-return int_array_test_0(a0, 0);
-//return int_array_test_0(a0, 5);
+if(success == true){
+	benchmark_test_0;
+	//benchmark_test_1;
+}
+	
+return success;

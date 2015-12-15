@@ -85,13 +85,7 @@ namespace cx {
 		BALOAD,
 		BASTORE,
 		BEQ,
-		BEQ_EQ,
-		BGE,
-		BGT,
 		BIPUSH,
-		BLE,
-		BLT,
-		BNE,
 		C2I,
 		CALL,
 		CALOAD,
@@ -106,7 +100,7 @@ namespace cx {
 		DCMP,
 		DCONST,
 		DDIV,
-		DEQ_EQ,
+		DEQ,
 		DGT,
 		DGT_EQ,
 		DINC,
@@ -139,7 +133,7 @@ namespace cx {
 		ICMP,
 		ICONST,
 		IDIV,
-		IEQ_EQ,
+		IEQ,
 		IF_FALSE,
 		IFNE,
 		IFLT,
@@ -206,7 +200,8 @@ namespace cx {
 		RETURN,
 		SWAP,
 		TABLESWITCH,
-		BREAK_MARKER
+		ZEQ,
+		BREAK_MARKER = 0xFFFF
 	};
 
 	// Instruction

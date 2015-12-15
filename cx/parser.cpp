@@ -213,12 +213,12 @@ namespace cx{
 
 			get_token();
 
-			if (token == TC_LEFT_PAREN) {
+		//	if (token == TC_LEFT_PAREN) {
 				parse_subroutine_call(p_function_id, p_node);
-			}
-			else {
-				parse_assignment(p_function_id, p_node);
-			}
+	//		}
+			//else {
+			//	parse_assignment(p_function_id, p_node);
+		//	}
 
 		}
 		else {
@@ -1640,18 +1640,12 @@ namespace cx{
 	* @param parm_check_flag : true to check parameter, false not to
 	* @return ptr to the subroutine's type object
 	*/
-	cx_type::type_ptr parser::parse_subroutine_call(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id) {
-		//get_token();
-		cx_type::type_ptr p_result_type = nullptr;
-		p_result_type = parse_declared_subroutine_call(p_function_id, p_node_id);
+	cx_type::type_ptr parser::parse_subroutine_call(
+		symbol_table_node_ptr &p_function_id, 
+		symbol_table_node_ptr &p_node_id) {
+		cx_type::type_ptr p_result_type = parse_declared_subroutine_call(p_function_id, p_node_id);
 		p_function_id->defined.routine.program_code.push_back({ CALL, p_node_id.get() });
 		return p_result_type;
-		/*return (p_function_id->defined.routine.function_type == FUNC_DECLARED) ||
-			(p_function_id->defined.routine.function_type == FUNC_FORWARD)
-			||
-			!parm_check_flag
-			? parse_declared_subroutine_call(p_function_id, parm_check_flag)
-			: ;*/
 	}
 
 	/** parse_declared_subroutine_call parse a call to a declared
@@ -1661,12 +1655,12 @@ namespace cx{
 	* @param parm_check_flag : true to check parameter, false not to.
 	* @return ptr to the subroutine's type object.
 	*/
-	cx_type::type_ptr parser::parse_declared_subroutine_call
-		(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id) {
+	cx_type::type_ptr parser::parse_declared_subroutine_call(
+		symbol_table_node_ptr &p_function_id, 
+			symbol_table_node_ptr &p_node_id) {
 
 		if (token == TC_LEFT_PAREN) {
 			parse_actual_parm_list(p_function_id, p_node_id);
-			//get_token();
 		}
 
 		return p_node_id->p_type;
@@ -1679,15 +1673,14 @@ namespace cx{
 	* @param p_function_id    : ptr to routine id's symbol table node.
 	* @param parm_check_flag : true to check parameter, false not to.
 	*/
-	void parser::parse_actual_parm_list(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id) {
+	void parser::parse_actual_parm_list(
+		symbol_table_node_ptr &p_function_id,
+		symbol_table_node_ptr &p_node_id) {
 
 		/* If there are no actual parameters, there better not be
 		 * any formal parameters either. */
 
-		if (token != TC_LEFT_PAREN) {
-			//if (parm_check_flag && p_formal_id) cx_error(ERR_WRONG_NUMBER_OF_PARMS);
-			return;
-		}
+		if (token != TC_LEFT_PAREN) return;
 
 		std::vector <std::shared_ptr<symbol_table_node>>::iterator p_formal_id;
 		p_formal_id = p_node_id->defined.routine.p_parameter_ids.begin();
@@ -1717,9 +1710,6 @@ namespace cx{
 
 		//  )
 		conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
-
-		// There better not be any more formal parameters.
-		//if (parm_check_flag && p_formal_id) cx_error(ERR_WRONG_NUMBER_OF_PARMS);
 	}
 
 	/** parse_statement          parse a statement.
@@ -1746,10 +1736,7 @@ namespace cx{
 			//	//case tc_CASE:
 			//	//case tc_DEFAULT:parse_case_label(p_function_id);
 			//	//  break;
-		case TC_BREAK: 
-			get_token(); 
-			this->emit(p_function_id, opcode::BREAK_MARKER);
-			break;
+		case TC_BREAK: get_token(); this->emit(p_function_id, opcode::BREAK_MARKER); break;
 		case TC_LEFT_BRACKET: parse_compound(p_function_id); break;
 		case TC_RETURN: parse_RETURN(p_function_id); break;
 			//case TC_POUND:
@@ -1782,12 +1769,8 @@ namespace cx{
 			//	symtab_stack.set_curr
 			//}
 			//	break;ent_symtab(p_old_symtab);
-		case TC_ASM:
-			parse_ASM(p_function_id);
-			break;
-		default:
-			parse_simple_expression(p_function_id);
-			break;
+		case TC_ASM: parse_ASM(p_function_id); break;
+		default: parse_simple_expression(p_function_id); break;
 		}
 
 		//if (token != TC_END_OF_FILE) {
@@ -2806,15 +2789,17 @@ namespace cx{
 		switch (p_type->typecode)
 		{
 		case T_BYTE:
-			op = BEQ_EQ;
+			op = opcode::BEQ;
 			break;
 		case T_BOOLEAN:
+			op = opcode::ZEQ;
+			break;
 		case T_CHAR:
 		case T_INT:
-			op = IEQ_EQ;
+			op = opcode::IEQ;
 			break;
 		case T_DOUBLE:
-			op = DEQ_EQ;
+			op = opcode::DEQ;
 			break;
 		case T_REFERENCE: // TODO fix
 			//op = ANOT_EQ;
@@ -3196,12 +3181,7 @@ namespace cx{
 			std::make_pair(L"baload",          cx::opcode::BALOAD),
 			std::make_pair(L"bastore",         cx::opcode::BASTORE),
 			std::make_pair(L"beq",             cx::opcode::BEQ),
-			std::make_pair(L"bge",             cx::opcode::BGE),
-			std::make_pair(L"bgt",             cx::opcode::BGT),
 			std::make_pair(L"bipush",          cx::opcode::BIPUSH),
-			std::make_pair(L"ble",             cx::opcode::BLE),
-			std::make_pair(L"blt",             cx::opcode::BLT),
-			std::make_pair(L"bne",             cx::opcode::BNE),
 			std::make_pair(L"c2i",             cx::opcode::C2I),
 			std::make_pair(L"call",            cx::opcode::CALL),
 			std::make_pair(L"caload",          cx::opcode::CALOAD),
@@ -3216,7 +3196,7 @@ namespace cx{
 			std::make_pair(L"dcmp",            cx::opcode::DCMP),
 			std::make_pair(L"dconst",          cx::opcode::DCONST),
 			std::make_pair(L"ddiv",            cx::opcode::DDIV),
-			std::make_pair(L"deq_eq",          cx::opcode::DEQ_EQ),
+			std::make_pair(L"deq_eq",          cx::opcode::DEQ),
 			std::make_pair(L"dgt",             cx::opcode::DGT),
 			std::make_pair(L"dgt_eq",          cx::opcode::DGT_EQ),
 			std::make_pair(L"dinc",            cx::opcode::DINC),
@@ -3248,7 +3228,7 @@ namespace cx{
 			std::make_pair(L"icmp",            cx::opcode::ICMP),
 			std::make_pair(L"iconst",          cx::opcode::ICONST),
 			std::make_pair(L"idiv",            cx::opcode::IDIV),
-			std::make_pair(L"ieq_eq",          cx::opcode::IEQ_EQ),
+			std::make_pair(L"ieq_eq",          cx::opcode::IEQ),
 			std::make_pair(L"if_false",        cx::opcode::IF_FALSE),
 			std::make_pair(L"ifne",            cx::opcode::IFNE),
 			std::make_pair(L"iflt",            cx::opcode::IFLT),
@@ -3314,7 +3294,8 @@ namespace cx{
 			std::make_pair(L"return",          cx::opcode::RETURN),
 			std::make_pair(L"ret",			   cx::opcode::RETURN),
 			std::make_pair(L"swap",            cx::opcode::SWAP),
-			std::make_pair(L"tableswitch",     cx::opcode::TABLESWITCH)
+			std::make_pair(L"tableswitch",     cx::opcode::TABLESWITCH),
+			std::make_pair(L"zeq",			   cx::opcode::ZEQ)
 		};
 
 		typedef std::map<std::wstring, cx::opcode> opcode_map;
@@ -3346,12 +3327,7 @@ namespace cx{
 			case opcode::BALOAD: get_token(); break;
 			case opcode::BASTORE: get_token(); break;
 			case opcode::BEQ: get_token(); break;
-			case opcode::BGE: get_token(); break;
-			case opcode::BGT: get_token(); break;
 			case opcode::BIPUSH: get_token(); break;
-			case opcode::BLE: get_token(); break;
-			case opcode::BLT: get_token(); break;
-			case opcode::BNE: get_token(); break;
 			case opcode::C2I: get_token(); break;
 			case opcode::CALL: get_token(); break;
 			case opcode::CALOAD: get_token(); break;
@@ -3366,7 +3342,7 @@ namespace cx{
 			case opcode::DCMP: get_token(); break;
 			case opcode::DCONST: get_token(); break;
 			case opcode::DDIV: get_token(); break;
-			case opcode::DEQ_EQ: get_token(); break;
+			case opcode::DEQ: get_token(); break;
 			case opcode::DGT: get_token(); break;
 			case opcode::DGT_EQ: get_token(); break;
 			case opcode::DINC: get_token(); break;
@@ -3403,7 +3379,7 @@ namespace cx{
 				this->emit(p_function_id, opcode::ICONST, { p_token->value().i_ });
 				break;
 			case opcode::IDIV: get_token(); break;
-			case opcode::IEQ_EQ: get_token(); break;
+			case opcode::IEQ: get_token(); break;
 			case opcode::IF_FALSE: get_token(); break;
 			case opcode::IFNE: get_token(); break;
 			case opcode::IFLT: get_token(); break;
