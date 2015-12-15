@@ -244,9 +244,7 @@ namespace cx{
 		//this->lock();
 	}
 
-	cxvm::~cxvm(void){
-		//this->unlock();
-	}
+	cxvm::~cxvm(void){}
 
 	value *cxvm::push(void){
 		return _PUSHS;
@@ -256,7 +254,7 @@ namespace cx{
 		return _POPS;
 	}
 
-	heap::mem_mapping &cxvm::get_managed_reference(uintptr_t address) {
+	heap::mem_mapping cxvm::get_managed_reference(uintptr_t address) {
 #ifdef _DEBUG
 		std::cout << "reference copied\n";
 #endif
@@ -336,7 +334,9 @@ namespace cx{
 					assert(mem != nullptr);
 					_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
 				} continue;*/
-				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; continue;
+				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; 
+					// do a look up on the heap and increment reference count.
+					continue;
 				case opcode::ATHROW: { // Throws a string message
 					char *message = (char *)_POPS->a_;
 					assert(message != nullptr);
@@ -351,7 +351,7 @@ namespace cx{
 				case opcode::CALL: {
 					symbol_table_node *p_function_id = (symbol_table_node *)vpu.inst_ptr->arg0.a_;
 
-					std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
+					std::shared_ptr<cxvm> cx = std::make_shared<cxvm>();
 					p_function_id->runstack_item = cx->push();
 					p_function_id->runstack_item->a_ = nullptr;
 

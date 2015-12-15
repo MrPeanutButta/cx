@@ -61,16 +61,17 @@ namespace cx {
 		public:
 			mem_mapping() {
 				if (vm_settings::verbose_gc) {
-					std::cout << "\nnew allocation\n";
+					std::cout << "new allocation\n";
 				}
 			}
 
 			~mem_mapping() {
 				if (vm_settings::verbose_gc) {
-					std::cout << "\nreference deleted\n";
+					std::cout << "reference deleted\n";
 					std::cout << "releasing " << p_type->size << " bytes\n";
 					std::cout << "references remaining: " << shared_ref.use_count() - 1 << std::endl;
 				}
+				this->shared_ref.reset();
 			}
 
 			managedmem shared_ref;		// VM memory allocations
@@ -251,7 +252,7 @@ namespace cx {
 		_vcpu vpu;					// VPU: Virtual Proc Unit
 		value stack[_STACK_SIZE];	// STACK:
 		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
-		heap::mem_mapping &get_managed_reference(uintptr_t address);
+		heap::mem_mapping get_managed_reference(uintptr_t address);
 
 		//std::mutex vm_lock;				// VM lock during execution
 		const symbol_table_node *p_my_function_id;

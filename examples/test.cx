@@ -1,4 +1,4 @@
-/* enum enum_value_1 : byte {
+enum enum_value_1 : byte {
 	E0 = 10,
 	E1 = 20,
 	E2 = 30
@@ -33,32 +33,32 @@ real *m_ref_test_2() {
 	}
 	
 	return d;
-} */
+}
 
 int *m_ref_test_3() {
-	int *i_ = new int[10000];
+	int *i_ = new int[1000];
 	int i = 0;
 	
-	while(i++ < 10000){
+	while(i++ < 999){
 		i_[i] = i + 2;
 	}
 	
 	return i_;
 }
 
-//int *aref = m_ref_test_0(100);
-//int *bref = m_ref_test_1(500);
-//int ret_val = aref[3] + bref[4];
+int *aref = m_ref_test_0(100);
+int *bref = m_ref_test_1(500);
+int ret_val = aref[3] + bref[4];
 
-//real *d_ret_val = m_ref_test_2;
-//int func_array = 
+real *d_ret_val = m_ref_test_2;
+int i_func_array = m_ref_test_3[50];
 
 // Function statement body type
 /* Broken
 int func(int count)	while(++count < 100){
 		if(count + count > 150) return (count + count);
 } */
-/*
+
 int int_array_test_0(int *a1, int index) return a1[index] + 2;
 
 int recursive_array_test(int *a2, int index){
@@ -447,7 +447,7 @@ a3[9] = 1.5;
 */
 
 //
-/*
+
 enum_test_0(enum_value_0.E0);
 enum_test_0(enum_value_0.E1);
 enum_test_0(enum_value_0::E2);
@@ -491,4 +491,4 @@ if(success == true){
 	//benchmark_test_1;
 }
 
-return 
+return i_func_array;

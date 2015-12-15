@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 		if (error::error_count == 0) {
-			std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
+			std::shared_ptr<cxvm> cx = std::make_shared<cxvm>();
 
 #ifdef __CX_PROFILE_EXECUTION__
 			t1 = high_resolution_clock::now();
