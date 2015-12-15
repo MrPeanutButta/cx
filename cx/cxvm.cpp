@@ -414,7 +414,7 @@ namespace cx{
 						break;
 					case type_code::T_REFERENCE: {
 						uintptr_t reference = _ADDRTOINT(p_function_id->runstack_item->a_);
-						this->heap_[reference] = cx->get_managed_reference(reference);
+						this->heap_[reference] = std::move(cx->get_managed_reference(reference));
 						_PUSHS->a_ = p_function_id->runstack_item->a_;
 					}break;
 					case type_code::T_VOID:

@@ -71,7 +71,6 @@ namespace cx {
 					std::cout << "releasing " << p_type->size << " bytes\n";
 					std::cout << "references remaining: " << shared_ref.use_count() - 1 << std::endl;
 				}
-				this->shared_ref.reset();
 			}
 
 			managedmem shared_ref;		// VM memory allocations
