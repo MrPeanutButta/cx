@@ -38,14 +38,15 @@ namespace cx{
 
 	class list_buffer;
 
-	extern bool cx_dev_debug_flag;
-	extern const char EOF_CHAR;
-	extern int input_position;
-	extern int list_flag;
-	extern int level;
-	extern list_buffer list;
-	extern int current_line_number;
-	extern int current_nesting_level;
+	namespace buffer {
+		extern const char EOF_CHAR;
+		extern int input_position;
+		extern bool list_flag;
+		extern int level;
+		extern list_buffer list;
+		extern int current_line_number;
+		extern const int max_printline_length;
+	}
 
 	///  text_in_buffer       Abstract text input buffer class.
 

@@ -53,9 +53,7 @@ namespace cx{
 		///  cx_text_scanner        Text scanner subclass of cx_scanner.
 
 	class text_scanner : public scanner {
-		text_in_buffer * const p_text_in_buffer; /* ptr to input text buffer
-													 * to scan */
-
+		text_in_buffer * const p_text_in_buffer; // ptr to input text buffer to scan
 		void skip_whitespace(void);
 
 	public:

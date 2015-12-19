@@ -34,6 +34,11 @@ THE SOFTWARE.
 #include "cxvm.h"
 
 namespace cx{
+	namespace scoping {
+		extern int current_nesting_level;
+		extern const int MAX_NESTING_LEVEL;
+	}
+
 	class symbol_table_node;
 	class symbol_table;
 
@@ -45,10 +50,6 @@ namespace cx{
 	extern symbol_table_ptr p_std_type_members;
 	
 	symbol_table_ptr new_symtab(void);
-
-	extern int current_line_number;
-	extern int current_nesting_level;
-	extern const int MAX_NESTING_LEVEL;
 
 	enum define_code {
 		DC_UNDEFINED, DC_CONSTANT, DC_TYPE, DC_VARIABLE, DC_MEMBER,
@@ -99,16 +100,14 @@ namespace cx{
 		}
 
 		~define();
+		
+		value constant_value;
 
 		struct {
 			bool is_this_ptr;
 			symbol_table_node_ptr p_node;
 			value *p_stack_item;
 		} this_ptr;
-
-		struct {
-			value value;
-		} constant;
 
 		struct {
 			function_code function_type;
@@ -171,29 +170,29 @@ namespace cx{
 		~symbol_table_stack(void);
 
 		symbol_table_node_ptr search_local(std::wstring name) {
-			return p_symtabs[current_nesting_level]->search(name);
+			return p_symtabs[scoping::current_nesting_level]->search(name);
 		}
 
 		symbol_table_node_ptr enter_local(std::wstring name,
 			define_code dc = DC_UNDEFINED) {
-			return p_symtabs[current_nesting_level]->enter(name, dc);
+			return p_symtabs[scoping::current_nesting_level]->enter(name, dc);
 		}
 
 		symbol_table_node_ptr enter_new_local(std::wstring name,
 			define_code dc = DC_UNDEFINED) {
-			return p_symtabs[current_nesting_level]->enter_new(name, dc);
+			return p_symtabs[scoping::current_nesting_level]->enter_new(name, dc);
 		}
 
 		symbol_table *get_current_symtab(void) const {
-			return p_symtabs[current_nesting_level];
+			return p_symtabs[scoping::current_nesting_level];
 		}
 
 		void set_current_symtab(symbol_table *p_symtab) {
-			p_symtabs[current_nesting_level] = p_symtab;
+			p_symtabs[scoping::current_nesting_level] = p_symtab;
 		}
 
 		void set_scope(int scopeLevel) {
-			current_nesting_level = scopeLevel;
+			scoping::current_nesting_level = scopeLevel;
 		}
 
 		symbol_table_node_ptr search_available_scopes(std::wstring name) const;
@@ -204,7 +203,7 @@ namespace cx{
 	};
 
 	// mains scope level on the symtab stack
-#define __MAIN_ENTRY__ symtab_stack.find(L"main")
+#define __MAIN_ENTRY__ symtab_stack.find(L"__main__")
 }
 #endif	/* SYMTABLE_H */
 

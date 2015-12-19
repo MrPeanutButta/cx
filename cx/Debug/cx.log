@@ -1,7 +1,7 @@
-﻿Build started 12/6/2015 12:49:55 AM.
+﻿Build started 12/19/2015 1:22:11 AM.
      1>Project "C:\Users\aahebert\Documents\GitHub\cx\cx\cx.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W4 /WX /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt buffer.cpp cxvm.cpp error.cpp main.cpp parser.cpp scanner.cpp symtab.cpp tknnum.cpp tknstrsp.cpp tknword.cpp types.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W4 /WX /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D __CX_PROFILE_EXECUTION__ /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt buffer.cpp cxvm.cpp error.cpp main.cpp parser.cpp scanner.cpp symtab.cpp tknnum.cpp tknstrsp.cpp tknword.cpp types.cpp
          types.cpp
          tknword.cpp
          tknstrsp.cpp
@@ -31,4 +31,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:10.67
+Time Elapsed 00:00:12.72

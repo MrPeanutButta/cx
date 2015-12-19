@@ -89,7 +89,7 @@ namespace cx{
 			symbol_table_node_ptr &p_string_node);
 		//cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
 		//	symbol_table_node_ptr &p_array_node);
-		cx_type::type_ptr parse_unksize_array_type(symbol_table_node_ptr &p_function_id,
+		cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_array_node);
 
 		void parse_index_type(symbol_table_node_ptr &p_array_node);
@@ -224,6 +224,8 @@ namespace cx{
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1, value arg2);
 		void emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
+		void emit_ax_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, cx_type::type_ptr &p_type);
+		void emit_ax_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_);
 		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
 		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);

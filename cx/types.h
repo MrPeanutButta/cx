@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include <memory>
 #include "error.h"
 
-namespace cx{
+namespace cx {
 
 	typedef long long cx_int;
 	typedef long double cx_real;
@@ -65,7 +65,6 @@ namespace cx{
 		cx_bool z_;
 		cx_byte b_;
 		cx_char c_;
-		//cx_wchar w_;
 		cx_int i_;
 		cx_real d_;
 		void *a_;
@@ -77,9 +76,9 @@ namespace cx{
 		value(int i) : i_(i) {}
 		value(cx_real d) : d_(d) {}
 		value(void *a) : a_(a) {}
-		value() : a_(nullptr){}
+		value() : a_(nullptr) {}
 
-		std::mutex &lock(bool unlock = false){
+		std::mutex &lock(bool unlock = false) {
 			// mutex not allowed in union, so static here
 			static std::mutex _lock;
 
@@ -100,7 +99,7 @@ namespace cx{
 				);
 		}
 
-		inline void unlock(void){
+		inline void unlock(void) {
 			this->lock(true).unlock();
 		}
 	} value;
@@ -125,19 +124,16 @@ namespace cx{
 		type_code typecode;
 		type_form typeform;
 
-		//struct {
-			symbol_table_ptr p_enum_ids; // TODO should be symbol_table_node_ptr
-		//} enumeration;
+		symbol_table_ptr p_enum_ids; // TODO should be symbol_table_node_ptr
 
 		struct {
 			type_ptr p_index_type;
 			type_ptr p_element_type;
-			int min_index;
-			int max_index;
-			int element_count;
+			size_t min_index;
+			size_t max_index;
+			size_t element_count;
 
-			// if multidimension array point to next element
-			std::vector<type_ptr> next;
+			type_ptr next;
 		} array;
 
 		struct {
@@ -148,7 +144,7 @@ namespace cx{
 
 		cx_type(type_form form, type_code type, size_t size, symbol_table_node_ptr &p_id, symbol_table_ptr &p_members);
 		cx_type(type_form form, type_code type);
-		cx_type(){}
+		cx_type() {}
 
 		~cx_type();
 
@@ -182,7 +178,6 @@ namespace cx{
 	extern cx_type::type_ptr p_boolean_type;
 	extern cx_type::type_ptr p_char_type;
 	extern cx_type::type_ptr p_byte_type;
-	//extern cx_type::type_ptr p_wchar_type;
 	extern cx_type::type_ptr p_integer_type;
 	extern cx_type::type_ptr p_double_type;
 	extern cx_type::type_ptr p_reference_type;

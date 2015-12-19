@@ -81,7 +81,7 @@ namespace cx{
 	
 		ch = buffer.get_char(); // first char after opening quote
 		
-		while (ch != EOF_CHAR) {
+		while (ch != buffer::EOF_CHAR) {
 			if (ch == L'\"') { // look for another quote
 
 				/* Fetched a quote.  Now check for an adjacent quote,
@@ -104,7 +104,7 @@ namespace cx{
 			ch = buffer.get_char();
 		}
 
-		if (ch == EOF_CHAR) cx_error(ERR_UNEXPECTED_EOF);
+		if (ch == buffer::EOF_CHAR) cx_error(ERR_UNEXPECTED_EOF);
 
 		*ps++ = L'\"'; // closing quote
 		*ps = L'\0';
@@ -134,24 +134,11 @@ namespace cx{
 		ch = buffer.get_char();
 
 		if (ch != L'\'') cx_error(ERR_MISSING_SINGLE_QUOTE);
-		if (ch == EOF_CHAR) cx_error(ERR_UNEXPECTED_EOF);
+		if (ch == buffer::EOF_CHAR) cx_error(ERR_UNEXPECTED_EOF);
 
 		ch = buffer.get_char();
 		*ps++ = L'\''; // closing quote
 		*ps = L'\0';
-	}
-
-	void char_token::print(void) const {
-//		sprintf(list.text, "\t%-18s %-s", ">> char:", string);
-		list.put_line();
-	}
-
-	/** print       print the token to the list file.
-	 *
-	 */
-	void string_token::print(void) const {
-//		sprintf(list.text, "\t%-18s %-s", ">> string:", string);
-		list.put_line();
 	}
 
 	/********************
@@ -371,14 +358,6 @@ namespace cx{
 		}
 
 		*ps = L'\0';
-	}
-
-	/** print       print the token to the list file.
-	 *
-	 */
-	void special_token::print(void) const {
-//		sprintf(list.text, "\t%-18s %-s", ">> special:", string);
-		list.put_line();
 	}
 
 	/*****************

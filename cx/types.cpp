@@ -40,7 +40,14 @@ namespace cx{
 	cx_type::type_ptr p_dummy_type;
 
 	cx_type::cx_type(type_form form, type_code type)
-		: typeform(form), typecode(type){}
+		: typeform(form), typecode(type){
+		this->array.element_count = 0;
+		this->array.max_index = 0;
+		this->array.min_index = 0;
+		this->array.p_element_type = nullptr;
+		this->array.p_index_type = p_integer_type;
+		this->size = 0;
+	}
 
 	/** Constructors    General.
 	 *
@@ -132,12 +139,8 @@ namespace cx{
 		p_true_id->p_type = p_boolean_type;
 		p_void_id->p_type = p_reference_type;
 
-
-		//p_boolean_type->enumeration.max = 1;
-		//p_boolean_type->enumeration.p_const_ids = p_false_id;
-
-		p_false_id->defined.constant.value.z_ = false;
-		p_true_id->defined.constant.value.z_ = true;
+		p_false_id->defined.constant_value.z_ = false;
+		p_true_id->defined.constant_value.z_ = true;
 		
 		// initialize standard type members
 		//init_std_members();
@@ -285,6 +288,7 @@ namespace cx{
 				switch (value_type) {
 				case T_BOOLEAN:
 				case T_BYTE:
+					p_function_id->defined.routine.program_code.push_back({ B2I });
 					return;
 					break;
 				case T_DOUBLE:

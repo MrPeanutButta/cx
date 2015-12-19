@@ -199,7 +199,6 @@ namespace cx{
 	public:
 		virtual void get(text_in_buffer &buffer);
 		virtual int is_delimiter(void) const {return false;}
-		virtual void print(void) const;
 	};
 
 	//  number_token        Number token subclass of token.
@@ -226,7 +225,6 @@ namespace cx{
 
 		virtual void get(text_in_buffer &buffer);
 		virtual int is_delimiter(void) const {return false;}
-		virtual void print(void) const;
 	};
 
 	///  string_token        string__ token subclass of token.
@@ -240,7 +238,6 @@ namespace cx{
 
 		virtual void get(text_in_buffer &buffer);
 		virtual int is_delimiter(void) const {return true;}
-		virtual void print(void) const;
 	};
 
 	class char_token : public token {
@@ -252,7 +249,6 @@ namespace cx{
 
 		virtual void get(text_in_buffer &buffer);		
 		virtual int is_delimiter(void) const {return true;}
-		virtual void print(void) const;
 	};
 
 	///  special_token       Special token subclass of token.
@@ -261,7 +257,6 @@ namespace cx{
 	public:
 		virtual void get(text_in_buffer &buffer);
 		virtual int is_delimiter(void) const {return true;}
-		virtual void print(void) const;
 	};
 
 	///  EOF_token           End-of-file token subclass of token.
@@ -277,7 +272,6 @@ namespace cx{
 		}
 
 		virtual int is_delimiter(void) const {return false;}
-		virtual void print(void) const {}
 	};
 
 	///  error_token         error token subclass of token.
@@ -291,8 +285,6 @@ namespace cx{
 
 		virtual void get(text_in_buffer &buffer);
 		virtual int is_delimiter(void) const {return false;}
-		virtual void print(void) const {}
 	};
-
 }
 #endif

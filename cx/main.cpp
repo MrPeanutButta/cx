@@ -27,6 +27,7 @@ THE SOFTWARE.
 #endif
 
 #include <iostream>
+#include <iomanip>
 #include <memory>
 #include <locale>
 #include <codecvt>
@@ -34,10 +35,7 @@ THE SOFTWARE.
 #include "buffer.h"
 #include "parser.h"
 #include "symtab.h"
-
-namespace cx{
-	extern bool	cx_dev_debug_flag;
-}
+#include "cxvm.h"
 
 void set_options(int argc, char **argv);
 
@@ -60,9 +58,6 @@ int main(int argc, char *argv[]) {
 			abort_translation(ABORT_INVALID_COMMANDLINE_ARGS);
 		}
 
-		list_flag = cx_dev_debug_flag;
-		error_arrow_flag = cx_dev_debug_flag;
-
 		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 		std::string args = argv[1];
 
@@ -77,7 +72,7 @@ int main(int argc, char *argv[]) {
 
 		symbol_table_node_ptr p_program_id = parser->parse();
 
-		if (cx::cx_dev_debug_flag) {
+		if (vm_settings::dev_debug_flag) {
 			std::wstring asm_file = parser->code_filename() + L".i";
 			std::wofstream output(asm_file);
 			output << "function: " << p_program_id->node_name << " address: " << p_program_id << std::endl;
@@ -105,8 +100,8 @@ int main(int argc, char *argv[]) {
 		std::cout << "finished parsing in: " << time_span.count() << "(secs)" << std::endl;
 #endif
 
-		if (error_count == 0) {
-			std::unique_ptr<cxvm> cx = std::make_unique<cxvm>();
+		if (error::error_count == 0) {
+			std::shared_ptr<cxvm> cx = std::make_shared<cxvm>();
 
 #ifdef __CX_PROFILE_EXECUTION__
 			t1 = high_resolution_clock::now();
@@ -120,7 +115,7 @@ int main(int argc, char *argv[]) {
 #ifdef __CX_PROFILE_EXECUTION__
 			t2 = high_resolution_clock::now();
 			time_span = duration_cast <duration<double >> (t2 - t1);
-			std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+			std::cout << "Finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
 			std::cin.get();
 #endif
@@ -129,15 +124,21 @@ int main(int argc, char *argv[]) {
 	}
 
 	catch (std::exception ex) {
-		std::cerr << ex.what();
-		std::cin.get();
+		std::cerr << "\nFatal: " << ex.what() << std::endl;
 	}
 
 	return return_value;
 }
 
 void set_options(int argc, char **argv) {
+	using namespace cx;
+
     for (int i = 1; i < argc; i++) {
-        if (!strcmp("-ddev", argv[i])) cx::cx_dev_debug_flag = true;
+			// Turn on debugging output
+        if (!strcmp("-dev", argv[i])) vm_settings::dev_debug_flag = true;
+		else // Verbose garbage collection
+		if (!strcmp("-vgc", argv[i])) vm_settings::verbose_gc = true;
+		else // Source listing
+		if (!strcmp("-list", argv[i])) buffer::list_flag = true;
     }
 }

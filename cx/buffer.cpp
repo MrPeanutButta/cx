@@ -34,19 +34,24 @@ THE SOFTWARE.
 #include <iostream>
 #include <string>
 #include "buffer.h"
+#include "symtab.h"
 
 namespace cx{
+	namespace buffer {
+		// special end-of-file character
+		const char EOF_CHAR = 0x7F;
+		int current_line_number = 0;
 
-	// special end-of-file character
-	const char EOF_CHAR = 0x7F;
-	int current_line_number = 0;
-
-	/* "virtual" position of the current char
-	 *  In the input buffer (with tabs expanded) */
-	int input_position;
-
+		/* "virtual" position of the current char
+		 *  In the input buffer (with tabs expanded) */
+		int input_position = 0;
+		const int max_printline_length = 80;
+		bool list_flag = false;
+		list_buffer list; // the list file buffer
+	}
+	
 	// true if list source lines, else false
-	int list_flag = true;
+
 
 	/** Constructor     Construct a input text buffer by opening the
 	 *                  input file.
@@ -56,9 +61,6 @@ namespace cx{
 	 */
 	text_in_buffer::text_in_buffer(std::wstring input_file_name,
 		abort_code ac) : file_name_(input_file_name) {
-
-		// Copy the input file name.
-		//strcpy(p_file_name, p_input_file_name);
 
 		// Open the input file.  Abort if failed.
 		file.open(file_name_.c_str(), std::ios::in);
@@ -82,17 +84,17 @@ namespace cx{
 		const int tab_size = 8; // size of tabs
 		wchar_t ch; // character to return
 
-		if (*p_char == EOF_CHAR) return EOF_CHAR; // end of file
+		if (*p_char == buffer::EOF_CHAR) return buffer::EOF_CHAR; // end of file
 		else if (*p_char == L'\0') ch = get_line(); // null
 		else { // next__ char
 			++p_char;
-			++input_position;
+			++buffer::input_position;
 			ch = *p_char;
 		}
 
 		// If tab character, increment input_position to the next__
 		// multiple of tab_size.
-		if (ch == L'\t') input_position += tab_size - input_position % tab_size;
+		if (ch == L'\t') buffer::input_position += tab_size - buffer::input_position % tab_size;
 
 		return ch;
 	}
@@ -106,7 +108,7 @@ namespace cx{
 	 */
 	wchar_t text_in_buffer::put_back_char(void) {
 		--p_char;
-		--input_position;
+		--buffer::input_position;
 
 		return *p_char;
 	}
@@ -120,7 +122,7 @@ namespace cx{
 	source_buffer::source_buffer(const std::wstring source_file_name)
 		: text_in_buffer(source_file_name, ABORT_SOURCE_FILE_OPEN_FAILED) {
 		// Initialize the list file and read the first source line.
-		if (list_flag) list.initialize(source_file_name);
+		if (buffer::list_flag) buffer::list.initialize(source_file_name);
 		get_line();
 	}
 
@@ -132,10 +134,10 @@ namespace cx{
 	 *          end-of-file character if at the end of the file
 	 */
 	wchar_t source_buffer::get_line(void) {
-		extern int current_nesting_level;
-
-		// If at the end of the source file, return the end-of-file char.
-		if (file.eof()) p_char = (wchar_t *)&EOF_CHAR;
+		if (file.eof()) {
+			p_char = (wchar_t *)&buffer::EOF_CHAR;
+			file.close();
+		}
 
 		// Else read the next__ source line and print it to the list file.
 		else {
@@ -143,28 +145,31 @@ namespace cx{
 
 			while (!wcscmp(text, L"\0")) {
 				file.getline(text, MAX_INPUT_BUFFER_SIZE);
-				++current_line_number;
+
+				if (file.eof()) break;
+
+				++buffer::current_line_number;
 			}
 
 			p_char = text; // point to first source line char
 
-			std::wcout << text << std::endl;
+			//std::wcout << text << std::endl;
+
 			// just buffer current line, we can display on error
-			list.wbuffer(
+			buffer::list.wbuffer(
 				text,
-				current_line_number,
-				current_nesting_level
+				buffer::current_line_number,
+				scoping::current_nesting_level
 				);
 
+			if (buffer::list_flag) buffer::list.put_line();
 		}
 
-		input_position = 0;
+		buffer::input_position = 0;
 		return *p_char;
 	}
 
-	const int max_printline_length = 80;
 
-	list_buffer list; // the list file buffer
 
 	/** Initialize      Initialize the list buffer.  Set the date
 	 *                  for the page header, and print the first
@@ -188,7 +193,7 @@ namespace cx{
 	void list_buffer::put_line(void) {
 
 		// Truncate the line if it's too long.
-		text[max_printline_length] = '\0';
+		text[buffer::max_printline_length] = '\0';
 
 		// print the text line, and then blank out the text.
 		std::wcout << text << std::endl;
@@ -197,7 +202,5 @@ namespace cx{
 		++line_count;
 	}
 
-	text_out_buffer::~text_out_buffer() {
-
-	}
+	text_out_buffer::~text_out_buffer() {}
 }

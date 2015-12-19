@@ -46,6 +46,11 @@ THE SOFTWARE.
 #include "symtab.h"
 
 namespace cx {
+	namespace vm_settings {
+		extern bool dev_debug_flag;
+		extern bool verbose_gc;
+	}
+
 	namespace heap {
 		// Memory allocation representation class
 		typedef std::shared_ptr<uintptr_t> managedmem;
@@ -53,18 +58,33 @@ namespace cx {
 		class mem_mapping {
 		private:
 		public:
-			mem_mapping() : is_rvalue(false) {}
-			managedmem shared_ref;	// VM memory allocations
-			size_t size;			// sizeof
-			type_code typecode;
-			type_form typeform;
-			bool is_rvalue;			// Evaluates to a temporary value that does not persist beyond the expression that defines it.
-			size_t count(void);		// memory size / element size
+			mem_mapping() {
+				if (vm_settings::verbose_gc) {
+					std::puts("[GC] New allocation");
+					if (this->shared_ref != nullptr) {
+						std::puts(std::to_string((uintptr_t)*this->shared_ref.get()).c_str());
+					}
+				}
+			}
+
+			~mem_mapping() {
+				if (this->p_type != nullptr) {
+					if (vm_settings::verbose_gc) {
+						std::puts("[GC] Reference deleted");
+						std::string msg =
+							std::string("\t\tReleasing: ") + std::to_string(p_type->size) + std::string(" bytes\n") +
+							std::string("\t\tReference: ") + std::to_string(shared_ref.use_count() - 1);
+						std::puts(msg.c_str());
+					}
+				}
+			}
+
+			managedmem shared_ref;		// VM memory allocations
+			cx_type::type_ptr p_type;	// Type information about this chunk of RAM
 		};
 
 		typedef void* address;
 		typedef std::map<uintptr_t, mem_mapping> malloc_map;
-
 		extern malloc_map heap_;		// HEAP: For storing raw memory allocations
 	}
 
@@ -80,15 +100,11 @@ namespace cx {
 		ARRAYLENGTH,
 		ASTORE,
 		ATHROW,
+		B2I,
 		BALOAD,
 		BASTORE,
 		BEQ,
-		BGE,
-		BGT,
 		BIPUSH,
-		BLE,
-		BLT,
-		BNE,
 		C2I,
 		CALL,
 		CALOAD,
@@ -103,7 +119,8 @@ namespace cx {
 		DCMP,
 		DCONST,
 		DDIV,
-		DEQ_EQ,
+		DEL,
+		DEQ,
 		DGT,
 		DGT_EQ,
 		DINC,
@@ -136,7 +153,7 @@ namespace cx {
 		ICMP,
 		ICONST,
 		IDIV,
-		IEQ_EQ,
+		IEQ,
 		IF_FALSE,
 		IFNE,
 		IFLT,
@@ -203,7 +220,8 @@ namespace cx {
 		RETURN,
 		SWAP,
 		TABLESWITCH,
-		BREAK_MARKER
+		ZEQ,
+		BREAK_MARKER = 0xFFFF
 	};
 
 	// Instruction
@@ -237,24 +255,28 @@ namespace cx {
 	class cxvm {
 	private:
 		_vcpu vpu;					// VPU: Virtual Proc Unit
-		value stack[_STACK_SIZE];	// STACK:
-		heap::malloc_map heap_;			// HEAP: For storing raw memory allocations
+		value stack[_STACK_SIZE];	// STACK: Runtime stack
+		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
 
-		//std::mutex vm_lock;				// VM lock during execution
+		// Copies a reference as a return value
+		heap::mem_mapping &get_managed_reference(uintptr_t address);
+		// Copies a reference into the callees heap
+		void copy_reference(uintptr_t &reference, heap::mem_mapping &mem_map);
+		// The current function ID node
 		const symbol_table_node *p_my_function_id;
+		// TODO: Nano sleep for multithreading
 		void nano_sleep(int nano_secs);	// Thread sleep while waiting for VM lock
 
 	public:
 		
+		// push/pop
 		value *push(void);
 		value *pop(void);
+		// Enter functions 
 		void enter_function(symbol_table_node *p_function_id);
 		void go(void);
 		cxvm();
 		~cxvm(void);
-
-		void lock(void);
-		void unlock(void);
 	};
 }
 

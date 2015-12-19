@@ -26,10 +26,12 @@ THE SOFTWARE.
 #define ERROR_H
 
 namespace cx {
-	extern int error_count;
-	extern bool error_arrow_flag;
-	extern int error_arrow_offset;
-
+	namespace error {
+		extern bool error_arrow_flag; // true if print arrows under syntax
+		extern const int error_arrow_offset; // offset for printing the error arrow
+		extern int error_count; // count of syntax errors
+		extern int max_syntax_errors;
+	}
 	///  Abort codes for fatal translator errors.
 
 	enum abort_code {
@@ -127,7 +129,8 @@ namespace cx {
 		RTE_DIVISION_BY_ZERO,
 		RTE_INVALID_FUNCTION_ARGUMENT,
 		RTE_INVALID_USER_INPUT,
-		RTE_UNIMPLEMENTED_RUNTIME_FEATURE
+		RTE_UNIMPLEMENTED_RUNTIME_FEATURE,
+		RTE_ARRAY_INDEX_OUT_OF_BOUNDS
 	};
 
 	void cx_runtime_error(runtime_error_code ec);

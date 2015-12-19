@@ -186,6 +186,7 @@ namespace cx{
 	// tokens that can follow a statement
 	const token_code tokenlist_statement_follow[] = {
 		TC_SEMICOLON, TC_LEFT_BRACKET, TC_RIGHT_BRACKET, TC_ELSE, TC_WHILE,
+		TC_LEFT_SUBSCRIPT,
 		TC_DUMMY
 	};
 
@@ -311,18 +312,5 @@ namespace cx{
 		token_code c_ = cx_reserved_words[this->string];
 		if (c_ > 0) code__ = c_;
 
-	}
-
-	/** print       print the token to the list file.
-	 */
-	void word_token::print(void) const {
-		if (code__ == TC_IDENTIFIER) {
-//			sprintf(list.text, "\t%-18s %-s", ">> identifier:", string);
-		}
-		else {
-//			sprintf(list.text, "\t%-18s %-s", ">> reserved word:", string);
-		}
-
-		list.put_line();
 	}
 }
