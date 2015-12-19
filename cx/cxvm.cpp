@@ -23,14 +23,17 @@ THE SOFTWARE.
 */
 
 #include <iostream>
+#include <cstdio>
 #include "cxvm.h"
 #include "symtab.h"
+#include "error.h"
 
 namespace cx{
 	namespace vm_settings {
 		// VM settings
 		// Turn on to view Cx debugging
 		bool dev_debug_flag = false;
+		// Verbose garbage collection
 		bool verbose_gc = false;
 	}
 
@@ -62,6 +65,7 @@ namespace cx{
 		L"dcmp"              ,
 		L"dconst"            ,
 		L"ddiv"              ,
+		L"del"				 ,
 		L"deq"               ,
 		L"dgt"               ,
 		L"dgt_eq"            ,
@@ -159,7 +163,7 @@ namespace cx{
 		L"preop"            ,
 		L"putfield"         ,
 		L"putstatic"        ,
-		L"return"           ,
+		L"ret"              ,
 		L"swap"             ,
 		L"tableswitch"      ,
 		L"zeq"              ,
@@ -175,11 +179,6 @@ namespace cx{
 		sizeof(cx_real)
 	};
 
-
-/*	size_t heap::mem_mapping::count(void){
-		return (this->size / type_size[this->typecode]);
-	}*/
-
 	// Stack Ops
 #define _POPS (--vpu.stack_ptr)
 #define _PUSHS (vpu.stack_ptr++)
@@ -187,80 +186,81 @@ namespace cx{
 	// Value object
 #define _VALUE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)->runstack_item 
 
+	// Symbol node
+#define _NODE ((symbol_table_node *) this->vpu.inst_ptr->arg0.a_)
+
+	// Type
+#define _TYPE ((cx_type *)this->vpu.inst_ptr->arg0.a_)
+
 	// Top of stack
 #define _TOS vpu.stack_ptr[-1]
-
+	// Memory address to uintptr_t
 #define _ADDRTOINT(addr) (uintptr_t)*&addr	
-
+	// Simple bounds checks
+#define _BOUNDS_CHECK(index){ \
+	if ((index > _NODE->p_type->array.max_index) || \
+	(index < 0)) {\
+		std::string msg = "index out of bounds: ";\
+		msg += std::string(_NODE->node_name.begin(), _NODE->node_name.end()) + "[" + std::to_string(index) + "]";\
+		throw std::exception(msg.c_str());\
+	}\
+}
 	// Load Array or reference to stack
 #define _ALOAD(t_, type) {      \
-	cx_int index = _POPS->i_;    \
-	void *mem = _POPS->a_;\
-	type v_ = *((type *)((char *)mem + (index * sizeof(type))));\
-	_PUSHS->t_ = v_;\
+		cx_int index = _POPS->i_; \
+		void *mem = _POPS->a_; \
+		_BOUNDS_CHECK(index) \
+		type v_ = *((type *)((char *)mem + (index * sizeof(type))));\
+		_PUSHS->t_ = v_;\
 }
-
 	// Store to memory
 #define _ASTORE(t_, type) {     \
 	type v_ = _POPS->t_;\
 	cx_int index = _POPS->i_;\
 	void *mem = _VALUE->a_;       \
+	_BOUNDS_CHECK(index); \
 	*((type *)((char *)mem + (index * sizeof(type)))) = v_;\
 }
-
-#define _JMP(t_) vpu.inst_ptr = this->vpu.code_ptr->begin() + ((int)vpu.inst_ptr->arg0.t_ - 1)
-
-#define _IFICMP(op) {       \
-    cx_int value2 = _POPS->i_; \
-    cx_int value1 = _POPS->i_; \
-    if(value1 op value2) _JMP(i_);  \
-									}
-
-#define _IF(op) if(vpu.inst_ptr->arg0.i_ op 0) _JMP(i_)
-
 	// Binary Operators
 #define _BIN_OP(t_, type, op)  { \
 	type b = _POPS->t_; \
 	type a = _POPS->t_; \
 	_PUSHS->t_ = (a op b); \
-					}
-
+}
 	// Unary Operators
 #define _UNA_OP(t_, type, op)  { \
 	type a = _POPS->t_; \
 	_PUSHS->t_ = op a; \
-				}
-
+}
 	// Relational Operators (bool)
 #define _REL_OP(t_, type, op)  { \
 	type b = _POPS->t_; \
 	type a = _POPS->t_; \
 	_PUSHS->i_ = (a op b); \
-					}
+}
 
-	cxvm::cxvm(){
-		// Pointer to the allocated stack
-		this->vpu.stack_ptr = this->stack;
-		//this->lock();
-	}
-
+	// Pointer to the runtime stack
+	cxvm::cxvm() { this->vpu.stack_ptr = this->stack; }
 	cxvm::~cxvm(void){}
+	value *cxvm::push(void) { return _PUSHS; }
+	value *cxvm::pop(void) { return _POPS; }
 
-	value *cxvm::push(void){
-		return _PUSHS;
+	// Does a look-up in the current heap and returns a reference to it.
+	heap::mem_mapping &cxvm::get_managed_reference(uintptr_t address) {
+		if (vm_settings::verbose_gc) {
+			std::puts("[GC] Reference copied\n");
+			// TODO: output more p_type information?
+		}
+
+		return heap_.at(address);
 	}
 
-	value *cxvm::pop(void) {
-		return _POPS;
+	// Copies a new reference into the current heap.
+	void cxvm::copy_reference(uintptr_t &reference, heap::mem_mapping &mal_map) {
+		this->heap_.insert(std::make_pair(reference, mal_map));
 	}
 
-	heap::mem_mapping cxvm::get_managed_reference(uintptr_t address) {
-#ifdef _DEBUG
-		std::cout << "reference copied\n";
-#endif
-		return heap_[address];
-	}
-
+	// Set basic function elements
 	void cxvm::enter_function(symbol_table_node *p_function_id){
 		this->p_my_function_id = p_function_id;
 
@@ -281,14 +281,6 @@ namespace cx{
 			);
 	}
 
-	inline void cxvm::lock(void){
-		//while (!this->vm_lock.try_lock()) nano_sleep();
-	}
-
-	inline void cxvm::unlock(void){
-		//this->vm_lock.unlock();
-	}
-
 	void cxvm::go(void) {
 		using namespace heap;
 
@@ -297,15 +289,7 @@ namespace cx{
 			vpu.inst_ptr < vpu.code_ptr->end();
 				vpu.inst_ptr++) {
 
-				if (vm_settings::dev_debug_flag == true) {
-					/*if (vpu.stack_ptr == &stack[_STACK_SIZE]) {
-						std::cout << "stack overflow\n";
-					}*/
-					//std::wcout << opcode_string[vpu.inst_ptr->op] << std::endl;
-				}
-
 				switch (vpu.inst_ptr->op) {
-
 				case opcode::AALOAD: _PUSHS->a_ = _VALUE->a_; continue;
 				case opcode::AASTORE: _VALUE->a_ = _POPS->a_; continue;
 				case opcode::ACONST_NULL: _PUSHS->a_ = nullptr; continue;
@@ -334,9 +318,13 @@ namespace cx{
 					assert(mem != nullptr);
 					_PUSHS->i_ = heap_[_ADDRTOINT(mem)].count();
 				} continue;*/
-				case opcode::ASTORE: _VALUE->a_ = _POPS->a_; 
-					// do a look up on the heap and increment reference count.
-					continue;
+				case opcode::ASTORE: {
+					_VALUE->a_ = _POPS->a_;
+					uintptr_t reference = _ADDRTOINT(_VALUE->a_);
+					// Do a look up on the heap and increment reference count.
+					symbol_table_node *p_node = _NODE;
+					p_node->p_type = this->heap_.at(reference).p_type;
+				}continue;
 				case opcode::ATHROW: { // Throws a string message
 					char *message = (char *)_POPS->a_;
 					assert(message != nullptr);
@@ -377,48 +365,67 @@ namespace cx{
 						case type_code::T_INT:
 							parameter->get()->runstack_item->i_ = p_param->i_;
 							break;
-						case type_code::T_REFERENCE:
+							// Reference needs to be copied into the callee heap
+						case type_code::T_REFERENCE: {
 							parameter->get()->runstack_item->a_ = p_param->a_;
-							break;
+							uintptr_t reference = _ADDRTOINT(p_param->a_);
+							heap::mem_mapping *mem_map = &this->heap_.at(reference);
+							cx->copy_reference(reference, *mem_map);
+							parameter->get()->p_type = mem_map->p_type;
+						}break;
 						}
 					}
 
+					// Enter function info
 					cx->enter_function(p_function_id);
+					// Run function
 					cx->go();
 
+					// Push functions return value
 					switch (p_function_id->p_type->typecode) {
 					case type_code::T_BOOLEAN:
 						_PUSHS->z_ = p_function_id->runstack_item->z_;
 
-						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->z_ << std::endl;
+						if (vm_settings::dev_debug_flag) {
+							std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->z_ << std::endl;
+						}
 						break;
 					case type_code::T_BYTE:
 						_PUSHS->b_ = p_function_id->runstack_item->b_;
 
-						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->b_ << std::endl;
+						if (vm_settings::dev_debug_flag) {
+							std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->b_ << std::endl;
+						}
 						break;
 					case type_code::T_CHAR:
 						_PUSHS->c_ = p_function_id->runstack_item->c_;
 
-						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->c_ << std::endl;
+						if (vm_settings::dev_debug_flag) {
+							std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->c_ << std::endl;
+						}
 						break;
 					case type_code::T_DOUBLE:
 						_PUSHS->d_ = p_function_id->runstack_item->d_;
 
-						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->d_ << std::endl;
+						if (vm_settings::dev_debug_flag) {
+							std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->d_ << std::endl;
+						}
 						break;
 					case type_code::T_INT:
 						_PUSHS->i_ = p_function_id->runstack_item->i_;
 
-						std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->i_ << std::endl;
+						if (vm_settings::dev_debug_flag) {
+							std::wcout << p_function_id->node_name << L" returned " << p_function_id->runstack_item->i_ << std::endl;
+						}
 						break;
+						// Need to copy returned reference into caller heap
 					case type_code::T_REFERENCE: {
 						uintptr_t reference = _ADDRTOINT(p_function_id->runstack_item->a_);
 						this->heap_[reference] = std::move(cx->get_managed_reference(reference));
+						p_function_id->p_type = this->heap_.at(reference).p_type;
 						_PUSHS->a_ = p_function_id->runstack_item->a_;
 					}break;
-					case type_code::T_VOID:
-						break;
+					case type_code::T_VOID: break;
 					}
 				} continue;
 				case opcode::CALOAD: _ALOAD(c_, cx_char); continue;
@@ -465,7 +472,15 @@ namespace cx{
 				case opcode::DASTORE:	_ASTORE(d_, cx_real); continue;
 				case opcode::DCONST:	_PUSHS->d_ = vpu.inst_ptr->arg0.d_; continue;
 				case opcode::DDIV:		_BIN_OP(d_, cx_real, / ); continue;
-				case opcode::DEQ:	_REL_OP(d_, cx_real, == ); continue;
+				case opcode::DEL: {
+					uintptr_t reference = _ADDRTOINT(_VALUE->a_);
+					if (this->heap_.erase(reference) == 0) {
+						std::string node_name = std::string(_NODE->node_name.begin(), _NODE->node_name.end());
+						std::string msg = "Double delete on reference or [ " + node_name + " ] not allocated on heap.";
+						throw std::exception(msg.c_str());
+					}
+				}continue;
+				case opcode::DEQ:		_REL_OP(d_, cx_real, == ); continue;
 				case opcode::DGT:		_REL_OP(d_, cx_real, > ); continue;
 				case opcode::DGT_EQ:	_REL_OP(d_, cx_real, >= ); continue;
 				case opcode::DINC:		_VALUE->d_ += vpu.inst_ptr->arg1.d_; continue;
@@ -487,7 +502,7 @@ namespace cx{
 				case opcode::GETSTATIC: continue;
 				case opcode::GOTO: {
 					cx_int location = vpu.inst_ptr->arg0.i_;
-					if (location == 0) {
+					if (location <= 0) {
 						vpu.inst_ptr = vpu.code_ptr->begin();
 					}
 					else {
@@ -515,11 +530,11 @@ namespace cx{
 						vpu.inst_ptr = vpu.code_ptr->begin() + (int)(location - 1);
 					}
 				}continue;
-				case opcode::IFNE: _IF(!= ); continue;
+				/*case opcode::IFNE: _IF(!= ); continue;
 				case opcode::IFLT: _IF(< ); continue;
 				case opcode::IFGE: _IF(>= ); continue;
 				case opcode::IFGT: _IF(> ); continue;
-				case opcode::IFLE: _IF(<= ); continue;
+				case opcode::IFLE: _IF(<= ); continue;*/
 
 /*				case opcode::IF_ACMPEQ: {
 					void *value2 = _POPS->a_;
@@ -535,14 +550,14 @@ namespace cx{
 					if (memcmp(value1, value2, heap_[_ADDRTOINT(value1)].size)) _JMP(i_);
 				} continue;
 */
-				case opcode::IF_ICMPEQ: _IFICMP(== ); continue;
+				/*case opcode::IF_ICMPEQ: _IFICMP(== ); continue;
 				case opcode::IF_ICMPNE: _IFICMP(!= ); continue;
 				case opcode::IF_ICMPLT: _IFICMP(< ); continue;
 				case opcode::IF_ICMPGE: _IFICMP(>= ); continue;
 				case opcode::IF_ICMPGT: _IFICMP(> ); continue;
 				case opcode::IF_ICMPLE: _IFICMP(<= ); continue;
 				case opcode::IFNONNULL: if (_POPS->a_ != nullptr) _JMP(i_); continue;
-				case opcode::IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); continue;
+				case opcode::IFNULL: if (_POPS->a_ == nullptr) _JMP(i_); continue;*/
 				case opcode::IGT:		_REL_OP(i_, cx_int, > ); continue;
 				case opcode::IGT_EQ:	_REL_OP(i_, cx_int, >= ); continue;
 				case opcode::IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; continue;
@@ -593,19 +608,20 @@ namespace cx{
 					cx_type *p_type = (cx_type *)vpu.inst_ptr->arg0.a_;
 					size_t size = p_type->size;
 					void *mem = malloc(size);
+					
+					if (mem == nullptr) {
+						std::string msg = "[ malloc ] ";
+						msg += std::strerror(errno);
+						throw std::exception(msg.c_str());
+					}
+
 					std::memset(mem, 0, size);
-					assert(mem != nullptr);
-					heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // point to, only 1 hash calculation
-
-					/* Compile with -D INSTRUCTION_TEST if testing.
-					* If undefined, RAM gets released and tests allocating RAM
-					* will fail.   */
-
-					// assign mem to smart pointer, release using free()
+					heap::mem_mapping *mem_map = &heap_[_ADDRTOINT(mem)]; // Point to, only 1 hash calculation
+					// Assign mem to smart pointer, release using free()
 					mem_map->shared_ref = heap::managedmem((uintptr_t *)mem, free);		
 					mem_map->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
 					mem_map->p_type->array.element_count = element_count;
-					mem_map->p_type->array.max_index = 0;
+					mem_map->p_type->array.min_index = 0;
 					mem_map->p_type->array.max_index = static_cast<int>(element_count) - 1;
 					mem_map->p_type->size = size;
 					mem_map->p_type->array.p_element_type = p_type->array.p_element_type;
@@ -628,8 +644,18 @@ namespace cx{
 		}
 
 		catch (std::exception ex) {
-			std::cerr << ex.what();
-			std::wcerr << L"caught fatal exception in: " << this->p_my_function_id->node_name << std::endl;
+			std::wcerr << L"[ function  ]--> " << this->p_my_function_id->node_name << std::endl;
+			std::wcerr << L"[ paramters ]-->";
+			if (this->p_my_function_id->defined.routine.p_parameter_ids.empty()) {
+				std::cerr << " [ void ]";
+			}
+			else {
+				//for (auto &param : this->p_my_function_id->defined.routine.p_parameter_ids) {
+				// TODO: std::wcerr << L" [ " << param->p_type->p_type_id->node_name << L" ] " << param->node_name;
+				//}
+			}
+
+			std::wcerr << std::endl;
 			throw ex;
 		}
 

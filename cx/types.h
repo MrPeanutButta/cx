@@ -65,7 +65,6 @@ namespace cx {
 		cx_bool z_;
 		cx_byte b_;
 		cx_char c_;
-		//cx_wchar w_;
 		cx_int i_;
 		cx_real d_;
 		void *a_;

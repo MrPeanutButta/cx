@@ -28,8 +28,8 @@ real *m_ref_test_2() {
 	real *d = new real[10000];
 	int i = 0;
 	
-	while(i++ < 100){
-		d = new real[10000];
+	while(i++ < 1000){
+		d = new real[1000000000000];
 	}
 	
 	return d;
@@ -43,6 +43,9 @@ int *m_ref_test_3() {
 		i_[i] = i + 2;
 	}
 	
+	i_[50] = 666;
+	
+//	delete i_;
 	return i_;
 }
 
@@ -416,38 +419,35 @@ a1[7] = 3;
 a1[8] = 2;
 a1[9] = 1;
 
-
-/*
-char *a2 = new char[10];
-
-a2[0] = '10';
-a2[1] = '9';
-a2[2] = '8';
-a2[3] = '7';
-a2[4] = '6';
-a2[5] = '5';
-a2[6] = '4';
-a2[7] = '3';
-a2[8] = '2';
-a2[9] = '1';
-
-real *a3 = new real[10];
-
-a3[0] = 10.5;
-a3[1] = 9.5;
-a3[2] = 8.5;
-a3[3] = 7.5;
-a3[4] = 6.5;
-a3[5] = 5.5;
-a3[6] = 4.5;
-a3[7] = 3.5;
-a3[8] = 2.5;
-a3[9] = 1.5;
-
-*/
-
+///*
+//char *a2 = new char[10];
 //
-
+//a2[0] = '10';
+//a2[1] = '9';
+//a2[2] = '8';
+//a2[3] = '7';
+//a2[4] = '6';
+//a2[5] = '5';
+//a2[6] = '4';
+//a2[7] = '3';
+//a2[8] = '2';
+//a2[9] = '1';
+//
+//real *a3 = new real[10];
+//
+//a3[0] = 10.5;
+//a3[1] = 9.5;
+//a3[2] = 8.5;
+//a3[3] = 7.5;
+//a3[4] = 6.5;
+//a3[5] = 5.5;
+//a3[6] = 4.5;
+//a3[7] = 3.5;
+//a3[8] = 2.5;
+//a3[9] = 1.5;
+//*/
+////
+//
 enum_test_0(enum_value_0.E0);
 enum_test_0(enum_value_0.E1);
 enum_test_0(enum_value_0::E2);
@@ -491,4 +491,11 @@ if(success == true){
 	//benchmark_test_1;
 }
 
-return i_func_array;
+delete a1;
+delete a0;
+
+delete aref;
+delete bref;
+delete d_ret_val;
+
+return success;

@@ -27,6 +27,7 @@ THE SOFTWARE.
 #endif
 
 #include <iostream>
+#include <iomanip>
 #include <memory>
 #include <locale>
 #include <codecvt>
@@ -114,7 +115,7 @@ int main(int argc, char *argv[]) {
 #ifdef __CX_PROFILE_EXECUTION__
 			t2 = high_resolution_clock::now();
 			time_span = duration_cast <duration<double >> (t2 - t1);
-			std::cout << "finished executing in: " << time_span.count() << "(secs)" << std::endl;
+			std::cout << "Finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
 			std::cin.get();
 #endif
@@ -123,8 +124,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	catch (std::exception ex) {
-		std::cerr << ex.what();
-		std::cin.get();
+		std::cerr << "\nFatal: " << ex.what() << std::endl;
 	}
 
 	return return_value;

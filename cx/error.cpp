@@ -170,12 +170,12 @@ namespace cx{
 		"Division by zero",
 		"Invalid standard function argument",
 		"Invalid user input",
-		"Unimplemented runtime feature"
+		"Unimplemented runtime feature",
+		"Array index out of bounds"
 	};
 
 	void cx_runtime_error(runtime_error_code ec) {
-		std::cout << "\nruntime error in line <" << buffer::current_line_number << ">: "
-			<< runtime_error_messages[ec] << std::endl;
+		std::cout << runtime_error_messages[ec] << std::endl;
 
 		exit(ABORT_RUNTIME_ERROR);
 	}

@@ -1163,7 +1163,7 @@ namespace cx{
 			case TC_LEFT_SUBSCRIPT:
 				p_result_type = parse_subscripts(p_function_id, p_result_type);
 				if (!reference) {
-					emit_ax_load(p_function_id, p_result_type);
+					emit_ax_load(p_function_id, p_id, p_result_type);
 				}
 				break;
 
@@ -1594,16 +1594,18 @@ namespace cx{
 
 
 			p_param = enter_new_local(p_token->string, DC_VARIABLE);
-			p_param->p_type = p_node->p_type;
 
 			if (is_array) {
 				p_param->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
 				p_param->p_type->array.p_element_type = p_node->p_type;
 
 			}
+			else {
+				p_param->p_type = p_node->p_type;
+			}
 
 			get_token();
-			p_function_id->defined.routine.p_parameter_ids.push_back(p_param);
+			p_function_id->defined.routine.p_parameter_ids.push_back(std::move(p_param));
 
 			resync(tokenlist_identifier_follow);
 			if (token == TC_COMMA) {
@@ -1771,6 +1773,16 @@ namespace cx{
 			//}
 			//	break;ent_symtab(p_old_symtab);
 		case TC_ASM: parse_ASM(p_function_id); break;
+		case TC_DELETE: {
+			get_token();
+			if (token != TC_IDENTIFIER) cx_error(error_code::ERR_MISSING_IDENTIFIER);
+			symbol_table_node_ptr p_node = search_all(p_token->string);
+			if (p_node->p_type->typecode != T_REFERENCE) cx_error(error_code::ERR_INVALID_REFERENCE);
+
+			this->emit(p_function_id, opcode::DEL, p_node.get());
+
+			get_token();
+		}break;
 		default: parse_simple_expression(p_function_id); break;
 		}
 
@@ -3087,7 +3099,9 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
 	}
 
-	void parser::emit_ax_load(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type) {
+	void parser::emit_ax_load(symbol_table_node_ptr &p_function_id, 
+		symbol_table_node_ptr &p_id,
+		cx_type::type_ptr &p_type) {
 		opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -3112,7 +3126,7 @@ namespace cx{
 			break;
 		}
 
-		p_function_id->defined.routine.program_code.push_back({ op, p_type.get() });
+		p_function_id->defined.routine.program_code.push_back({ op, p_id.get(), p_type.get() });
 	}
 
 	void parser::emit_ax_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id) {

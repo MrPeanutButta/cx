@@ -52,7 +52,6 @@ namespace cx {
 	}
 
 	namespace heap {
-
 		// Memory allocation representation class
 		typedef std::shared_ptr<uintptr_t> managedmem;
 
@@ -61,25 +60,31 @@ namespace cx {
 		public:
 			mem_mapping() {
 				if (vm_settings::verbose_gc) {
-					std::cout << "new allocation\n";
+					std::puts("[GC] New allocation");
+					if (this->shared_ref != nullptr) {
+						std::puts(std::to_string((uintptr_t)*this->shared_ref.get()).c_str());
+					}
 				}
 			}
 
 			~mem_mapping() {
-				if (vm_settings::verbose_gc) {
-					std::cout << "reference deleted\n";
-					std::cout << "releasing " << p_type->size << " bytes\n";
-					std::cout << "references remaining: " << shared_ref.use_count() - 1 << std::endl;
+				if (this->p_type != nullptr) {
+					if (vm_settings::verbose_gc) {
+						std::puts("[GC] Reference deleted");
+						std::string msg =
+							std::string("\t\tReleasing: ") + std::to_string(p_type->size) + std::string(" bytes\n") +
+							std::string("\t\tReference: ") + std::to_string(shared_ref.use_count() - 1);
+						std::puts(msg.c_str());
+					}
 				}
 			}
 
 			managedmem shared_ref;		// VM memory allocations
-			cx_type::type_ptr p_type;
+			cx_type::type_ptr p_type;	// Type information about this chunk of RAM
 		};
 
 		typedef void* address;
 		typedef std::map<uintptr_t, mem_mapping> malloc_map;
-
 		extern malloc_map heap_;		// HEAP: For storing raw memory allocations
 	}
 
@@ -114,6 +119,7 @@ namespace cx {
 		DCMP,
 		DCONST,
 		DDIV,
+		DEL,
 		DEQ,
 		DGT,
 		DGT_EQ,
@@ -249,25 +255,28 @@ namespace cx {
 	class cxvm {
 	private:
 		_vcpu vpu;					// VPU: Virtual Proc Unit
-		value stack[_STACK_SIZE];	// STACK:
+		value stack[_STACK_SIZE];	// STACK: Runtime stack
 		heap::malloc_map heap_;		// HEAP: For storing raw memory allocations
-		heap::mem_mapping get_managed_reference(uintptr_t address);
 
-		//std::mutex vm_lock;				// VM lock during execution
+		// Copies a reference as a return value
+		heap::mem_mapping &get_managed_reference(uintptr_t address);
+		// Copies a reference into the callees heap
+		void copy_reference(uintptr_t &reference, heap::mem_mapping &mem_map);
+		// The current function ID node
 		const symbol_table_node *p_my_function_id;
+		// TODO: Nano sleep for multithreading
 		void nano_sleep(int nano_secs);	// Thread sleep while waiting for VM lock
 
 	public:
 		
+		// push/pop
 		value *push(void);
 		value *pop(void);
+		// Enter functions 
 		void enter_function(symbol_table_node *p_function_id);
 		void go(void);
 		cxvm();
 		~cxvm(void);
-
-		void lock(void);
-		void unlock(void);
 	};
 }
 
