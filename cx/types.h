@@ -110,8 +110,6 @@ namespace cx {
 	typedef std::shared_ptr<symbol_table_node> symbol_table_node_ptr;
 
 	class cx_type {
-		bool is_constant_;
-
 	public:
 		typedef std::shared_ptr <cx_type> type_ptr;			// Smart type pointer
 
@@ -144,18 +142,13 @@ namespace cx {
 
 		cx_type(type_form form, type_code type, size_t size, symbol_table_node_ptr &p_id, symbol_table_ptr &p_members);
 		cx_type(type_form form, type_code type);
-		cx_type() {}
-
+		cx_type(const cx_type &type);
 		~cx_type();
 
 		bool is_scalar_type(void) const {
 			return (typeform != F_ARRAY) &&
 				(typeform != F_REFERENCE) &&
 				(typeform != F_STREAM);
-		}
-
-		bool is_constant(void) const {
-			return is_constant_;
 		}
 
 		const cx_type *base_type(void) const {

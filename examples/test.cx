@@ -29,9 +29,11 @@ real *m_ref_test_2() {
 	int i = 0;
 	
 	while(i++ < 1000){
-		d = new real[1000000000000];
+		//d = new real[1000000000000]; // undefined behavior
+		d[i] = 5.5;
 	}
 	
+	//d[50] = 5.5;
 	return d;
 }
 
@@ -53,8 +55,13 @@ int *aref = m_ref_test_0(100);
 int *bref = m_ref_test_1(500);
 int ret_val = aref[3] + bref[4];
 
+real d(real d) return d;
+
 real *d_ret_val = m_ref_test_2;
-int i_func_array = m_ref_test_3[50];
+bool s = (d_ret_val[50] == 5.5);
+real e = d(d_ret_val[50]);
+
+int i_func_array = m_ref_test_3[999];
 
 // Function statement body type
 /* Broken
@@ -491,11 +498,11 @@ if(success == true){
 	//benchmark_test_1;
 }
 
-delete a1;
-delete a0;
-
-delete aref;
-delete bref;
-delete d_ret_val;
-
+//delete a1;
+//delete a0;
+//
+//delete aref;
+//delete bref;
+//delete d_ret_val;
+//
 return success;

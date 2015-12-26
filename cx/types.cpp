@@ -39,14 +39,36 @@ namespace cx{
 	cx_type::type_ptr p_void_type;
 	cx_type::type_ptr p_dummy_type;
 
-	cx_type::cx_type(type_form form, type_code type)
-		: typeform(form), typecode(type){
+	cx_type::cx_type(const cx_type &type) {
+		this->size = type.size;
+		this->p_type_id = type.p_type_id;
+		this->typecode = type.typecode;
+		this->typeform = type.typeform;;
+		this->p_enum_ids = type.p_enum_ids;
+		this->array.p_index_type = type.array.p_index_type;
+		this->array.p_element_type = type.array.p_element_type;
+		this->array.min_index = type.array.min_index;
+		this->array.max_index = type.array.max_index;
+		this->array.element_count = type.array.element_count;
+		this->array.next = type.array.next;
+	}
+
+/*	cx_type::cx_type() : typeform((type_form)0), typecode((type_code)0), size(0) {
 		this->array.element_count = 0;
 		this->array.max_index = 0;
 		this->array.min_index = 0;
 		this->array.p_element_type = nullptr;
 		this->array.p_index_type = p_integer_type;
-		this->size = 0;
+	}
+	*/
+
+	cx_type::cx_type(type_form form, type_code type)
+		: typeform(form), typecode(type), size(0){
+		this->array.element_count = 0;
+		this->array.max_index = 0;
+		this->array.min_index = 0;
+		this->array.p_element_type = nullptr;
+		this->array.p_index_type = p_integer_type;
 	}
 
 	/** Constructors    General.
@@ -57,17 +79,11 @@ namespace cx{
 	 */
 	cx_type::cx_type(type_form form, type_code type, size_t size, symbol_table_node_ptr &p_id, symbol_table_ptr &p_members)
 		: typeform(form), typecode(type), size(size), p_type_id(p_id) {
-
-		switch (typeform) {
-		case F_ARRAY:
-			this->array.element_count = 0;
-			this->array.min_index = 0;
-			this->array.p_index_type = p_integer_type;
-			break;
-		default:
-			break;
-		}
-
+		this->array.element_count = 0;
+		this->array.max_index = 0;
+		this->array.min_index = 0;
+		this->array.p_element_type = nullptr;
+		this->array.p_index_type = p_integer_type;;
 		this->complex.p_class_scope = p_members;
 	}
 

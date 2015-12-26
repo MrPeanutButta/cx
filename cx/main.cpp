@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 			time_span = duration_cast <duration<double >> (t2 - t1);
 			std::cout << "Finished executing in: " << time_span.count() << "(secs)" << std::endl;
 
-			std::cin.get();
+			//std::cin.get();
 #endif
 			return_value = static_cast<int>(p_program_id->runstack_item->i_);
 		}
