@@ -52,9 +52,6 @@ namespace cx {
 	}
 
 	namespace heap {
-		// Memory allocation representation class
-		typedef std::shared_ptr<uintptr_t> managedmem;
-
 		class mem_mapping {
 		private:
 		public:
@@ -79,11 +76,10 @@ namespace cx {
 				}
 			}
 
-			managedmem shared_ref;		// VM memory allocations
+			std::shared_ptr<uintptr_t> shared_ref;		// VM memory allocations
 			cx_type::type_ptr p_type;	// Type information about this chunk of RAM
 		};
 
-		typedef void* address;
 		typedef std::map<uintptr_t, mem_mapping> malloc_map;
 		extern malloc_map heap_;		// HEAP: For storing raw memory allocations
 	}
@@ -99,7 +95,7 @@ namespace cx {
 		ANEWARRAY,
 		ARRAYLENGTH,
 		ASTORE,
-		ATHROW,
+		VM_THROW,
 		B2I,
 		BALOAD,
 		BASTORE,

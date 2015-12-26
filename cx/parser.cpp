@@ -404,7 +404,6 @@ namespace cx{
 		static const cx_type * cx_types_[] = {
 			p_integer_type.get(),
 			p_char_type.get(),
-			//p_wchar_type.get(),
 			p_double_type.get(),
 			p_boolean_type.get(),
 			p_byte_type.get(),
@@ -1111,8 +1110,7 @@ namespace cx{
 				cx_error(error_code::ERR_UNEXPECTED_TOKEN);
 			}
 
-
-
+			return p_result_type;
 		}break;
 		default:
 			cx_error(ERR_INVALID_EXPRESSION);/// err_invalid_expression);
@@ -1598,14 +1596,13 @@ namespace cx{
 			if (is_array) {
 				p_param->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
 				p_param->p_type->array.p_element_type = p_node->p_type;
-
 			}
 			else {
 				p_param->p_type = p_node->p_type;
 			}
 
 			get_token();
-			p_function_id->defined.routine.p_parameter_ids.push_back(std::move(p_param));
+			p_function_id->defined.routine.p_parameter_ids.push_back(p_param);
 
 			resync(tokenlist_identifier_follow);
 			if (token == TC_COMMA) {
@@ -3191,7 +3188,7 @@ namespace cx{
 			std::make_pair(L"anewarray",       cx::opcode::ANEWARRAY),
 			std::make_pair(L"arraylength",     cx::opcode::ARRAYLENGTH),
 			std::make_pair(L"astore",          cx::opcode::ASTORE),
-			std::make_pair(L"athrow",          cx::opcode::ATHROW),
+			std::make_pair(L"vm_throw",          cx::opcode::VM_THROW),
 			std::make_pair(L"baload",          cx::opcode::BALOAD),
 			std::make_pair(L"bastore",         cx::opcode::BASTORE),
 			std::make_pair(L"beq",             cx::opcode::BEQ),
@@ -3337,7 +3334,7 @@ namespace cx{
 			case opcode::ANEWARRAY: get_token(); break;
 			case opcode::ARRAYLENGTH: get_token(); break;
 			case opcode::ASTORE: get_token(); break;
-			case opcode::ATHROW: get_token(); break;
+			case opcode::VM_THROW: get_token(); break;
 			case opcode::BALOAD: get_token(); break;
 			case opcode::BASTORE: get_token(); break;
 			case opcode::BEQ: get_token(); break;
