@@ -3,7 +3,6 @@ The Cx Language
 A scripting language for fun and profit.<br>
 ``` cpp
 use io;	// Standard IO
-
 io.puts("Hello, World!");
 ```
 
@@ -85,6 +84,3 @@ All documentation will be posted and updated at the link below. More information
 ### Status
 This project is for educational purposes only and is still in early development.
 A working prototype is well underway and current work is focused on the base language.
-
-### Getting involved
-* Why would you?

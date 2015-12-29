@@ -141,18 +141,15 @@ namespace cx{
 	class symbol_table_node {
 
 		friend class symbol_table;
-
+	private:
+		int level;
 	public:
 
 		cx_type::type_ptr p_type;
 		std::wstring node_name;
 		define defined;
-		int level;
-		int label_index;
-		int global_finish_location;
-		int string_length;
-		bool found_global_end;
-		symbol_table_node *p_referenced_id;
+
+
 		// pointer to runstack item
 		value *runstack_item;
 		symbol_table_node(std::wstring name, define_code dc = DC_UNDEFINED);

@@ -136,4 +136,3 @@ namespace cx {
 	void cx_runtime_error(runtime_error_code ec);
 }
 #endif
-//endfig

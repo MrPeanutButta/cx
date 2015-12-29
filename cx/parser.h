@@ -73,22 +73,16 @@ namespace cx{
 		void parse_identifier_constant(symbol_table_node_ptr &p_id1, token_code sign);
 
 		void parse_definitions(symbol_table_node_ptr &p_function_id);
-		//void ParseIntegerDeclaration(symbol_table_node_ptr &p_function_id);
 		void parse_type_definitions(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_type_spec(symbol_table_node_ptr &p_node);
-
 		cx_type::type_ptr parse_identifier_type(symbol_table_node_ptr &p_id2);
-
 		cx_type::type_ptr parse_enum_header(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_enumeration_type(void);
-
 		cx_type::type_ptr parse_subrange_type(symbol_table_node_ptr &p_min_id);
 		cx_type::type_ptr parse_subrange_limit(symbol_table_node_ptr &p_limit_id, int &limit);
 
 		cx_type::type_ptr parse_string_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_string_node);
-		//cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
-		//	symbol_table_node_ptr &p_array_node);
 		cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_array_node);
 
@@ -96,19 +90,10 @@ namespace cx{
 		size_t array_size(cx_type::type_ptr &p_array_type);
 		cx_type::type_ptr parse_complex_type(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node);
 
-		//void parse_variable_declarations(symbol_table_node_ptr &p_function_id);
 		void parse_member_decls(symbol_table_node_ptr &p_function_id, cx_type::type_ptr p_complex_type, int offset);
-		//void ParseVarOrFieldDecls(symbol_table_node_ptr &p_function_id,
-		//cx_type::type_ptr p_complex_type,
-		//int offset);
-		//symbol_table_node_ptr &parse_id_sublist(const symbol_table_node_ptr &p_function_id,
-		//const cx_type::type_ptr &p_complex_type, symbol_table_node_ptr &p_last_id);
 
 		// expressions
-		//cx_type::type_ptr parse_rvalue(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &lhs, cx_type::type_ptr &rhs);
 		cx_type::type_ptr parse_expression(symbol_table_node_ptr &p_function_id);
-		//cx_type::type_ptr ParseSuffix(symbol_table_node_ptr &p_node);
-		//void ParseSizeOf(void);
 		cx_type::type_ptr parse_simple_expression(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_term(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_factor(symbol_table_node_ptr &p_function_id);
@@ -191,7 +176,7 @@ namespace cx{
 
 		void copy_quoted_string(wchar_t *p_string, const wchar_t *p_quoted_string) const {
 			size_t length = wcslen(p_quoted_string) - 2;
-			wcscpy(p_string, &p_quoted_string[1]);// , length);
+			wcscpy(p_string, &p_quoted_string[1]);
 			p_string[length] = '\0';
 		}
 

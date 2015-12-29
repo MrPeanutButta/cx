@@ -216,8 +216,6 @@ namespace cx{
 		_PUSHS->t_ = v_;\
 }
 
-	//_BOUNDS_CHECK(index) \
-
 	// Store to memory
 #define _ASTORE(t_, type) {     \
 	type v_ = _POPS->t_;\
@@ -261,7 +259,7 @@ namespace cx{
 	}
 
 	// Copies a new reference into the current heap.
-	void cxvm::copy_reference(uintptr_t &reference, heap::mem_mapping &mal_map) {
+	void cxvm::copy_reference(const uintptr_t &reference, const heap::mem_mapping &mal_map) {
 		heap_.insert(std::make_pair(reference, mal_map));
 	}
 
@@ -373,9 +371,9 @@ namespace cx{
 						case type_code::T_REFERENCE: {
 							parameter->get()->runstack_item->a_ = p_param->a_;
 							uintptr_t reference = _ADDRTOINT(p_param->a_);
-							heap::mem_mapping *mem_map = &this->heap_[reference];
-							cx->copy_reference(reference, *mem_map);
-							parameter->get()->p_type = mem_map->p_type;
+							heap::mem_mapping mem_map = this->heap_.at(reference);
+							cx->copy_reference(reference, mem_map);
+							parameter->get()->p_type = mem_map.p_type;
 						}break;
 						}
 					}
@@ -425,8 +423,8 @@ namespace cx{
 						// Need to copy returned reference into caller heap
 					case type_code::T_REFERENCE: {
 						uintptr_t reference = _ADDRTOINT(p_function_id->runstack_item->a_);
-						this->heap_.insert(std::make_pair(reference, cx->get_managed_reference(reference)));
-						p_function_id->p_type = this->heap_[reference].p_type;
+						auto mem_mapping = this->heap_.insert(std::make_pair(reference, cx->get_managed_reference(reference)));
+						p_function_id->p_type = mem_mapping.first->second.p_type;// ->heap_.at(reference).p_type;
 						_PUSHS->a_ = p_function_id->runstack_item->a_;
 					}break;
 					case type_code::T_VOID: break;
@@ -605,33 +603,32 @@ namespace cx{
 
 					/** newarray: allocate new array
 					 * @param: vpu.stack_ptr[-1].l_ - number of elements
-					 * @param: vpu.inst_ptr->arg0.b_ - type code
+					 * @param: vpu.inst_ptr->arg0.a_ - type pointer
 					 * @return: new array allocation managed by GC */
 				case opcode::NEWARRAY: {
-					size_t element_count = static_cast<size_t>(_POPS->i_);
+					const size_t element_count = static_cast<size_t>(_POPS->i_);
 					const cx_type *p_type = (const cx_type *)vpu.inst_ptr->arg0.a_;
 					const size_t size = p_type->size;
 
 					void *mem = malloc(size);
-					
+
 					if (mem == nullptr) {
 						std::string msg = "[ malloc ] ";
 						msg += std::strerror(errno);
-						
+
 						msg += "\ntype: " + std::to_string(p_type->typecode);
 						//msg += "\nelement type: " + std::to_string(p_type->array.p_element_type->typecode);
 					//	msg += "\nelement size: " + type_size[p_type->typecode];
 						msg += "\nelement count: " + std::to_string(element_count);
 						msg += "\nsize: " + std::to_string(size);
-						
+
 						throw std::exception(msg.c_str());
 					}
-					else {
-						uintptr_t reference = _ADDRTOINT(mem);
-						this->heap_.insert(std::make_pair(reference, mem_mapping()));
-						this->heap_[reference].shared_ref = std::shared_ptr<uintptr_t>((uintptr_t *)mem, free);
-						this->heap_[reference].p_type = std::make_shared<cx_type>(*p_type);
-					}
+
+					uintptr_t reference = _ADDRTOINT(mem);
+					this->heap_.insert(std::make_pair(reference, mem_mapping()));
+					this->heap_[reference].shared_ref = std::shared_ptr<uintptr_t>((uintptr_t *)mem, free);
+					this->heap_[reference].p_type = std::make_shared<cx_type>(*p_type);
 
 					_PUSHS->a_ = mem;
 				} continue;

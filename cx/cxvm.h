@@ -257,7 +257,7 @@ namespace cx {
 		// Copies a reference as a return value
 		heap::mem_mapping &get_managed_reference(uintptr_t address);
 		// Copies a reference into the callees heap
-		void copy_reference(uintptr_t &reference, heap::mem_mapping &mem_map);
+		void copy_reference(const uintptr_t &reference, const heap::mem_mapping &mem_map);
 		// The current function ID node
 		const symbol_table_node *p_my_function_id;
 		// TODO: Nano sleep for multithreading
@@ -276,5 +276,5 @@ namespace cx {
 	};
 }
 
-#endif	/* CXVM_H */
+#endif	// CXVM_H
 
