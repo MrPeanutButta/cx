@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <string>
 #include <memory>
 #include <vector>
+#include "token.h"
 #include "types.h"
 #include "cxvm.h"
 
@@ -42,7 +43,8 @@ namespace cx{
 	class symbol_table_node;
 	class symbol_table;
 
-	typedef std::map<std::wstring, std::shared_ptr<symbol_table_node>> local;
+	//typedef std::map<std::wstring, std::shared_ptr<symbol_table_node>> local;
+	typedef std::multimap<std::wstring, std::shared_ptr<symbol_table_node>> local;
 	typedef std::shared_ptr<symbol_table> symbol_table_ptr;
 	typedef std::shared_ptr<symbol_table_node> symbol_table_node_ptr;
 
@@ -61,6 +63,12 @@ namespace cx{
 		FUNC_DECLARED, FUNC_FORWARD, FUNC_STANDARD, FUNC_STD_MEMBER, FUNC_ITERATOR
 	};
 
+	enum access_scope {
+		PUBLIC = static_cast<access_scope>(TC_PUBLIC),
+		PRIVATE = static_cast<access_scope>(TC_PRIVATE),
+		PROTECTED = static_cast<access_scope>(TC_PROTECTED)
+	};
+
 	class symbol_table {
 	public:
 		local symbols;
@@ -69,11 +77,15 @@ namespace cx{
 		~symbol_table() {}
 
 		void copy(symbol_table *p_symtab);
-		void enter(symbol_table_node *p_node);
+		//void enter(symbol_table_node *p_node);
+		void enter(symbol_table_node_ptr &p_new_id);
 		void enter(local &params);
 		symbol_table_node_ptr search(std::wstring);
 		symbol_table_node_ptr enter(std::wstring, define_code dc = DC_UNDEFINED);
 		symbol_table_node_ptr enter_new(std::wstring, define_code dc = DC_UNDEFINED);
+		std::pair<local::iterator, local::iterator> find_functions(std::wstring name);
+		void enter_new(symbol_table_node_ptr &p_new_id);
+		void enter_new_function(symbol_table_node_ptr &p_new_id);
 
 		size_t node_count(void) const {return symbols.size();}
 	};
@@ -89,14 +101,16 @@ namespace cx{
 	public:
 
 		define_code defined_how;
+		access_scope member_scope;
 
-		define() {}
+		define() { member_scope = access_scope::PUBLIC; }
 
 		define(define_code dc) {
 			defined_how = dc;
 			io.stream = nullptr;
 			this_ptr.p_stack_item = nullptr;
 			this_ptr.is_this_ptr = false;
+			member_scope = access_scope::PUBLIC;
 		}
 
 		~define();
@@ -141,20 +155,17 @@ namespace cx{
 	class symbol_table_node {
 
 		friend class symbol_table;
-
+	private:
+		int level;
 	public:
 
-		cx_type::type_ptr p_type;
+		type_ptr p_type;
 		std::wstring node_name;
 		define defined;
-		int level;
-		int label_index;
-		int global_finish_location;
-		int string_length;
-		bool found_global_end;
-		symbol_table_node *p_referenced_id;
+
 		// pointer to runstack item
 		value *runstack_item;
+		symbol_table_node() = delete;
 		symbol_table_node(std::wstring name, define_code dc = DC_UNDEFINED);
 		~symbol_table_node();
 	};
@@ -168,6 +179,10 @@ namespace cx{
 	public:
 		symbol_table_stack(void);
 		~symbol_table_stack(void);
+
+		std::pair<local::iterator, local::iterator> find_functions(std::wstring name) {
+			return p_symtabs[0]->find_functions(name);
+		}
 
 		symbol_table_node_ptr search_local(std::wstring name) {
 			return p_symtabs[scoping::current_nesting_level]->search(name);
@@ -183,6 +198,14 @@ namespace cx{
 			return p_symtabs[scoping::current_nesting_level]->enter_new(name, dc);
 		}
 
+		void enter_new_local(symbol_table_node_ptr &p_new_id) {
+			p_symtabs[scoping::current_nesting_level]->enter_new(p_new_id);
+		}
+
+		void enter_new_function(symbol_table_node_ptr &p_new_id) {
+			p_symtabs[scoping::current_nesting_level]->enter_new_function(p_new_id);
+		}
+
 		symbol_table *get_current_symtab(void) const {
 			return p_symtabs[scoping::current_nesting_level];
 		}
@@ -195,9 +218,9 @@ namespace cx{
 			scoping::current_nesting_level = scopeLevel;
 		}
 
-		symbol_table_node_ptr search_available_scopes(std::wstring name) const;
-		symbol_table_node_ptr search_all(std::wstring name) const;
-		symbol_table_node_ptr find(std::wstring name) const;
+		symbol_table_node_ptr search_available_scopes(std::wstring name);
+		symbol_table_node_ptr search_all(std::wstring name);
+		symbol_table_node_ptr find(std::wstring name);
 		void enter_scope(void);
 		symbol_table *exit_scope(void);
 	};

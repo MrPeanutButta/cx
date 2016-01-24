@@ -1,4 +1,62 @@
-enum enum_value_1 : byte {
+class test_class_0 {
+	public int *both;
+	public int a;
+	public int b;
+	public int sum() return a + b;
+	public int get_a() return a;
+	private int get_b() return b;
+	
+	public void test_class_0(){
+		this.a = 5;
+		this.b = 5;
+	
+		both = new int[2];
+		both[0] = this.a;
+		both[1] = this.b;
+	}
+	
+	public void test_class_0(int a_, int b_){
+		this.a = a_;
+		this.b = b_;
+	}
+	
+	public void ~test_class_0(){
+		this.a = 0;
+		this.b = 0;
+		delete this.both;
+	}
+}
+
+test_class_0 tc_0_0 = new test_class_0;
+test_class_0 tc_0_1 = new test_class_0(6, 6);
+test_class_0 tc_0_2 = null;
+
+class test_class_1 : test_class_0 {
+	int c;
+	int d;
+	int sum() return this.a + this.b + this.c + this.d;
+	int get_c() return c;
+	int get_d() return d;
+	
+	public test_class_1() : test_class_0(6, 6) {
+		this.c = 5;
+		this.d = 6;
+	}
+	
+	public test_class_1(int c_, int d_) : test_class_0 {
+		c = c_;
+		d = d_;
+	}
+	
+	public ~test_class_1() : ~test_class_0 {
+		this.c = 0;
+		this.d = 0;
+	}
+}
+
+return 0;
+
+/*enum enum_value_1 : byte {
 	E0 = 10,
 	E1 = 20,
 	E2 = 30
@@ -10,95 +68,14 @@ enum enum_value_0 {
 	E2 = 5
 }
 
-int *m_ref_test_0(int i){
-	int *ref = new int[5];
-	ref[3] = i;
-	
-	return ref;
-}
-
-byte *m_ref_test_1(int i){
-	int *ref = new int[500];
-	ref[4] = i;
-	
-	return ref;
-}
-
-real *m_ref_test_2() {
-	real *d = new real[10000];
-	int i = 0;
-	
-	while(i++ < 1000){
-		//d = new real[1000000000000]; // undefined behavior
-		d[i] = 5.5;
-	}
-	
-	//d[50] = 5.5;
-	return d;
-}
-
-int *m_ref_test_3() {
-	int *i_ = new int[1000];
-	int i = 0;
-	
-	while(i++ < 999){
-		i_[i] = i + 2;
-	}
-	
-	i_[50] = 666;
-	
-//	delete i_;
-	return i_;
-}
-
-int *aref = m_ref_test_0(100);
-int *bref = m_ref_test_1(500);
-int ret_val = aref[3] + bref[4];
-
-real d(real d) return d;
-
-real *d_ret_val = m_ref_test_2;
-bool s = (d_ret_val[50] == 5.5);
-real e = d(d_ret_val[50]);
-
-int i_func_array = m_ref_test_3[999];
-
-// Function statement body type
-/* Broken
-int func(int count)	while(++count < 100){
+// TODO: Function statement body type
+// Broken
+/*int func(int count)	while(++count < 100){
 		if(count + count > 150) return (count + count);
-} */
+};
 
-int int_array_test_0(int *a1, int index) return a1[index] + 2;
-
-int recursive_array_test(int *a2, int index){
-	if(index == 9) return int_array_test_0(a2, index);
-	
-	return recursive_array_test(a2, ++index);
-}
-
-int array_index_check_0(int *a2, int count){
-	int i = 0;
-	int sum = 0;
-	
-	do{
-		sum += int_array_test_0(a2, i);
-	}while(i++ < count);
-	
-	return sum;
-}
-
-byte array_index_check_1(byte *a2, int count){
-	int i = 0;
-	byte sum = 0;
-	
-	do{
-		sum += a2[i];
-	}while(i++ < count);
-	
-	return sum;
-}
-
+int f = func(0);*/
+/*
 enum_value_0 enum_test_0(enum_value_0 e2) return e2;
 enum_value_1 enum_test_1(enum_value_1 e2) return e2;
 
@@ -148,14 +125,14 @@ int assembly_test_0(int i){
 	asm istore a;		// a = 1000
 	
 	asm{
-		iconst 0b11111111 		// Load 255
-		iload a		     		// Load 1000 (a == 1000)
+		iconst 	0b11111111 		// Load 255
+		iload 	a		     	// Load 1000 (a == 1000)
 		iadd				 	// a + 255 = 1255
-		iload i			 		// Load 100 (if i == 100)
+		iload 	i			 	// Load 100 (if i == 100)
 		iadd				 	// 1255 + 100 = 1355
-		istore i			 	// i = 1355
-		iload i          		// Load 1355
-		istore assembly_test_0 	// assembly_test_0 = 1355
+		istore 	i			 	// i = 1355
+		iload 	i         		// Load 1355
+		istore 	assembly_test_0	// assembly_test_0 = 1355
 		ret						// return
 	}
 }
@@ -399,6 +376,87 @@ int for_test_0(int count){
 	return count;
 }
 
+/* Array tests
+ *
+ *
+ */
+/*int *m_ref_test_0(int i){
+	int *ref = new int[5];
+	ref[3] = i;
+	
+	return ref;
+}
+
+int *m_ref_test_1(int i){
+	int *ref = new int[500];
+	ref[4] = i;
+	
+	return ref;
+}
+
+real *m_ref_test_2() {
+	real *d = new real[10000];
+	int i = 0;
+	
+	while(i++ < 1000){
+		//d = new real[1000000000000]; // BUG: undefined behavior
+		d[i] = 5.5;
+	}
+	
+	return d;
+}
+
+int *m_ref_test_3() {
+	int *i_ = new int[1000];
+	int i = 0;
+	
+	while(i++ < 999){
+		i_[i] = i + 2;
+	}
+	
+	i_[50] = 666;
+	
+	return i_;
+}
+
+int *aref = m_ref_test_0(100);
+int *bref = m_ref_test_1(500);
+int ret_val = aref[3] + bref[4];
+real d(real d) return d;
+real *d_ret_val = m_ref_test_2;
+bool s = (d_ret_val[50] == 5.5);
+real e = d(d_ret_val[50]);
+int i_func_array = m_ref_test_3[999];
+int int_array_test_0(int *a1, int index) return a1[index] + 2;
+
+int recursive_array_test(int *a2, int index){
+	if(index == 9) return int_array_test_0(a2, index);
+	
+	return recursive_array_test(a2, ++index);
+}
+
+int array_index_check_0(int *a2, int count){
+	int i = 0;
+	int sum = 0;
+	
+	do{
+		sum += int_array_test_0(a2, i);
+	}while(i++ < count);
+	
+	return sum;
+}
+
+byte array_index_check_1(byte *a2, int count){
+	int i = 0;
+	byte sum = 0;
+	
+	do{
+		sum += a2[i];
+	}while(i++ < count);
+	
+	return sum;
+}
+
 // Initialize
 int *a0 = new int[10];
 
@@ -426,35 +484,74 @@ a1[7] = 3;
 a1[8] = 2;
 a1[9] = 1;
 
-///*
-//char *a2 = new char[10];
-//
-//a2[0] = '10';
-//a2[1] = '9';
-//a2[2] = '8';
-//a2[3] = '7';
-//a2[4] = '6';
-//a2[5] = '5';
-//a2[6] = '4';
-//a2[7] = '3';
-//a2[8] = '2';
-//a2[9] = '1';
-//
-//real *a3 = new real[10];
-//
-//a3[0] = 10.5;
-//a3[1] = 9.5;
-//a3[2] = 8.5;
-//a3[3] = 7.5;
-//a3[4] = 6.5;
-//a3[5] = 5.5;
-//a3[6] = 4.5;
-//a3[7] = 3.5;
-//a3[8] = 2.5;
-//a3[9] = 1.5;
-//*/
-////
-//
+char *a2 = new char[10];
+a2[0] = '0';
+a2[1] = '9';
+a2[2] = '8';
+a2[3] = '7';
+a2[4] = '6';
+a2[5] = '5';
+a2[6] = '4';
+a2[7] = '3';
+a2[8] = '2';
+a2[9] = '1';
+
+// Fails because a2 isn't loaded 
+// to heap of a2_test_2
+// TODO: create a more readable error instead of "invalid <key, value>"
+char a2_test_2(int a, int b, byte c) return 'a';
+
+// Function overload test.
+int a2_test_2(int a) return 5;
+byte f = 9;
+char cb = a2_test_2(0, 4, f);
+int bb = a2_test_2(0);
+
+// Passes because a is loaded 
+// into the heap of a2_test_1.
+// This is only true for returning a
+// reference. This doesn't impact array elements.
+char *a2_test_1(char *a) return a;
+
+// Seems to work just fine.
+char a2_test_0(int index) return a2[index];
+
+int index = 0;
+char c;
+
+while(index < 10){
+	c = a2_test_0(index++);
+	c = a2_test_1(a2)[index - 1];
+}
+
+delete a2;
+
+real *a3 = new real[10];
+
+a3[0] = 10.5;
+a3[1] = 9.5;
+a3[2] = 8.5;
+a3[3] = 7.5;
+a3[4] = 6.5;
+a3[5] = 5.5;
+a3[6] = 4.5;
+a3[7] = 3.5;
+a3[8] = 2.5;
+a3[9] = 1.5;
+
+real *a3_test_1(real *a) return a;
+real a3_test_0(int index) return a3[index];
+
+index = 0;
+real r;
+
+while(index < 10){
+	a3_test_0(index++);
+	r = a3_test_1(a3)[index - 1];
+}
+
+delete a3;
+
 enum_test_0(enum_value_0.E0);
 enum_test_0(enum_value_0.E1);
 enum_test_0(enum_value_0::E2);
@@ -498,11 +595,11 @@ if(success == true){
 	//benchmark_test_1;
 }
 
-//delete a1;
-//delete a0;
-//
-//delete aref;
-//delete bref;
-//delete d_ret_val;
-//
-return success;
+delete a1;
+delete a0;
+
+delete aref;
+delete bref;
+delete d_ret_val;
+
+return success;*/

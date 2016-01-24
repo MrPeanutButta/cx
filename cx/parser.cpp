@@ -127,19 +127,32 @@ namespace cx{
 	*                     assigned a value.
 	*/
 	void parser::parse_declarations_or_assignment(symbol_table_node_ptr &p_function_id) {
-		
+		access_scope scope = access_scope::PUBLIC;
+
+		switch (token) {
+		case TC_PUBLIC:
+			get_token();
+			break;
+		case TC_PRIVATE:
+			scope = access_scope::PRIVATE;
+			get_token();
+			break;
+		case TC_PROTECTED:
+			scope = access_scope::PROTECTED;
+			get_token();
+			break;
+		default:
+			break;
+		}
+
 		bool is_array = false;
 		symbol_table_node_ptr p_node = find(p_token->string);
-		cx_type::type_ptr assignment_expression_ptr = nullptr;
+		type_ptr assignment_expression_ptr = nullptr;
 		
-		// if complex then this is an object
-		if (p_node->p_type->typeform == F_REFERENCE) {
-			//parse_complex_type(p_function_id, p_node);
-			//			// predefined type name found
-		}
-		else if ((p_node->defined.defined_how == DC_TYPE) && (p_node->p_type->typeform != F_REFERENCE) &&
+		if ((p_node->defined.defined_how == DC_TYPE) &&
 			(p_node->defined.defined_how != DC_FUNCTION)) {
 
+			this->p_target_type = p_node->p_type;
 			get_token();
 
 			if (token == TC_STAR) {
@@ -152,11 +165,11 @@ namespace cx{
 
 				symbol_table_node_ptr p_new_id;
 
-				p_new_id = search_local(p_token->string);
+				//p_new_id = search_local(p_token->string);
 
 				// if not nullptr, it's already defined.
 				// check if forwarded
-				if (p_new_id != nullptr) {
+				/*if (p_new_id != nullptr) {
 					if (p_new_id->defined.defined_how == DC_FUNCTION &&
 						p_new_id->defined.routine.function_type == FUNC_FORWARD) {
 						get_token();
@@ -164,9 +177,10 @@ namespace cx{
 					}
 					else cx_error(ERR_REDEFINED_IDENTIFIER);
 				}
-				else {
-					p_new_id = enter_new_local(p_token->string);
-				}
+				else {*/
+				//p_new_id = enter_new_local(p_token->string);
+				p_new_id = std::make_shared<symbol_table_node>(p_token->string, DC_UNDEFINED);
+				//}
 
 				// set type
 				p_new_id->p_type = p_node->p_type;
@@ -181,7 +195,7 @@ namespace cx{
 					p_new_id->p_type = parse_array_type(p_function_id, p_new_id);
 				}
 				else if (token == TC_LEFT_PAREN) {
-
+					enter_new_function(p_new_id);
 					parse_function_header(p_new_id);
 				}
 				else if ((token != TC_COMMA) && (token != TC_END_OF_FILE)) {
@@ -191,7 +205,11 @@ namespace cx{
 					p_new_id->defined.defined_how = DC_VARIABLE;
 				}
 
+				p_new_id->defined.member_scope = scope;
+
 				if (p_new_id->defined.defined_how == DC_VARIABLE) {
+					enter_new_local(p_new_id);
+
 					// add variable to variable list
 					if (p_function_id != nullptr) {
 						p_function_id->defined.routine.p_variable_ids.emplace_back(p_new_id);
@@ -199,6 +217,8 @@ namespace cx{
 					// add function to routine list
 				}
 				else if (p_new_id->defined.defined_how == DC_FUNCTION) {
+					enter_new_function(p_new_id);
+
 					if (p_function_id != nullptr) {
 						p_function_id->defined.routine.p_function_ids.emplace_back(p_new_id);
 					}
@@ -206,195 +226,14 @@ namespace cx{
 			} while (token == TC_COMMA);
 		}
 		else if (p_node->defined.defined_how == DC_FUNCTION) {
-
 			get_token();
-
-		//	if (token == TC_LEFT_PAREN) {
-				parse_subroutine_call(p_function_id, p_node);
-	//		}
-			//else {
-			//	parse_assignment(p_function_id, p_node);
-		//	}
-
+			parse_subroutine_call(p_function_id, find_functions(p_node->node_name));
 		}
 		else {
 			get_token();
 			parse_assignment(p_function_id, p_node);
 		}
 	}
-
-	/** parse_constant_declaration    'const' will only set it's qualifier as
-	*                              dc_constant all else is treated as a standard
-	*                              declaration.
-	*      const <type> <name>;
-	*
-	* @param p_function_id    ptr to the routine which owns the type being declared or
-	*                      assigned a constant value.
-	*/
-//	void parser::parse_constant_declaration(symbol_table_node_ptr &p_function_id) {
-		//symbol_table_node_ptr &p_last_id = nullptr;
-		//symbol_table_node_ptr &p_const_id = nullptr;
-		//symbol_table_node_ptr &p_type_node = find(p_token->string__());
-
-		//get_token_append();
-
-		//p_const_id = enter_new_local(p_token->string__());
-
-		//if (!p_function_id->defined.routine.locals.p_constant_ids) {
-		//	p_function_id->defined.routine.locals.p_constant_ids = p_const_id;
-		//}
-		//else {
-
-		//	p_last_id = p_function_id->defined.routine.locals.p_constant_ids;
-
-		//	while (p_last_id->next__)
-		//		p_last_id = p_last_id->next__;
-
-		//	p_last_id->next__ = p_const_id;
-
-		//}
-
-		//get_token_append();
-		//conditional_get_token(tc_equal, err_missing_equal);
-
-		//set_type(p_const_id->p_type, p_type_node->p_type);
-		//parse_constant(p_const_id);
-		//p_const_id->defined.defined_how = dc_constant;
-
-		//resync(tokenlist_declaration_follow, tokenlist_declaration_start, tokenlist_statement_start);
-
-//	}
-
-	/** parse_constant       parse a constant.
-	*
-	* @param p_const_id : ptr to symbol table node of the identifier
-	*                   being defined
-	*/
-//	void parser::parse_constant(symbol_table_node_ptr &p_const_id) {
-		//token_code sign = tc_dummy;
-
-		//if (token_in(token, tokenlist_unary_ops)) {
-		//	if (token == tc_minus) sign = tc_minus;
-		//	get_token_append();
-		//}
-
-		//switch (token) {
-		//case tc_number:
-		//	if ((p_token->type() == ty_integer) && (p_const_id->p_type == p_integer_type)) {
-		//		p_const_id->defined.constant.value.int__ = sign == tc_minus ?
-		//			-p_token->value().int__ : p_token->value().int__;
-		//	}
-		//	else if ((p_token->type() == ty_real) &&
-		//		(((p_const_id->p_type == p_float_type)))) {
-
-		//		if (p_const_id->p_type == p_float_type) {
-		//			p_const_id->defined.constant.value.float__ = sign == tc_minus ?
-		//				-p_token->value().float__ : p_token->value().float__;
-		//		}
-		//		else {
-		//			//                    p_const_id->defined.constant.value.double__ = sign == tc_minus ?
-		//			//                            -p_token->value().float__ : p_token->value().float__;
-		//		}
-		//	}
-
-		//	get_token_append();
-		//	break;
-
-		//case tc_identifier:
-		//	parse_identifier_constant(p_const_id, sign);
-		//	break;
-		//case tc_char:
-		//case tc_string:
-		//	if (p_const_id->p_type == p_char_type) {
-		//		int length = strlen(p_token->string__()) - 2;
-
-		//		if (sign != tc_dummy) cx_error(err_invalid_constant);
-
-		//		if (length == 1) {
-		//			p_const_id->defined.constant.value.char__ = p_token->string__()[1];
-
-		//			//set_type(p_const_id->p_type, p_char_type);
-		//		}
-		//		else {
-		//			char *p_string = new char[length];
-		//			copy_quoted_string(p_string, p_token->string__());
-
-		//			p_const_id->defined.constant.value.addr__ = (void *)p_string;
-
-		//			//set_type(p_const_id->p_type, new cx_type(length));
-		//		}
-
-		//		get_token_append();
-		//	}
-		//	else cx_error(err_invalid_type);
-		//	break;
-		//default:
-		//	break;
-		//}
-	//}
-
-	/** parse_identifier_constant     In a constant definition of the
-	*                              form
-	*
-	*                                      <id-1> = <id-2>
-	*
-	*                              parse <id-2>. The type can be
-	*                              integer, real, character,
-	*                              enumeration, or string
-	*                              (character array).
-	*
-	* @param p_id1 : ptr to symbol table node of <id-1>.
-	* @param sign : unary + or - sign, or none.
-	*/
-//	void parser::parse_identifier_constant(symbol_table_node_ptr &p_id1, token_code sign) {
-		//symbol_table_node_ptr &p_id2 = find(p_token->string__());
-
-		//if (p_id2->defined.defined_how != dc_constant) {
-		//	cx_error(err_not_a_constant_identifier);
-		//	set_type(p_id1->p_type, p_dummy_type);
-		//	get_token_append();
-		//	return;
-		//}
-
-		//if (p_id2->p_type == p_integer_type) {
-		//	p_id2->defined.constant.value.int__ = sign == tc_minus ?
-		//		-p_id2->defined.constant.value.int__ :
-		//		p_id2->defined.constant.value.int__;
-
-		//	set_type(p_id1->p_type, p_integer_type);
-		//}
-		//else if (p_id2->p_type == p_float_type) {
-		//	p_id1->defined.constant.value.float__ = sign == tc_minus ?
-		//		-p_id2->defined.constant.value.float__ :
-		//		p_id2->defined.constant.value.float__;
-		//	set_type(p_id1->p_type, p_float_type);
-		//}
-		//else if (p_id2->p_type == p_char_type) {
-		//	if (sign != tc_dummy) cx_error(err_invalid_constant);
-
-		//	p_id1->defined.constant.value.char__ = p_id2->defined.constant.value.char__;
-
-		//	set_type(p_id1->p_type, p_char_type);
-		//}
-		//else if (p_id2->p_type->typeform == fc_enum) {
-		//	if (sign != tc_dummy)cx_error(err_invalid_constant);
-
-		//	p_id1->defined.constant.value.int__ = p_id2->defined.constant.value.int__;
-
-		//	set_type(p_id1->p_type, p_id2->p_type);
-		//}
-		//else if (p_id2->p_type->typeform == F_ARRAY) {
-		//	if ((sign != tc_dummy) || (p_id2->p_type->array.p_element_type != p_char_type)) {
-		//		cx_error(err_invalid_constant);
-		//	}
-
-		//	p_id1->defined.constant.value.addr__ = p_id2->defined.constant.value.addr__;
-
-		//	set_type(p_id1->p_type, p_id2->p_type);
-		//}
-
-		//get_token_append();
-//	}
 
 	// env variable that holds the path to stdlib
 #define __CX_STDLIB__   L"CX_STDLIB"
@@ -569,10 +408,10 @@ namespace cx{
 	*
 	* @return ptr to the expression's type object.
 	*/
-	cx_type::type_ptr parser::parse_expression(symbol_table_node_ptr &p_function_id) {
+	type_ptr parser::parse_expression(symbol_table_node_ptr &p_function_id) {
 
-		cx_type::type_ptr p_result_type;
-		cx_type::type_ptr p_operand_type;
+		type_ptr p_result_type;
+		type_ptr p_operand_type;
 		token_code op;
 
 		p_result_type = parse_simple_expression(p_function_id);
@@ -620,10 +459,10 @@ namespace cx{
 	*
 	* @return ptr to the simple expression's type object.
 	*/
-	cx_type::type_ptr parser::parse_simple_expression(symbol_table_node_ptr &p_function_id) {
+	type_ptr parser::parse_simple_expression(symbol_table_node_ptr &p_function_id) {
 
-		cx_type::type_ptr p_result_type;
-		cx_type::type_ptr p_operand_type;
+		type_ptr p_result_type;
+		type_ptr p_operand_type;
 		token_code op = TC_DUMMY;
 		token_code unary_op = TC_DUMMY;
 
@@ -726,49 +565,15 @@ namespace cx{
 		return p_result_type;
 	}
 
-//	cx_type::type_ptr parser::parse_rvalue(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &lhs, cx_type::type_ptr &rhs) {
-//		cx_type::type_ptr p_result_type = lhs;
-		//cx_type::type_ptr p_tmp_type;// = nullptr;
-
-		//if ((lhs->typeform == F_ARRAY) || (rhs->typeform == F_ARRAY)) {
-		//	const int size = lhs->size + rhs->size;
-		//	const int element_count = size / (lhs->typeform == F_ARRAY ?
-		//		lhs->base_type()->size :
-		//		rhs->base_type()->size);
-
-		//	p_tmp_type = new cx_type(F_ARRAY, size, nullptr);
-		//	//p_tmp_type->is_temp_value = true;
-		//	p_tmp_type->array.element_count = element_count;
-		//	p_tmp_type->array.max_index = element_count;
-		//	p_tmp_type->type_code = rhs->base_type()->type_code;
-
-		//	if (lhs->typeform == F_ARRAY) {
-		//		set_type(p_tmp_type->array.p_element_type, lhs->array.p_element_type);
-		//	}
-		//	else {
-		//		set_type(p_tmp_type->array.p_element_type, rhs->array.p_element_type);
-		//	}
-
-		//	p_result_type = p_tmp_type;
-
-		//	if (rhs->is_temp_value) {
-		//		remove_type(rhs);
-		//	}
-
-		//}
-
-	//	return p_result_type;
-//	}
-
 	/** parse_term           parse a term (binary operators * /
 	*                      % and &&).
 	*
 	* @return ptr to the term's type object.
 	*/
-	cx_type::type_ptr parser::parse_term(symbol_table_node_ptr &p_function_id) {
+	type_ptr parser::parse_term(symbol_table_node_ptr &p_function_id) {
 
-		cx_type::type_ptr p_result_type;
-		cx_type::type_ptr p_operand_type;
+		type_ptr p_result_type;
+		type_ptr p_operand_type;
 		token_code op;
 
 		p_result_type = parse_factor(p_function_id);
@@ -817,9 +622,9 @@ namespace cx{
 	*
 	* @return ptr to the factor's type object.
 	*/
-	cx_type::type_ptr parser::parse_factor(symbol_table_node_ptr &p_function_id) {
+	type_ptr parser::parse_factor(symbol_table_node_ptr &p_function_id) {
 
-		cx_type::type_ptr p_result_type = nullptr;
+		type_ptr p_result_type = nullptr;
 		token_code op = TC_DUMMY;
 
 		switch (this->token){
@@ -846,9 +651,13 @@ namespace cx{
 			p_result_type = p_node->p_type;
 
 			switch (p_node->defined.defined_how) {
-			case DC_FUNCTION:
+			case DC_FUNCTION: {
 				get_token();
-				p_result_type = parse_subroutine_call(p_function_id, p_node);
+
+				// Find all functions that share this name.
+				auto function_list = this->find_functions(p_node->node_name);
+				p_node = parse_subroutine_call(p_function_id, function_list);
+				p_result_type = p_node->p_type;
 
 				if (token == TC_DOT) {
 					p_result_type = parse_variable(p_function_id, p_node);
@@ -856,7 +665,7 @@ namespace cx{
 				else if (token == TC_LEFT_SUBSCRIPT) {
 					p_result_type = parse_variable(p_function_id, p_node);
 				}
-				break;
+			}break;
 			case DC_CONSTANT:
 				get_token();
 				p_result_type = p_node->p_type;
@@ -1075,7 +884,7 @@ namespace cx{
 						cx_error(error_code::ERR_INVALID_INDEX_TYPE);
 					}	
 					std::wstring index_id = p_token->string;	// Save node name to lookup later
-					cx_type::type_ptr p_expr_type = parse_expression(p_function_id);
+					type_ptr p_expr_type = parse_expression(p_function_id);
 					symbol_table_node_ptr p_const_node = search_all(index_id);
 
 					if (p_const_node->defined.defined_how != DC_CONSTANT) {
@@ -1128,8 +937,8 @@ namespace cx{
 	* @param p_id : variable node id.
 	* @return variables type object ptr.
 	*/
-	cx_type::type_ptr parser::parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference) {
-		cx_type::type_ptr p_result_type = p_id->p_type;
+	type_ptr parser::parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference) {
+		type_ptr p_result_type = p_id->p_type;
 
 		switch (p_id->defined.defined_how) {
 		case DC_VARIABLE:
@@ -1154,7 +963,7 @@ namespace cx{
 
 		//  [ or . : Loop to parse any subscripts and fields.
 		bool done_flag = false;
-		cx_type::type_ptr p_prev_type = p_result_type;
+		type_ptr p_prev_type = p_result_type;
 		do {
 			switch (token) {
 
@@ -1212,7 +1021,7 @@ namespace cx{
 		} while (!done_flag);
 
 		if (token_in(token, tokenlist_assign_ops)) {
-			cx_type::type_ptr p_expr_type = nullptr;
+			type_ptr p_expr_type = nullptr;
 
 			switch (token) {
 			case TC_EQUAL:
@@ -1404,10 +1213,10 @@ namespace cx{
 	* @param p_type : ptr to the array's type object.
 	* @return ptr to the array element's type object.
 	*/
-	cx_type::type_ptr parser::parse_subscripts(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type) {
+	type_ptr parser::parse_subscripts(symbol_table_node_ptr &p_function_id, type_ptr &p_type) {
 
 //		int column = 0;
-		cx_type::type_ptr p_result_type = nullptr;
+		type_ptr p_result_type = nullptr;
 		cx_type *p_next = p_type.get();
 
 		do {
@@ -1508,6 +1317,8 @@ namespace cx{
 		parse_formal_parm_list(p_function_id);
 		p_function_id->defined.defined_how = DC_FUNCTION;
 
+		// For recursive calls.
+		//symtab_stack.enter_new_function(p_function_id);
 		//  )
 		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 
@@ -1596,6 +1407,7 @@ namespace cx{
 			if (is_array) {
 				p_param->p_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
 				p_param->p_type->array.p_element_type = p_node->p_type;
+				p_param->p_type->p_type_id = p_param;
 			}
 			else {
 				p_param->p_type = p_node->p_type;
@@ -1640,12 +1452,12 @@ namespace cx{
 	* @param parm_check_flag : true to check parameter, false not to
 	* @return ptr to the subroutine's type object
 	*/
-	cx_type::type_ptr parser::parse_subroutine_call(
+	symbol_table_node_ptr parser::parse_subroutine_call(
 		symbol_table_node_ptr &p_function_id, 
-		symbol_table_node_ptr &p_node_id) {
-		cx_type::type_ptr p_result_type = parse_declared_subroutine_call(p_function_id, p_node_id);
-		p_function_id->defined.routine.program_code.push_back({ CALL, p_node_id.get() });
-		return p_result_type;
+		std::pair<local::iterator, local::iterator> p_node_ids) {
+		symbol_table_node_ptr p_result_node = parse_declared_subroutine_call(p_function_id, p_node_ids);
+		p_function_id->defined.routine.program_code.push_back({ CALL, p_result_node.get() });
+		return p_result_node;
 	}
 
 	/** parse_declared_subroutine_call parse a call to a declared
@@ -1655,15 +1467,26 @@ namespace cx{
 	* @param parm_check_flag : true to check parameter, false not to.
 	* @return ptr to the subroutine's type object.
 	*/
-	cx_type::type_ptr parser::parse_declared_subroutine_call(
+	symbol_table_node_ptr parser::parse_declared_subroutine_call(
 		symbol_table_node_ptr &p_function_id, 
-			symbol_table_node_ptr &p_node_id) {
+		std::pair<local::iterator, local::iterator> p_node_ids) {
 
+		symbol_table_node_ptr p_result_node;
 		if (token == TC_LEFT_PAREN) {
-			parse_actual_parm_list(p_function_id, p_node_id);
+			p_result_node = parse_actual_parm_list(p_function_id, p_node_ids);
+		}
+		else {
+			for (auto it = p_node_ids.first; it != p_node_ids.second; ++it) {
+				if (it->second->defined.defined_how != define_code::DC_FUNCTION) continue;
+
+				if (assignment_is_compatible(it->second->p_type, this->p_target_type)) {
+					p_result_node = it->second;
+					break;
+				}
+			}
 		}
 
-		return p_node_id->p_type;
+		return p_result_node;
 	}
 
 	/** parse_actual_parm_list     parse an actual parameter list:
@@ -1673,19 +1496,31 @@ namespace cx{
 	* @param p_function_id    : ptr to routine id's symbol table node.
 	* @param parm_check_flag : true to check parameter, false not to.
 	*/
-	void parser::parse_actual_parm_list(
+	symbol_table_node_ptr parser::parse_actual_parm_list(
 		symbol_table_node_ptr &p_function_id,
-		symbol_table_node_ptr &p_node_id) {
+		std::pair<local::iterator, local::iterator> p_node_ids) {
 
 		/* If there are no actual parameters, there better not be
 		 * any formal parameters either. */
 
-		if (token != TC_LEFT_PAREN) return;
+		if (token != TC_LEFT_PAREN) {
+			symbol_table_node_ptr p_result;
 
-		std::vector <std::shared_ptr<symbol_table_node>>::iterator p_formal_id;
-		p_formal_id = p_node_id->defined.routine.p_parameter_ids.begin();
+			for (auto it = p_node_ids.first; it != p_node_ids.second; ++it) {
+				if (it->second->defined.defined_how != define_code::DC_FUNCTION) continue;
 
-		cx::cx_type::type_ptr p_expr_type;
+				if (it->second->p_type == this->p_target_type) {
+					return it->second;
+				}
+			}
+		}
+
+		//std::vector <std::shared_ptr<symbol_table_node>>::iterator p_formal_id;
+		//p_formal_id = p_node_id->defined.routine.p_parameter_ids.begin();
+
+		std::vector<type_ptr> param_results;
+		type_ptr p_expr_type;
+		symbol_table_node_ptr p_result_node;
 
 		/* Loop to parse actual parameter expressions
 		* separated by commas. */
@@ -1693,23 +1528,51 @@ namespace cx{
 			//  ( or ,
 			get_token();
 
-			if (token == TC_RIGHT_PAREN && (p_node_id->defined.routine.p_parameter_ids.size()) == 0) {
-				break;
-			}
+			//if (token == TC_RIGHT_PAREN && (p_node_id->defined.routine.p_parameter_ids.size()) == 0) {
+			//	break;
+			//}
 
 			// TODO parse_expression and check type compatability
-			p_expr_type = parse_expression(p_function_id);
+			//p_expr_type = parse_expression(p_function_id);
+			param_results.emplace_back(parse_expression(p_function_id));
+			//check_assignment_type_compatible(p_function_id, p_formal_id->get()->p_type, p_expr_type,
+			//	ERR_INCOMPATIBLE_TYPES);
 
-			check_assignment_type_compatible(p_function_id, p_formal_id->get()->p_type, p_expr_type,
-				ERR_INCOMPATIBLE_TYPES);
-
-			if (p_formal_id != p_node_id->defined.routine.p_parameter_ids.end()){
-				++p_formal_id;
-			}
+			//if (p_formal_id != p_node_id->defined.routine.p_parameter_ids.end()){
+			//	++p_formal_id;
+			//}
 		} while (token == TC_COMMA);
 
 		//  )
 		conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
+
+		bool found_match = false;
+
+		for (auto it = p_node_ids.first; it != p_node_ids.second; ++it) {
+			if (it->second->defined.defined_how != define_code::DC_FUNCTION) continue;
+
+//			if (assignment_is_compatible(it->second->p_type, this->p_target_type)) {
+				if (it->second->defined.routine.p_parameter_ids.size() == param_results.size()) {
+					int count = param_results.size();
+					for (int index = 0; index < count; ++index) {
+						if (!assignment_is_compatible(it->second->defined.routine.p_parameter_ids[index]->p_type, param_results[index])) {
+							found_match = false;
+							break;
+						}
+						else {
+							found_match = true;
+						}
+					}
+				}
+		//	}
+
+			if (found_match) {
+				p_result_node = it->second;
+				break;
+			}
+		}
+
+		return p_result_node;
 	}
 
 	/** parse_statement          parse a statement.
@@ -1717,9 +1580,11 @@ namespace cx{
 	* @param p_function_id : function in which this statement is executed.
 	*/
 	void parser::parse_statement(symbol_table_node_ptr &p_function_id) {
-		//insert_line_marker();
 
 		switch (this->token) {
+		case TC_PUBLIC:
+		case TC_PRIVATE:
+		case TC_PROTECTED:
 		case TC_IDENTIFIER: parse_declarations_or_assignment(p_function_id);break;
 			//	// not a type but a cv-qualifier
 			//case TC_CONST:
@@ -1741,7 +1606,7 @@ namespace cx{
 		case TC_RETURN: parse_RETURN(p_function_id); break;
 			//case TC_POUND:
 			//	get_token();
-			//	parse_execute_directive(p_function_id);
+				//parse_execute_directive(p_function_id);
 			//	break;
 			//case TC_NAMESPACE:{
 			//	get_token();
@@ -1780,12 +1645,8 @@ namespace cx{
 
 			get_token();
 		}break;
-		default: parse_simple_expression(p_function_id); break;
+		default: parse_expression(p_function_id); break;
 		}
-
-		//if (token != TC_END_OF_FILE) {
-		//	resync(tokenlist_statement_follow, tokenlist_statement_start);
-		//}
 	}
 
 	/** parse_statement_list      parse a statement list until the
@@ -1810,11 +1671,11 @@ namespace cx{
 	* @param p_target_id : ptr to target id's symbol table node
 	* @return ptr to the p_target_id type object.
 	*/
-	cx_type::type_ptr parser::parse_assignment(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_target_id) {
+	type_ptr parser::parse_assignment(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_target_id) {
 
-		cx_type::type_ptr p_target_type = parse_variable(p_function_id, p_target_id, true);
+		type_ptr p_result_target_type = parse_variable(p_function_id, p_target_id, true);
 
-		return p_target_type;
+		return p_result_target_type;
 	}
 
 	void parser::parse_ENUM(symbol_table_node_ptr &p_function_id) {
@@ -1826,11 +1687,9 @@ namespace cx{
 		if (p_function_id == nullptr) {}
 
 		symbol_table_node_ptr p_enum_id = this->enter_new_local(p_token->string, DC_TYPE);
-
-		//std::wcout << p_enum_id->node_name;
 		get_token();
 
-		cx::cx_type::type_ptr p_result_type = p_integer_type;
+		type_ptr p_result_type = p_integer_type;
 		symbol_table_node_ptr p_node;
 		symbol_table_node_ptr p_id;
 
@@ -1852,7 +1711,7 @@ namespace cx{
 		case TC_LEFT_BRACKET: {
 			p_enum_id->p_type = std::make_shared<cx_type>(F_ENUM, p_result_type->typecode);
 			p_enum_id->p_type->p_enum_ids = std::make_shared<symbol_table>();
-
+			p_enum_id->p_type->p_type_id = p_enum_id;
 			conditional_get_token(TC_LEFT_BRACKET, error_code::ERR_MISSING_LEFT_BRACKET);
 			cx_int tc_number = 0;
 
@@ -2058,81 +1917,6 @@ namespace cx{
 		symtab_stack.exit_scope();
 	}
 
-	/** parse_SWITCH         parse switch statements.
-	*
-	*      switch(<expression>){
-	*              case <const-expression>:
-	*              default:
-	*      }
-	*
-	* NOTE:
-	*      Broken/not implemented yet.
-	*
-	* @param p_function_id : ptr to this statements function Id.
-	*/
-	/*void parser::parse_SWITCH(symbol_table_node_ptr &p_function_id) {
-
-	get_token_append();
-	conditional_get_token_append(TC_LEFT_PAREN, ERR_MISSING_LEFT_PAREN);
-
-	cx_type::type_ptr p_expr_type = parse_expression();
-
-	conditional_get_token_append(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
-
-	if ((p_expr_type != p_integer_type)
-	&& (p_expr_type != p_char_type)
-	&& (p_expr_type->typeform != F_ENUM)) {
-	cx_error(ERR_INCOMPATIBLE_TYPES);
-	}
-
-	parse_statement(p_function_id);
-
-	}*/
-
-	/// XXX fixme
-
-	/*void parser::parse_case_branch(symbol_table_node_ptr &p_function_id, const cx_type::type_ptr &p_expr_type) {
-	// c switch easier to parse that Pascal???
-	}*/
-
-	/// XXX fixme
-
-	/*void parser::parse_case_label(cx_symtab_node* p_function_id, const cx_type *p_expr_type) {
-	get_token_append();
-
-	bool sign_flag(false);
-
-	if (token_in(token, tokenlist_unary_ops)) {
-	sign_flag = true;
-	get_token_append();
-	}
-
-	switch (token) {
-	case tc_identifier:
-	if (!search_all(p_token->string__())) {
-	cx_error(err_undefined_identifier);
-	}
-
-	get_token_append();
-	break;
-	case tc_number:
-	if (p_token->type() != ty_integer) cx_error(err_invalid_constant);
-	get_token_append();
-	break;
-	case tc_string:
-	if (sign_flag || (strlen(p_token->string__()) != 3)) {
-	cx_error(err_invalid_constant);
-	}
-	break;
-	default:
-	break;
-	}
-
-	conditional_get_token_append(tc_colon, err_missing_colon);
-
-	parse_statement_list(p_function_id, tc_BREAK);
-	}*/
-
 	/** parse_compound       parse compounded statements.
 	*
 	*      {
@@ -2172,6 +1956,7 @@ namespace cx{
 			return;
 		}
 
+		this->p_target_type = p_function_id->p_type;
 		// expr 1
 		check_assignment_type_compatible(p_function_id, p_function_id->p_type, parse_expression(p_function_id),
 			ERR_INCOMPATIBLE_TYPES);
@@ -2179,91 +1964,6 @@ namespace cx{
 		this->emit_store(p_function_id, p_function_id);
 		this->emit(p_function_id, RETURN);
 	}
-
-	/** parse_type_definitions    parse a list of type definitions
-	*                          separated by commas:
-	*
-	*                              <type> <id>, ... ;
-	*
-	* @param p_function_id : ptr to symbol table node of program,
-	*                     procedure, or function identifier.
-	*/
-	//void parser::parse_type_definitions(symbol_table_node_ptr &p_function_id) {
-	//	//symbol_table_node_ptr p_last_id;// = nullptr;
-
-	//	//while (token == TC_IDENTIFIER) {
-	//	//	symbol_table_node_ptr p_type_id = enter_new_local(p_token->string__());
-
-	//	//	/*if (p_function_id->defined.routine.locals.types == nullptr) {
-	//	//	p_function_id->defined.routine.locals.types.symbols.emplace(p_type_id);
-	//	//	}
-	//	//	else {
-	//	//	//p_last_id->next__ = p_type_id;
-	//	//	}*/
-
-	//	//	p_last_id = p_type_id;
-
-	//	//	get_token_append();
-	//	//	conditional_get_token(TC_EQUAL, ERR_MISSING_EQUAL);
-
-	//	//	//        set_type(p_type_id->p_type, parse_type_spec());
-	//	//	p_type_id->defined.defined_how = DC_TYPE;
-
-	//	//	if (!p_type_id->p_type->p_type_id) {
-	//	//		p_type_id->p_type->p_type_id = p_type_id;
-	//	//	}
-
-	//	//	resync(tokenlist_declaration_follow, tokenlist_declaration_start, tokenlist_statement_start);
-	//	//	conditional_get_token(TC_SEMICOLON, ERR_MISSING_SEMICOLON);
-
-	//	//	while (token == TC_SEMICOLON)get_token_append();
-
-	//	//	resync(tokenlist_declaration_follow, tokenlist_declaration_start, tokenlist_statement_start);
-
-	//	//}
-	//}
-
-	/** parse_type_spec       parse a type specification.
-	*
-	* @param p_node : ptr to object node.
-	* @return ptr to type object.
-	*/
-	//cx_type::type_ptr parser::parse_type_spec(symbol_table_node_ptr &p_node) {
-	//	//switch (token) {
-	//	//case TC_IDENTIFIER:
-	//	//{
-	//	//	symbol_table_node_ptr p_id = find(p_token->string__());
-
-	//	//	switch (p_id->defined.defined_how) {
-	//	//	case DC_TYPE: return parse_identifier_type(p_id);
-	//	//	case DC_CONSTANT: return parse_subrange_type(p_id);
-	//	//	default:
-	//	//		cx_error(ERR_NOT_A_TYPE_IDENTIFIER);
-	//	//		get_token_append();
-	//	//		return (p_dummy_type);
-	//	//	}
-	//	//}
-
-	//	//case TC_LEFT_BRACKET: return parse_enumeration_type();
-
-	//	//	/* found empty subscript.
-	//	//	* array must have initializer */
-	//	//case TC_RIGHT_SUBSCRIPT: return parse_assignment(p_node);
-	//	//	//        case tcRecord: return parse_complex_type();
-	//	//case TC_PLUS:
-	//	//case TC_MINUS:
-	//	//case TC_NUMBER:
-	//	//case TC_CHAR:
-	//	//case TC_STRING:// return parse_subrange_type(nullptr);
-
-	//	//default:
-	//	//	cx_error(ERR_INVALID_TYPE);
-	//	//	return (p_dummy_type);
-
-	//	//}
-
-	//	return p_dummy_type;
-	//}
 
 	/** parse_identifier_type     In a type defintion of the form
 	*
@@ -2274,126 +1974,10 @@ namespace cx{
 	* @param p_id2 : ptr to symbol table node of <id-2>.
 	* @return ptr to type object of <id-2>.
 	*/
-	cx_type::type_ptr parser::parse_identifier_type(symbol_table_node_ptr &p_id2) {
+	/*cx_type::type_ptr parser::parse_identifier_type(symbol_table_node_ptr &p_id2) {
 		get_token();
 		return p_id2->p_type;
-	}
-
-	/** parse_enumeration_type    parse a enumeration type
-	*                          specification:
-	*      enum <id> { <enum-list> };
-	*
-	* @return
-	*/
-	/*cx_type *parser::parse_enumeration_type(void) {
-	cx_type *p_type = new cx_type(fc_enum, sizeof(int), nullptr);
-	symbol_table_node_ptr &p_last_id = nullptr;
-
-	int const_value = -1;
-
-	get_token_append();
-	resync(tokenlist_enum_const_start);
-
-	while (token == tc_identifier) {
-	symbol_table_node_ptr &p_const_id = enter_new_local(p_token->string__());
-	++const_value;
-
-	if (p_const_id->defined.defined_how == dc_undefined) {
-	p_const_id->defined.defined_how = dc_constant;
-
-	p_const_id->defined.constant.value.int__ = const_value;
-	set_type(p_const_id->p_type, p_type);
-
-	if (!p_last_id) {
-	p_type->enumeration.p_const_ids = p_last_id = p_const_id;
-	}
-	else {
-	p_last_id->next__ = p_const_id;
-	p_last_id = p_const_id;
-	}
-	}
-
-	get_token_append();
-	resync(tokenlist_enum_const_follow);
-
-	if (token == tc_comma) {
-
-	do {
-	get_token_append();
-	resync(tokenlist_enum_const_start, tokenlist_enum_const_follow);
-	if (token == tc_comma) cx_error(err_missing_identifier);
-	} while (token == tc_comma);
-	if (token != tc_identifier) cx_error(err_missing_identifier);
-	}
-	else if (token == tc_identifier) cx_error(err_missing_comma);
-	}
-
-	conditional_get_token(tc_right_bracket, err_missing_right_bracket);
-
-	p_type->enumeration.max = const_value;
-	return p_type;
 	}*/
-
-	/** parse_array_type      parse an array type specification.
-	*
-	*      <type-id> <id> [ <const-index-size> ];
-	*
-	* @param p_function_id : ptr to fuction which owns this array.
-	* @param p_array_node : ptr to array symtab node.
-	* @return ptr to array type object.
-	*/
-	//cx_type::type_ptr parser::parse_array_type(symbol_table_node_ptr &p_function_id,
-	//	symbol_table_node_ptr &p_array_node) {
-
-	//	cx_type::type_ptr p_array_type;
-	//	//cx_type::type_ptr p_array_type = std::make_shared<cx_type>(*(new cx_type()));
-	//	//p_array_type->typeform = F_ARRAY;
-	//	//p_array_type->size = 0;
-	//	//cx_type::type_ptr p_element_type = p_array_type;
-
-	//	//// Final element type.
-	//	////set_type(p_element_type->array.p_element_type, p_array_node->p_type);
-
-	//	//conditional_get_token(TC_LEFT_SUBSCRIPT, ERR_MISSING_LEFT_SUBSCRIPT);
-
-	//	//int min_index = 0;
-	//	//int max_index = 0;
-
-	//	//if (token == TC_NUMBER) {
-	//	//	max_index = p_token->value().i_;
-	//	//	get_token();
-
-	//	//}
-	//	//else {
-	//	//	cx_type::type_ptr p_index_type = parse_expression();
-
-	//	//	check_assignment_type_compatible(p_integer_type, p_index_type,
-	//	//		ERR_INVALID_INDEX_TYPE);
-
-	//	//}
-
-	//	//p_array_type->array.element_count = max_index;
-	//	//p_array_type->array.max_index = max_index;
-	//	//p_array_type->size = min_index * p_array_type->array.p_element_type->size;
-
-	//	//conditional_get_token(TC_RIGHT_SUBSCRIPT, ERR_MISSING_RIGHT_SUBSCRIPT);
-
-	//	//if (token_in(token, tokenlist_assign_ops))parse_assignment(p_array_node);
-	//	//p_array_node->p_type = p_array_type;
-	//	////set_type(p_array_node->p_type, p_array_type);
-
-	//	//if (p_array_node->defined.defined_how == DC_UNDEFINED) {
-	//	//	p_array_node->defined.defined_how = DC_VARIABLE;
-	//	//}
-
-	//	//// If the type object doesn't have a name yet,
-	//	//// point it to the type id.
-	//	//if (!p_array_node->p_type->p_type_id) {
-	//	//	p_array_node->p_type->p_type_id = p_array_node;
-	//	//}
-
-	//	return p_array_type;
-	//}
 
 	/** parse_unksize_array_type      parse an array type specification
 	*                                of unknown size.
@@ -2404,18 +1988,19 @@ namespace cx{
 	* @param p_array_node : ptr to array symtab node.
 	* @return ptr to array type object.
 	*/
-	cx_type::type_ptr parser::parse_array_type(symbol_table_node_ptr &p_function_id,
+	type_ptr parser::parse_array_type(symbol_table_node_ptr &p_function_id,
 		symbol_table_node_ptr &p_array_node) {
 
-		cx_type::type_ptr p_array_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
+		type_ptr p_array_type = std::make_shared<cx_type>(F_ARRAY, T_REFERENCE);
 		p_array_type->array.element_count = 0;
 		p_array_type->array.max_index = 0;
 		p_array_type->array.min_index = 0;
 		p_array_type->array.p_element_type = p_array_node->p_type;
 		p_array_type->array.p_index_type = p_integer_type;
 		p_array_type->size = 0;
+		p_array_type->p_type_id = p_array_node;
 
-		cx_type::type_ptr p_expr_type = nullptr;
+		type_ptr p_expr_type = nullptr;
 
 		bool is_function = false;
 		const bool is_expression = token_in(this->token, tokenlist_assign_ops);
@@ -2452,68 +2037,13 @@ namespace cx{
 	* @param p_array_type : ptr to array type object.
 	* @return byte size.
 	*/
-	size_t parser::array_size(cx_type::type_ptr &p_array_type) {
+	size_t parser::array_size(type_ptr &p_array_type) {
 		if (p_array_type->array.p_element_type->size == 0) {
 			p_array_type->array.p_element_type->size = array_size(p_array_type->array.p_element_type);
 		}
 
 		return (p_array_type->array.element_count * p_array_type->array.p_element_type->size);
 	}
-
-	///** parse_string_type      parse an string type specification.
-	// *
-	// *      <type-id> <id> [ <const-index-size> ];
-	// *
-	// * @param p_function_id : ptr to fuction which owns this array.
-	// * @param p_array_node : ptr to string symtab node.
-	// * @return ptr to array type object.
-	// */
-	//cx_type *parser::parse_string_type(cx_symtab_node* p_function_id,
-	//        cx_symtab_node* p_string_node) {
-	//
-	//    cx_type *p_array_type = new cx_type(F_ARRAY, 0, nullptr);
-	//    cx_type *p_element_type = p_array_type;
-	//
-	//    // Final element type.
-	//    set_type(p_element_type->array.p_element_type, p_char_type);
-	//
-	//    int min_index = 0;
-	//    int max_index = 0;
-	//
-	//    //set_type(p_element_type->array.p_index_type, p_integer_type);
-	//    p_array_type->array.element_count = max_index;
-	//    p_array_type->array.min_index = min_index;
-	//    p_array_type->array.max_index = max_index - 1;
-	//
-	//    set_type(p_string_node->p_type, p_array_type);
-	//
-	//    get_token_append();
-	//
-	//    if (token_in(token, tokenlist_assign_ops))parse_assignment(p_string_node);
-	//
-	//    p_string_node->defined.defined_how = dc_variable;
-	//
-	//    //add to routines variable list
-	//    /*if (p_function_id != nullptr) {
-	//        symbol_table_node_ptr array = p_function_id->defined.routine.locals.p_type_ids;
-	//        if (!array) {
-	//            p_function_id->defined.routine.locals.p_type_ids = p_string_node;
-	//        } else {
-	//            while (array->next__)array = array->next__;
-	//
-	//            array->next__ = p_string_node;
-	//        }
-	//    }*/
-	//
-	//    // If the type object doesn't have a name yet,
-	//    // point it to the type id.
-	//    if (!p_string_node->p_type->p_type_id) {
-	//        p_string_node->p_type->p_type_id = p_string_node;
-	//    }
-	//
-	//    return p_array_type;
-	//
-	//}
 
 	/** parse_complex_type
 	*
@@ -2524,42 +2054,42 @@ namespace cx{
 	* @param p_node
 	* @return
 	*/
-	/*	cx_type * parser::parse_complex_type(symbol_table_node_ptr p_function_id, symbol_table_node_ptr  p_node) {
+	type_ptr parser::parse_complex_type(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node) {
 
-	get_token();
+//	get_token();
+//
+//	// <id>
+//	cx_type *p_type = new cx_type(F_REFERENCE, 0, nullptr);
+//
+	symbol_table_node_ptr next_type = p_node;
+//
+//	//while (next_type->next__)
+//	//next_type = next_type->next__;
+//
+//	symbol_table_node_ptr p_id = enter_new_local(p_token->string__());
+//	icode.put(p_id);
+//
+//	//next_type->next__ = p_id;
+//
+//	// Link the routine's local type id nodes together.
+//	if (!p_function_id->defined.routine.locals.p_type_ids) {
+//	p_function_id->defined.routine.locals.p_type_ids = p_id;
+//	}
+//	else {
+//	symbol_table_node_ptr p_var_id = p_function_id->defined.routine.locals.p_type_ids;
+//
+//	while (p_var_id->next__)
+//	p_var_id = p_var_id->next__;
+//
+//	p_var_id->next__ = p_id;
+//	}
+//
+//	set_type(p_id->p_type, p_type);
+//	p_id->defined.defined_how = DC_TYPE;
+//
+//	parse_member_decls(p_function_id, p_id->p_type, 0);
 
-	// <id>
-	cx_type *p_type = new cx_type(F_REFERENCE, 0, nullptr);
-
-	//symbol_table_node_ptr next_type = p_node;
-
-	//while (next_type->next__)
-	//next_type = next_type->next__;
-
-	symbol_table_node_ptr p_id = enter_new_local(p_token->string__());
-	icode.put(p_id);
-
-	//next_type->next__ = p_id;
-
-	// Link the routine's local type id nodes together.
-	if (!p_function_id->defined.routine.locals.p_type_ids) {
-	p_function_id->defined.routine.locals.p_type_ids = p_id;
-	}
-	else {
-	symbol_table_node_ptr p_var_id = p_function_id->defined.routine.locals.p_type_ids;
-
-	while (p_var_id->next__)
-	p_var_id = p_var_id->next__;
-
-	p_var_id->next__ = p_id;
-	}
-
-	set_type(p_id->p_type, p_type);
-	p_id->defined.defined_how = DC_TYPE;
-
-	parse_member_decls(p_function_id, p_id->p_type, 0);
-
-	return p_id->p_type;
+		return p_function_id->p_type;
 	}
 
 	/** parse_member_decls
@@ -2746,7 +2276,7 @@ namespace cx{
 		}
 	}
 
-	void parser::emit_not_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_not_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2770,7 +2300,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_lt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_lt_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2792,7 +2322,7 @@ namespace cx{
 	}
 
 
-	void parser::emit_eq_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_eq_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2820,7 +2350,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_gt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_gt(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2841,7 +2371,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_gt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_gt_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2862,7 +2392,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_lt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_lt(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2883,7 +2413,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_add(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2907,7 +2437,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_div(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2931,7 +2461,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_sub(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2955,7 +2485,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_mod(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2976,7 +2506,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_mul(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -2996,7 +2526,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back(op);
 	}
 
-	void parser::emit_lnot(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type){
+	void parser::emit_lnot(symbol_table_node_ptr &p_function_id, type_ptr &p_type){
 		cx::opcode op = LOGIC_NOT;
 
 		switch (p_type->typecode)
@@ -3098,7 +2628,7 @@ namespace cx{
 
 	void parser::emit_ax_load(symbol_table_node_ptr &p_function_id, 
 		symbol_table_node_ptr &p_id,
-		cx_type::type_ptr &p_type) {
+		type_ptr &p_type) {
 		opcode op = opcode::NOP;
 
 		switch (p_type->typecode)
@@ -3154,7 +2684,7 @@ namespace cx{
 		p_function_id->defined.routine.program_code.push_back({ op, p_id.get() });
 	}
 
-	void parser::emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_){
+	void parser::emit_inc(symbol_table_node_ptr &p_function_id, type_ptr &p_type, value v_){
 
 		switch (p_type->typecode)
 		{

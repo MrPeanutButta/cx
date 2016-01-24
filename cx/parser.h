@@ -50,6 +50,7 @@ namespace cx{
 		token *p_token; // ptr to the current token
 		token_code token; // code of current token
 		symbol_table_stack symtab_stack;
+		type_ptr p_target_type;
 		bool is_module;
 		std::wstring file_name;
 
@@ -59,81 +60,66 @@ namespace cx{
 		void parse_iterator_block(symbol_table_node_ptr &p_function_id);
 		void parse_formal_parm_list(symbol_table_node_ptr &p_function_id);
 
-		cx_type::type_ptr parse_subroutine_call(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id);
-		cx_type::type_ptr parse_declared_subroutine_call(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id);
+		symbol_table_node_ptr parse_subroutine_call(symbol_table_node_ptr &p_function_id, std::pair<local::iterator, local::iterator> p_node_ids);
+		symbol_table_node_ptr parse_declared_subroutine_call(symbol_table_node_ptr &p_function_id, std::pair<local::iterator, local::iterator> p_node_ids);
 
-		void parse_actual_parm_list(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id);
-		void parse_actual_parm(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id, symbol_table_node_ptr &p_formal_id);
+		symbol_table_node_ptr parse_actual_parm_list(symbol_table_node_ptr &p_function_id, std::pair<local::iterator, local::iterator> p_node_ids);
+		//void parse_actual_parm(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id, symbol_table_node_ptr &p_formal_id);
 
 		// declarations
-		symbol_table_node_ptr allocate_new_node(symbol_table_node_ptr &p_function_id);
+		//symbol_table_node_ptr allocate_new_node(symbol_table_node_ptr &p_function_id);
 		void parse_declarations_or_assignment(symbol_table_node_ptr &p_function_id);
-		void parse_constant_declaration(symbol_table_node_ptr &p_function_id);
-		void parse_constant(symbol_table_node_ptr &p_const_id);
-		void parse_identifier_constant(symbol_table_node_ptr &p_id1, token_code sign);
+		//void parse_constant_declaration(symbol_table_node_ptr &p_function_id);
+		//void parse_constant(symbol_table_node_ptr &p_const_id);
+		//void parse_identifier_constant(symbol_table_node_ptr &p_id1, token_code sign);
 
-		void parse_definitions(symbol_table_node_ptr &p_function_id);
-		//void ParseIntegerDeclaration(symbol_table_node_ptr &p_function_id);
+		/*void parse_definitions(symbol_table_node_ptr &p_function_id);
 		void parse_type_definitions(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_type_spec(symbol_table_node_ptr &p_node);
-
-		cx_type::type_ptr parse_identifier_type(symbol_table_node_ptr &p_id2);
-
+		cx_type::type_ptr parse_type_spec(symbol_table_node_ptr &p_node);*/
+		/*cx_type::type_ptr parse_identifier_type(symbol_table_node_ptr &p_id2);
 		cx_type::type_ptr parse_enum_header(symbol_table_node_ptr &p_function_id);
 		cx_type::type_ptr parse_enumeration_type(void);
-
 		cx_type::type_ptr parse_subrange_type(symbol_table_node_ptr &p_min_id);
-		cx_type::type_ptr parse_subrange_limit(symbol_table_node_ptr &p_limit_id, int &limit);
+		cx_type::type_ptr parse_subrange_limit(symbol_table_node_ptr &p_limit_id, int &limit);*/
 
-		cx_type::type_ptr parse_string_type(symbol_table_node_ptr &p_function_id,
-			symbol_table_node_ptr &p_string_node);
-		//cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
-		//	symbol_table_node_ptr &p_array_node);
-		cx_type::type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
+		/*cx_type::type_ptr parse_string_type(symbol_table_node_ptr &p_function_id,
+			symbol_table_node_ptr &p_string_node);*/
+		type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_array_node);
 
-		void parse_index_type(symbol_table_node_ptr &p_array_node);
-		size_t array_size(cx_type::type_ptr &p_array_type);
-		cx_type::type_ptr parse_complex_type(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node);
+		//void parse_index_type(symbol_table_node_ptr &p_array_node);
+		size_t array_size(type_ptr &p_array_type);
+		type_ptr parse_complex_type(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node);
 
-		//void parse_variable_declarations(symbol_table_node_ptr &p_function_id);
-		void parse_member_decls(symbol_table_node_ptr &p_function_id, cx_type::type_ptr p_complex_type, int offset);
-		//void ParseVarOrFieldDecls(symbol_table_node_ptr &p_function_id,
-		//cx_type::type_ptr p_complex_type,
-		//int offset);
-		//symbol_table_node_ptr &parse_id_sublist(const symbol_table_node_ptr &p_function_id,
-		//const cx_type::type_ptr &p_complex_type, symbol_table_node_ptr &p_last_id);
+		//void parse_member_decls(symbol_table_node_ptr &p_function_id, cx_type::type_ptr p_complex_type, int offset);
 
 		// expressions
-		//cx_type::type_ptr parse_rvalue(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &lhs, cx_type::type_ptr &rhs);
-		cx_type::type_ptr parse_expression(symbol_table_node_ptr &p_function_id);
-		//cx_type::type_ptr ParseSuffix(symbol_table_node_ptr &p_node);
-		//void ParseSizeOf(void);
-		cx_type::type_ptr parse_simple_expression(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_term(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_factor(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false);
-		cx_type::type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		type_ptr parse_expression(symbol_table_node_ptr &p_function_id);
+		type_ptr parse_simple_expression(symbol_table_node_ptr &p_function_id);
+		type_ptr parse_term(symbol_table_node_ptr &p_function_id);
+		type_ptr parse_factor(symbol_table_node_ptr &p_function_id);
+		type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false);
+		type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
 		//cx_type::type_ptr parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type);
-		cx_type::type_ptr parse_iterator(symbol_table_node_ptr &p_iterator);
+		//cx_type::type_ptr parse_iterator(symbol_table_node_ptr &p_iterator);
 
 		// statements
 		void parse_statement(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_assignment(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_target_id);
+		type_ptr parse_assignment(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_target_id);
 		void parse_statement_list(symbol_table_node_ptr &p_function_id, token_code terminator);
 		void parse_ENUM(symbol_table_node_ptr &p_function_id);
 		void parse_DO(symbol_table_node_ptr &p_function_id);
 		void parse_WHILE(symbol_table_node_ptr &p_function_id);
 		void parse_IF(symbol_table_node_ptr &p_function_id);
 		void parse_FOR(symbol_table_node_ptr &p_function_id);
-		void parse_SWITCH(symbol_table_node_ptr &p_function_id);
-		void parse_case_branch(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
-		void parse_case_label(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
+		//void parse_SWITCH(symbol_table_node_ptr &p_function_id);
+		//void parse_case_branch(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
+		//void parse_case_label(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
 		void parse_compound(symbol_table_node_ptr &p_function_id);
 		void parse_RETURN(symbol_table_node_ptr &p_function_id);
 		void parse_ASM(symbol_table_node_ptr &p_function_id);
 
-		void parse_execute_directive(symbol_table_node_ptr &p_function_id);
+		//void parse_execute_directive(symbol_table_node_ptr &p_function_id);
 
 		void get_token(void) {
 			p_token = p_scanner->get();
@@ -175,11 +161,11 @@ namespace cx{
 			return symtab_stack.search_local(name);
 		}
 
-		symbol_table_node_ptr search_all(const std::wstring name) const {
+		symbol_table_node_ptr search_all(const std::wstring name) {
 			return symtab_stack.search_all(name);
 		}
 
-		symbol_table_node_ptr find(const std::wstring name) const {
+		symbol_table_node_ptr find(const std::wstring name) {
 			symbol_table_node_ptr p_node = search_all(name);
 
 			if (p_node == nullptr){
@@ -189,9 +175,13 @@ namespace cx{
 			return p_node;
 		}
 
+		std::pair<local::iterator, local::iterator> find_functions(const std::wstring name) {
+			return symtab_stack.find_functions(name);
+		}
+
 		void copy_quoted_string(wchar_t *p_string, const wchar_t *p_quoted_string) const {
 			size_t length = wcslen(p_quoted_string) - 2;
-			wcscpy(p_string, &p_quoted_string[1]);// , length);
+			wcscpy(p_string, &p_quoted_string[1]);
 			p_string[length] = '\0';
 		}
 
@@ -203,6 +193,14 @@ namespace cx{
 		symbol_table_node_ptr enter_new_local(std::wstring name,
 			define_code dc = DC_UNDEFINED) {
 			return symtab_stack.enter_new_local(name, dc);
+		}
+
+		void enter_new_local(symbol_table_node_ptr &p_new_id) {
+			symtab_stack.enter_new_local(p_new_id);
+		}
+
+		void enter_new_function(symbol_table_node_ptr &p_new_id) {
+			symtab_stack.enter_new_function(p_new_id);
 		}
 
 		void conditional_get_token(token_code tc, error_code ec) {
@@ -224,22 +222,22 @@ namespace cx{
 		void emit(symbol_table_node_ptr &p_function_id, opcode op1, value arg1, value arg2);
 		void emit_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 		void emit_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
-		void emit_ax_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, cx_type::type_ptr &p_type);
+		void emit_ax_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, type_ptr &p_type);
 		void emit_ax_store(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
-		void emit_inc(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type, value v_);
-		void emit_add(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_sub(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_inc(symbol_table_node_ptr &p_function_id, type_ptr &p_type, value v_);
+		void emit_add(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_sub(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
 		void emit_const(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
-		void emit_mul(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_div(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_mod(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_not_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_eq_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_lt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_gt(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_lt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_gt_eq(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
-		void emit_lnot(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_type);
+		void emit_mul(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_div(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_mod(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_not_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_eq_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_lt(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_gt(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_lt_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_gt_eq(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
+		void emit_lnot(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
 		void emit_store_no_load(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id);
 	public:
 

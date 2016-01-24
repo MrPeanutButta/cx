@@ -30,14 +30,14 @@ THE SOFTWARE.
 
 namespace cx{
 
-	cx_type::type_ptr p_boolean_type;
-	cx_type::type_ptr p_char_type;
-	cx_type::type_ptr p_byte_type;
-	cx_type::type_ptr p_integer_type;
-	cx_type::type_ptr p_double_type;
-	cx_type::type_ptr p_reference_type;
-	cx_type::type_ptr p_void_type;
-	cx_type::type_ptr p_dummy_type;
+	type_ptr p_boolean_type;
+	type_ptr p_char_type;
+	type_ptr p_byte_type;
+	type_ptr p_integer_type;
+	type_ptr p_double_type;
+	type_ptr p_reference_type;
+	type_ptr p_void_type;
+	type_ptr p_dummy_type;
 
 	cx_type::cx_type(const cx_type &type) {
 		this->size = type.size;
@@ -115,50 +115,52 @@ namespace cx{
 		symbol_table_node_ptr p_true_id = p_symtab->enter(L"true", DC_CONSTANT);
 		symbol_table_node_ptr p_void_id = p_symtab->enter(L"void", DC_TYPE);
 
-		// only used for functions with no return value
+		// Only used for functions with no return value.
 		if (p_void_type == nullptr) {
 			p_void_type = std::make_shared<cx_type>(F_SCALAR, T_VOID, 0, p_void_id, p_std_type_members);
+			p_void_type->p_type_id = p_void_id;
+			p_void_id->p_type = p_void_type;
 		}
 
 		if (p_integer_type == nullptr) {
 			p_integer_type = std::make_shared<cx_type>(F_SCALAR, T_INT, sizeof(cx_int), p_integer_id, p_std_type_members);
+			p_integer_type->p_type_id = p_integer_id;
+			p_integer_id->p_type = p_integer_type;
 		}
 
 		if (p_byte_type == nullptr) {
 			p_byte_type = std::make_shared<cx_type>(F_SCALAR, T_BYTE, sizeof(uint8_t), p_byte_id, p_std_type_members);
+			p_byte_type->p_type_id = p_byte_id;
+			p_byte_id->p_type = p_byte_type;
 		}
 
 		if (p_double_type == nullptr) {
 			p_double_type = std::make_shared<cx_type>(F_SCALAR, T_DOUBLE, sizeof(cx_real), p_double_id, p_std_type_members);
+			p_double_type->p_type_id = p_double_id;
+			p_double_id->p_type = p_double_type;
 		}
 
 		if (p_boolean_type == nullptr) {
 			p_boolean_type = std::make_shared<cx_type>(F_SCALAR, T_BOOLEAN, sizeof(bool), p_boolean_id, p_std_type_members);
+			p_boolean_type->p_type_id = p_boolean_id;
+			p_boolean_id->p_type = p_boolean_type;
+			p_false_id->p_type = p_boolean_type;
+			p_true_id->p_type = p_boolean_type;
+			p_false_id->defined.constant_value.z_ = false;
+			p_true_id->defined.constant_value.z_ = true;
 		}
 
 		if (p_char_type == nullptr) {
 			p_char_type = std::make_shared<cx_type>(F_SCALAR, T_CHAR, sizeof(wchar_t), p_char_id, p_std_type_members);
+			p_char_type->p_type_id = p_char_id;
+			p_char_id->p_type = p_char_type;
 		}
 
 		if (p_reference_type == nullptr) {
 			p_reference_type = std::make_shared<cx_type>(F_REFERENCE, T_REFERENCE, sizeof(uintptr_t), p_reference_id, p_std_type_members);
+			p_reference_id->p_type = p_reference_type;
 		}
 
-		// Link each predefined type id's node to it's type object
-		p_integer_id->p_type = p_integer_type;
-		p_byte_id->p_type = p_byte_type;
-		p_double_id->p_type = p_double_type;
-		p_reference_id->p_type = p_reference_type;
-		p_boolean_id->p_type = p_boolean_type;
-		p_char_id->p_type = p_char_type;
-		p_false_id->p_type = p_boolean_type;
-		p_true_id->p_type = p_boolean_type;
-		p_void_id->p_type = p_reference_type;
-
-		p_false_id->defined.constant_value.z_ = false;
-		p_true_id->defined.constant_value.z_ = true;
-		
-		// initialize standard type members
 		//init_std_members();
 
 		if (p_dummy_type == nullptr){
@@ -180,7 +182,7 @@ namespace cx{
 	 * @param p_type1 : ptr to the first  operand's type object.
 	 * @param p_type2 : ptr to the second operand's type object.
 	 */
-	void check_relational_op_operands(symbol_table_node_ptr &p_function_id, const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+	void check_relational_op_operands(symbol_table_node_ptr &p_function_id, const type_ptr p_type1, const type_ptr p_type2) {
 		check_assignment_type_compatible(p_function_id, p_type1, p_type2, ERR_INCOMPATIBLE_TYPES);
 	}
 
@@ -191,7 +193,7 @@ namespace cx{
 	 * @param p_type1 : ptr to the first  operand's type object.
 	 * @param p_type2 : ptr to the second operand's type object or nullptr.
 	 */
-	void check_integer_or_real(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+	void check_integer_or_real(const type_ptr p_type1, const type_ptr p_type2) {
 		if ((p_type1->typecode != T_INT) && (p_type1->typecode != T_DOUBLE)) {
 			cx_error(ERR_INCOMPATIBLE_TYPES);
 		}
@@ -203,7 +205,7 @@ namespace cx{
 		}
 	}
 
-	void check_bitwise_integer(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+	void check_bitwise_integer(const type_ptr p_type1, const type_ptr p_type2) {
 		type_code target_type = p_type1->base_type()->typecode;
 		type_code value_type = p_type2->base_type()->typecode;
 
@@ -228,7 +230,7 @@ namespace cx{
 	}
 
 	// TODO add additional type checks
-	void check_bitwise_integer(const cx_type::type_ptr p_type1) {
+	void check_bitwise_integer(const type_ptr p_type1) {
 		type_code target_type = p_type1->base_type()->typecode;
 
 		switch (target_type) {
@@ -251,7 +253,7 @@ namespace cx{
 	 * @param p_type1 : ptr to the first  operand's type object.
 	 * @param p_type2 : ptr to the second operand's type object or nullptr.
 	 */
-	void check_boolean(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+	void check_boolean(const type_ptr p_type1, const type_ptr p_type2) {
 		// TODO Check boolean
 		/*if ((p_type1->base_type() != p_boolean_type.get())
 			|| ((p_type2 != nullptr) && (p_type2->base_type() != p_boolean_type.get()))) {
@@ -268,8 +270,8 @@ namespace cx{
 	 * @param p_value_type  : ptr to the value's  type object.
 	 * @param ec          : error code.
 	 */
-	void check_assignment_type_compatible(symbol_table_node_ptr &p_function_id, const cx_type::type_ptr p_target_type,
-		const cx_type::type_ptr p_value_type, error_code ec) {
+	void check_assignment_type_compatible(symbol_table_node_ptr &p_function_id, const type_ptr p_target_type,
+		const type_ptr p_value_type, error_code ec) {
 
 		type_code target_type = p_target_type->base_type()->typecode;
 		type_code value_type = p_value_type->base_type()->typecode;
@@ -284,17 +286,17 @@ namespace cx{
 				case T_INT:					
 				case T_BOOLEAN:
 					p_function_id->defined.routine.program_code.push_back({ I2B });
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -305,15 +307,15 @@ namespace cx{
 				case T_BOOLEAN:
 				case T_BYTE:
 					p_function_id->defined.routine.program_code.push_back({ B2I });
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
-					return;
+					return ;
 				default:
 					break;
 				}
@@ -323,13 +325,12 @@ namespace cx{
 				case T_INT:
 				case T_BYTE:
 					p_function_id->defined.routine.program_code.push_back({ I2C });
-					return;
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
 					p_function_id->defined.routine.program_code.push_back({ I2C });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -340,12 +341,12 @@ namespace cx{
 				case T_INT:
 				case T_BYTE:
 					p_function_id->defined.routine.program_code.push_back({ I2D });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
 					p_function_id->defined.routine.program_code.push_back({ I2D });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -355,15 +356,15 @@ namespace cx{
 				switch (value_type) {
 				case T_INT:
 				case T_BYTE:
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -374,12 +375,109 @@ namespace cx{
 			}
 		}
 		else if (p_target_type->typeform == F_ARRAY) {
-			//        if (p_target_type->base_type() ==
-			//            p_value_type->array.p_element_type->type_code) return;
-			return;
+			if (p_target_type->array.p_element_type->base_type() == p_value_type->array.p_element_type->base_type()) return ;
 		}
 
+		if (ec == (error_code)0) return ;
+
 		cx_error(ec);
+
+		return ;
+	}
+
+	bool assignment_is_compatible(const type_ptr p_target_type,
+		const type_ptr p_value_type) {
+
+		type_code target_type = p_target_type->base_type()->typecode;
+		type_code value_type = p_value_type->base_type()->typecode;
+
+		// If same type return
+		if (target_type == value_type) return true;
+
+		if (p_target_type->is_scalar_type()) {
+			switch (target_type) {
+			case T_BYTE:
+				switch (value_type) {
+				case T_INT:
+				case T_BOOLEAN:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			case T_INT:
+				switch (value_type) {
+				case T_BOOLEAN:
+				case T_BYTE:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+				default:
+					break;
+				}
+				break;
+			case T_CHAR:
+				switch (value_type) {
+				case T_INT:
+				case T_BYTE:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			case T_DOUBLE:
+				switch (value_type) {
+				case T_INT:
+				case T_BYTE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			case T_BOOLEAN:
+				switch (value_type) {
+				case T_INT:
+				case T_BYTE:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		else if (p_target_type->typeform == F_ARRAY) {
+			if (p_target_type->base_type() == p_value_type->base_type()) return true;
+		}
+
+		return false;
 	}
 
 	/** integer_operands     Check that the types of both operands
@@ -389,7 +487,7 @@ namespace cx{
 	 * @param p_type2 : ptr to the second operand's type object.
 	 * @return true if yes, false if no.
 	 */
-	bool integer_operands(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+	bool integer_operands(const type_ptr p_type1, const type_ptr p_type2) {
 		
 		type_code target_type = p_type1->base_type()->typecode;
 		type_code value_type = p_type2->base_type()->typecode;
@@ -466,7 +564,7 @@ namespace cx{
 	 * @param p_type2 : ptr to the second operand's type object.
 	 * @return true if yes, false if no.
 	 */
-	bool real_operands(const cx_type::type_ptr p_type1, const cx_type::type_ptr p_type2) {
+	bool real_operands(const type_ptr p_type1, const type_ptr p_type2) {
 		const cx_type *p_type_a = p_type1.get()->base_type();
 		const cx_type *p_type_b = p_type2.get()->base_type();
 
