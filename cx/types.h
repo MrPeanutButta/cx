@@ -163,6 +163,7 @@ namespace cx {
 		friend void check_integer_or_real(const type_ptr p_type1, const type_ptr p_type2);
 		friend void check_boolean(const type_ptr p_type1, const type_ptr p_type2);
 		friend void check_assignment_type_compatible(symbol_table_node_ptr &p_function_id, const type_ptr p_target_type, const type_ptr p_value_type, error_code ec);
+		friend bool assignment_is_compatible(const type_ptr p_target_type, const type_ptr p_value_type);
 		friend bool integer_operands(const type_ptr p_type1, const type_ptr p_type2);
 		friend bool real_operands(const type_ptr p_type1, const type_ptr p_type2);
 

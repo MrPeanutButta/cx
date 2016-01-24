@@ -178,8 +178,8 @@ namespace cx{
 					else cx_error(ERR_REDEFINED_IDENTIFIER);
 				}
 				else {*/
-					//p_new_id = enter_new_local(p_token->string);
-					p_new_id = std::make_shared<symbol_table_node>(p_token->string, DC_UNDEFINED);
+				//p_new_id = enter_new_local(p_token->string);
+				p_new_id = std::make_shared<symbol_table_node>(p_token->string, DC_UNDEFINED);
 				//}
 
 				// set type
@@ -195,7 +195,7 @@ namespace cx{
 					p_new_id->p_type = parse_array_type(p_function_id, p_new_id);
 				}
 				else if (token == TC_LEFT_PAREN) {
-
+					enter_new_function(p_new_id);
 					parse_function_header(p_new_id);
 				}
 				else if ((token != TC_COMMA) && (token != TC_END_OF_FILE)) {
@@ -217,16 +217,9 @@ namespace cx{
 					// add function to routine list
 				}
 				else if (p_new_id->defined.defined_how == DC_FUNCTION) {
+					enter_new_function(p_new_id);
+
 					if (p_function_id != nullptr) {
-
-						//p_new_id->node_name = p_new_id->p_type->p_type_id->node_name + p_new_id->node_name;
-
-						/*for (auto &param : p_new_id->defined.routine.p_parameter_ids) {
-							p_new_id->node_name += param->p_type->p_type_id->node_name;
-						}*/
-
-						enter_new_function(p_new_id);
-
 						p_function_id->defined.routine.p_function_ids.emplace_back(p_new_id);
 					}
 				}
@@ -1324,6 +1317,8 @@ namespace cx{
 		parse_formal_parm_list(p_function_id);
 		p_function_id->defined.defined_how = DC_FUNCTION;
 
+		// For recursive calls.
+		//symtab_stack.enter_new_function(p_function_id);
 		//  )
 		conditional_get_token(TC_RIGHT_PAREN, ERR_MISSING_RIGHT_PAREN);
 
@@ -1482,7 +1477,9 @@ namespace cx{
 		}
 		else {
 			for (auto it = p_node_ids.first; it != p_node_ids.second; ++it) {
-				if (it->second->p_type == this->p_target_type) {
+				if (it->second->defined.defined_how != define_code::DC_FUNCTION) continue;
+
+				if (assignment_is_compatible(it->second->p_type, this->p_target_type)) {
 					p_result_node = it->second;
 					break;
 				}
@@ -1510,6 +1507,8 @@ namespace cx{
 			symbol_table_node_ptr p_result;
 
 			for (auto it = p_node_ids.first; it != p_node_ids.second; ++it) {
+				if (it->second->defined.defined_how != define_code::DC_FUNCTION) continue;
+
 				if (it->second->p_type == this->p_target_type) {
 					return it->second;
 				}
@@ -1537,7 +1536,7 @@ namespace cx{
 			//p_expr_type = parse_expression(p_function_id);
 			param_results.emplace_back(parse_expression(p_function_id));
 			//check_assignment_type_compatible(p_function_id, p_formal_id->get()->p_type, p_expr_type,
-				//ERR_INCOMPATIBLE_TYPES);
+			//	ERR_INCOMPATIBLE_TYPES);
 
 			//if (p_formal_id != p_node_id->defined.routine.p_parameter_ids.end()){
 			//	++p_formal_id;
@@ -1550,11 +1549,13 @@ namespace cx{
 		bool found_match = false;
 
 		for (auto it = p_node_ids.first; it != p_node_ids.second; ++it) {
-			if (it->second->p_type == this->p_target_type) {
+			if (it->second->defined.defined_how != define_code::DC_FUNCTION) continue;
+
+//			if (assignment_is_compatible(it->second->p_type, this->p_target_type)) {
 				if (it->second->defined.routine.p_parameter_ids.size() == param_results.size()) {
 					int count = param_results.size();
 					for (int index = 0; index < count; ++index) {
-						if (it->second->defined.routine.p_parameter_ids[index]->p_type != param_results[index]) {
+						if (!assignment_is_compatible(it->second->defined.routine.p_parameter_ids[index]->p_type, param_results[index])) {
 							found_match = false;
 							break;
 						}
@@ -1563,7 +1564,7 @@ namespace cx{
 						}
 					}
 				}
-			}
+		//	}
 
 			if (found_match) {
 				p_result_node = it->second;
@@ -1955,6 +1956,7 @@ namespace cx{
 			return;
 		}
 
+		this->p_target_type = p_function_id->p_type;
 		// expr 1
 		check_assignment_type_compatible(p_function_id, p_function_id->p_type, parse_expression(p_function_id),
 			ERR_INCOMPATIBLE_TYPES);

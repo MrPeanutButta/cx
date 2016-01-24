@@ -181,7 +181,7 @@ namespace cx{
 		~symbol_table_stack(void);
 
 		std::pair<local::iterator, local::iterator> find_functions(std::wstring name) {
-			return p_symtabs[scoping::current_nesting_level]->find_functions(name);
+			return p_symtabs[0]->find_functions(name);
 		}
 
 		symbol_table_node_ptr search_local(std::wstring name) {

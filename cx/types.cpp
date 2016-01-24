@@ -286,17 +286,17 @@ namespace cx{
 				case T_INT:					
 				case T_BOOLEAN:
 					p_function_id->defined.routine.program_code.push_back({ I2B });
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
 					p_function_id->defined.routine.program_code.push_back({ I2B });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -307,15 +307,15 @@ namespace cx{
 				case T_BOOLEAN:
 				case T_BYTE:
 					p_function_id->defined.routine.program_code.push_back({ B2I });
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
-					return;
+					return ;
 				default:
 					break;
 				}
@@ -325,13 +325,12 @@ namespace cx{
 				case T_INT:
 				case T_BYTE:
 					p_function_id->defined.routine.program_code.push_back({ I2C });
-					return;
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
 					p_function_id->defined.routine.program_code.push_back({ I2C });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -342,12 +341,12 @@ namespace cx{
 				case T_INT:
 				case T_BYTE:
 					p_function_id->defined.routine.program_code.push_back({ I2D });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
 					p_function_id->defined.routine.program_code.push_back({ I2D });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -357,15 +356,15 @@ namespace cx{
 				switch (value_type) {
 				case T_INT:
 				case T_BYTE:
-					return;
+					return ;
 					break;
 				case T_DOUBLE:
 					p_function_id->defined.routine.program_code.push_back({ D2I });
-					return;
+					return ;
 					break;
 				case T_CHAR:
 					p_function_id->defined.routine.program_code.push_back({ C2I });
-					return;
+					return ;
 					break;
 				default:
 					break;
@@ -376,12 +375,109 @@ namespace cx{
 			}
 		}
 		else if (p_target_type->typeform == F_ARRAY) {
-			//        if (p_target_type->base_type() ==
-			//            p_value_type->array.p_element_type->type_code) return;
-			return;
+			if (p_target_type->array.p_element_type->base_type() == p_value_type->array.p_element_type->base_type()) return ;
 		}
 
+		if (ec == (error_code)0) return ;
+
 		cx_error(ec);
+
+		return ;
+	}
+
+	bool assignment_is_compatible(const type_ptr p_target_type,
+		const type_ptr p_value_type) {
+
+		type_code target_type = p_target_type->base_type()->typecode;
+		type_code value_type = p_value_type->base_type()->typecode;
+
+		// If same type return
+		if (target_type == value_type) return true;
+
+		if (p_target_type->is_scalar_type()) {
+			switch (target_type) {
+			case T_BYTE:
+				switch (value_type) {
+				case T_INT:
+				case T_BOOLEAN:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			case T_INT:
+				switch (value_type) {
+				case T_BOOLEAN:
+				case T_BYTE:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+				default:
+					break;
+				}
+				break;
+			case T_CHAR:
+				switch (value_type) {
+				case T_INT:
+				case T_BYTE:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			case T_DOUBLE:
+				switch (value_type) {
+				case T_INT:
+				case T_BYTE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			case T_BOOLEAN:
+				switch (value_type) {
+				case T_INT:
+				case T_BYTE:
+					return true;
+					break;
+				case T_DOUBLE:
+					return true;
+					break;
+				case T_CHAR:
+					return true;
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		else if (p_target_type->typeform == F_ARRAY) {
+			if (p_target_type->base_type() == p_value_type->base_type()) return true;
+		}
+
+		return false;
 	}
 
 	/** integer_operands     Check that the types of both operands

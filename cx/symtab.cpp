@@ -85,14 +85,14 @@ namespace cx{
 	 */
 	//symbol_table_node_ptr return_null;
 	symbol_table_node_ptr symbol_table::search(std::wstring name) {
-		//for (auto &node : this->symbols){
-		//	if (node.first == name) return node.second;
-		//}
+		for (auto &node : this->symbols){
+			if (node.first == name) return node.second;
+		}
 
-		auto p_node = this->symbols.find(name);
-		if (p_node == this->symbols.end()) return nullptr;
+		//auto p_node = this->symbols.find(name);
+		//if (p_node == this->symbols.end()) return nullptr;
 
-		return p_node->second;
+		return nullptr;
 	}
 
 	/** enter       search the symbol table for the node with a
