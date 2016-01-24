@@ -83,12 +83,16 @@ namespace cx{
 	 * @param p_string : ptr to the name string to search for.
 	 * @return ptr to the node if found, else nullptr.
 	 */
+	//symbol_table_node_ptr return_null;
 	symbol_table_node_ptr symbol_table::search(std::wstring name) {
-		for (auto &node : this->symbols){
-			if (node.first == name) return node.second;
-		}
+		//for (auto &node : this->symbols){
+		//	if (node.first == name) return node.second;
+		//}
 
-		return nullptr;
+		auto p_node = this->symbols.find(name);
+		if (p_node == this->symbols.end()) return nullptr;
+
+		return p_node->second;
 	}
 
 	/** enter       search the symbol table for the node with a
@@ -102,13 +106,13 @@ namespace cx{
 	 * @return ptr to the node, whether existing or newly-entered.
 	 */
 	symbol_table_node_ptr symbol_table::enter(std::wstring name, define_code dc) {
-		symbol_table_node_ptr p_node = symbols[name];
+		auto p_node = symbols.find(name);
 
-		if (p_node == nullptr) {
-			return (symbols[name] = std::make_shared<symbol_table_node>(name, dc));
+		if (p_node == symbols.end()) {
+			return (symbols.insert(std::make_pair(name, std::make_shared<symbol_table_node>(name, dc))))->second;
 		}
 
-		return p_node; // return a ptr to it
+		return p_node->second; // return a ptr to it
 	}
 
 	/** enter_new    search the symbol table for the given name
@@ -121,20 +125,39 @@ namespace cx{
 	 * @return ptr to symbol table node.
 	 */
 	symbol_table_node_ptr symbol_table::enter_new(std::wstring name, define_code dc) {
-		symbol_table_node_ptr p_node = symbols[name];
+		auto p_node = symbols.find(name);
 
-		if (p_node == nullptr) p_node = enter(name, dc);
+		if (p_node == symbols.end()) return enter(name, dc);
 		else cx_error(ERR_REDEFINED_IDENTIFIER);
 
-		return p_node;
+		return p_node->second;
+	}
+
+	void symbol_table::enter_new(symbol_table_node_ptr &p_new_id) {
+		auto p_node = symbols.find(p_new_id->node_name);
+
+		if (p_node == symbols.end()) enter(p_new_id);
+		else cx_error(ERR_REDEFINED_IDENTIFIER);
+	}
+
+	void symbol_table::enter_new_function(symbol_table_node_ptr &p_new_id) {
+		enter(p_new_id);
+	}
+
+	std::pair<local::iterator, local::iterator> symbol_table::find_functions(std::wstring name) {
+		return symbols.equal_range(name);
 	}
 
 	void symbol_table::copy(symbol_table *p_symtab){
 		this->symbols.insert(p_symtab->symbols.begin(), p_symtab->symbols.end());
 	}
 
-	void symbol_table::enter(symbol_table_node *p_node){
+	/*void symbol_table::enter(symbol_table_node *p_node){
 		this->symbols[p_node->node_name].reset(p_node);// this->node_pool.back().get();
+	}*/
+
+	void symbol_table::enter(symbol_table_node_ptr &p_new_id) {
+		this->symbols.insert(std::make_pair(p_new_id->node_name, p_new_id));
 	}
 
 	void symbol_table::enter(local &params){
@@ -174,7 +197,7 @@ namespace cx{
 	 * @param p_string : ptr to name string to find.
 	 * @return ptr to symbol table node if found, else nullptr.
 	 */
-	symbol_table_node_ptr symbol_table_stack::search_all(std::wstring name) const {
+	symbol_table_node_ptr symbol_table_stack::search_all(std::wstring name) {
 		
 		symbol_table_node_ptr p_node;
 
@@ -195,7 +218,7 @@ namespace cx{
 	 * @param p_string : ptr to name string to find.
 	 * @return ptr to symbol table node.
 	 */
-	symbol_table_node_ptr symbol_table_stack::find(std::wstring name) const {
+	symbol_table_node_ptr symbol_table_stack::find(std::wstring name) {
 
 		symbol_table_node_ptr p_node = search_all(name);
 

@@ -1,4 +1,4 @@
-class test_class_0 {
+/*class test_class_0 {
 	public int *both;
 	public int a;
 	public int b;
@@ -6,28 +6,25 @@ class test_class_0 {
 	public int get_a() return a;
 	private int get_b() return b;
 	
-	test_class_0(){
+	public test_class_0() : a(5), b(6) {
 		both = new int[2];
-		this.a = 5;
-		this.b = 6;
-		
 		both[0] = this.a;
 		both[1] = this.b;
 	}
 	
-	test_class_0(int a_, int b_){
+	public test_class_0(int a_, int b_){
 		this.a = a_;
 		this.b = b_;
 	}
 	
-	~test_class_0(){
+	public ~test_class_0(){
 		this.a = 0;
 		this.b = 0;
 		delete this.both;
 	}
 }
 
-test_class_0 tc_0_0 = new test_class_0();
+test_class_0 tc_0_0 = new test_class_0;
 test_class_0 tc_0_1 = new test_class_0(6, 6);
 test_class_0 tc_0_2 = null;
 
@@ -38,17 +35,17 @@ class test_class_1 : test_class_0 {
 	int get_c() return c;
 	int get_d() return d;
 	
-	test_class_1() : test_class_0(6, 6) {
+	public test_class_1() : test_class_0(6, 6) {
 		this.c = 5;
 		this.d = 6;
 	}
 	
-	test_class_1(int c_, int d_) : test_class_0 {
+	public test_class_1(int c_, int d_) : test_class_0 {
 		c = c_;
 		d = d_;
 	}
 	
-	~test_class_1() : ~test_class_0 {
+	public ~test_class_1() : ~test_class_0 {
 		this.c = 0;
 		this.d = 0;
 	}
@@ -76,7 +73,7 @@ enum enum_value_0 {
 
 int f = func(0);*/
 
-enum_value_0 enum_test_0(enum_value_0 e2) return e2;
+/*enum_value_0 enum_test_0(enum_value_0 e2) return e2;
 enum_value_1 enum_test_1(enum_value_1 e2) return e2;
 
 // Euclidean Greatest Common Divisor (GCD) algorithm
@@ -380,7 +377,7 @@ int for_test_0(int count){
  *
  *
  */
-int *m_ref_test_0(int i){
+/*int *m_ref_test_0(int i){
 	int *ref = new int[5];
 	ref[3] = i;
 	
@@ -494,13 +491,20 @@ a2[5] = '5';
 a2[6] = '4';
 a2[7] = '3';
 a2[8] = '2';
-a2[9] = '1';
+a2[9] = '1';*/
 
 // Fails because a2 isn't loaded 
 // to heap of a2_test_2
 // TODO: create a more readable error instead of "invalid <key, value>"
-char *a2_test_2() return a2;
+char a2_test_2(int a, int b, byte c) return 'a';
 
+// Function overload test.
+int a2_test_2(int a) return 5;
+byte f = 9;
+int b = a2_test_2(0);
+
+return b;
+/*
 // Passes because a is loaded 
 // into the heap of a2_test_1.
 // This is only true for returning a
@@ -596,4 +600,4 @@ delete aref;
 delete bref;
 delete d_ret_val;
 
-return success;
+return success;*/

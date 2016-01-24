@@ -1,1 +1,2 @@
-﻿cl : Command line error D8016: '/ZI' and '/GL' command-line options are incompatible
+﻿  parser.cpp
+  cx.vcxproj -> C:\Users\aahebert\Source\Repos\cx\Debug\cx.exe

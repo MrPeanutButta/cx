@@ -109,9 +109,13 @@ namespace cx {
 	typedef std::shared_ptr<symbol_table> symbol_table_ptr;
 	typedef std::shared_ptr<symbol_table_node> symbol_table_node_ptr;
 
+	class cx_type;
+
+	typedef std::shared_ptr <cx_type> type_ptr;			// Smart type pointer
+
 	class cx_type {
 	public:
-		typedef std::shared_ptr <cx_type> type_ptr;			// Smart type pointer
+		
 
 		/* Mapped raw pointer to type data. Gets passed to library
 		 * to allow the lib to decalre cx datatypes and functions */
@@ -168,14 +172,14 @@ namespace cx {
 
 	void initialize_builtin_types(symbol_table_ptr &p_symtab);
 
-	extern cx_type::type_ptr p_boolean_type;
-	extern cx_type::type_ptr p_char_type;
-	extern cx_type::type_ptr p_byte_type;
-	extern cx_type::type_ptr p_integer_type;
-	extern cx_type::type_ptr p_double_type;
-	extern cx_type::type_ptr p_reference_type;
-	extern cx_type::type_ptr p_void_type;
-	extern cx_type::type_ptr p_dummy_type;
+	extern type_ptr p_boolean_type;
+	extern type_ptr p_char_type;
+	extern type_ptr p_byte_type;
+	extern type_ptr p_integer_type;
+	extern type_ptr p_double_type;
+	extern type_ptr p_reference_type;
+	extern type_ptr p_void_type;
+	extern type_ptr p_dummy_type;
 
 
 }

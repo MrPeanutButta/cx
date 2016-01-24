@@ -489,7 +489,7 @@ namespace cx{
 				case opcode::DLOAD:		_PUSHS->d_ = _VALUE->d_; continue;
 				case opcode::DLT:		_REL_OP(d_, cx_real, < ); continue;
 				case opcode::DLT_EQ:	_REL_OP(d_, cx_real, <= ); continue;
-				case opcode::DMUL:		_BIN_OP(d_, cx_real, *); continue;
+				case opcode::DMUL:		_BIN_OP(d_, cx_real, * ); continue;
 				case opcode::DNEG:		_PUSHS->d_ = -abs(_POPS->d_); continue;
 				case opcode::DNOT_EQ:	_REL_OP(d_, cx_real, != ); continue;
 				case opcode::DPOS:		_PUSHS->d_ = abs(_POPS->d_); continue;
@@ -499,7 +499,7 @@ namespace cx{
 					_PUSHS->d_ = fmod(a, b);
 				}continue;
 				case opcode::DSTORE:	_VALUE->d_ = _POPS->d_; continue;
-				case opcode::DSUB:		_BIN_OP(d_, cx_real, -); continue;
+				case opcode::DSUB:		_BIN_OP(d_, cx_real, - ); continue;
 				case opcode::GETFIELD: continue;
 				case opcode::GETSTATIC: continue;
 				case opcode::GOTO: {
@@ -514,11 +514,11 @@ namespace cx{
 				case opcode::I2B:		_PUSHS->b_ = static_cast<cx_byte> (_POPS->i_); continue;
 				case opcode::I2C:		_PUSHS->c_ = static_cast<cx_char> (_POPS->i_); continue;
 				case opcode::I2D:		_PUSHS->d_ = static_cast<cx_real> (_POPS->i_); continue;
-				case opcode::IADD:		_BIN_OP(i_, cx_int, +); continue;
+				case opcode::IADD:		_BIN_OP(i_, cx_int, + ); continue;
 				case opcode::IALOAD:	_ALOAD(i_, cx_int); continue;
 				case opcode::ILT:		_REL_OP(i_, cx_int, < ); continue;
 					// Bitwise AND
-				case opcode::IAND:		_BIN_OP(i_, cx_int, &); continue;
+				case opcode::IAND:		_BIN_OP(i_, cx_int, & ); continue;
 				case opcode::IASTORE:	_ASTORE(i_, cx_int); continue;
 				case opcode::ICMP:
 					continue;
@@ -565,10 +565,10 @@ namespace cx{
 				case opcode::IINC:		_VALUE->i_ += vpu.inst_ptr->arg1.i_; continue;
 				case opcode::ILOAD:		_PUSHS->i_ = _VALUE->i_; continue;
 				case opcode::ILT_EQ:	_REL_OP(i_, cx_int, <= ); continue;
-				case opcode::IMUL:		_BIN_OP(i_, cx_int, *); continue;
+				case opcode::IMUL:		_BIN_OP(i_, cx_int, * ); continue;
 				case opcode::INEG:		_PUSHS->i_ = -abs(_POPS->i_); continue;
 					// Unary complement (bit inversion)
-				case opcode::INOT: 		_UNA_OP(i_, cx_int, ~); continue;
+				case opcode::INOT: 		_UNA_OP(i_, cx_int, ~ ); continue;
 				case opcode::INOT_EQ:	_REL_OP(i_, cx_int, != ); continue;
 				case opcode::INSTANCEOF: continue;
 				case opcode::INVOKEDYNAMIC: continue;
@@ -580,13 +580,13 @@ namespace cx{
 					// Bitwise inclusive OR
 				case opcode::IOR:		_BIN_OP(i_, cx_int, | ); continue;
 				case opcode::IPOS: 		_PUSHS->i_ = abs(_POPS->i_); continue;
-				case opcode::IREM: 		_BIN_OP(i_, cx_int, %); continue;
+				case opcode::IREM: 		_BIN_OP(i_, cx_int, % ); continue;
 				case opcode::ISHL: 		_BIN_OP(i_, cx_int, << ); continue;
 				case opcode::ISHR: 		_BIN_OP(i_, cx_int, >> ); continue;
 				case opcode::ISTORE:	_VALUE->i_ = _POPS->i_; continue;
-				case opcode::ISUB:		_BIN_OP(i_, cx_int, -); continue;
+				case opcode::ISUB:		_BIN_OP(i_, cx_int, - ); continue;
 					// Bitwise exclusive OR
-				case opcode::IXOR: 		_BIN_OP(i_, cx_int, ^); continue;
+				case opcode::IXOR: 		_BIN_OP(i_, cx_int, ^ ); continue;
 				case opcode::JSR:
 				case opcode::JSR_W: continue;
 				case opcode::LDC:
@@ -594,7 +594,7 @@ namespace cx{
 				case opcode::LDC_W: continue;
 				case opcode::LOOKUPSWITCH: continue;
 				case opcode::LOGIC_OR:	_BIN_OP(z_, cx_bool, || ); continue;
-				case opcode::LOGIC_AND:	_BIN_OP(z_, cx_bool, &&); continue;
+				case opcode::LOGIC_AND:	_BIN_OP(z_, cx_bool, && ); continue;
 				case opcode::LOGIC_NOT: _PUSHS->z_ = !_POPS->i_; continue;
 				case opcode::MONITORENTER:
 				case opcode::MONITOREXIT: continue;
@@ -626,9 +626,9 @@ namespace cx{
 					}
 
 					uintptr_t reference = _ADDRTOINT(mem);
-					this->heap_.insert(std::make_pair(reference, mem_mapping()));
-					this->heap_[reference].shared_ref = std::shared_ptr<uintptr_t>((uintptr_t *)mem, free);
-					this->heap_[reference].p_type = std::make_shared<cx_type>(*p_type);
+					auto mem_map = this->heap_.insert(std::make_pair(reference, mem_mapping()));
+					mem_map.first->second.shared_ref = std::shared_ptr<uintptr_t>((uintptr_t *)mem, free);
+					mem_map.first->second.p_type = std::make_shared<cx_type>(*p_type);
 
 					_PUSHS->a_ = mem;
 				} continue;

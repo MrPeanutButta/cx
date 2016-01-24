@@ -1,4 +1,4 @@
-The Cx Language
+Cx
 ==
 A scripting language for fun and profit.<br>
 ``` cpp
@@ -34,7 +34,7 @@ else
 
 The Cx Virtual Machine (CxVM)
 --
-The Cx back-end is a very simple op-code, stack-based processor built from scratch which (very) loosely follows the JVM instruction syntax. CxVM instrucions can be directly emitted from within Cx source.
+The Cx back-end is a very simple op-code, stack-based processor built from scratch which (very) loosely follows the JVM instruction syntax. CxVM instructions can be directly emitted from within Cx source.
 
 ``` cpp
 

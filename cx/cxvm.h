@@ -77,7 +77,7 @@ namespace cx {
 			}
 
 			std::shared_ptr<uintptr_t> shared_ref;		// VM memory allocations
-			cx_type::type_ptr p_type;	// Type information about this chunk of RAM
+			type_ptr p_type;	// Type information about this chunk of RAM
 		};
 
 		typedef std::map<uintptr_t, mem_mapping> malloc_map;
