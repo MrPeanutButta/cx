@@ -222,7 +222,7 @@ namespace cx{
 		symbol_table_node_ptr search_all(std::wstring name);
 		symbol_table_node_ptr find(std::wstring name);
 		void enter_scope(void);
-		symbol_table *exit_scope(void);
+		symbol_table_ptr exit_scope(void);
 	};
 
 	// mains scope level on the symtab stack

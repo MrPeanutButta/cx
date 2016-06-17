@@ -6,21 +6,21 @@ class test_class_0 {
 	public int get_a() return a;
 	private int get_b() return b;
 	
-	public void test_class_0(){
-		this.a = 5;
-		this.b = 5;
+	init test_class_0(){
+		//this.a = 5;
+		//this.b = 5;
 	
 		both = new int[2];
-		both[0] = this.a;
-		both[1] = this.b;
+		//both[0] = this.a;
+		//both[1] = this.b;
 	}
 	
-	public void test_class_0(int a_, int b_){
+	init test_class_0(int a_, int b_){
 		this.a = a_;
 		this.b = b_;
 	}
 	
-	public void ~test_class_0(){
+	dispose test_class_0(){
 		this.a = 0;
 		this.b = 0;
 		delete this.both;
@@ -38,17 +38,19 @@ class test_class_1 : test_class_0 {
 	int get_c() return c;
 	int get_d() return d;
 	
-	public test_class_1() : test_class_0(6, 6) {
+	init test_class_1(){
+		this.test_class_0(6, 6);
 		this.c = 5;
 		this.d = 6;
 	}
 	
-	public test_class_1(int c_, int d_) : test_class_0 {
+	init test_class_1(int c_, int d_){
+		this.test_class_0;
 		c = c_;
 		d = d_;
 	}
 	
-	public ~test_class_1() : ~test_class_0 {
+	dispose test_class_1(){
 		this.c = 0;
 		this.d = 0;
 	}

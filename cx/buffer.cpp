@@ -50,9 +50,6 @@ namespace cx{
 		list_buffer list; // the list file buffer
 	}
 	
-	// true if list source lines, else false
-
-
 	/** Constructor     Construct a input text buffer by opening the
 	 *                  input file.
 	 *

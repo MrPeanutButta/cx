@@ -184,9 +184,16 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="asm.cpp" />
     <ClCompile Include="buffer.cpp" />
+    <ClCompile Include="class.cpp" />
     <ClCompile Include="cxvm.cpp" />
+    <ClCompile Include="emit.cpp" />
+    <ClCompile Include="enum.cpp" />
     <ClCompile Include="error.cpp" />
+    <ClCompile Include="expr.cpp" />
+    <ClCompile Include="funct.cpp" />
+    <ClCompile Include="lib.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.cpp" />
     <ClCompile Include="removed\double operations.cpp">
@@ -196,6 +203,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="scanner.cpp" />
+    <ClCompile Include="statement.cpp" />
     <ClCompile Include="symtab.cpp" />
     <ClCompile Include="tknnum.cpp" />
     <ClCompile Include="tknstrsp.cpp" />

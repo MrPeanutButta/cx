@@ -37,8 +37,6 @@ namespace cx{
 
 	extern symbol_table_ptr p_global_symtab;
 
-	///  cx_parser     Parser class.
-
 	class parser {
 	public:
 		const std::wstring code_filename(void) const {
@@ -46,7 +44,7 @@ namespace cx{
 		}
 
 	private:
-		text_scanner * const p_scanner; // ptr to the scanner
+		text_scanner *const p_scanner; // ptr to the scanner
 		token *p_token; // ptr to the current token
 		token_code token; // code of current token
 		symbol_table_stack symtab_stack;
@@ -57,41 +55,20 @@ namespace cx{
 		symbol_table_node_ptr parse_function_header(symbol_table_node_ptr &p_function_id);
 
 		void parse_block(symbol_table_node_ptr &p_function_id);
-		void parse_iterator_block(symbol_table_node_ptr &p_function_id);
 		void parse_formal_parm_list(symbol_table_node_ptr &p_function_id);
 
 		symbol_table_node_ptr parse_subroutine_call(symbol_table_node_ptr &p_function_id, std::pair<local::iterator, local::iterator> p_node_ids);
 		symbol_table_node_ptr parse_declared_subroutine_call(symbol_table_node_ptr &p_function_id, std::pair<local::iterator, local::iterator> p_node_ids);
 
 		symbol_table_node_ptr parse_actual_parm_list(symbol_table_node_ptr &p_function_id, std::pair<local::iterator, local::iterator> p_node_ids);
-		//void parse_actual_parm(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node_id, symbol_table_node_ptr &p_formal_id);
-
-		// declarations
-		//symbol_table_node_ptr allocate_new_node(symbol_table_node_ptr &p_function_id);
 		void parse_declarations_or_assignment(symbol_table_node_ptr &p_function_id);
-		//void parse_constant_declaration(symbol_table_node_ptr &p_function_id);
-		//void parse_constant(symbol_table_node_ptr &p_const_id);
-		//void parse_identifier_constant(symbol_table_node_ptr &p_id1, token_code sign);
-
-		/*void parse_definitions(symbol_table_node_ptr &p_function_id);
-		void parse_type_definitions(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_type_spec(symbol_table_node_ptr &p_node);*/
-		/*cx_type::type_ptr parse_identifier_type(symbol_table_node_ptr &p_id2);
-		cx_type::type_ptr parse_enum_header(symbol_table_node_ptr &p_function_id);
-		cx_type::type_ptr parse_enumeration_type(void);
-		cx_type::type_ptr parse_subrange_type(symbol_table_node_ptr &p_min_id);
-		cx_type::type_ptr parse_subrange_limit(symbol_table_node_ptr &p_limit_id, int &limit);*/
-
-		/*cx_type::type_ptr parse_string_type(symbol_table_node_ptr &p_function_id,
-			symbol_table_node_ptr &p_string_node);*/
 		type_ptr parse_array_type(symbol_table_node_ptr &p_function_id,
 			symbol_table_node_ptr &p_array_node);
 
-		//void parse_index_type(symbol_table_node_ptr &p_array_node);
 		size_t array_size(type_ptr &p_array_type);
-		type_ptr parse_complex_type(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node);
-
-		//void parse_member_decls(symbol_table_node_ptr &p_function_id, cx_type::type_ptr p_complex_type, int offset);
+		void parse_class_declaration(symbol_table_node_ptr &p_function_id);
+		void parse_init(symbol_table_node_ptr &p_function_id);
+		void parse_dispose(symbol_table_node_ptr &p_function_id);
 
 		// expressions
 		type_ptr parse_expression(symbol_table_node_ptr &p_function_id);
@@ -101,7 +78,6 @@ namespace cx{
 		type_ptr parse_variable(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_id, bool reference = false);
 		type_ptr parse_subscripts(symbol_table_node_ptr &p_function_id, type_ptr &p_type);
 		//cx_type::type_ptr parse_field(symbol_table_node_ptr &p_function_id, symbol_table_node_ptr &p_node, cx_type::type_ptr &p_type);
-		//cx_type::type_ptr parse_iterator(symbol_table_node_ptr &p_iterator);
 
 		// statements
 		void parse_statement(symbol_table_node_ptr &p_function_id);
@@ -112,14 +88,9 @@ namespace cx{
 		void parse_WHILE(symbol_table_node_ptr &p_function_id);
 		void parse_IF(symbol_table_node_ptr &p_function_id);
 		void parse_FOR(symbol_table_node_ptr &p_function_id);
-		//void parse_SWITCH(symbol_table_node_ptr &p_function_id);
-		//void parse_case_branch(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
-		//void parse_case_label(symbol_table_node_ptr &p_function_id, cx_type::type_ptr &p_expr_type);
 		void parse_compound(symbol_table_node_ptr &p_function_id);
 		void parse_RETURN(symbol_table_node_ptr &p_function_id);
 		void parse_ASM(symbol_table_node_ptr &p_function_id);
-
-		//void parse_execute_directive(symbol_table_node_ptr &p_function_id);
 
 		void get_token(void) {
 			p_token = p_scanner->get();

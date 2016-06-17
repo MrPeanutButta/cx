@@ -108,7 +108,7 @@ namespace cx{
 		symbol_table_node_ptr p_integer_id = p_symtab->enter(L"int", DC_TYPE);
 		symbol_table_node_ptr p_byte_id = p_symtab->enter(L"byte", DC_TYPE);
 		symbol_table_node_ptr p_double_id = p_symtab->enter(L"real", DC_TYPE);
-		symbol_table_node_ptr p_reference_id = p_symtab->enter(L"class", DC_TYPE);
+		symbol_table_node_ptr p_reference_id = p_symtab->enter(L"object", DC_TYPE);
 		symbol_table_node_ptr p_boolean_id = p_symtab->enter(L"bool", DC_TYPE);
 		symbol_table_node_ptr p_char_id = p_symtab->enter(L"char", DC_TYPE);
 		symbol_table_node_ptr p_false_id = p_symtab->enter(L"false", DC_CONSTANT);

@@ -121,12 +121,12 @@ namespace cx {
 		 * to allow the lib to decalre cx datatypes and functions */
 		typedef std::map<type_code, cx_type *> cx_datatype;
 
-		size_t size;					// The size of this type
-		symbol_table_node_ptr p_type_id;	// TODO should be symbol_table_node_ptr
+		size_t size;					
+		symbol_table_node_ptr p_type_id;
 		type_code typecode;
 		type_form typeform;
 
-		symbol_table_ptr p_enum_ids; // TODO should be symbol_table_node_ptr
+		symbol_table_ptr p_enum_ids;
 
 		struct {
 			type_ptr p_index_type;
@@ -139,9 +139,9 @@ namespace cx {
 		} array;
 
 		struct {
-			/* used only for internal to class.
-			 * connects all scopes to a single table */
 			symbol_table_ptr p_class_scope;
+			symbol_table_ptr p_init_scope;
+			symbol_table_ptr p_dispose_scope;
 		} complex;
 
 		cx_type(type_form form, type_code type, size_t size, symbol_table_node_ptr &p_id, symbol_table_ptr &p_members);

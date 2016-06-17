@@ -121,7 +121,11 @@ namespace cx{
 
 		MC_LOCATION_MARKER = 126,
 		MC_LINE_MARKER = 127,
-		TC_ASM
+		TC_ASM,
+
+		// CTOR DTOR
+		TC_INIT, TC_DISPOSE,
+		TC_CLASS
 	};
 
 	typedef std::map<std::wstring, token_code> token_map;

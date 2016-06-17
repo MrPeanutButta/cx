@@ -1,2 +1,23 @@
-﻿  parser.cpp
-  cx.vcxproj -> C:\Users\aahebert\Source\Repos\cx\Debug\cx.exe
+﻿  types.cpp
+  tknword.cpp
+  tknstrsp.cpp
+  tknnum.cpp
+  symtab.cpp
+  statement.cpp
+  scanner.cpp
+  parser.cpp
+  main.cpp
+  lib.cpp
+  funct.cpp
+  expr.cpp
+  error.cpp
+  enum.cpp
+  emit.cpp
+  cxvm.cpp
+  class.cpp
+c:\users\aahebert\source\repos\cx\cx\class.cpp(53): error C2220: warning treated as error - no 'object' file generated
+c:\users\aahebert\source\repos\cx\cx\class.cpp(53): warning C4100: 'p_function_id': unreferenced formal parameter
+c:\users\aahebert\source\repos\cx\cx\class.cpp(57): warning C4100: 'p_function_id': unreferenced formal parameter
+  buffer.cpp
+  asm.cpp
+  Generating Code...

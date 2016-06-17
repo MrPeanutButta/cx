@@ -152,10 +152,6 @@ namespace cx{
 		this->symbols.insert(p_symtab->symbols.begin(), p_symtab->symbols.end());
 	}
 
-	/*void symbol_table::enter(symbol_table_node *p_node){
-		this->symbols[p_node->node_name].reset(p_node);// this->node_pool.back().get();
-	}*/
-
 	void symbol_table::enter(symbol_table_node_ptr &p_new_id) {
 		this->symbols.insert(std::make_pair(p_new_id->node_name, p_new_id));
 	}
@@ -252,7 +248,7 @@ namespace cx{
 	 *
 	 * @return ptr to closed scope's symbol table.
 	 */
-	symbol_table *symbol_table_stack::exit_scope(void) {
-		return p_symtabs[scoping::current_nesting_level--];
+	symbol_table_ptr symbol_table_stack::exit_scope(void) {
+		return std::make_shared<symbol_table>(*p_symtabs[scoping::current_nesting_level--]);
 	}
 }
