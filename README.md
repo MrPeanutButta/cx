@@ -52,7 +52,7 @@ int assembly_example(int i){
 		iadd				 	// 1255 + 100 = 1355
 		istore i			 	// i = 1355
 		iload i          		// Load 1355
-		istore assembly_test_0 	// assembly_test_0 = 1355
+		istore assembly_example // assembly_example = 1355
 		ret						// return
 	}
 }
